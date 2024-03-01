@@ -10,6 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Neba.Api/Neba.Api.csproj", "Neba.Api/"]
+COPY ["Directory.Packages.props", "./"] # Copy the Directory.Packages.props file
 RUN dotnet restore "./Neba.Api/Neba.Api.csproj"
 COPY . .
 WORKDIR "/src/Neba.Api"
