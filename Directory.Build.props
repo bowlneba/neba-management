@@ -1,0 +1,28 @@
+<Project>
+	<PropertyGroup Condition=" '$(MSBuildProjectExtension)' != '.dcproj'">
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+		<PathMap>$([System.IO.Path]::GetFullPath(('$(MSBuildThisFileDirectory)'))=./</PathMap>
+
+		<AnalysisLevel>latest</AnalysisLevel>
+		<AnalysisMode>All</AnalysisMode>
+		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+		<Authors>G &amp; C Software</Authors>
+		<Product>New England Bowlers' Association Management</Product>
+		<RepositoryType>Git</RepositoryType>
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(MSBuildProjectExtension)' != '.dcproj'">
+		<PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
+		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all"/>
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
+	</ItemGroup>
+</Project>
