@@ -1,5 +1,5 @@
 <Project>
-	<PropertyGroup Condition=" '$(MSBuildProjectExtension)' != '.dcproj'">
+	<PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj'">
 		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -20,7 +20,7 @@
 		<RepositoryType>Git</RepositoryType>
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(MSBuildProjectExtension)' != '.dcproj'">
+	<ItemGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj'">
 		<PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
 		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all"/>
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
