@@ -1,4 +1,4 @@
-name: Pull Request Build and Test
+name: Pull Request CI
 
 on:
     pull_request:
