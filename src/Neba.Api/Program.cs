@@ -25,7 +25,7 @@ var summaries = new[]
 
 app.MapGet("/weather", () =>
 {
-    var forecast = Enumerable.Range(1, 10).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new Neba.Api.WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
