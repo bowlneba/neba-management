@@ -2,4 +2,8 @@
 
 	<PropertyGroup />
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Neba.Api\Neba.Api.csproj" />
+	</ItemGroup>
+
 </Project>
