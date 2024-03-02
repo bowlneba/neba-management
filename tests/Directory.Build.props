@@ -19,7 +19,12 @@
 		<PackageReference Include="FluentAssertions.Analyzers" PrivateAssets="all" />
 
 		<PackageReference Include="coverlet.collector" PrivateAssets="all"/>
+		<PackageReference Include="coverlet.msbuild">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
+		<PackageReference Include="ReportGenerator" />
 	</ItemGroup>
 
 	<ItemGroup>
