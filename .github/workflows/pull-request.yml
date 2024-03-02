@@ -24,7 +24,7 @@ jobs:
             - name: Check NuGet Dependencies
               run: |
                 dotnet tool update --global dotnet-outdated-tool
-                dotnet outdated -f -exc Microsoft.VisualStudio.Azure.Containers.Tools.Targets NEBA.sln
+                dotnet outdated -f -exc Microsoft.VisualStudio.Azure.Containers.Tools.Targets Neba.sln
 
             - name: Restore
               run: dotnet restore Neba.sln
