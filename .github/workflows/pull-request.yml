@@ -1,0 +1,87 @@
+name: Pull Request CI
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+env:
+    DOTNET: 8.0.X
+    DOTNET_HOST_PATH: /usr/share/dotnet/
+
+jobs:
+
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET }}
+
+            - name: Check NuGet Dependencies
+              run: |
+                dotnet tool update --global dotnet-outdated-tool
+                dotnet outdated -f -exc Microsoft.VisualStudio.Azure.Containers.Tools.Targets Neba.sln
+
+            - name: Restore
+              run: dotnet restore Neba.sln
+
+            - name: Build
+              run: dotnet build --configuration Release
+    
+
+    Unit-Tests:
+        runs-on: ubuntu-latest
+        needs: Build
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET }}
+
+            - name: Restore
+              run: dotnet restore Neba.sln
+
+            - name: Test
+              run: dotnet test Neba.sln --no-restore --verbosity normal --configuration Release --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
+
+            - name: Copy Coverage
+              run: find coverage -type f -name coverage.cobertura.xml -exec cp -p {} coverage/coverage.cobertura.xml \;
+            
+            - name: Code Coverage Summary Report
+              uses: irongut/CodeCoverageSummary@v1.3.0
+              # uses: joshjohanning/CodeCoverageSummary@v1.0.2
+              with:
+                filename: coverage/coverage.cobertura.xml
+                badge: true
+                format: 'markdown'
+                output: 'both'
+        
+            - name: Upload code coverage results artifact
+              uses: actions/upload-artifact@v4
+              if: success() || failure()
+              with:
+                name: code-coverage-results
+                path: code-coverage-results.md
+                retention-days: 1
+        
+            - name: Save the PR number in an artifact
+              if: github.event_name == 'pull_request' && (success() || failure())
+              shell: bash
+              env:
+                PR_NUMBER: ${{ github.event.number }}
+              run: echo $PR_NUMBER > pr-number.txt
+        
+            - name: Upload the PR number
+              uses: actions/upload-artifact@v4
+              if: github.event_name == 'pull_request' &&  (success() || failure())
+              with:
+                name: pr-number
+                path: ./pr-number.txt
+                retention-days: 1

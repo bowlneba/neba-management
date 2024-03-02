@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34607.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Api", "src\Neba.Api\Neba.Api.csproj", "{7F397455-A86E-4EDF-99BB-FC457799E0F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3B3C6A7A-7B66-4B07-A339-D0EA4042FA08}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2B90D457-5715-424A-AC32-410511977BD7}"
+	ProjectSection(SolutionItems) = preProject
+		tests\.editorconfig = tests\.editorconfig
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api.UnitTests", "tests\Neba.Api.UnitTests\Neba.Api.UnitTests.csproj", "{2D4AB709-8617-4550-B208-924E7DF76573}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F397455-A86E-4EDF-99BB-FC457799E0F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F397455-A86E-4EDF-99BB-FC457799E0F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F397455-A86E-4EDF-99BB-FC457799E0F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F397455-A86E-4EDF-99BB-FC457799E0F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D4AB709-8617-4550-B208-924E7DF76573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D4AB709-8617-4550-B208-924E7DF76573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D4AB709-8617-4550-B208-924E7DF76573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D4AB709-8617-4550-B208-924E7DF76573}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F397455-A86E-4EDF-99BB-FC457799E0F2} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
+		{2D4AB709-8617-4550-B208-924E7DF76573} = {2B90D457-5715-424A-AC32-410511977BD7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A836566F-366B-4B94-B30D-7C093CBD2805}
+	EndGlobalSection
+EndGlobal
