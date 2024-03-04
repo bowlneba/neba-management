@@ -47,7 +47,7 @@ jobs:
               id: plan
               run: |
                 set +e
-                output=$(terraform plan -no-color)
+                output=$(terraform plan -no-color -out=tfplan)
                 echo "$output"
                 echo "::set-output name=has_changes::$(echo "$output" | grep -q "+ create" && echo "true" || echo "false")"
               working-directory: terraform
@@ -70,7 +70,7 @@ jobs:
       
             - name: Terraform Apply
               if: steps.plan.outputs.has_changes == 'true'
-              run: terraform apply -auto-approve
+              run: terraform apply -auto-approve tfplan
               working-directory: terraform
     
     deploy-api:
@@ -100,9 +100,6 @@ jobs:
             
             - name: Build
               run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-            
-            - name: Publish
-              run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build
 
             - name: Login to Azure
               uses: azure/login@v2
@@ -113,3 +110,4 @@ jobs:
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
                 az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --os Linux --runtime "DOTNETCORE:8.0"
+              working-directory: src/Neba.Api
