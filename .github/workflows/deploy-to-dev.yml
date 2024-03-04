@@ -95,13 +95,13 @@ jobs:
                   dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
             
             - name: Restore
-              run: dotnet restore "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj"
+              run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
             
             - name: Build
-              run: dotnet build "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj" --configuration ${{ env.CONFIGURATION }} --no-restore
+              run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
             - name: Publish
-              run: dotnet publish "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
+              run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
 
             - name: Login to Azure
               uses: azure/login@v2
