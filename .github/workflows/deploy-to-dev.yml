@@ -37,7 +37,7 @@ jobs:
               working-directory: terraform
 
             - name: Import Terraform State
-              run: terraform import azurerm_resource_group.nebamgmt-rg ${{ vars.AZURE_RESOURCE_GROUP_NAME }} /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGruops/${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+              run: terraform import azurerm_resource_group.nebamgmt-rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGruops/${{ vars.AZURE_RESOURCE_GROUP_NAME }}
               working-directory: terraform
 
             - name: Terraform Validate
