@@ -6,6 +6,12 @@ on:
             - 'develop'
             - 'feature/*'
 
+env:
+    ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    ARM_CLIENT_ID: ${{ secrets.AZURE_APP_CLIENT_ID }}
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_APP_CLIENT_SECRET }}
+    ARM_TENANT_ID: ${{ secrets.AZURE_APP_TENANT_ID }}
+
 jobs:
     terraform:
         name: 'Terraform'
@@ -37,11 +43,6 @@ jobs:
             - name: Terraform Apply
               run: terraform apply -auto-approve
               working-directory: terraform
-              env:
-                ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                ARM_CLIENT_ID: ${{ secrets.AZURE_APP_CLIENT_ID }}
-                ARM_CLIENT_SECRET: ${{ secrets.AZURE_APP_CLIENT_SECRET }}
-                ARM_TENANT_ID: ${{ secrets.AZURE_APP_TENANT_ID }}
     
     deploy-api:
         name: 'Deploy API'
