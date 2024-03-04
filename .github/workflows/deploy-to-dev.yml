@@ -19,6 +19,8 @@ jobs:
         environment:
             name: 'Development'
         env:
+            TF_VAR_storage_account_name: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+            TF_VAR_container_name: ${{ vars.AZURE_STORAGE_CONTAINER_NAME }}
             TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             TF_VAR_app_service_plan_name: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
             TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
@@ -33,11 +35,7 @@ jobs:
               uses: hashicorp/setup-terraform@v2
             
             - name: Terraform Init
-              run: terraform init
-              working-directory: terraform
-
-            - name: Import Terraform State
-              run: terraform import azurerm_resource_group.nebamgmt-rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=terraform.tfstate"
               working-directory: terraform
 
             - name: Terraform Validate

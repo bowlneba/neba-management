@@ -3,6 +3,23 @@ provider "azurerm" {
   features {}
 }
 
+variable "storage_account_name" {
+  default = "nebamgmttest"
+}
+
+variable "container_name" {
+  default = "nebamgmt-terraform-state-test"
+}
+
+terraform {
+  backend "azurerm" {
+    resource_group_name  = nebamgmt-rg.name
+    storage_account_name = var.storage_account_name
+    container_name       = var.container_name
+    key                  = "terraform.tfstate"
+  }
+}
+
 variable "resource_group_name" {
     default = "nebamgmt-rg-test"
 }
