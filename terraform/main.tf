@@ -28,10 +28,6 @@ variable "resource_group_budget_dollars" {
     default = 10
 }
 
-variable "resource_group_budget_email" {
-    default = "info@bowlneba.com"
-}
-
 resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
   name = "Resource Group Budget"
   resource_group_id = azurerm_resource_group.nebamgmt-rg.id
