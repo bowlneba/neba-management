@@ -26,7 +26,7 @@ jobs:
             TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
             TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
             TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
-            TF_VAR_system_admin_email: ${{ vars.AZURE_SYSTEM_ADMIN_EMAIL }}
+            TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             
         steps:
             - name: Checkout
