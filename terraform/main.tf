@@ -3,25 +3,14 @@ provider "azurerm" {
   features {}
 }
 
-variable "storage_account_name" {
-  default = "nebamgmttest"
-}
-
-variable "container_name" {
-  default = "nebamgmt-terraform-state-test"
-}
-
 terraform {
   backend "azurerm" {
-    resource_group_name  = nebamgmt-rg.name
-    storage_account_name = var.storage_account_name
-    container_name       = var.container_name
-    key                  = "terraform.tfstate"
+    key = "terraform.tfstate"
   }
 }
 
 variable "resource_group_name" {
-    default = "nebamgmt-rg-test"
+    default = "nebamgmt-rg-dev"
 }
 
 resource "azurerm_resource_group" "nebamgmt-rg" {
@@ -29,8 +18,40 @@ resource "azurerm_resource_group" "nebamgmt-rg" {
   location = "East US"
 }
 
+variable "resource_group_budget_cents" {
+    default = 1000
+}
+
+variable "resource_group_budget_email" {
+    default = "info@bowlneba.com"
+}
+
+resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
+  name = "Resource Group Budget"
+  resource_group_id = azurerm_resource_group.nebamgmt-rg.id
+  amount = var.resource_group_budget_cents
+  time_grain = "Monthly"
+
+  time_period {
+    start_date = "2023-03-01"
+    end_date = "2030-12-31"
+  }
+
+  notification{
+    operator = "GreaterThan"
+    threshold = 50
+    contact_emails = [var.resource_group_budget_email]
+  }
+
+  notification{
+    operator = "GreaterThan"
+    threshold = 90
+    contact_emails = [var.resource_group_budget_email]
+  }
+}
+
 variable "app_service_plan_name" {
-    default = "nebamgmt-asp-test"
+    default = "nebamgmt-asp-dev"
 }
 
 variable "app_service_plan_sku_name" {
@@ -46,7 +67,7 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
 }
 
 variable "app_insights_name"{
-    default = "nebamgmt-ai-test"
+    default = "nebamgmt-ai-dev"
 }
 
 resource "azurerm_application_insights" "nebamgmt-ai" {
@@ -57,7 +78,7 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
 }
 
 variable "api_service_name" {
-    default = "nebamgmt-api-test"
+    default = "nebamgmt-api-dev"
 }
 
 resource "azurerm_linux_web_app" "nebamgmt-api"{

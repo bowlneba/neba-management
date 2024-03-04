@@ -19,13 +19,13 @@ jobs:
         environment:
             name: 'Development'
         env:
-            TF_VAR_storage_account_name: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
-            TF_VAR_container_name: ${{ vars.AZURE_STORAGE_CONTAINER_NAME }}
             TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             TF_VAR_app_service_plan_name: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
             TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
             TF_VAR_app_insights_name: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
             TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+            TF_VAR_resource_group_budget_cents: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_CENTS}}
+            TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
             
         steps:
             - name: Checkout
@@ -35,7 +35,7 @@ jobs:
               uses: hashicorp/setup-terraform@v2
             
             - name: Terraform Init
-              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=terraform.tfstate"
+              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}"
               working-directory: terraform
 
             - name: Terraform Validate
