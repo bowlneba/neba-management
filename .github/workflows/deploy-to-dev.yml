@@ -30,10 +30,14 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v1
+              uses: hashicorp/setup-terraform@v2
             
             - name: Terraform Init
               run: terraform init
+              working-directory: terraform
+
+            - name: Import Terraform State
+              run: terraform import azurerm_resource_group.nebamgmt-rg ${{ vars.AZURE_RESOURCE_GROUP_NAME }} /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGruops/${{ vars.AZURE_RESOURCE_GROUP_NAME }}
               working-directory: terraform
 
             - name: Terraform Validate
