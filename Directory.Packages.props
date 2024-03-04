@@ -16,7 +16,7 @@
 	<PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
 	<PackageVersion Include="ReportGenerator" Version="5.2.2" />
 	<PackageVersion Include="Roslynator.Analyzers" Version="4.11.0" />
-	<PackageVersion Include="SonarAnalyzer.CSharp" Version="9.20.0.85982"/>
+	<PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780"/>
 	<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	<PackageVersion Include="xunit" Version="2.7.0" />
 	<PackageVersion Include="xunit.analyzers" Version="1.11.0"/>
