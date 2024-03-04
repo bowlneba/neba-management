@@ -107,7 +107,6 @@ jobs:
               run: |
                 cd publishApi
                 zip -r ../publishApi.zip *
-              working-directory: ${{ env.WORKING_DIRECTORY }}
 
             - name: Login to Azure
               uses: azure/login@v2
