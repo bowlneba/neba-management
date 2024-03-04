@@ -39,9 +39,9 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
   time_grain = "Monthly"
 
   time_period {
-  start_date = formatdate("YYYY-MM-01", timeadd(timestamp(), "0M"))
-  end_date = "2030-12-31"
-}
+    start_date = formatdate("YYYY-MM-01", timestamp())
+    end_date = "2030-12-31"
+  }
 
   notification{
     operator = "GreaterThan"
