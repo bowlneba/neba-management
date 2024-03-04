@@ -18,6 +18,12 @@ resource "azurerm_resource_group" "nebamgmt-rg" {
   location = "East US"
 }
 
+resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
+  name = "Budget Action Group"
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  short_name = "BudgetAG"
+}
+
 variable "resource_group_budget_cents" {
     default = 1000
 }
@@ -40,13 +46,13 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
   notification{
     operator = "GreaterThan"
     threshold = 50
-    contact_emails = [var.resource_group_budget_email]
+    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
   }
 
   notification{
     operator = "GreaterThan"
     threshold = 90
-    contact_emails = [var.resource_group_budget_email]
+    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
   }
 }
 
