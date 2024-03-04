@@ -103,6 +103,12 @@ jobs:
             - name: Publish
               run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
 
+            - name: Archive published files
+              run: |
+                cd publishApi
+                zip -r ../publishApi.zip *
+              working-directory: ${{ env.WORKING_DIRECTORY }}
+
             - name: Login to Azure
               uses: azure/login@v2
               with:
@@ -111,5 +117,4 @@ jobs:
             - name: Deploy API
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
-                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --os Linux --src ./publishApi
-              working-directory: src/Neba.Api
+                az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
