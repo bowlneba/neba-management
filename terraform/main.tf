@@ -18,10 +18,19 @@ resource "azurerm_resource_group" "nebamgmt-rg" {
   location = "East US"
 }
 
+variable "system_admin_email"{
+  default = "info@bowlneba.com"
+}
+
 resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
   name = "Budget Action Group"
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   short_name = "BudgetAG"
+
+  email_receiver {
+    name = "System Admin"
+    email_address = var.system_admin_email
+  } 
 }
 
 variable "resource_group_budget_dollars" {
