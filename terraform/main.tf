@@ -24,8 +24,8 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
   short_name = "BudgetAG"
 }
 
-variable "resource_group_budget_cents" {
-    default = 1000
+variable "resource_group_budget_dollars" {
+    default = 10
 }
 
 variable "resource_group_budget_email" {
@@ -35,7 +35,7 @@ variable "resource_group_budget_email" {
 resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
   name = "Resource Group Budget"
   resource_group_id = azurerm_resource_group.nebamgmt-rg.id
-  amount = var.resource_group_budget_cents
+  amount = var.resource_group_budget_dollars
   time_grain = "Monthly"
 
   time_period {

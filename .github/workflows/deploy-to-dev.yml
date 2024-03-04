@@ -24,7 +24,7 @@ jobs:
             TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
             TF_VAR_app_insights_name: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
             TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
-            TF_VAR_resource_group_budget_cents: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_CENTS}}
+            TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
             TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
             
         steps:
@@ -85,5 +85,5 @@ jobs:
             - name: Deploy API
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
-                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --runtime "DOTNETCORE:8.0"
+                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --os Linux --runtime "DOTNETCORE:8.0"
               working-directory: ${{ env.AZURE_API_PACKAGE_PATH }}
