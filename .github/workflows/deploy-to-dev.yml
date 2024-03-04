@@ -85,4 +85,5 @@ jobs:
             - name: Deploy API
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
-                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --src "${{ env.AZURE_API_PACKAGE_PATH }}"
+                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}}
+              working-directory: ${{ env.AZURE_API_PACKAGE_PATH }}
