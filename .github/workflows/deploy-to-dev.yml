@@ -4,6 +4,8 @@ on:
     push:
         branches:
             - 'develop'
+            - 'hotfix/*'
+            - 'release/*'
 
 env:
     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -51,22 +53,6 @@ jobs:
                 echo "$output"
                 echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
               working-directory: terraform
-
-            - name: Wait for approval
-              if: steps.plan.outputs.has_changes == 'true'
-              uses: actions/github-script@v5
-              with:
-                script: |
-                  const { owner, repo } = context.repo
-                  const { number } = context.issue
-                  await github.rest.repos.createDeploymentStatus({
-                    owner,
-                    repo,
-                    deployment_id: number,
-                    state: "pending",
-                    environment: "Development",
-                    description: "Waiting for approval"
-                  })
       
             - name: Terraform Apply
               if: steps.plan.outputs.has_changes == 'true'
