@@ -10,7 +10,9 @@ terraform {
 }
 
 variable "resource_group_name" {
-    default = "nebamgmt-rg-test"
+  description = "value for the resource group name"
+  default = "nebamgmt-rg-test"
+  type = string
 }
 
 resource "azurerm_resource_group" "nebamgmt-rg" {
@@ -19,7 +21,15 @@ resource "azurerm_resource_group" "nebamgmt-rg" {
 }
 
 variable "system_admin_email"{
+  description = "value for the system admin email address"
   default = "info@bowlneba.com"
+  type = string
+}
+
+variable "manager_email"{
+  description = "value for the manager email address"
+  default = "manager@bowlneba.com"
+  type = string
 }
 
 resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
@@ -30,6 +40,11 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
   email_receiver {
     name = "System Admin"
     email_address = var.system_admin_email
+  }
+
+  email_receiver {
+    name = "Manager"
+    email_address = var.manager_email
   } 
 }
 

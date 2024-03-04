@@ -27,6 +27,7 @@ jobs:
             TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
             TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
+            TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
             
         steps:
             - name: Checkout
