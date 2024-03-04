@@ -1,0 +1,119 @@
+name: 'Deploy to Dev Environment'
+
+on:
+    push:
+        branches:
+            - 'develop'
+
+env:
+    ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    ARM_CLIENT_ID: ${{ secrets.AZURE_APP_CLIENT_ID }}
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_APP_CLIENT_SECRET }}
+    ARM_TENANT_ID: ${{ secrets.AZURE_APP_TENANT_ID }}
+
+jobs:
+    terraform:
+        name: 'Terraform'
+        runs-on: ubuntu-latest
+        environment:
+            name: 'Development'
+        env:
+            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+            TF_VAR_app_service_plan_name: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
+            TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
+            TF_VAR_app_insights_name: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
+            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+            TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
+            TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
+            TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
+            TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+            
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+            
+            - name: Terraform Init
+              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}"
+              working-directory: terraform
+
+            - name: Terraform Validate
+              run: terraform validate
+              working-directory: terraform
+
+            - name: Terraform Plan
+              id: plan
+              run: |
+                set +e
+                output=$(terraform plan -no-color -out=tfplan)
+                echo "$output"
+                echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
+              working-directory: terraform
+
+            - name: Wait for approval
+              if: steps.plan.outputs.has_changes == 'true'
+              uses: actions/github-script@v5
+              with:
+                script: |
+                  const { owner, repo } = context.repo
+                  const { number } = context.issue
+                  await github.rest.repos.createDeploymentStatus({
+                    owner,
+                    repo,
+                    deployment_id: number,
+                    state: "pending",
+                    environment: "Development",
+                    description: "Waiting for approval"
+                  })
+      
+            - name: Terraform Apply
+              if: steps.plan.outputs.has_changes == 'true'
+              run: terraform apply -auto-approve tfplan
+              working-directory: terraform
+    
+    deploy-api:
+        name: 'Deploy API'
+        runs-on: ubuntu-latest
+        needs: terraform
+        env:
+            AZURE_API_NAME: ${{ vars.AZURE_API_SERVICE_NAME }}
+            CONFIGURATION: Release
+            DOTNET_CORE_VERSION: 8.0.x
+            WORKING_DIRECTORY: src/Neba.Api
+        environment:
+          name: 'Development'
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+            
+            - name: Restore
+              run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+            
+            - name: Build
+              run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+            - name: Publish
+              run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
+
+            - name: Archive Published Files
+              run: |
+                cd publishApi
+                zip -r ../publishApi.zip *
+
+            - name: Login to Azure
+              uses: azure/login@v2
+              with:
+                creds: '{"clientId":"${{ secrets.AZURE_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_APP_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_APP_TENANT_ID }}"}'
+            
+            - name: Deploy API
+              run: |
+                az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
+                az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
