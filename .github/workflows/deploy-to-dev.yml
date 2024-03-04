@@ -79,7 +79,6 @@ jobs:
         needs: terraform
         env:
             AZURE_API_NAME: ${{ vars.AZURE_API_SERVICE_NAME }}
-            AZURE_API_PACKAGE_PATH: src/Neba.Api/publish
             CONFIGURATION: Release
             DOTNET_CORE_VERSION: 8.0.x
             WORKING_DIRECTORY: src/Neba.Api
@@ -96,13 +95,13 @@ jobs:
                   dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
             
             - name: Restore
-              run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+              run: dotnet restore "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj"
             
             - name: Build
-              run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+              run: dotnet build "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj" --configuration ${{ env.CONFIGURATION }} --no-restore
 
             - name: Publish
-              run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publish
+              run: dotnet publish "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/Neba.Api.csproj" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
 
             - name: Login to Azure
               uses: azure/login@v2
@@ -112,5 +111,5 @@ jobs:
             - name: Deploy API
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
-                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --os Linux --runtime "DOTNETCORE:8.0" --src ./publish
+                az webapp up --name ${{ vars.AZURE_API_SERVICE_NAME}} --os Linux --src ./publishApi
               working-directory: src/Neba.Api
