@@ -10,7 +10,7 @@ terraform {
 }
 
 variable "resource_group_name" {
-    default = "nebamgmt-rg-dev"
+    default = "nebamgmt-rg-test"
 }
 
 resource "azurerm_resource_group" "nebamgmt-rg" {
@@ -51,7 +51,7 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
 }
 
 variable "app_service_plan_name" {
-    default = "nebamgmt-asp-dev"
+    default = "nebamgmt-asp-test"
 }
 
 variable "app_service_plan_sku_name" {
@@ -67,7 +67,7 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
 }
 
 variable "app_insights_name"{
-    default = "nebamgmt-ai-dev"
+    default = "nebamgmt-ai-test"
 }
 
 resource "azurerm_application_insights" "nebamgmt-ai" {
@@ -78,7 +78,7 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
 }
 
 variable "api_service_name" {
-    default = "nebamgmt-api-dev"
+    default = "nebamgmt-api-test"
 }
 
 resource "azurerm_linux_web_app" "nebamgmt-api"{
