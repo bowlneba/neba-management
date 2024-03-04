@@ -49,7 +49,7 @@ jobs:
                 set +e
                 output=$(terraform plan -no-color -out=tfplan)
                 echo "$output"
-                echo "::set-output name=has_changes::$(echo "$output" | grep -q "+ create" && echo "true" || echo "false")"
+                echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
               working-directory: terraform
 
             - name: Wait for approval
