@@ -103,7 +103,7 @@ jobs:
             
             - name: Publish
               run: |
-                dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build"
+                dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build
                 ls -l "${{ env.AZURE_API_PACKAGE_PATH }}"
 
             - name: Login to Azure
