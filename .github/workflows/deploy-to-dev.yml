@@ -56,6 +56,8 @@ jobs:
             CONFIGURATION: Release
             DOTNET_CORE_VERSION: 8.0.x
             WORKING_DIRECTORY: src/Neba.Api
+        environment:
+          name: 'Development'
         
         steps:
             - name: Checkout
