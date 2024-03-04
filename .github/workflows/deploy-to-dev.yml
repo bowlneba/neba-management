@@ -43,6 +43,7 @@ jobs:
     deploy-api:
         name: 'Deploy API'
         runs-on: ubuntu-latest
+        needs: terraform
         env:
             AZURE_API_NAME: ${{ vars.AZURE_API_SERVICE_NAME }}
             AZURE_API_PACKAGE_PATH: src/Neba.Api/publish
