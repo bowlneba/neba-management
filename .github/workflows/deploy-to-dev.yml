@@ -103,7 +103,7 @@ jobs:
             - name: Publish
               run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
 
-            - name: Archive published files
+            - name: Archive Published Files
               run: |
                 cd publishApi
                 zip -r ../publishApi.zip *
