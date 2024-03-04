@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2B90D457
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Api.UnitTests", "tests\Neba.Api.UnitTests\Neba.Api.UnitTests.csproj", "{2D4AB709-8617-4550-B208-924E7DF76573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.UI", "src\Neba.UI\Neba.UI.csproj", "{81223505-884A-40FB-88A4-28C95734DCE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI", "src\Neba.UI\Neba.UI.csproj", "{81223505-884A-40FB-88A4-28C95734DCE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
