@@ -1,25 +1,26 @@
 <Project>
   <PropertyGroup>
-	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-	<PackageVersion Include="coverlet.collector" Version="6.0.1" />
-	<PackageVersion Include="coverlet.msbuild" Version="6.0.1" />
-	<PackageVersion Include="FluentAssertions" Version="6.12.0" />
-	<PackageVersion Include="FluentAssertions.Analyzers" Version="0.31.0" />
-	<PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0"/>
-	<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
-	<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-	<PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.0-Preview.1" />
-	<PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28"/>
-	<PackageVersion Include="NSubstitute" Version="5.1.0" />
-	<PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-	<PackageVersion Include="ReportGenerator" Version="5.2.2" />
-	<PackageVersion Include="Roslynator.Analyzers" Version="4.11.0" />
-	<PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780"/>
-	<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-	<PackageVersion Include="xunit" Version="2.7.0" />
-	<PackageVersion Include="xunit.analyzers" Version="1.11.0"/>
-	<PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.1" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.1" />
+    <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.31.0" />
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.0-Preview.1" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28" />
+    <PackageVersion Include="MudBlazor" Version="6.17.0" />
+    <PackageVersion Include="NSubstitute" Version="5.1.0" />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
+    <PackageVersion Include="ReportGenerator" Version="5.2.2" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.11.0" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageVersion Include="xunit" Version="2.7.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.11.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
   </ItemGroup>
 </Project>
