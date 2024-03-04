@@ -54,38 +54,6 @@ jobs:
                 echo "$output"
                 echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
               working-directory: terraform
-
-            - name: Create deployment
-              id: create_deployment
-              if: steps.plan.outputs.has_changes == 'true'
-              run: |
-                response=$(curl -X POST \
-                  -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                  -H "Accept: application/vnd.github.v3+json" \
-                  https://api.github.com/repos/${{ github.repository }}/deployments \
-                  -d '{
-                    "ref": "${{ github.sha }}",
-                    "environment": "Development",
-                    "description": "Deploying to Development"
-                  }')
-                deployment_id=$(echo "$response" | jq '.id')
-                echo "::set-output name=deployment_id::$deployment_id"
-
-            - name: Wait for approval
-              if: steps.plan.outputs.has_changes == 'true'
-              uses: actions/github-script@v5
-              with:
-                script: |
-                  const { owner, repo } = context.repo
-                  const deployment_id = ${{ steps.create_deployment.outputs.deployment_id }}
-                  await github.rest.repos.createDeploymentStatus({
-                    owner,
-                    repo,
-                    deployment_id,
-                    state: "pending",
-                    environment: "Development",
-                    description: "Waiting for approval"
-                  })
       
             - name: Terraform Apply
               if: steps.plan.outputs.has_changes == 'true'
