@@ -9,6 +9,8 @@ terraform {
   }
 }
 
+data "azurerm_client_config" "current" {}
+
 variable "resource_group_name" {
   description = "value for the resource group name"
   default     = "nebamgmt-rg-test"

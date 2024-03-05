@@ -20,8 +20,8 @@ env:
     ARM_TENANT_ID: ${{ secrets.AZURE_APP_TENANT_ID }}
 
 jobs:
-    terraform:
-        name: 'Terraform'
+    terraform-plan:
+        name: 'Terraform Plan'
         runs-on: ubuntu-latest
         environment:
             name: ${{ github.event.inputs.environment }}
