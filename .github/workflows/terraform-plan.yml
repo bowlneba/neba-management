@@ -49,9 +49,5 @@ jobs:
 
             - name: Terraform Plan
               id: plan
-              run: |
-                set +e
-                output=$(terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color -out=tfplan)
-                echo "$output"
-                echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
+              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
               working-directory: terraform
