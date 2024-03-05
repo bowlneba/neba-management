@@ -122,3 +122,24 @@ resource "azurerm_linux_web_app" "nebamgmt-api"{
         "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
     }
 }
+
+variable "ui_service_name" {
+    default = "nebamgmt-ui-test"
+}
+
+resource "azurerm_linux_web_app" "nebamgmt-ui"{
+    name = var.ui_service_name
+    location = azurerm_resource_group.nebamgmt-rg.location
+    resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+    service_plan_id = azurerm_service_plan.nebamgmt-asp.id
+
+    site_config {
+        always_on = false
+    }
+
+    https_only = true
+
+    app_settings = {
+        "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    }
+}
