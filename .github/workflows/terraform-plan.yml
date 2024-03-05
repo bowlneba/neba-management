@@ -12,6 +12,11 @@ on:
                     - 'Development'
                     - 'Staging'
                     - 'Production'
+    pull_request:
+        types: [opened, reopened, synchronize]
+        branches:
+            - 'develop'
+
 
 env:
     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -24,7 +29,7 @@ jobs:
         name: 'Terraform Plan'
         runs-on: ubuntu-latest
         environment:
-            name: ${{ github.event.inputs.environment }}
+            name: ${{ github.event_name == 'pull_request' && 'Development' || github.event.inputs.environment }}
         env:
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
