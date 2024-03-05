@@ -205,6 +205,17 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 }
 
+variable "nebamgmt-api-url" {
+  description = "value for the nebamgmt api url"
+  type        = string
+}
+
+resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
+  name         = "NebaApi--BaseUrl"
+  value        = var.nebamgmt-api-url
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
 resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
 
