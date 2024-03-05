@@ -1,6 +1,7 @@
 using MudBlazor;
 using MudBlazor.Services;
 using Neba.UI.Components;
+using Neba.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddMudServices(config =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.Configure<NebaApiOptions>(builder.Configuration.GetSection(NebaApiOptions.SectionName));
 
 var app = builder.Build();
 
