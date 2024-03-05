@@ -158,6 +158,15 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 }
 
+variable "application_name"{
+    description = "value for the application name"
+    type = string
+}
+
+resource "azuread_application" "nebamgmt-app" {
+  name = var.application_name
+}
+
 variable "ui_service_name" {
   description = "value for the ui service name"
   default     = "nebamgmt-ui-test"
@@ -252,4 +261,10 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
     "Get",
     "List"
   ]
+}
+
+resource "azurerm_role_assignment" "nebamgmt-app-kv-role"{
+    scope = azurerm_key_vault.nebamgmt-kv.id
+    principal_id = azuread_application.nebamgmt-app.object_id
+    role_definition_name = "Key Vault Contributor"
 }

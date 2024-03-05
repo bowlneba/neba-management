@@ -8,6 +8,8 @@ app_service_plan_sku_name = "F1"
 
 app_insights_name = "nebamgmt-ai-dev"
 
+application_name = "NEBA Management (Dev)"
+
 api_always_on = false
 
 ui_always_on = false
