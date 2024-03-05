@@ -3,6 +3,10 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
+		<LangVersion>latest</LangVersion>
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>

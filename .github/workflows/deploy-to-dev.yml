@@ -20,15 +20,11 @@ jobs:
         environment:
             name: 'Development'
         env:
-            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
-            TF_VAR_app_service_plan_name: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
-            TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
-            TF_VAR_app_insights_name: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
-            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
-            TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
-            TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+            TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
+            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             
         steps:
             - name: Checkout
@@ -49,14 +45,14 @@ jobs:
               id: plan
               run: |
                 set +e
-                output=$(terraform plan -no-color -out=tfplan)
+                output=$(terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color -out=tfplan)
                 echo "$output"
                 echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
               working-directory: terraform
       
             - name: Terraform Apply
               if: steps.plan.outputs.has_changes == 'true'
-              run: terraform apply -auto-approve tfplan
+              run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve tfplan
               working-directory: terraform
     
     deploy-api:
@@ -64,7 +60,6 @@ jobs:
         runs-on: ubuntu-latest
         needs: terraform
         env:
-            AZURE_API_NAME: ${{ vars.AZURE_API_SERVICE_NAME }}
             CONFIGURATION: Release
             DOTNET_CORE_VERSION: 8.0.x
             WORKING_DIRECTORY: src/Neba.Api
@@ -103,3 +98,47 @@ jobs:
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
                 az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+
+    deploy-ui:
+      name: 'Deploy UI'
+      runs-on: ubuntu-latest
+      needs: [terraform, deploy-api]
+      env:
+          CONFIGURATION: Release
+          DOTNET_CORE_VERSION: 8.0.x
+          WORKING_DIRECTORY: src/Neba.UI
+      environment:
+        name: 'Development'
+      
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Setup .NET
+            uses: actions/setup-dotnet@v4
+            with:
+                dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+          
+          - name: Restore
+            run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+          
+          - name: Build
+            run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+          - name: Publish
+            run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishUI
+
+          - name: Archive Published Files
+            run: |
+              cd publishUI
+              zip -r ../publishUI.zip *
+
+          - name: Login to Azure
+            uses: azure/login@v2
+            with:
+              creds: '{"clientId":"${{ secrets.AZURE_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_APP_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_APP_TENANT_ID }}"}'
+          
+          - name: Deploy UI
+            run: |
+              az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_UI_SERVICE_NAME }}
+              az webapp deployment source config-zip --src ./publishUI.zip --name ${{ vars.AZURE_UI_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}

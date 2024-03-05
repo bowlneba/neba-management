@@ -1,5 +1,3 @@
-using Neba.Api;
-
 namespace Neba.Api.UnitTests;
 
 public class CalculatorTests

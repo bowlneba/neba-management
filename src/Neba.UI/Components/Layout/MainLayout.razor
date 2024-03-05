@@ -1,0 +1,60 @@
+﻿@inherits LayoutComponentBase
+
+<NebaThemeProvider IsDarkMode="@IsDarkMode" @ref="_nebaThemeProvider" />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudToolBar Style="width: 100%">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
+            <MudSpacer />
+            <MudSwitch @bind-Value="@IsDarkMode" Color="Color.Dark" ThumbIcon="@ThemeIcon" />
+        </MudToolBar>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@IsDrawerOpen" Elevation="2">
+        <MudDrawerHeader>
+            <MudImage Src="images/neba-logo.png" Width="40" Height="40" Alt="NEBA Logo" />
+            <MudSpacer />
+            <MudText Typo="Typo.h5" Class="mt-1">Management</MudText>
+        </MudDrawerHeader>
+        <MainNavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@code
+{
+    public bool IsDarkMode { get; set; }
+    public string ThemeIcon 
+        => IsDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode;
+
+    public bool IsDrawerOpen { get; set; }
+
+    private void DrawerToggle()
+        => IsDrawerOpen = !IsDrawerOpen;
+
+    private NebaThemeProvider _nebaThemeProvider = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;    
+        }
+
+        IsDarkMode = await _nebaThemeProvider.IsSystemDarkMode();
+        StateHasChanged();
+    }
+}
