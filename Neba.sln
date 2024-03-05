@@ -27,6 +27,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_infrastructure", "_infrastructure", "{405DBE70-4B83-4C58-8CA0-1DA08FCE7780}"
 	ProjectSection(SolutionItems) = preProject
 		terraform\main.tf = terraform\main.tf
+		terraform\development.tfvars = terraform\development.tfvars
 	EndProjectSection
 EndProject
 Global
