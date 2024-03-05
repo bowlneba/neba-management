@@ -204,13 +204,13 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
   object_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
 
   secret_permissions = [
-    "get",
-    "list"
+    "Get",
+    "List"
   ]
 
   key_permissions = [
-    "get",
-    "list"
+    "Get",
+    "List"
   ]
 }
 
@@ -221,12 +221,12 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
   object_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
 
   secret_permissions = [
-    "get",
-    "list"
+    "Get",
+    "List"
   ]
 
   key_permissions = [
-    "get",
-    "list"
+    "Get",
+    "List"
   ]
 }
