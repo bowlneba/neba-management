@@ -6,6 +6,12 @@ on:
             environment:
                 description: 'Selected Environment'
                 required: true
+                default: 'Development'
+                type: choice
+                options:
+                    - 'Development'
+                    - 'Staging'
+                    - 'Production'
 
 env:
     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -18,7 +24,7 @@ jobs:
         name: 'Terraform'
         runs-on: ubuntu-latest
         environment:
-            name: 'Development'
+            name: ${{ github.event.inputs.environment }}
         env:
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
