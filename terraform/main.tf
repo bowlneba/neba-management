@@ -116,6 +116,12 @@ variable "api_service_name" {
     type = string
 }
 
+variable "api_always_on" {
+    description = "value for the api always on setting"
+    default = false
+    type = bool
+}
+
 resource "azurerm_linux_web_app" "nebamgmt-api"{
     name = var.api_service_name
     location = azurerm_resource_group.nebamgmt-rg.location
@@ -123,7 +129,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api"{
     service_plan_id = azurerm_service_plan.nebamgmt-asp.id
 
     site_config {
-        always_on = false
+        always_on = var.api_always_on
     }
 
     https_only = true
@@ -139,6 +145,12 @@ variable "ui_service_name" {
     type = string
 }
 
+variable "ui_always_on" {
+    description = "value for the ui always on setting"
+    default = false
+    type = bool
+}
+
 resource "azurerm_linux_web_app" "nebamgmt-ui"{
     name = var.ui_service_name
     location = azurerm_resource_group.nebamgmt-rg.location
@@ -146,7 +158,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui"{
     service_plan_id = azurerm_service_plan.nebamgmt-asp.id
 
     site_config {
-        always_on = false
+        always_on = var.ui_always_on
     }
 
     depends_on = [azurerm_linux_web_app.nebamgmt-api]
