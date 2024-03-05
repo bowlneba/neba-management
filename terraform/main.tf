@@ -49,7 +49,8 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
 }
 
 variable "resource_group_budget_dollars" {
-    default = 10
+    description = "value for the resource group budget in dollars"
+    type = number
 }
 
 resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
@@ -76,11 +77,13 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
 }
 
 variable "app_service_plan_name" {
-    default = "nebamgmt-asp-test"
+    description = "value for the app service plan name"
+    type = string
 }
 
 variable "app_service_plan_sku_name" {
-    default = "F1"
+    description = "value for the app service plan sku name"
+    type = string
 }
 
 resource "azurerm_service_plan" "nebamgmt-asp" {
@@ -91,8 +94,26 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
   sku_name = var.app_service_plan_sku_name
 }
 
+variable "log_analytics_workspace_name" {
+    description = "value for the log analytics workspace name"
+    type = string
+}
+
+variable "log_analytics_workspace_sku" {
+    description = "value for the log analytics workspace sku"
+    type = string
+}
+
+resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
+  name                = var.log_analytics_workspace_name
+  location            = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  sku                 = var.log_analytics_workspace_sku
+}
+
 variable "app_insights_name"{
-    default = "nebamgmt-ai-test"
+    description = "value for the application insights name"
+    type = string
 }
 
 resource "azurerm_application_insights" "nebamgmt-ai" {
@@ -100,10 +121,18 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   application_type    = "web"
+  workspace_id = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
 }
 
 variable "api_service_name" {
+    description = "value for the api service name"
     default = "nebamgmt-api-test"
+    type = string
+}
+
+variable "api_always_on" {
+    description = "value for the api always on setting"
+    type = bool
 }
 
 resource "azurerm_linux_web_app" "nebamgmt-api"{
@@ -113,8 +142,38 @@ resource "azurerm_linux_web_app" "nebamgmt-api"{
     service_plan_id = azurerm_service_plan.nebamgmt-asp.id
 
     site_config {
-        always_on = false
+        always_on = var.api_always_on
     }
+
+    https_only = true
+
+    app_settings = {
+        "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    }
+}
+
+variable "ui_service_name" {
+    description = "value for the ui service name"
+    default = "nebamgmt-ui-test"
+    type = string
+}
+
+variable "ui_always_on" {
+    description = "value for the ui always on setting"
+    type = bool
+}
+
+resource "azurerm_linux_web_app" "nebamgmt-ui"{
+    name = var.ui_service_name
+    location = azurerm_resource_group.nebamgmt-rg.location
+    resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+    service_plan_id = azurerm_service_plan.nebamgmt-asp.id
+
+    site_config {
+        always_on = var.ui_always_on
+    }
+
+    depends_on = [azurerm_linux_web_app.nebamgmt-api]
 
     https_only = true
 
