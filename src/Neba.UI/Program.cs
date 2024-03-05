@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudBlazor.Services;
 using Neba.UI.Components;
@@ -21,7 +22,20 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.Configure<NebaApiOptions>(builder.Configuration.GetSection(NebaApiOptions.SectionName));
+#region Neba Api
+
+builder.Services.AddOptions<NebaApiOptions>()
+    .BindConfiguration(NebaApiOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddHttpClient(NebaApiService._serviceName, (services, client) =>
+{
+    var options = services.GetRequiredService<IOptions<NebaApiOptions>>().Value;
+    client.BaseAddress = options.BaseUrl;
+});
+
+#endregion
 
 var app = builder.Build();
 
