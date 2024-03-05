@@ -35,6 +35,8 @@ builder.Services.AddHttpClient(NebaApiService._serviceName, (services, client) =
     client.BaseAddress = options.BaseUrl;
 });
 
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+
 #endregion
 
 var app = builder.Build();
