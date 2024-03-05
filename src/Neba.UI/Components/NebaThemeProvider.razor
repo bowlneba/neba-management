@@ -1,0 +1,30 @@
+﻿@using MudBlazor.Utilities
+
+<CascadingValue Value="false" Name="UsePopoverProvider">
+    <MudThemeProvider Theme="Neba" IsDarkMode="@IsDarkMode" @ref="_mudThemeProvider" />
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public bool IsDarkMode { get; set; }
+
+    public static readonly MudTheme Neba = new()
+        {
+            Palette = new PaletteLight
+            {
+                AppbarBackground = new MudColor(62, 79, 217, 255)
+            },
+            PaletteDark = new PaletteDark
+            {
+                AppbarBackground = new MudColor(62, 79, 217, 255).ColorRgbDarken()
+            }
+        };
+
+    public void SetDarkMode(bool isDarkMode)
+        => IsDarkMode = isDarkMode;
+
+    private MudThemeProvider _mudThemeProvider = null!;
+
+    public async Task<bool> IsSystemDarkMode()
+        => await _mudThemeProvider.GetSystemPreference();
+}

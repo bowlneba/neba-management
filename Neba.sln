@@ -20,7 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2B90D457
 		tests\Directory.Build.props = tests\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api.UnitTests", "tests\Neba.Api.UnitTests\Neba.Api.UnitTests.csproj", "{2D4AB709-8617-4550-B208-924E7DF76573}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Api.UnitTests", "tests\Neba.Api.UnitTests\Neba.Api.UnitTests.csproj", "{2D4AB709-8617-4550-B208-924E7DF76573}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI", "src\Neba.UI\Neba.UI.csproj", "{81223505-884A-40FB-88A4-28C95734DCE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{2D4AB709-8617-4550-B208-924E7DF76573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D4AB709-8617-4550-B208-924E7DF76573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D4AB709-8617-4550-B208-924E7DF76573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81223505-884A-40FB-88A4-28C95734DCE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81223505-884A-40FB-88A4-28C95734DCE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81223505-884A-40FB-88A4-28C95734DCE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81223505-884A-40FB-88A4-28C95734DCE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7F397455-A86E-4EDF-99BB-FC457799E0F2} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
 		{2D4AB709-8617-4550-B208-924E7DF76573} = {2B90D457-5715-424A-AC32-410511977BD7}
+		{81223505-884A-40FB-88A4-28C95734DCE8} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A836566F-366B-4B94-B30D-7C093CBD2805}
