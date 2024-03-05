@@ -1,3 +1,7 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Keys;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudBlazor.Services;
@@ -21,6 +25,32 @@ builder.Services.AddMudServices(config =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+#region Key Vault
+
+var kvUrl = builder.Configuration.GetValue<string>("KeyVault:Url") ?? throw new InvalidOperationException("KeyVault:Url is not set");
+
+KeyClient keyClient = null!;
+
+#if DEBUG
+
+var kvClientId = builder.Configuration.GetValue<string>("KeyVault:ClientId");
+var kvClientSecret = builder.Configuration.GetValue<string>("KeyVault:ClientSecret");
+var kvTenantId = builder.Configuration.GetValue<string>("KeyVault:TenantId");
+
+var credential = new ClientSecretCredential(kvTenantId, kvClientId, kvClientSecret);
+keyClient = new(new Uri(kvUrl), credential);
+
+#else
+
+var credential = new ManagedIdentityCredential();
+keyClient = new(new Uri(kvUrl), credential);
+
+#endif
+
+builder.Configuration.AddAzureKeyVault(new SecretClient(new Uri(kvUrl), credential), new KeyVaultSecretManager());
+
+#endregion
 
 #region Neba Api
 
