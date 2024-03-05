@@ -1,5 +1,10 @@
 ﻿@page "/weather"
+
 @using System.Security.Cryptography
+@using Neba.UI.Services
+
+@inject IWeatherService WeatherService
+
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>
@@ -8,7 +13,11 @@
 
 <p>This component demonstrates showing data.</p>
 
-@if (forecasts == null)
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p><b>Error: @errorMessage</b></p>    
+}
+else if (forecasts == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -39,27 +48,19 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        var result = await WeatherService.GetForecastAsync(default);
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        if (result.IsError)
         {
-            Date = startDate.AddDays(index),
-            TemperatureC = RandomNumberGenerator.GetInt32(-20, 55),
-            Summary = summaries[RandomNumberGenerator.GetInt32(summaries.Length)]
-        }).ToArray();
-    }
-
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+            errorMessage = result.FirstError.Description;
+        }
+        else
+        {
+            forecasts = result.Value;
+        }
     }
 }

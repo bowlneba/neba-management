@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudBlazor.Services;
 using Neba.UI.Components;
+using Neba.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,23 @@ builder.Services.AddMudServices(config =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+#region Neba Api
+
+builder.Services.AddOptions<NebaApiOptions>()
+    .BindConfiguration(NebaApiOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddHttpClient(NebaApiService._serviceName, (services, client) =>
+{
+    var options = services.GetRequiredService<IOptions<NebaApiOptions>>().Value;
+    client.BaseAddress = options.BaseUrl;
+});
+
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+
+#endregion
 
 var app = builder.Build();
 
