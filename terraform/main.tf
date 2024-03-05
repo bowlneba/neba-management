@@ -152,6 +152,10 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 variable "ui_service_name" {
@@ -181,6 +185,10 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 }
 
