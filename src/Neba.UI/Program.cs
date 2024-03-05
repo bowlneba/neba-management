@@ -1,8 +1,3 @@
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Azure.Identity;
-using Azure.Security.KeyVault.Keys;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Options;
 using Neba.UI.Components;
 using Neba.UI.Infrastructure;
 using Neba.UI.Services;
