@@ -223,6 +223,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   name         = "NebaApi--BaseUrl"
   value        = var.nebamgmt-api-url
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  content_type = "text/url"
 }
 
 resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
