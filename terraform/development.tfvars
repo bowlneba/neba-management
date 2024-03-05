@@ -11,3 +11,5 @@ app_insights_name = "nebamgmt-ai-dev"
 api_always_on = false
 
 ui_always_on = false
+
+nebamgmt-key-vault-name = "nebamgmt-kv-dev"

@@ -181,3 +181,50 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
   }
 }
+
+variable "nebamgmt-key-vault-name" {
+  description = "value for the key vault name"
+  type = string
+}
+
+resource "azurerm_key_vault" "nebamgmt-kv" {
+  name                = var.nebamgmt-key-vault-name
+  location            = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  sku_name            = "standard"
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+}
+
+resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+
+  secret_permissions = [
+    "get",
+    "list"
+  ]
+
+  key_permissions = [
+    "get",
+    "list"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+
+  secret_permissions = [
+    "get",
+    "list"
+  ]
+
+  key_permissions = [
+    "get",
+    "list"
+  ]
+}
