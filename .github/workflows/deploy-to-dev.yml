@@ -20,18 +20,11 @@ jobs:
         environment:
             name: 'Development'
         env:
-            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
-            TF_VAR_app_service_plan_name: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
-            TF_VAR_app_service_plan_sku_name: ${{ vars.AZURE_APP_SERVICE_PLAN_SKU_NAME }}
-            TF_VAR_app_insights_name: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
-            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
-            TF_VAR_api_always_on: ${{ vars.AZURE_API_ALWAYS_ON }}
-            TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
-            TF_VAR_ui_always_on: ${{ vars.AZURE_UI_ALWAYS_ON }}
-            TF_VAR_resource_group_budget_dollars: ${{ vars.AZURE_RESOURCE_GROUP_BUDGET_DOLLARS}}
-            TF_VAR_resource_group_budget_email: ${{ vars.AZURE_BUDGET_NOTIFICATION_EMAILS}}
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+            TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
+            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             
         steps:
             - name: Checkout
@@ -52,14 +45,14 @@ jobs:
               id: plan
               run: |
                 set +e
-                output=$(terraform plan -no-color -out=tfplan)
+                output=$(terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color -out=tfplan)
                 echo "$output"
                 echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
               working-directory: terraform
       
             - name: Terraform Apply
               if: steps.plan.outputs.has_changes == 'true'
-              run: terraform apply -auto-approve tfplan
+              run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve tfplan
               working-directory: terraform
     
     deploy-api:

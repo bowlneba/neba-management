@@ -50,7 +50,6 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
 
 variable "resource_group_budget_dollars" {
     description = "value for the resource group budget in dollars"
-    default = 10
     type = number
 }
 
@@ -79,13 +78,11 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
 
 variable "app_service_plan_name" {
     description = "value for the app service plan name"
-    default = "nebamgmt-asp-test"
     type = string
 }
 
 variable "app_service_plan_sku_name" {
     description = "value for the app service plan sku name"
-    default = "F1"
     type = string
 }
 
@@ -99,7 +96,6 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
 
 variable "app_insights_name"{
     description = "value for the application insights name"
-    default = "nebamgmt-ai-test"
     type = string
 }
 
@@ -118,7 +114,6 @@ variable "api_service_name" {
 
 variable "api_always_on" {
     description = "value for the api always on setting"
-    default = false
     type = bool
 }
 
@@ -147,7 +142,6 @@ variable "ui_service_name" {
 
 variable "ui_always_on" {
     description = "value for the ui always on setting"
-    default = false
     type = bool
 }
 
