@@ -94,6 +94,23 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
   sku_name = var.app_service_plan_sku_name
 }
 
+variable "log_analytics_workspace_name" {
+    description = "value for the log analytics workspace name"
+    type = string
+}
+
+variable "log_analytics_workspace_sku" {
+    description = "value for the log analytics workspace sku"
+    type = string
+}
+
+resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
+  name                = var.log_analytics_workspace_name
+  location            = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  sku                 = var.log_analytics_workspace_sku
+}
+
 variable "app_insights_name"{
     description = "value for the application insights name"
     type = string
@@ -104,6 +121,7 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   application_type    = "web"
+  workspace_id = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
 }
 
 variable "api_service_name" {

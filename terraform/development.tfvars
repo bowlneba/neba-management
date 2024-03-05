@@ -1,5 +1,8 @@
 resource_group_budget_dollars = 10
 
+log_analytics_workspace_name = "nebamgmt-log-analytics-dev"
+log_analytics_workspace_sku = "PerGB2018"
+
 app_service_plan_name = "nebamgmt-asp-dev"
 app_service_plan_sku_name = "F1"
 
