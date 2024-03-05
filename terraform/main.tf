@@ -164,7 +164,7 @@ variable "application_name"{
 }
 
 resource "azuread_application" "nebamgmt-app" {
-  name = var.application_name
+  display_name = var.application_name
 }
 
 variable "ui_service_name" {
