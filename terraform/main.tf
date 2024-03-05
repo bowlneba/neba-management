@@ -49,7 +49,9 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag"{
 }
 
 variable "resource_group_budget_dollars" {
+    description = "value for the resource group budget in dollars"
     default = 10
+    type = number
 }
 
 resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
@@ -76,11 +78,15 @@ resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
 }
 
 variable "app_service_plan_name" {
+    description = "value for the app service plan name"
     default = "nebamgmt-asp-test"
+    type = string
 }
 
 variable "app_service_plan_sku_name" {
+    description = "value for the app service plan sku name"
     default = "F1"
+    type = string
 }
 
 resource "azurerm_service_plan" "nebamgmt-asp" {
@@ -92,7 +98,9 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
 }
 
 variable "app_insights_name"{
+    description = "value for the application insights name"
     default = "nebamgmt-ai-test"
+    type = string
 }
 
 resource "azurerm_application_insights" "nebamgmt-ai" {
@@ -103,7 +111,9 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
 }
 
 variable "api_service_name" {
+    description = "value for the api service name"
     default = "nebamgmt-api-test"
+    type = string
 }
 
 resource "azurerm_linux_web_app" "nebamgmt-api"{
@@ -124,7 +134,9 @@ resource "azurerm_linux_web_app" "nebamgmt-api"{
 }
 
 variable "ui_service_name" {
+    description = "value for the ui service name"
     default = "nebamgmt-ui-test"
+    type = string
 }
 
 resource "azurerm_linux_web_app" "nebamgmt-ui"{
@@ -136,6 +148,8 @@ resource "azurerm_linux_web_app" "nebamgmt-ui"{
     site_config {
         always_on = false
     }
+
+    depends_on = [azurerm_linux_web_app.nebamgmt-api]
 
     https_only = true
 
