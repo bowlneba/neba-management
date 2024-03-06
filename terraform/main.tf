@@ -323,9 +323,3 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
     "List"
   ]
 }
-
-resource "azurerm_role_assignment" "nebamgmt-app-kv-role"{
-    scope = azurerm_key_vault.nebamgmt-kv.id
-    principal_id = azuread_application.nebamgmt-app.object_id
-    role_definition_name = "Key Vault Contributor"
-}
