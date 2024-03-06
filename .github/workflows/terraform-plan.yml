@@ -51,5 +51,5 @@ jobs:
 
             - name: Terraform Plan
               id: plan
-              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
+              run: terraform plan -refresh=false -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
               working-directory: terraform
