@@ -2,6 +2,10 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerd"{
+  features {}
+}
+
 terraform {
   backend "azurerm" {
   }
