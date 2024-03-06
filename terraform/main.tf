@@ -143,6 +143,9 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
 
   site_config {
     always_on = var.api_always_on
+    application_stack {
+      dotnet_version = "8.0"
+    }
   }
 
   https_only = true
@@ -174,7 +177,10 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
 
   site_config {
-    always_on = var.ui_always_on
+    always_on = var.api_always_on
+    application_stack {
+      dotnet_version = "8.0"
+    }
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
