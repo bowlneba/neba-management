@@ -27,6 +27,7 @@ jobs:
             TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
             TF_VAR_terraform_app_client_id: ${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}
             TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+            TF_VAR_azure_infrastructure_management_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
             
         steps:
             - name: Checkout

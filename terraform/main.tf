@@ -210,11 +210,41 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
+}
 
-  access_policy = {
-    key_permissions = ["List", "Get"]
-    secret_permissions = ["List", "Get"]
-  }
+variable "azure_infrastructure_management_group_id"{
+  description = "value for the azure infrastructure management group id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
+resource "azurerm_key_vault_access_policy" "nebamgmt-kv-infrastructure-management"{
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = var.azure_infrastructure_management_group_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
+
+  key_permissions = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Import",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
 }
 
 variable "terraform_app_client_id" {
