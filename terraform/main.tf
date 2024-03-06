@@ -146,6 +146,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
     application_stack {
       dotnet_version = "8.0"
     }
+    remote_debugging_version = "VS2022"
   }
 
   https_only = true
@@ -181,6 +182,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
     application_stack {
       dotnet_version = "8.0"
     }
+    remote_debugging_version = "VS2022"
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
