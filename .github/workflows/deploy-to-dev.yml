@@ -43,18 +43,8 @@ jobs:
             - name: Terraform Validate
               run: terraform validate
               working-directory: terraform
-
-            - name: Terraform Plan
-              id: plan
-              run: |
-                set +e
-                output=$(terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }})
-                echo "$output"
-                echo "::set-output name=has_changes::$(echo "$output" | grep -qE "\+ create|~ update in-place" && echo "true" || echo "false")"
-              working-directory: terraform
       
             - name: Terraform Apply
-              if: steps.plan.outputs.has_changes == 'true'
               run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
               working-directory: terraform
     
