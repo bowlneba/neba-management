@@ -156,15 +156,6 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 }
 
-variable "application_name"{
-    description = "value for the application name"
-    type = string
-}
-
-resource "azuread_application" "nebamgmt-app" {
-  display_name = var.application_name
-}
-
 variable "ui_service_name" {
   description = "value for the ui service name"
   default     = "nebamgmt-ui-test"
@@ -292,7 +283,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   value        = var.nebamgmt-api-url
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
-  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure ]
+  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
 }
 
 resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
