@@ -22,7 +22,6 @@ env:
   ARM_CLIENT_ID: ${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}
   ARM_TENANT_ID: ${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}
-  #TF_LOG: TRACE
 
 jobs:
     terraform-plan:
@@ -51,5 +50,5 @@ jobs:
               working-directory: terraform
 
             - name: Terraform Plan
-              run: terraform plan #-var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
+              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
               working-directory: terraform
