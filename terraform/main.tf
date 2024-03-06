@@ -143,7 +143,6 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
 
   site_config {
     always_on = var.api_always_on
-    linux_fx_version = "DOTNET|8"
   }
 
   https_only = true
@@ -176,7 +175,6 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
 
   site_config {
     always_on = var.ui_always_on
-    linux_fx_version = "DOTNET|8"
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
