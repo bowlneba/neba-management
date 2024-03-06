@@ -29,7 +29,7 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    key = "terraform.tfstate"
+    # use var here for what is the same, and just include key in the init backend-config part
   }
 }
 
