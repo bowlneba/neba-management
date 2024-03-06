@@ -294,7 +294,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
 }
 
-resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
+resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
   name         = "KeyVault--Url"
   value        = azurerm_key_vault.nebamgmt-kv.vault_uri
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
