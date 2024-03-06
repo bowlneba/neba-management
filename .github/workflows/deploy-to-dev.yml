@@ -6,6 +6,7 @@ on:
             - 'develop'
             - 'hotfix/*'
             - 'release/*'
+    workflow_dispatch:
 
 env:
   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -67,6 +68,22 @@ jobs:
               uses: actions/setup-dotnet@v4
               with:
                   dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+
+            - name: Login to Azure
+              uses: azure/login@v2
+              with:
+                creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
+          
+            - name: Inject KeyVault URL
+              id: get-keyvault-url
+              uses: Azure/get-keyvault-secrets@v1
+              with:
+                keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
+                secrets: 'KeyVault--Url'
+
+            - name: Update appsettings.json
+              run: |
+                sed -i 's/@KEY_VAULT_URL@/${{ steps.get-keyvault-url.outputs.KeyVault--Url }}/g' "${{ env.WORKING_DIRECTORY }}/src/Neba.Api/appsettings.json
             
             - name: Restore
               run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
@@ -82,11 +99,6 @@ jobs:
                 cd publishApi
                 zip -r ../publishApi.zip *
 
-            - name: Login to Azure
-              uses: azure/login@v2
-              with:
-                creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
-            
             - name: Deploy API
               run: |
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
@@ -112,7 +124,23 @@ jobs:
             uses: actions/setup-dotnet@v4
             with:
                 dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-          
+
+          - name: Login to Azure
+            uses: azure/login@v2
+            with:
+              creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
+        
+          - name: Inject KeyVault URL
+            id: get-keyvault-url
+            uses: Azure/get-keyvault-secrets@v1
+            with:
+              keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
+              secrets: 'KeyVault--Url'
+
+          - name: Update appsettings.json
+            run: |
+              sed -i 's/@KEY_VAULT_URL@/${{ steps.get-keyvault-url.outputs.KeyVault--Url }}/g' "${{ env.WORKING_DIRECTORY }}/src/Neba.UI/appsettings.json
+    
           - name: Restore
             run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
           
