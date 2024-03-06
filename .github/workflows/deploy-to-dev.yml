@@ -83,7 +83,7 @@ jobs:
 
             - name: Update appsettings.json
               run: |
-                sed -i 's/@KEY_VAULT_URL@/${{ steps.get-keyvault-url.outputs.KeyVault--Url }}/g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
+                sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
             
             - name: Restore
               run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
@@ -139,7 +139,7 @@ jobs:
 
           - name: Update appsettings.json
             run: |
-              sed -i 's/@KEY_VAULT_URL@/${{ steps.get-keyvault-url.outputs.KeyVault--Url }}/g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
+              sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
     
           - name: Restore
             run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
