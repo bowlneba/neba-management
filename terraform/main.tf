@@ -300,8 +300,6 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
   tenant_id = data.azurerm_client_config.current.tenant_id
   object_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
 
-  depends_on = [ azurerm_linux_web_app.nebamgmt-api ]
-
   secret_permissions = [
     "Get",
     "List"
@@ -318,8 +316,6 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
 
   tenant_id = data.azurerm_client_config.current.tenant_id
   object_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-
-  depends_on = [ azurerm_linux_web_app.nebamgmt-ui ]
 
   secret_permissions = [
     "Get",
