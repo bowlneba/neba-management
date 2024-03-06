@@ -1,12 +1,20 @@
 using Neba.UI.Components;
-using Neba.UI.Infrastructure;
 using Neba.UI.Services;
 
+#if !DEBUG
+using Neba.UI.Infrastructure;
+#endif
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddMudBlazor();
 
+#if !DEBUG
+
 builder.Configuration.AddKeyVault();
+
+#endif
 
 builder.Services.AddServices();
 
