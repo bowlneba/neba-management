@@ -210,6 +210,11 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
+
+  access_policy = {
+    key_permissions = ["List", "Get"]
+    secret_permissions = ["List", "Get"]
+  }
 }
 
 variable "terraform_app_client_id" {
