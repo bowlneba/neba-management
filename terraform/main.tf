@@ -1,11 +1,9 @@
-# terraform/main.tf
 provider "azurerm" {
   features {}
 }
 
 terraform {
   backend "azurerm" {
-    key = "terraform.tfstate"
   }
 }
 
@@ -158,15 +156,6 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 }
 
-variable "application_name"{
-    description = "value for the application name"
-    type = string
-}
-
-resource "azuread_application" "nebamgmt-app" {
-  display_name = var.application_name
-}
-
 variable "ui_service_name" {
   description = "value for the ui service name"
   default     = "nebamgmt-ui-test"
@@ -214,6 +203,76 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 }
 
+variable "azure_infrastructure_management_group_id"{
+  description = "value for the azure infrastructure management group id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
+resource "azurerm_key_vault_access_policy" "nebamgmt-kv-infrastructure-management"{
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = var.azure_infrastructure_management_group_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
+
+  key_permissions = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Import",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
+}
+
+variable "terraform_app_client_id" {
+  description = "value for the terraform app client id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
+resource "azurerm_key_vault_access_policy" "nebamgmt-kv-infrastructure"{
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = var.terraform_app_client_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
+
+  key_permissions = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Import",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore"
+  ]
+}
+
 variable "nebamgmt-api-url" {
   description = "value for the nebamgmt api url"
   type        = string
@@ -224,6 +283,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   value        = var.nebamgmt-api-url
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
+  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
 }
 
 resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
@@ -262,10 +322,4 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
     "Get",
     "List"
   ]
-}
-
-resource "azurerm_role_assignment" "nebamgmt-app-kv-role"{
-    scope = azurerm_key_vault.nebamgmt-kv.id
-    principal_id = azuread_application.nebamgmt-app.object_id
-    role_definition_name = "Key Vault Contributor"
 }
