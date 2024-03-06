@@ -3,7 +3,6 @@ provider "azurerm" {
 }
 
 provider "azurerd"{
-  features {}
 }
 
 terraform {
