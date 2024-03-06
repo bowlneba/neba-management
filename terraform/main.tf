@@ -143,6 +143,10 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
 
   site_config {
     always_on = var.api_always_on
+    application_stack {
+      dotnet_version = "8.0"
+    }
+    remote_debugging_version = "VS2022"
   }
 
   https_only = true
@@ -174,7 +178,11 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
 
   site_config {
-    always_on = var.ui_always_on
+    always_on = var.api_always_on
+    application_stack {
+      dotnet_version = "8.0"
+    }
+    remote_debugging_version = "VS2022"
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
@@ -286,13 +294,19 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
 }
 
+resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
+  name         = "KeyVault--Url"
+  value        = azurerm_key_vault.nebamgmt-kv.vault_uri
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  content_type = "text/url"
+  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
+}
+
 resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
 
   tenant_id = data.azurerm_client_config.current.tenant_id
   object_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-
-  depends_on = [ azurerm_linux_web_app.nebamgmt-api ]
 
   secret_permissions = [
     "Get",
@@ -310,8 +324,6 @@ resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
 
   tenant_id = data.azurerm_client_config.current.tenant_id
   object_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-
-  depends_on = [ azurerm_linux_web_app.nebamgmt-ui ]
 
   secret_permissions = [
     "Get",
