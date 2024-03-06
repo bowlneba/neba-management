@@ -19,6 +19,7 @@ variable "tenant_id" {
   description = "The tenant ID for the Azure provider"
   type        = string
 }
+
 provider "azurerm" {
   subscription_id = "${var.subscription_id}"
   client_id       = "${var.client_id}"
