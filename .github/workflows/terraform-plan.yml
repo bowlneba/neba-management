@@ -50,10 +50,6 @@ jobs:
               run: terraform validate
               working-directory: terraform
 
-            # - name: Terraform Plan
-            #   run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
-            #   working-directory: terraform
-
-            - name: Terraform Apply
-              run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
+            - name: Terraform Plan
+              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
               working-directory: terraform
