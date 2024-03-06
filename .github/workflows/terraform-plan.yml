@@ -43,7 +43,7 @@ jobs:
               uses: hashicorp/setup-terraform@v3
             
             - name: Terraform Init
-              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=${{ vars.AZURE_TERRAFORM_STORAGE_CONTAINER_KEY }}"
+              run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_STORAGE_CONTAINER_NAME }}" -backend-config="key=${{ vars.TERRAFORM_STATE_FILE_NAME }}"
               working-directory: terraform
 
             - name: Terraform Validate
@@ -52,5 +52,5 @@ jobs:
 
             - name: Terraform Plan
               id: plan
-              run: terraform plan -refresh=false -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
+              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -no-color
               working-directory: terraform
