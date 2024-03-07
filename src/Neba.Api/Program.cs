@@ -56,8 +56,13 @@ try
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    app.MapGet("/weather", () =>
+    app.MapGet("/weather", (ILoggerFactory loggerFactory) =>
         {
+            var logger = loggerFactory.CreateLogger("GetWeatherForecast");
+#pragma warning disable CA1848 // Use the LoggerMessage delegates
+            logger.LogInformation("Get Weather Request");
+#pragma warning restore CA1848 // Use the LoggerMessage delegates
+
             var forecast = Enumerable.Range(1, 10).Select(index =>
                     new Neba.Api.WeatherForecast
                     (

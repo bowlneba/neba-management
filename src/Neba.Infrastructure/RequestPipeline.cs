@@ -7,6 +7,7 @@ public static class RequestPipeline
 {
     public static IApplicationBuilder UseSharedMiddleware(this IApplicationBuilder app)
     {
+        app.UseMiddleware<RequestContextLoggingMiddleware>();
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         return app;
