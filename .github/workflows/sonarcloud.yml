@@ -32,13 +32,24 @@ jobs:
       - name: Test with coverage
         run: dotnet test Neba.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: **/coverage.cobertura.xml
+
   sonarcloud-analysis:
     needs: build-test-coverage
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
 
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2
@@ -49,4 +60,4 @@ jobs:
           args:
             -Dsonar.projectKey=bowlneba_neba-management
             -Dsonar.organization=bowlneba
-            -Dsonar.coverageReportPaths=**/coverage.cobertura.xml  # Path to your coverage report
+            -Dsonar.coverageReportPaths=coverage-report/coverage.cobertura.xml  # Path to your coverage report
