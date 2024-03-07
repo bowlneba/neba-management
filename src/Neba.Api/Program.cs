@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Neba.Application;
+using Neba.Application.Clock;
 using Neba.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSharedApplicationServices()
     .AddSharedInfrastructureServices();
+
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -45,5 +48,7 @@ app.MapGet("/weather", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
 
 app.Run();
