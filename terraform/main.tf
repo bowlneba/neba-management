@@ -232,6 +232,12 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_admin" {
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
+resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = var.azure_infrastructure_management_group_id
+}
+
 variable "nebamgmt-api-url" {
   description = "value for the nebamgmt api url"
   type        = string
@@ -259,12 +265,12 @@ data "azurerm_role_definition" "keyvault_secrets_user" {
 
 resource "azurerm_role_assignment" "nebamgmt-api-kv-secrets-user"{
   scope = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id = azurerm_linux_web_app.nebamgmt-api.id
 }
 
 resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
   scope = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id = azurerm_linux_web_app.nebamgmt-ui.id
 }
