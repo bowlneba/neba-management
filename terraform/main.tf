@@ -142,6 +142,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
+  client_certificate_enabled = false
 
   site_config {
     always_on = var.api_always_on
@@ -178,6 +179,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
+  client_certificate_enabled = false
 
   site_config {
     always_on = var.api_always_on
