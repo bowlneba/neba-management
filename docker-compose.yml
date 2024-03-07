@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  
+  seq:
+    image: datalust/seq:latest
+    container_name: neba.seq
+    environment:
+      - ACCEPT_EULA=Y
+    restart: always
+    ports:
+      - "19630:80"
+      - "19631:5341"
+    volumes:
+      - neba.seq:/data
+
+volumes:
+  neba.seq:
