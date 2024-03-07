@@ -266,11 +266,11 @@ data "azurerm_role_definition" "keyvault_secrets_user" {
 resource "azurerm_role_assignment" "nebamgmt-api-kv-secrets-user"{
   scope = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id = azurerm_linux_web_app.nebamgmt-api.id
+  principal_id = azurerm_linux_web_app.nebamgmt-api.object_id
 }
 
 resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
   scope = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id = azurerm_linux_web_app.nebamgmt-ui.id
+  principal_id = azurerm_linux_web_app.nebamgmt-ui.object_id
 }
