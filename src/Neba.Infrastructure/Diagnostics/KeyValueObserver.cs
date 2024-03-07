@@ -43,7 +43,7 @@ internal sealed class KeyValueObserver
 internal static partial class KeyValueObserverLogMessages
 {
     [LoggerMessage(Level = LogLevel.Error, Message = "An error occurred in the observer")]
-    public static partial void ObserverError(this ILogger<KeyValueObserver> logger, Exception ex);
+    public static partial void ObserverError(this ILogger logger, Exception ex);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Context {ContextType} has been initialized")]
     public static partial void ContextInitialized(this ILogger<KeyValueObserver> logger, string? contextType);
