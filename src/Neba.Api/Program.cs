@@ -14,6 +14,9 @@ builder.Services.AddSharedApplicationServices()
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+app.UseSharedMiddleware();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
