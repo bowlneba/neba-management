@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Kernel", "Shared Ker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Domain.UnitTests", "tests\Neba.Domain.UnitTests\Neba.Domain.UnitTests.csproj", "{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Application", "src\Neba.Application\Neba.Application.csproj", "{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67} = {FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}
 		{73BAC724-D21B-41A7-818E-23DEAF334D90} = {2B90D457-5715-424A-AC32-410511977BD7}
 		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F} = {73BAC724-D21B-41A7-818E-23DEAF334D90}
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371} = {FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A836566F-366B-4B94-B30D-7C093CBD2805}
