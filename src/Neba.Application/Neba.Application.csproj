@@ -8,7 +8,12 @@
 
     <ItemGroup>
       <PackageReference Include="ErrorOr" />
+      <PackageReference Include="FluentValidation.AspNetCore" />
       <PackageReference Include="MediatR" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Neba.Application.UnitTests" />
     </ItemGroup>
 
 </Project>

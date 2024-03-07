@@ -1,6 +1,4 @@
-﻿using Neba.Domain;
-
-namespace NEBA.Domain.UnitTests;
+﻿namespace Neba.Domain.UnitTests;
 
 public sealed class AggregateRootTests
 {
