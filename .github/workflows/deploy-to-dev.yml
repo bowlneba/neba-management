@@ -6,7 +6,6 @@ on:
             - 'develop'
             - 'hotfix/*'
             - 'release/*'
-    workflow_dispatch:
 
 env:
   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
