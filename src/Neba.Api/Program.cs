@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Neba.Application;
+using Neba.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSharedApplicationServices();
+builder.Services.AddSharedApplicationServices()
+    .AddSharedInfrastructureServices();
 
 var app = builder.Build();
 
