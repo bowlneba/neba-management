@@ -213,7 +213,11 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  enable_rbac_authorization = false
+  enable_rbac_authorization = true
+}
+
+data "azurerm_role_definition" "keyvault_admin" {
+  name = "Key Vault Administrator"
 }
 
 variable "azure_infrastructure_management_group_id"{
@@ -222,68 +226,10 @@ variable "azure_infrastructure_management_group_id"{
   type        = string
 }
 
-resource "azurerm_key_vault_access_policy" "nebamgmt-kv-infrastructure-management"{
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = var.azure_infrastructure_management_group_id
-
-  secret_permissions = [
-    "Get",
-    "List",
-    "Set",
-    "Delete",
-    "Recover",
-    "Backup",
-    "Restore"
-  ]
-
-  key_permissions = [
-    "Get",
-    "List",
-    "Update",
-    "Create",
-    "Import",
-    "Delete",
-    "Recover",
-    "Backup",
-    "Restore"
-  ]
-}
-
-variable "terraform_app_client_id" {
-  description = "value for the terraform app client id"
-  default     = "00000000-0000-0000-0000-000000000000"
-  type        = string
-}
-
-resource "azurerm_key_vault_access_policy" "nebamgmt-kv-infrastructure"{
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = var.terraform_app_client_id
-
-  secret_permissions = [
-    "Get",
-    "List",
-    "Set",
-    "Delete",
-    "Recover",
-    "Backup",
-    "Restore"
-  ]
-
-  key_permissions = [
-    "Get",
-    "List",
-    "Update",
-    "Create",
-    "Import",
-    "Delete",
-    "Recover",
-    "Backup",
-    "Restore"
-  ]
+resource "azurerm_role_assignment" "infrastructure_mgmt_kv_admin" {
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
+  principal_id         = var.azure_infrastructure_management_group_id
 }
 
 variable "nebamgmt-api-url" {
@@ -307,36 +253,18 @@ resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
   depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
 }
 
-resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-api"{
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-
-  secret_permissions = [
-    "Get",
-    "List"
-  ]
-
-  key_permissions = [
-    "Get",
-    "List"
-  ]
+data "azurerm_role_definition" "keyvault_secrets_user" {
+  name = "Key Vault Secrets User"
 }
 
-resource "azurerm_key_vault_access_policy" "nebamgmt-kv-ap-ui"{
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+resource "azurerm_role_assignment" "nebamgmt-api-kv-secrets-user"{
+  scope = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.id
+  principal_id = azurerm_linux_web_app.nebamgmt-api.id
+}
 
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-
-  secret_permissions = [
-    "Get",
-    "List"
-  ]
-
-  key_permissions = [
-    "Get",
-    "List"
-  ]
+resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
+  scope = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.id
+  principal_id = azurerm_linux_web_app.nebamgmt-ui.id
 }
