@@ -242,7 +242,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   value        = var.nebamgmt-api-url
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
-  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
+  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
 resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
@@ -250,7 +250,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
   value        = azurerm_key_vault.nebamgmt-kv.vault_uri
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
-  depends_on = [ azurerm_key_vault_access_policy.nebamgmt-kv-infrastructure-management ]
+  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
 data "azurerm_role_definition" "keyvault_secrets_user" {
