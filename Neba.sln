@@ -26,11 +26,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI", "src\Neba.UI\Neba
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_infrastructure", "_infrastructure", "{405DBE70-4B83-4C58-8CA0-1DA08FCE7780}"
 	ProjectSection(SolutionItems) = preProject
-		terraform\main.tf = terraform\main.tf
 		terraform\development.tfvars = terraform\development.tfvars
+		terraform\main.tf = terraform\main.tf
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.UI.UnitTests", "tests\Neba.UI.UnitTests\Neba.UI.UnitTests.csproj", "{137DF66A-D8FF-41F9-88BC-62AE3F52340F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI.UnitTests", "tests\Neba.UI.UnitTests\Neba.UI.UnitTests.csproj", "{137DF66A-D8FF-41F9-88BC-62AE3F52340F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Kernel", "Shared Kernel", "{FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,7 @@ Global
 		{2D4AB709-8617-4550-B208-924E7DF76573} = {2B90D457-5715-424A-AC32-410511977BD7}
 		{81223505-884A-40FB-88A4-28C95734DCE8} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
 		{137DF66A-D8FF-41F9-88BC-62AE3F52340F} = {2B90D457-5715-424A-AC32-410511977BD7}
+		{FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A836566F-366B-4B94-B30D-7C093CBD2805}
