@@ -34,6 +34,8 @@ jobs:
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
             TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
+            TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+            TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
             
         steps:
             - name: Checkout
