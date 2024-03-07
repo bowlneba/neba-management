@@ -122,6 +122,8 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   application_type    = "web"
   workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
+  internet_ingestion_enabled = false
+  internet_query_enabled = true
 }
 
 variable "api_service_name" {
@@ -209,6 +211,7 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
+  enable_rbac_authorization = false
 }
 
 variable "azure_infrastructure_management_group_id"{

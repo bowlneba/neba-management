@@ -1,4 +1,7 @@
 using System.Security.Cryptography;
+using Neba.Application;
+using Neba.Application.Clock;
+using Neba.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSharedApplicationServices()
+    .AddSharedInfrastructureServices();
+
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseSharedMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,5 +48,7 @@ app.MapGet("/weather", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
 
 app.Run();

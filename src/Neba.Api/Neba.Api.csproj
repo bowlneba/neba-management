@@ -10,4 +10,9 @@
 	<PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
+    <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

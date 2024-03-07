@@ -10,7 +10,11 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 
 builder.Services.AddMudBlazor();
 
-#if !DEBUG
+#if DEBUG
+
+builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+
+#else
 
 builder.Configuration.AddKeyVault();
 
