@@ -1,6 +1,7 @@
-﻿namespace Neba.Application.Messaging;
+﻿using ErrorOr;
+using MediatR;
 
-internal interface IQueryHandler
-{
-    
-}
+namespace Neba.Application.Messaging;
+
+public interface IQueryHandler<in TQuery, TResult> : IRequestHandler<TQuery, ErrorOr<TResult>>
+    where TQuery : IQuery<TResult>;
