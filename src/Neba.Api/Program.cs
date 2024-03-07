@@ -1,54 +1,86 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using Neba.Application;
 using Neba.Application.Clock;
 using Neba.Infrastructure;
+using Serilog;
+using Serilog.Debugging;
+using SerilogTracing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var serilogger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+
+Log.Logger = serilogger;
+SelfLog.Enable(message => Debug.WriteLine(message));
+
+using var _ = new ActivityListenerConfiguration()
+    .Instrument.AspNetCoreRequests()
+    .Instrument.SqlClientCommands()
+    .TraceTo(serilogger);
+
+using var loggerFactory = LoggerFactory.Create(options => options.AddSerilog(serilogger, true));
+
+builder.Host.UseSerilog();
+
+try
+{
+    // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
 
-builder.Services.AddSharedApplicationServices()
-    .AddSharedInfrastructureServices();
+    builder.Services.AddSharedApplicationServices()
+        .AddSharedInfrastructureServices();
 
-builder.Services.AddProblemDetails();
+    builder.Services.AddProblemDetails();
 
-var app = builder.Build();
+    var app = builder.Build();
 
-app.UseExceptionHandler();
-app.UseSharedMiddleware();
+    app.UseSerilogRequestLogging();
+
+    app.UseExceptionHandler();
+    app.UseSharedMiddleware();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseHttpsRedirection();
+
+    var summaries = new[]
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    app.MapGet("/weather", () =>
+        {
+            var forecast = Enumerable.Range(1, 10).Select(index =>
+                    new Neba.Api.WeatherForecast
+                    (
+                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                        RandomNumberGenerator.GetInt32(-20, 55),
+                        summaries[RandomNumberGenerator.GetInt32(summaries.Length)]
+                    ))
+                .ToArray();
+            return Results.Ok(forecast);
+        })
+        .WithName("GetWeatherForecast")
+        .WithOpenApi();
+
+    app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
+#pragma warning disable CA1031
+catch (Exception ex)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weather", () =>
+    serilogger.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
 {
-    var forecast = Enumerable.Range(1, 10).Select(index =>
-        new Neba.Api.WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            RandomNumberGenerator.GetInt32(-20, 55),
-            summaries[RandomNumberGenerator.GetInt32(summaries.Length)]
-        ))
-        .ToArray();
-    return Results.Ok(forecast);
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
-app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
-
-app.Run();
+    await Log.CloseAndFlushAsync();
+}
