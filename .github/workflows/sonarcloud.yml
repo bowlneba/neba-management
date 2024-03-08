@@ -54,7 +54,7 @@ jobs:
 
       - name: Generate coverage report paths
         run: |
-          REPORTS=$(find coverage-report -name 'coverage.cobertura.xml' | tr '\n' ',')
+          REPORTS=$(find coverage-report -name 'coverage.opencover.xml' | tr '\n' ',')
           REPORTS=$(echo "$REPORTS" | sed 's/,$//')
           echo "COVERAGE_REPORT_PATHS=$REPORTS" >> $GITHUB_ENV
 
