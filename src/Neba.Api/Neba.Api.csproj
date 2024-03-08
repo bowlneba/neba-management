@@ -7,12 +7,25 @@
   <ItemGroup>
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+	<PackageReference Include="Serilog.AspNetCore"/>
+	<PackageReference Include="Serilog.Enrichers.Environment"/>
+	<PackageReference Include="Serilog.Enrichers.Process"/>
+	<PackageReference Include="Serilog.Enrichers.Thread"/>
+	<PackageReference Include="Serilog.Sinks.ApplicationInsights"/>
+	<PackageReference Include="SerilogTracing"/>
+	<PackageReference Include="SerilogTracing.Expressions"/>
+	<PackageReference Include="SerilogTracing.Instrumentation.AspNetCore"/>
+	<PackageReference Include="SerilogTracing.Instrumentation.SqlClient"/>
 	<PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+	<PackageReference Include="SerilogTracing.Sinks.Seq" />
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
-    <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+	<ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
+	<ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

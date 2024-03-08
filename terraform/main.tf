@@ -123,7 +123,7 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   application_type    = "web"
   workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
   internet_ingestion_enabled = false
-  internet_query_enabled = true
+  internet_query_enabled = false
 }
 
 variable "api_service_name" {
@@ -153,7 +153,8 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 
   auth_settings {
-    enabled = false
+    enabled = true
+    unauthenticated_client_action = "AllowAnonymous"
   }
 
   https_only = true
@@ -194,7 +195,8 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 
   auth_settings {
-    enabled = false
+    enabled = true
+    unauthenticated_client_action = "AllowAnonymous"
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
