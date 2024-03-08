@@ -30,7 +30,7 @@ jobs:
         run: dotnet build Neba.sln --no-restore
 
       - name: Test with coverage
-        run: dotnet test Neba.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=coverage-report/
+        run: dotnet test Neba.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage-report/
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
