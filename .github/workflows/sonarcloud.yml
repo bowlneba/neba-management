@@ -30,7 +30,7 @@ jobs:
         run: dotnet build Neba.sln --no-restore
 
       - name: Test with coverage
-        run: dotnet test Neba.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=coverage-report/
+        run: dotnet test Neba.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=coverage-report
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -52,6 +52,11 @@ jobs:
           name: coverage-report
           path: coverage-report
 
+      - name: Generate coverage report paths
+        run: |
+          REPORTS=$(find coverage-report -name 'coverage.cobertura.xml' | tr '\n' ',')
+          echo "COVERAGE_REPORT_PATHS=${REPORTS::-1}" >> $GITHUB_ENV
+
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2
         env:
@@ -61,4 +66,4 @@ jobs:
           args:
             -Dsonar.projectKey=bowlneba_neba-management
             -Dsonar.organization=bowlneba
-            -Dsonar.coverageReportPaths=coverage-report/coverage.cobertura.xml  # Path to your coverage report
+            -Dsonar.coverageReportPaths=${{ env.COVERAGE_REPORT_PATHS }}  # Path to your coverage report
