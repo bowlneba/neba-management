@@ -160,6 +160,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
   }
 
   identity {
@@ -203,6 +204,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
   }
 
   identity {
