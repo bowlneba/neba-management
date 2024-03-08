@@ -55,7 +55,8 @@ jobs:
       - name: Generate coverage report paths
         run: |
           REPORTS=$(find coverage-report -name 'coverage.cobertura.xml' | tr '\n' ',')
-          echo "COVERAGE_REPORT_PATHS=${REPORTS::-1}" >> $GITHUB_ENV
+          REPORTS=$(echo "$REPORTS" | sed 's/,$//')
+          echo "COVERAGE_REPORT_PATHS=$REPORTS" >> $GITHUB_ENV
 
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2
