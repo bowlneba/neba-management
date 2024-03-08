@@ -153,8 +153,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 
   auth_settings {
-    enabled = true
-    unauthenticated_client_action = "AllowAnonymous"
+    enabled = false
   }
 
   https_only = true
@@ -195,8 +194,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 
   auth_settings {
-    enabled = true
-    unauthenticated_client_action = "AllowAnonymous"
+    enabled = false
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
