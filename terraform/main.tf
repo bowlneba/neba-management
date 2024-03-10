@@ -295,9 +295,7 @@ resource "azurerm_app_configuration" "nebamgmt-config"{
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   location = azurerm_resource_group.nebamgmt-rg.location
 
-  sku = {
-    name = "free"
-  }
+  sku = "free"
 }
 
 data "azurerm_role_definition" "app_config_data_reader" {
