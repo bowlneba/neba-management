@@ -284,3 +284,44 @@ resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
 }
+
+variable "nebamgmt-config-name" {
+  description = "value for the nebamgmt config name"
+  type        = string
+}
+
+resource "azurerm_app_configuration" "nebamgmt-config"{
+  name = var.nebamgmt-config-name
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+
+  sku = {
+    name = "free"
+  }
+}
+
+data "azurerm_role_definition" "app_config_data_reader" {
+  name = "App Configuration Data Reader"
+}
+
+resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+  principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+}
+
+resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+  principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+}
+
+data "azurerm_role_definition" "appconfig_data_owner"{
+  name = "App Configuration Data Owner"
+}
+
+resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
+  principal_id = var.azure_infrastructure_management_group_id
+}
