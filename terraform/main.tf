@@ -261,14 +261,6 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
-resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
-  name         = "KeyVault--Url"
-  value        = azurerm_key_vault.nebamgmt-kv.vault_uri
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-  content_type = "text/url"
-  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
-}
-
 data "azurerm_role_definition" "keyvault_secrets_user" {
   name = "Key Vault Secrets User"
 }
@@ -322,4 +314,22 @@ resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admi
   scope = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
   principal_id = var.azure_infrastructure_management_group_id
+}
+
+resource "azurerm_app_configuration_key_value" "nebamgmt-app-config-kv-url-value" {
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = "KeyVault--Url"
+  value = azurerm_key_vault.nebamgmt-kv.vault_uri
+
+  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_appconfig_owner ]
+}
+
+resource "azurerm_key_vault_secret" "nebamgmt-app-config-url-secret"{
+  name         = "ConfigurationUrl"
+  value        = azurerm_app_configuration.nebamgmt-config.endpoint
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  content_type = "text/url"
+  depends_on = [ 
+    azurerm_role_assignment.infrastructure_mgmt_kv_admin,
+    azurerm_role_assignment.infrastructure_mgmt_appconfig_owner ]
 }

@@ -73,16 +73,16 @@ jobs:
               with:
                 creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
           
-            - name: Inject KeyVault URL
-              id: get-keyvault-url
+            - name: Inject Config URL
+              id: get-configuration-url
               uses: Azure/get-keyvault-secrets@v1
               with:
                 keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-                secrets: 'KeyVault--Url'
+                secrets: 'ConfigurationUrl'
 
             - name: Update appsettings.json
               run: |
-                sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
+                sed -i 's#@CONFIG_URL@#${{ steps.get-configuration-url.outputs.ConfigurationUrl }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
             
             - name: Restore
               run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
@@ -129,17 +129,17 @@ jobs:
             with:
               creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
         
-          - name: Inject KeyVault URL
-            id: get-keyvault-url
+          - name: Inject Config URL
+            id: get-configuration-url
             uses: Azure/get-keyvault-secrets@v1
             with:
               keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-              secrets: 'KeyVault--Url'
+              secrets: 'ConfigurationUrl'
 
           - name: Update appsettings.json
             run: |
-              sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
-    
+              sed -i 's#@CONFIG_URL@#${{ steps.get-configuration-url.outputs.ConfigurationUrl }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
+          
           - name: Restore
             run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
           
