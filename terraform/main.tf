@@ -316,10 +316,11 @@ resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admi
   principal_id = var.azure_infrastructure_management_group_id
 }
 
-resource "azurerm_app_configuration_key_value" "nebamgmt-app-config-kv-url-value" {
+resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
   key = "KeyVault--Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  label = "KeyVaultUrl"
 
   depends_on = [ azurerm_role_assignment.infrastructure_mgmt_appconfig_owner ]
 }
