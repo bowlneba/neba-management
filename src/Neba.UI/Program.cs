@@ -5,7 +5,10 @@ using Serilog;
 using Serilog.Debugging;
 using SerilogTracing;
 
-#if !DEBUG
+#if DEBUG
+using Microsoft.FeatureManagement;
+#else
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Neba.UI.Infrastructure;
 #endif
 
@@ -18,6 +21,15 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 #if DEBUG
 
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureFlags"));
+
+#else
+
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(builder.Configuration.GetValue<string>("Configuration--Url"))
+            .UseFeatureFlags();
+});
 
 #endif
 
@@ -59,6 +71,10 @@ builder.Configuration.AddKeyVault();
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
+
+    #if !DEBUG
+    app.UseAzureAppConfiguration();
+    #endif
 
     app.UseHttpsRedirection();
 
