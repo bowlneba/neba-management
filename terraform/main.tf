@@ -322,7 +322,7 @@ resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
   label = "KeyVaultUrl"
 
-  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_appconfig_owner ]
+  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_app-config_owner ]
 }
 
 resource "azurerm_key_vault_secret" "nebamgmt-app-config-url-secret"{
@@ -332,5 +332,5 @@ resource "azurerm_key_vault_secret" "nebamgmt-app-config-url-secret"{
   content_type = "text/url"
   depends_on = [ 
     azurerm_role_assignment.infrastructure_mgmt_kv_admin,
-    azurerm_role_assignment.infrastructure_mgmt_appconfig_owner ]
+    azurerm_role_assignment.infrastructure_mgmt_app-config_owner ]
 }
