@@ -22,11 +22,15 @@
     <PackageReference Include="SerilogTracing"/>
     <PackageReference Include="SerilogTracing.Expressions"/>
     <PackageReference Include="SerilogTracing.Instrumentation.AspNetCore"/>
-  </ItemGroup>
+   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="SerilogTracing.Sinks.Seq" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+      <PackageReference Include="SerilogTracing.Sinks.Seq" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)'=='Release'">
+      <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
+    </ItemGroup>
   
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.UI.UnitTests" />
