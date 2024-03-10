@@ -12,7 +12,7 @@ api_always_on = false
 
 ui_always_on = false
 
-nebamgmt-key-vault-name = "nebamgmt-kv-dev"
-nebamgmt-api-url = "https://nebamgmt-api-dev.azurewebsites.net"
+nebamgmt_key_vault_name = "nebamgmt-kv-dev"
+nebamgmt_api_url = "https://nebamgmt-api-dev.azurewebsites.net"
 
-nebamgmt-config-name = "nebamgmt-config-dev"
+nebamgmt_config_name = "nebamgmt-config-dev"

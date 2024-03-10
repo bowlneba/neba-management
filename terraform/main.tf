@@ -212,13 +212,13 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 }
 
-variable "nebamgmt-key-vault-name" {
+variable "nebamgmt_key_vault_name" {
   description = "value for the key vault name"
   type = string
 }
 
 resource "azurerm_key_vault" "nebamgmt-kv" {
-  name                = var.nebamgmt-key-vault-name
+  name                = var.nebamgmt_key_vault_name
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
@@ -248,14 +248,14 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-variable "nebamgmt-api-url" {
+variable "nebamgmt_api_url" {
   description = "value for the nebamgmt api url"
   type        = string
 }
 
 resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   name         = "NebaApi--BaseUrl"
-  value        = var.nebamgmt-api-url
+  value        = var.nebamgmt_api_url
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
   depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
@@ -285,13 +285,13 @@ resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
 }
 
-variable "nebamgmt-config-name" {
+variable "nebamgmt_config_name" {
   description = "value for the nebamgmt config name"
   type        = string
 }
 
 resource "azurerm_app_configuration" "nebamgmt-config"{
-  name = var.nebamgmt-config-name
+  name = var.nebamgmt_config_name
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   location = azurerm_resource_group.nebamgmt-rg.location
 
