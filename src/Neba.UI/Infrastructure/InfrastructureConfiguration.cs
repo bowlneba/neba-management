@@ -2,12 +2,10 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
-using Microsoft.FeatureManagement;
 
 #if DEBUG
-#else
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using Neba.UI.Infrastructure;
+using Microsoft.FeatureManagement;
+using Neba.UI.Services;
 #endif
 
 namespace Neba.UI.Infrastructure;
@@ -21,8 +19,19 @@ internal static class InfrastructureConfiguration
 #if DEBUG
 
         builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
-        
+        builder.Configuration.AddUserSecrets<NebaApiOptions>();
+
+        builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 #else
+
+        builder.Configuration.AddAzureAppConfiguration(options =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
+                                  throw new InvalidOperationException("AppConfig ConnectionString is not set");
+
+            options.Connect(connectionString)
+                   .UseFeatureFlags();
+        });
 
 #endif
 
@@ -33,7 +42,21 @@ internal static class InfrastructureConfiguration
         var kvUrl = config.GetValue<string>("KeyVault:Url") ??
                     throw new InvalidOperationException("KeyVault:Url is not set");
 
-        var credential = new ManagedIdentityCredential();
+        #if DEBUG
+            var clientId = config.GetValue<string>("KeyVault:ClientId") ??
+                           throw new InvalidOperationException("KeyVault:ClientId is not set");
+
+            var clientSecret = config.GetValue<string>("KeyVault:ClientSecret") ??
+                               throw new InvalidOperationException("KeyVault:ClientSecret is not set");
+
+            var tenantId = config.GetValue<string>("KeyVault:TenantId") ??
+                           throw new InvalidOperationException("KeyVault:TenantId is not set");
+
+            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+        #else
+            var credential = new ManagedIdentityCredential();
+        #endif
+
         var keyClient = new KeyClient(new Uri(kvUrl), credential);
 
         config.AddAzureKeyVault(new SecretClient(new Uri(kvUrl), credential), new KeyVaultSecretManager());
