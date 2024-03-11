@@ -34,9 +34,11 @@ public static class InfrastructureDependencyInjection
         services.AddFeatureManagement(configuration.GetSection("FeatureFlags"));
 
 #else
+
+        var connectionString = configuration.GetConnectionString("AppConfig");
         configuration.AddAzureAppConfiguration(options =>
         {
-            options.Connect(configuration.GetValue<string>("Configuration--Url"))
+            options.Connect(connectionString)
                     .UseFeatureFlags();
         });
 #endif
