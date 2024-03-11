@@ -26,6 +26,7 @@ try
     builder.Services.AddMudBlazor();
 
 #if !DEBUG
+
 builder.Configuration.AddKeyVault();
 
 #endif
