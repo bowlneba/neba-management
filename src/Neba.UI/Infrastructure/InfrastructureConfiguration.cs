@@ -21,7 +21,7 @@ internal static class InfrastructureConfiguration
 #if DEBUG
 
         builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
-        builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
+        builder.Services.AddFeatureManagement(builder.Configuration.GetSection("Features"));
 
 #else
         var configUrl = builder.Configuration.GetConnectionString("AppConfig");
