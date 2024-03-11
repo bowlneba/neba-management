@@ -91,7 +91,7 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   os_type             = "Linux"
-  sku_name            = var.app_service_plan_sku_name
+  sku_name            = "B2" #var.app_service_plan_sku_name
 }
 
 variable "log_analytics_workspace_name" {
