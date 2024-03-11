@@ -47,10 +47,6 @@ builder.Configuration.AddKeyVault();
         app.UseHsts();
     }
 
-#if !DEBUG
-    app.UseAzureAppConfiguration();
-#endif
-
     app.UseHttpsRedirection();
 
     app.UseStaticFiles();
