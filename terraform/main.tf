@@ -269,7 +269,7 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
 resource "azurerm_role_assignment" "nebamgmt-local-kv-user" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id         = "188d6061-49c3-4ca0-a09f-6fc5bfe0f032"
+  principal_id         = "var.azure_nebamgmt_local_app_registration_principal_id"
 }
 
 variable "nebamgmt_api_url" {

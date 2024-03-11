@@ -36,7 +36,7 @@ jobs:
             TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
             TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
             TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
-            TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ vars.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
+            TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
             
         steps:
             - name: Checkout
