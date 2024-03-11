@@ -24,9 +24,10 @@ internal static class InfrastructureConfiguration
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureFlags"));
 
 #else
+        var configUrl = builder.Configuration.GetValue<string>("Configuration--Url");
         builder.Configuration.AddAzureAppConfiguration(options =>
         {
-            options.Connect(builder.Configuration.GetValue<string>("Configuration--Url"))
+            options.Connect(configUrl)
                     .UseFeatureFlags();
         });
 #endif
