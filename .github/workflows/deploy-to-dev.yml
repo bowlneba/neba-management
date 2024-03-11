@@ -15,8 +15,8 @@ env:
   ARM_TENANT_ID: ${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}
 
 jobs:
-    terraform:
-        name: 'Terraform'
+    infrastructure:
+        name: 'Infrastructure Deployment'
         runs-on: ubuntu-latest
         environment:
             name: 'Development'
@@ -50,7 +50,7 @@ jobs:
     deploy-api:
         name: 'Deploy API'
         runs-on: ubuntu-latest
-        needs: terraform
+        needs: infrastructure
         if: success()
         env:
             CONFIGURATION: Release
@@ -106,7 +106,7 @@ jobs:
     deploy-ui:
       name: 'Deploy UI'
       runs-on: ubuntu-latest
-      needs: [terraform, deploy-api]
+      needs: [infrastructure, deploy-api]
       if: success()
       env:
           CONFIGURATION: Release
