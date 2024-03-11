@@ -91,7 +91,7 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   os_type             = "Linux"
-  sku_name            = "B2" #var.app_service_plan_sku_name
+  sku_name            = var.app_service_plan_sku_name
 }
 
 variable "log_analytics_workspace_name" {
@@ -339,9 +339,8 @@ resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
 }
 
 resource "azurerm_app_configuration_feature" "test-feature"{
-  name = "Test Feature"
+  name = "Test-Feature"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "TestFeature"
   enabled = true
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
