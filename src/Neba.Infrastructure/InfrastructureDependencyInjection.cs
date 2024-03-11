@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Neba.Application.Clock;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
+
 #if DEBUG
 using Microsoft.FeatureManagement;
 #else
@@ -15,27 +17,28 @@ namespace Neba.Infrastructure;
 public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services,
-        IConfigurationManager configuration)
+        IConfigurationManager configuration, ILogger logger)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         Debug.Assert(configuration != null, nameof(configuration) + " != null");
-        services.AddFeatureFlags(configuration);
+        services.AddFeatureFlags(configuration, logger);
 
         services.AddDiagnostics();
 
         return services;
     }
 
-    private static void AddFeatureFlags(this IServiceCollection services, IConfigurationManager configuration)
+    private static void AddFeatureFlags(this IServiceCollection services, IConfigurationManager configuration, ILogger logger)
     {
 #if DEBUG
-
-        services.AddFeatureManagement(configuration.GetSection("Features"));
+        logger.LogInformation("Feature Management: Debug");
+        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
 
         var connectionString = configuration.GetConnectionString("AppConfig");
+        logger.LogInformation("Connection String for AppConfig: {AppConfig}", connectionString);
         configuration.AddAzureAppConfiguration(options =>
         {
             options.Connect(connectionString)

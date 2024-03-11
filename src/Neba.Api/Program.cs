@@ -33,7 +33,7 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddSharedApplicationServices()
-        .AddSharedInfrastructureServices(builder.Configuration);
+        .AddSharedInfrastructureServices(builder.Configuration, loggerFactory.CreateLogger("Infrastructure"));
 
     builder.Services.AddProblemDetails();
 
@@ -50,6 +50,10 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+    
+#if !DEBUG
+    app.UseAzureAppConfiguration();
+#endif
 
     app.UseHttpsRedirection();
 
