@@ -255,7 +255,7 @@ variable "nebamgmt_api_url" {
 
 resource "azurerm_key_vault_secret" "nebamgmt-app-config-connection-string-secret"{
   name         = "AppConfigConnectionString"
-  value        = azurerm_app_configuration.nebamgmt-config.primary_read_key.connection_string
+  value        = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
   content_type = "text/url"
   depends_on = [ 
