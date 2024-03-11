@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Microsoft.FeatureManagement;
+using Neba.Api;
 using Neba.Application;
 using Neba.Application.Clock;
 using Neba.Infrastructure;
@@ -31,7 +33,7 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddSharedApplicationServices()
-        .AddSharedInfrastructureServices();
+        .AddSharedInfrastructureServices(builder.Configuration);
 
     builder.Services.AddProblemDetails();
 
@@ -64,7 +66,7 @@ try
 #pragma warning restore CA1848 // Use the LoggerMessage delegates
 
             var forecast = Enumerable.Range(1, 10).Select(index =>
-                    new Neba.Api.WeatherForecast
+                    new WeatherForecast
                     (
                         DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                         RandomNumberGenerator.GetInt32(-20, 55),
@@ -77,6 +79,13 @@ try
         .WithOpenApi();
 
     app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
+
+    app.MapGet("/featureFlag", async (IFeatureManager featureManager) =>
+    {
+        var featureFlag = await featureManager.IsEnabledAsync("TestFeature");
+
+        return Results.Ok($"FeatureA enabled: {featureFlag}");
+    });
 
     await app.RunAsync();
 }
