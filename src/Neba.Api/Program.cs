@@ -50,10 +50,6 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-    
-#if !DEBUG
-    app.UseAzureAppConfiguration();
-#endif
 
     app.UseHttpsRedirection();
 
