@@ -161,7 +161,12 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-    "CUSTOMCONNSTR_AppConfig" = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
+  }
+
+  connection_string {
+    name = "AppConfig"
+    type = "Custom"
+    value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
@@ -206,7 +211,12 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-    "CUSTOMCONNSTR_AppConfig" = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
+  }
+
+  connection_string {
+    name = "AppConfig"
+    type = "Custom"
+    value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
