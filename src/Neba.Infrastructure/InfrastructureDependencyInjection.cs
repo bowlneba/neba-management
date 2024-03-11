@@ -31,7 +31,7 @@ public static class InfrastructureDependencyInjection
     {
 #if DEBUG
 
-        services.AddFeatureManagement(configuration.GetSection("FeatureFlags"));
+        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
 

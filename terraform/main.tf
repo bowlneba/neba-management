@@ -161,6 +161,7 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+    "CUSTOMCONNSTR_AppConfig" = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
@@ -205,6 +206,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+    "CUSTOMCONNSTR_AppConfig" = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
@@ -251,15 +253,6 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
 variable "nebamgmt_api_url" {
   description = "value for the nebamgmt api url"
   type        = string
-}
-
-resource "azurerm_key_vault_secret" "nebamgmt-app-config-connection-string-secret"{
-  name         = "AppConfigConnectionString"
-  value        = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-  content_type = "text/url"
-  depends_on = [ 
-    azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
 data "azurerm_role_definition" "keyvault_secrets_user" {

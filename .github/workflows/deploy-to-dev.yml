@@ -73,17 +73,6 @@ jobs:
               with:
                 creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
           
-            - name: Inject App Config Connection
-              id: get-appconfig-conn
-              uses: Azure/get-keyvault-secrets@v1
-              with:
-                keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-                secrets: 'AppConfigConnectionString'
-
-            - name: Update appsettings.json
-              run: |
-                sed -i 's#@CONFIG_URL@#${{ steps.get-appconfig-conn.outputs.AppConfigConnectionString }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
-            
             - name: Restore
               run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
             
@@ -129,17 +118,6 @@ jobs:
             with:
               creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
         
-          - name: Inject App Config Connection
-            id: get-appconfig-conn
-            uses: Azure/get-keyvault-secrets@v1
-            with:
-              keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-              secrets: 'AppConfigConnectionString'
-
-          - name: Update appsettings.json
-            run: |
-              sed -i 's#@CONFIG_URL@#${{ steps.get-appconfig-conn.outputs.AppConfigConnectionString }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
-          
           - name: Restore
             run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
           
