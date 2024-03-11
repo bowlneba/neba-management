@@ -266,7 +266,7 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-resource "azure_role_assignment" "nebamgmt-local-kv-user" {
+resource "azurerm_role_assignment" "nebamgmt-local-kv-user" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_nebamgmt_local_app_registration_object_id
