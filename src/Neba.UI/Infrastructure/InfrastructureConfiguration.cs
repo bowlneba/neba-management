@@ -2,9 +2,9 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
-#if DEBUG
 using Microsoft.FeatureManagement;
 
+#if DEBUG
 #else
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Neba.UI.Infrastructure;
@@ -30,7 +30,7 @@ internal static class InfrastructureConfiguration
             options.Connect(configUrl)
                     .UseFeatureFlags();
         });
-        
+
         builder.Services.AddFeatureManagement();
 #endif
 
