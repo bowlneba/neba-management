@@ -16,7 +16,7 @@ env:
 
 jobs:
     infrastructure:
-        name: 'Infrastructure Deployment'
+        name: 'Deploy Infrastructure'
         runs-on: ubuntu-latest
         environment:
             name: 'Development'
