@@ -31,8 +31,8 @@ public static class InfrastructureDependencyInjection
 
     private static void AddFeatureFlags(this IServiceCollection services, IConfigurationManager configuration, ILogger logger)
     {
-#if DEBUG
 #pragma warning disable CA1848
+#if DEBUG
         logger.LogInformation("Feature Management: Debug");
         services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
 
