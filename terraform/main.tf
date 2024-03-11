@@ -261,6 +261,16 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
   depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
+resource "azurerm_key_vault_secret" "nebamgmt-app-config-url-secret"{
+  name         = "ConfigurationUrl"
+  value        = azurerm_app_configuration.nebamgmt-config.endpoint
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  content_type = "text/url"
+  depends_on = [ 
+    azurerm_role_assignment.infrastructure_mgmt_kv_admin,
+    azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+}
+
 data "azurerm_role_definition" "keyvault_secrets_user" {
   name = "Key Vault Secrets User"
 }
@@ -325,12 +335,9 @@ resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
-resource "azurerm_key_vault_secret" "nebamgmt-app-config-url-secret"{
-  name         = "ConfigurationUrl"
-  value        = azurerm_app_configuration.nebamgmt-config.endpoint
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-  content_type = "text/url"
-  depends_on = [ 
-    azurerm_role_assignment.infrastructure_mgmt_kv_admin,
-    azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+resource "azurerm_app_configuration_feature" "test-feature"{
+  name = "Test Feature"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = "TestFeature"
+  enabled = true
 }

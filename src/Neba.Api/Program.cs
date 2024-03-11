@@ -84,7 +84,7 @@ try
     {
         var featureFlag = await featureManager.IsEnabledAsync("TestFeature");
 
-        return Results.Ok($"FeatureA enabled: {featureFlag}");
+        return Results.Ok($"TestFeature enabled: {featureFlag}");
     });
 
     await app.RunAsync();
