@@ -19,19 +19,13 @@ internal static class InfrastructureConfiguration
         builder.Configuration.AddJsonFile("appsettings.json", false, true);
 
 #if DEBUG
+
         builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
 
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
-        var configUrl = builder.Configuration.GetConnectionString("AppConfig");
-        builder.Configuration.AddAzureAppConfiguration(options =>
-        {
-            options.Connect(configUrl)
-                    .UseFeatureFlags();
-        });
 
-        builder.Services.AddFeatureManagement();
 #endif
 
     }

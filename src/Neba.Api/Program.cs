@@ -33,7 +33,7 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddSharedApplicationServices()
-        .AddSharedInfrastructureServices(builder.Configuration, loggerFactory.CreateLogger("Infrastructure"));
+        .AddSharedInfrastructureServices(builder.Configuration);
 
     builder.Services.AddProblemDetails();
 
@@ -79,13 +79,6 @@ try
         .WithOpenApi();
 
     app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
-
-    app.MapGet("/featureFlag", async (IFeatureManager featureManager) =>
-    {
-        var featureFlag = await featureManager.IsEnabledAsync("Test-Feature");
-
-        return Results.Ok($"Test-Feature enabled: {featureFlag}");
-    });
 
     await app.RunAsync();
 }

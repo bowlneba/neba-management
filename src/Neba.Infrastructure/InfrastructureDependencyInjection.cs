@@ -17,35 +17,15 @@ namespace Neba.Infrastructure;
 public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services,
-        IConfigurationManager configuration, ILogger logger)
+        IConfigurationManager configuration)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         Debug.Assert(configuration != null, nameof(configuration) + " != null");
-        services.AddFeatureFlags(configuration, logger);
 
         services.AddDiagnostics();
 
         return services;
-    }
-
-    private static void AddFeatureFlags(this IServiceCollection services, IConfigurationManager configuration, ILogger logger)
-    {
-#pragma warning disable CA1848
-#if DEBUG
-        logger.LogInformation("Feature Management: Debug");
-        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
-
-#else
-
-        var connectionString = configuration.GetConnectionString("AppConfig");
-        logger.LogInformation("Connection String for AppConfig: {AppConfig}", connectionString);
-        configuration.AddAzureAppConfiguration(options =>
-        {
-            options.Connect(connectionString)
-                    .UseFeatureFlags();
-        });
-#endif
     }
 
     private static void AddDiagnostics(this IServiceCollection services)
