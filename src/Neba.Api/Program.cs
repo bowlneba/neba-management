@@ -82,9 +82,9 @@ try
 
     app.MapGet("/featureFlag", async (IFeatureManager featureManager) =>
     {
-        var featureFlag = await featureManager.IsEnabledAsync("TestFeature");
+        var featureFlag = await featureManager.IsEnabledAsync("Test-Feature");
 
-        return Results.Ok($"TestFeature enabled: {featureFlag}");
+        return Results.Ok($"Test-Feature enabled: {featureFlag}");
     });
 
     await app.RunAsync();

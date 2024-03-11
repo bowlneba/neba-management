@@ -20,6 +20,6 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-        _isFeatureEnabled = await FeatureManager.IsEnabledAsync("TestFeature");
+        _isFeatureEnabled = await FeatureManager.IsEnabledAsync("Test-Feature");
     }
 }
