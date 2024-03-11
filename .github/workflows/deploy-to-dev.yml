@@ -47,7 +47,7 @@ jobs:
               run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
               working-directory: terraform
     
-    deploy-api:
+    api:
         name: 'Deploy API'
         runs-on: ubuntu-latest
         needs: infrastructure
@@ -103,10 +103,10 @@ jobs:
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
                 az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
 
-    deploy-ui:
+    ui:
       name: 'Deploy UI'
       runs-on: ubuntu-latest
-      needs: [infrastructure, deploy-api]
+      needs: [infrastructure, api]
       if: success()
       env:
           CONFIGURATION: Release
