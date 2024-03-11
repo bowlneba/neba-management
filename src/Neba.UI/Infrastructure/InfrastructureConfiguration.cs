@@ -2,14 +2,40 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
+#if DEBUG
+using Microsoft.FeatureManagement;
+
+#else
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Neba.UI.Infrastructure;
+#endif
 
 namespace Neba.UI.Infrastructure;
 
 internal static class InfrastructureConfiguration
 {
+    public static void AddConfiguration(this WebApplicationBuilder builder)
+    {
+        builder.Configuration.AddJsonFile("appsettings.json", false, true);
+
+#if DEBUG
+
+        builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
+        builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureFlags"));
+
+#else
+        builder.Configuration.AddAzureAppConfiguration(options =>
+        {
+            options.Connect(builder.Configuration.GetValue<string>("Configuration--Url"))
+                    .UseFeatureFlags();
+        });
+#endif
+    }
+
     public static KeyClient AddKeyVault(this IConfigurationManager config)
     {
-        var kvUrl = config.GetValue<string>("KeyVault:Url") ?? throw new InvalidOperationException("KeyVault:Url is not set");
+        var kvUrl = config.GetValue<string>("KeyVault:Url") ??
+                    throw new InvalidOperationException("KeyVault:Url is not set");
 
         var credential = new ManagedIdentityCredential();
         var keyClient = new KeyClient(new Uri(kvUrl), credential);

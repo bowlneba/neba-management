@@ -14,6 +14,7 @@
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
     <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration"/>
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="Serilog.AspNetCore"/>
@@ -28,10 +29,6 @@
 
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
       <PackageReference Include="SerilogTracing.Sinks.Seq" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)'=='Release'">
-      <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
     </ItemGroup>
   
   <ItemGroup>

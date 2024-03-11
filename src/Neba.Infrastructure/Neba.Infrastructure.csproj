@@ -18,6 +18,8 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
       <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration"/>
+        <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
     </ItemGroup>
 
 </Project>

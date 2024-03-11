@@ -1,39 +1,14 @@
 using System.Diagnostics;
 using Neba.UI.Components;
+using Neba.UI.Infrastructure;
 using Neba.UI.Services;
 using Serilog;
 using Serilog.Debugging;
 using SerilogTracing;
 
-#if DEBUG
-using Microsoft.FeatureManagement;
-#else
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using Neba.UI.Infrastructure;
-#endif
-
 var builder = WebApplication.CreateBuilder(args);
 
-#region App Settings
-
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-#if DEBUG
-
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureFlags"));
-
-#else
-
-builder.Configuration.AddAzureAppConfiguration(options =>
-{
-    options.Connect(builder.Configuration.GetValue<string>("Configuration--Url"))
-            .UseFeatureFlags();
-});
-
-#endif
-
-#endregion
+builder.AddConfiguration();
 
 var serilogger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 
@@ -51,7 +26,6 @@ try
     builder.Services.AddMudBlazor();
 
 #if !DEBUG
-
 builder.Configuration.AddKeyVault();
 
 #endif
@@ -72,9 +46,9 @@ builder.Configuration.AddKeyVault();
         app.UseHsts();
     }
 
-    #if !DEBUG
+#if !DEBUG
     app.UseAzureAppConfiguration();
-    #endif
+#endif
 
     app.UseHttpsRedirection();
 
