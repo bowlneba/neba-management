@@ -384,7 +384,7 @@ variable "redis_cache_name" {
 resource "rediscloud_subscription_database" "nebamgmt-redis-cache"{
   subscription_id = data.rediscloud_subscription.nebamgmt-redis-subscription.id
   name = var.redis_cache_name
-  memory_limit = 1
-  throughput_measurement_by = "OperationsPerSecond"
+  memory_limit_in_gb = 1
+  throughput_measurement_value = "OperationsPerSecond"
   password = "P@ssw0rd123!!!"
 }
