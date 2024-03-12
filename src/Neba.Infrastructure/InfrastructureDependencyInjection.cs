@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FeatureManagement;
+using Neba.Application.Caching;
 using Neba.Application.Clock;
+using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
-using Microsoft.FeatureManagement;
 
 #if DEBUG
 #else
@@ -26,18 +28,21 @@ public static class InfrastructureDependencyInjection
         services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
-
         AddFeatureManagement(services, configuration);
 
 #endif
 
         services.AddDiagnostics();
 
+        var cacheConnectionString = configuration.GetConnectionString("Caching") ??
+                                    throw new InvalidOperationException("Cache ConnectionString is not set");
+
+        services.AddCaching(cacheConnectionString);
+
         return services;
     }
 
 #if !DEBUG
-
     private static void AddFeatureManagement(IServiceCollection services, IConfigurationManager configuration)
     {
         services.AddAzureAppConfiguration();
@@ -69,5 +74,12 @@ public static class InfrastructureDependencyInjection
 
         DiagnosticListener.AllListeners.Subscribe(services.BuildServiceProvider()
             .GetRequiredService<IObserver<DiagnosticListener>>());
+    }
+
+    private static void AddCaching(this IServiceCollection services, string connectionString)
+    {
+        services.AddStackExchangeRedisCache(options => options.Configuration = connectionString);
+
+        services.AddSingleton<ICacheService, CacheService>();
     }
 }

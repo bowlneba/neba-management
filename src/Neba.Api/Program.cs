@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
-using Microsoft.FeatureManagement;
 using Neba.Api;
 using Neba.Application;
-using Neba.Application.Clock;
 using Neba.Infrastructure;
 using Serilog;
 using Serilog.Debugging;
@@ -77,14 +75,6 @@ try
         })
         .WithName("GetWeatherForecast")
         .WithOpenApi();
-
-    app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
-
-    app.MapGet("/feature", async (IFeatureManager featureManager) =>
-    {
-        var feature = await featureManager.IsEnabledAsync("Test-Feature");
-        return Results.Ok($"Test-Feature is {(feature ? "enabled" : "disabled")}");
-    });
 
     await app.RunAsync();
 }

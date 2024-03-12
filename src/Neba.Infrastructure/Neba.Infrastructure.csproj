@@ -18,6 +18,7 @@
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
 		<PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
 		<PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>
 	</ItemGroup>
 
 </Project>

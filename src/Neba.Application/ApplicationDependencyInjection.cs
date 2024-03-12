@@ -13,6 +13,7 @@ public static class ApplicationDependencyInjection
             config.RegisterServicesFromAssembly(typeof(ApplicationDependencyInjection).Assembly);
 
             config.AddOpenBehavior(typeof(RequestLoggingBehavior<,>));
+            config.AddOpenBehavior(typeof(QueryCachingBehavior<,>));
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
