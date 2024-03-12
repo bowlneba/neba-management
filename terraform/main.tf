@@ -350,10 +350,10 @@ resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
-resource "azurerm_app_configuration_feature" "test-feature"{
-  name = "Test-Feature"
+resource "azurerm_app_configuration_feature" "caching-feature"{
+  name = "Caching"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  enabled = true
+  enabled = false
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
