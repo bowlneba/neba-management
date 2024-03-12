@@ -21,12 +21,36 @@ public static class InfrastructureDependencyInjection
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-        Debug.Assert(configuration != null, nameof(configuration) + " != null");
+#if DEBUG
+        
+        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
+        
+#else
+
+        configuration.AddFeatureManagement();
+
+#endif
 
         services.AddDiagnostics();
 
         return services;
     }
+
+#if !DEBUG
+
+    private static void AddFeatureManagement(this IConfigurationManager configuration)
+    {
+        configuration.AddAzureAppConfiguration(options =>
+        {
+            var connectionString = configuration.GetConnectionString("AppConfig") ??
+                                  throw new InvalidOperationException("AppConfig ConnectionString is not set");
+
+            options.Connect(connectionString)
+                   .UseFeatureFlags();
+        });
+    }
+
+#endif
 
     private static void AddDiagnostics(this IServiceCollection services)
     {
