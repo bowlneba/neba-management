@@ -373,7 +373,6 @@ provider "rediscloud" {
 }
 
 data "rediscloud_subscription" "nebamgmt-redis-subscription"{
-  name  = "bowlneba"
 }
 
 variable "redis_cache_name" {
