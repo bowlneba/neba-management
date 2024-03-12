@@ -357,3 +357,7 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
+
+provider "rediscloud" {
+  features {}
+}
