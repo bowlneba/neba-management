@@ -364,5 +364,21 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 }
 
 provider "rediscloud" {
-  features {}
+}
+
+data "rediscloud_subscription" "nebamgmt-redis-subscription"{
+  name  = "bowlneba"
+}
+
+variable "redis_cache_name" {
+  description = "value for the redis cache name"
+  type        = string
+}
+
+resource "rediscloud_subscription_database" "nebamgmt-redis-cache"{
+  subscription_id = data.rediscloud_subscription.nebamgmt-redis-subscription.id
+  name = var.redis_cache_name
+  memory_limit = 1
+  throughput_measurement_by = "OperationsPerSecond"
+  password = "P@ssw0rd123!!!"
 }
