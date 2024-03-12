@@ -376,13 +376,17 @@ data "rediscloud_subscription" "nebamgmt-redis-subscription"{
   name  = "bowlneba"
 }
 
+output "nebamgmt-redis-subscription-id" {
+  value = data.rediscloud_subscription.nebamgmt-redis-subscription.id
+}
+
 variable "redis_cache_name" {
   description = "value for the redis cache name"
   type        = string
 }
 
 resource "rediscloud_subscription_database" "nebamgmt-redis-cache"{
-  subscription_id = data.rediscloud_subscription.nebamgmt-redis-subscription.id
+  subscription_id = redis_cache_name.value
   name = var.redis_cache_name
   throughput_measurement_by = "operations-per-second"
   throughput_measurement_value = 10000
