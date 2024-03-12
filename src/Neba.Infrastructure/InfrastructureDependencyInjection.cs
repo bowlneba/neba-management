@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
+using Neba.Application;
 using Neba.Application.Caching;
 using Neba.Application.Clock;
 using Neba.Infrastructure.Caching;
@@ -20,11 +22,12 @@ public static class InfrastructureDependencyInjection
     public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services,
         IConfigurationManager configuration)
     {
+        Debug.Assert(configuration != null, nameof(configuration) + " != null");
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 #if DEBUG
 
-        Debug.Assert(configuration != null, nameof(configuration) + " != null");
         services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
@@ -33,6 +36,14 @@ public static class InfrastructureDependencyInjection
 #endif
 
         services.AddDiagnostics();
+
+        var cachingEnabled = Convert.ToBoolean(configuration.GetSection("FeatureManagement")[FeatureFlags.Caching],
+            CultureInfo.InvariantCulture);
+
+        if (!cachingEnabled)
+        {
+            return services;
+        }
 
         var cacheConnectionString = configuration.GetConnectionString("Caching") ??
                                     throw new InvalidOperationException("Cache ConnectionString is not set");
