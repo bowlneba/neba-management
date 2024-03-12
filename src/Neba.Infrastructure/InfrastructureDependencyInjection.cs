@@ -50,7 +50,7 @@ public static class InfrastructureDependencyInjection
             options.Connect(connectionString)
                    .UseFeatureFlags(options =>
                    {
-                       options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+                       options.CacheExpirationInterval = TimeSpan.FromSeconds(30);
                        options.Select(KeyFilter.Any);
                    });
         });
