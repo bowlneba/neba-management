@@ -15,9 +15,9 @@
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="MediatR" Version="12.2.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
     <PackageVersion Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.1.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="7.1.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.2.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
@@ -34,11 +34,11 @@
     <PackageVersion Include="Serilog.Enrichers.Process" Version="2.0.2" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="2.3.0" />
     <PackageVersion Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
-    <PackageVersion Include="SerilogTracing" Version="1.0.1-dev-00261" />
-    <PackageVersion Include="SerilogTracing.Expressions" Version="1.0.1-dev-00261" />
-    <PackageVersion Include="SerilogTracing.Instrumentation.AspNetCore" Version="1.0.1-dev-00261" />
-    <PackageVersion Include="SerilogTracing.Instrumentation.SqlClient" Version="1.0.1-dev-00261" />
-    <PackageVersion Include="SerilogTracing.Sinks.Seq" Version="1.0.1-dev-00261" />
+    <PackageVersion Include="SerilogTracing" Version="1.0.1-dev-00267" />
+    <PackageVersion Include="SerilogTracing.Expressions" Version="1.0.1-dev-00267" />
+    <PackageVersion Include="SerilogTracing.Instrumentation.AspNetCore" Version="1.0.1-dev-00267" />
+    <PackageVersion Include="SerilogTracing.Instrumentation.SqlClient" Version="1.0.1-dev-00267" />
+    <PackageVersion Include="SerilogTracing.Sinks.Seq" Version="1.0.1-dev-00264" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
