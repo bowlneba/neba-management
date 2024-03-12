@@ -4,7 +4,7 @@ services:
   
   seq:
     image: datalust/seq:latest
-    container_name: neba.seq
+    container_name: seq
     environment:
       - ACCEPT_EULA=Y
     restart: always
@@ -14,5 +14,17 @@ services:
     volumes:
       - neba.seq:/data
 
+  cache:
+    image: redis:latest
+    container_name: redis
+    environment:
+      - REDIS_PASSWORD=NebaRedis123!!!
+    ports:
+      - "19632:6379"
+    restart: always
+    volumes:
+      - neba.cache:/data
+
 volumes:
   neba.seq:
+  neba.cache:
