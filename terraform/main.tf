@@ -386,7 +386,7 @@ variable "redis_cache_name" {
 }
 
 resource "rediscloud_subscription_database" "nebamgmt-redis-cache"{
-  subscription_id = nebamgmt-redis-subscription-id.value
+  subscription_id = nebamgmt-redis-subscription-id
   name = var.redis_cache_name
   throughput_measurement_by = "operations-per-second"
   throughput_measurement_value = 10000
