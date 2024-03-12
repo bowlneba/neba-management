@@ -304,6 +304,11 @@ resource "azurerm_app_configuration" "nebamgmt-config"{
   location = azurerm_resource_group.nebamgmt-rg.location
 
   sku = "free"
+
+  identity {
+    type = "SystemAssigned"
+  
+  }
 }
 
 data "azurerm_role_definition" "app_config_data_reader" {
