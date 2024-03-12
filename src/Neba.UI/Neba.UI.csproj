@@ -13,6 +13,9 @@
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration"/>
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="Serilog.AspNetCore"/>
     <PackageReference Include="Serilog.Enrichers.Environment"/>
@@ -22,11 +25,11 @@
     <PackageReference Include="SerilogTracing"/>
     <PackageReference Include="SerilogTracing.Expressions"/>
     <PackageReference Include="SerilogTracing.Instrumentation.AspNetCore"/>
-  </ItemGroup>
+   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="SerilogTracing.Sinks.Seq" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+      <PackageReference Include="SerilogTracing.Sinks.Seq" />
+    </ItemGroup>
   
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.UI.UnitTests" />

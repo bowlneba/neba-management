@@ -1,27 +1,14 @@
 using System.Diagnostics;
 using Neba.UI.Components;
+using Neba.UI.Infrastructure;
 using Neba.UI.Services;
 using Serilog;
 using Serilog.Debugging;
 using SerilogTracing;
 
-#if !DEBUG
-using Neba.UI.Infrastructure;
-#endif
-
 var builder = WebApplication.CreateBuilder(args);
 
-#region App Settings
-
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-#if DEBUG
-
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-
-#endif
-
-#endregion
+builder.AddConfiguration();
 
 var serilogger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 
@@ -38,11 +25,7 @@ try
 {
     builder.Services.AddMudBlazor();
 
-#if !DEBUG
-
-builder.Configuration.AddKeyVault();
-
-#endif
+    builder.Configuration.AddKeyVault();
 
     builder.Services.AddServices();
 
@@ -52,9 +35,11 @@ builder.Configuration.AddKeyVault();
 
     app.UseSerilogRequestLogging();
 
-// Configure the HTTP request pipeline.
+    // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())
     {
+        app.UseAzureAppConfiguration();
+
         app.UseExceptionHandler("/Error", createScopeForErrors: true);
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();

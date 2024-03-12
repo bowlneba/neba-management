@@ -2,5 +2,12 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "NEBA",
         "projectKey": "bowlneba_neba-management"
-    }
+    },
+    "cSpell.words": [
+        "Antiforgery",
+        "appsettings",
+        "Blazor",
+        "Neba",
+        "Serilog"
+    ]
 }

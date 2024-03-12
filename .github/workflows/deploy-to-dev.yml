@@ -15,8 +15,8 @@ env:
   ARM_TENANT_ID: ${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}
 
 jobs:
-    terraform:
-        name: 'Terraform'
+    infrastructure:
+        name: 'Deploy Infrastructure'
         runs-on: ubuntu-latest
         environment:
             name: 'Development'
@@ -27,6 +27,7 @@ jobs:
             TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
             TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
+            TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
             
         steps:
             - name: Checkout
@@ -47,10 +48,10 @@ jobs:
               run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
               working-directory: terraform
     
-    deploy-api:
+    api:
         name: 'Deploy API'
         runs-on: ubuntu-latest
-        needs: terraform
+        needs: infrastructure
         if: success()
         env:
             CONFIGURATION: Release
@@ -73,17 +74,6 @@ jobs:
               with:
                 creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
           
-            - name: Inject KeyVault URL
-              id: get-keyvault-url
-              uses: Azure/get-keyvault-secrets@v1
-              with:
-                keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-                secrets: 'KeyVault--Url'
-
-            - name: Update appsettings.json
-              run: |
-                sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
-            
             - name: Restore
               run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
             
@@ -103,10 +93,10 @@ jobs:
                 az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
                 az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
 
-    deploy-ui:
+    ui:
       name: 'Deploy UI'
       runs-on: ubuntu-latest
-      needs: [terraform, deploy-api]
+      needs: [infrastructure, api]
       if: success()
       env:
           CONFIGURATION: Release
@@ -129,17 +119,6 @@ jobs:
             with:
               creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
         
-          - name: Inject KeyVault URL
-            id: get-keyvault-url
-            uses: Azure/get-keyvault-secrets@v1
-            with:
-              keyvault: ${{ vars.AZURE_KEYVAULT_NAME }}
-              secrets: 'KeyVault--Url'
-
-          - name: Update appsettings.json
-            run: |
-              sed -i 's#@KEY_VAULT_URL@#${{ steps.get-keyvault-url.outputs.KeyVault--Url }}#g' ${{ env.WORKING_DIRECTORY }}/appsettings.json
-    
           - name: Restore
             run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
           

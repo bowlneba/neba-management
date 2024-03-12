@@ -1,7 +1,21 @@
 ﻿@page "/"
+@inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<div>
+    <p>Test-Feature: <strong>@isEnabled</strong></p>
+</div>
+
+@code
+{
+    private bool isEnabled;
+    protected override async Task OnInitializedAsync()
+    {
+        isEnabled = await FeatureManager.IsEnabledAsync("Test-Feature");
+    }
+}

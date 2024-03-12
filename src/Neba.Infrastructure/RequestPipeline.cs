@@ -7,6 +7,9 @@ public static class RequestPipeline
 {
     public static IApplicationBuilder UseSharedMiddleware(this IApplicationBuilder app)
     {
+#if !DEBUG
+        app.UseAzureAppConfiguration();
+#endif
         app.UseMiddleware<RequestContextLoggingMiddleware>();
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 

@@ -122,8 +122,8 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   application_type    = "web"
   workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
-  internet_ingestion_enabled = false
-  internet_query_enabled = false
+  internet_ingestion_enabled = true
+  internet_query_enabled = true
 }
 
 variable "api_service_name" {
@@ -153,14 +153,20 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
   }
 
   auth_settings {
-    enabled = true
-    unauthenticated_client_action = "AllowAnonymous"
+    enabled = false
   }
 
   https_only = true
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+  }
+
+  connection_string {
+    name = "AppConfig"
+    type = "Custom"
+    value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
@@ -195,8 +201,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 
   auth_settings {
-    enabled = true
-    unauthenticated_client_action = "AllowAnonymous"
+    enabled = false
   }
 
   depends_on = [azurerm_linux_web_app.nebamgmt-api]
@@ -205,6 +210,13 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+  }
+
+  connection_string {
+    name = "AppConfig"
+    type = "Custom"
+    value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
   identity {
@@ -212,13 +224,13 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 }
 
-variable "nebamgmt-key-vault-name" {
+variable "nebamgmt_key_vault_name" {
   description = "value for the key vault name"
   type = string
 }
 
 resource "azurerm_key_vault" "nebamgmt-kv" {
-  name                = var.nebamgmt-key-vault-name
+  name                = var.nebamgmt_key_vault_name
   location            = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name            = "standard"
@@ -236,6 +248,12 @@ variable "azure_infrastructure_management_group_id"{
   type        = string
 }
 
+variable "azure_nebamgmt_local_app_registration_principal_id"{
+  description = "value for the nebamgmt local app registration id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
 resource "azurerm_role_assignment" "infrastructure_mgmt_kv_admin" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_admin.name
@@ -248,25 +266,15 @@ resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-variable "nebamgmt-api-url" {
+resource "azurerm_role_assignment" "nebamgmt-local-kv-user" {
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
+}
+
+variable "nebamgmt_api_url" {
   description = "value for the nebamgmt api url"
   type        = string
-}
-
-resource "azurerm_key_vault_secret" "nebamgmt-api-url-secret"{
-  name         = "NebaApi--BaseUrl"
-  value        = var.nebamgmt-api-url
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-  content_type = "text/url"
-  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
-}
-
-resource "azurerm_key_vault_secret" "nebamgmt-kv-url-secret"{
-  name         = "KeyVault--Url"
-  value        = azurerm_key_vault.nebamgmt-kv.vault_uri
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-  content_type = "text/url"
-  depends_on = [ azurerm_role_assignment.infrastructure_mgmt_kv_admin ]
 }
 
 data "azurerm_role_definition" "keyvault_secrets_user" {
@@ -283,4 +291,69 @@ resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
   scope = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+}
+
+variable "nebamgmt_config_name" {
+  description = "value for the nebamgmt config name"
+  type        = string
+}
+
+resource "azurerm_app_configuration" "nebamgmt-config"{
+  name = var.nebamgmt_config_name
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+
+  sku = "free"
+}
+
+data "azurerm_role_definition" "app_config_data_reader" {
+  name = "App Configuration Data Reader"
+}
+
+resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+  principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+}
+
+resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+  principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+}
+
+data "azurerm_role_definition" "appconfig_data_owner"{
+  name = "App Configuration Data Owner"
+}
+
+resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
+  scope = azurerm_app_configuration.nebamgmt-config.id
+  role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
+  principal_id = var.azure_infrastructure_management_group_id
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = "KeyVault--Url"
+  value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  label = "KeyVaultUrl"
+
+  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = "NebaApi--BaseUrl"
+  value = var.nebamgmt_api_url
+  label = "ApiUrl"
+  
+  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+}
+
+resource "azurerm_app_configuration_feature" "test-feature"{
+  name = "Test-Feature"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  enabled = true
+
+  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }

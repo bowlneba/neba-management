@@ -23,6 +23,10 @@
 	<PackageReference Include="SerilogTracing.Sinks.Seq" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+	<PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
+  </ItemGroup>
+
   <ItemGroup>
 	<ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
 	<ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
