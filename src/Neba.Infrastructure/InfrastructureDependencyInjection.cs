@@ -22,9 +22,10 @@ public static class InfrastructureDependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 #if DEBUG
-        
+
+        Debug.Assert(configuration != null, nameof(configuration) + " != null");
         services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
-        
+
 #else
 
         configuration.AddFeatureManagement();
