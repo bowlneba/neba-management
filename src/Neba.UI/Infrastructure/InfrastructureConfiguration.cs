@@ -2,10 +2,13 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 #if DEBUG
 using Microsoft.FeatureManagement;
 using Neba.UI.Services;
+#else
+using Microsoft.FeatureManagement;
 #endif
 
 namespace Neba.UI.Infrastructure;
@@ -24,14 +27,22 @@ internal static class InfrastructureConfiguration
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 #else
 
+        builder.Services.AddAzureAppConfiguration();
+
         builder.Configuration.AddAzureAppConfiguration(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
             options.Connect(connectionString)
-                   .UseFeatureFlags();
+                   .UseFeatureFlags(options =>
+                   {
+                       options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+                       options.Select(KeyFilter.Any);
+                   });
         });
+
+        builder.Services.AddFeatureManagement();
 
 #endif
 
