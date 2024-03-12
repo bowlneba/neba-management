@@ -364,6 +364,7 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 }
 
 provider "rediscloud" {
+  source = "RedisLabs/rediscloud"
 }
 
 data "rediscloud_subscription" "nebamgmt-redis-subscription"{
