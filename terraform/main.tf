@@ -1,10 +1,16 @@
-provider "azurerm" {
-  features {}
-}
-
 terraform {
   backend "azurerm" {
   }
+  required_providers {
+    rediscloud = {
+      source = "RedisLabs/rediscloud"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
+provider "azurerm" {
+  features {}
 }
 
 data "azurerm_client_config" "current" {}
@@ -364,7 +370,6 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 }
 
 provider "rediscloud" {
-  source = "RedisLabs/rediscloud"
 }
 
 data "rediscloud_subscription" "nebamgmt-redis-subscription"{
