@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Neba.Application.Clock;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
+using Microsoft.FeatureManagement;
 
 #if DEBUG
-using Microsoft.FeatureManagement;
 #else
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 #endif
@@ -28,7 +27,7 @@ public static class InfrastructureDependencyInjection
 
 #else
 
-        configuration.AddFeatureManagement();
+        AddFeatureManagement(services, configuration);
 
 #endif
 
@@ -39,16 +38,24 @@ public static class InfrastructureDependencyInjection
 
 #if !DEBUG
 
-    private static void AddFeatureManagement(this IConfigurationManager configuration)
+    private static void AddFeatureManagement(IServiceCollection services, IConfigurationManager configuration)
     {
+        services.AddAzureAppConfiguration();
+
         configuration.AddAzureAppConfiguration(options =>
         {
             var connectionString = configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
             options.Connect(connectionString)
-                   .UseFeatureFlags();
+                   .UseFeatureFlags(options =>
+                   {
+                       options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+                       options.Select(KeyFilter.Any);
+                   });
         });
+
+        services.AddFeatureManagement();
     }
 
 #endif
