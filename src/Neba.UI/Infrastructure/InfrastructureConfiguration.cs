@@ -24,20 +24,18 @@ internal static class InfrastructureConfiguration
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
-        Serilog.Log.Information("AppConfig ConnectionString: {ConnectionString}", builder.Configuration.GetConnectionString("AppConfig"));
-
         builder.Services.AddAzureAppConfiguration();
 
-        builder.Configuration.AddAzureAppConfiguration(options =>
+        builder.Configuration.AddAzureAppConfiguration(azureAppConfigOptions =>
         {
             var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            options.Connect(connectionString)
-                   .UseFeatureFlags(options =>
+            azureAppConfigOptions.Connect(new Uri(connectionString), new ManagedIdentityCredential())
+                   .UseFeatureFlags(featureFlagOptions =>
                    {
-                       options.CacheExpirationInterval = TimeSpan.FromSeconds(30);
-                       options.Select(KeyFilter.Any);
+                       featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(30);
+                       featureFlagOptions.Select(KeyFilter.Any);
                    });
         });
 
