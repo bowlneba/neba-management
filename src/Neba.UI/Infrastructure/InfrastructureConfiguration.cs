@@ -21,6 +21,8 @@ internal static class InfrastructureConfiguration
         builder.Services.AddScopedFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
+        builder.Services.AddAzureAppConfiguration();
+
         var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
