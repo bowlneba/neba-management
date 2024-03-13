@@ -17,12 +17,8 @@ internal static class InfrastructureConfiguration
 {
     public static void AddConfiguration(this WebApplicationBuilder builder)
     {
-        builder.Configuration.AddJsonFile("appsettings.json", false, true);
 
 #if DEBUG
-
-        builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
-        builder.Configuration.AddUserSecrets<NebaApiOptions>();
 
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 #else
