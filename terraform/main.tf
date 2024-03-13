@@ -1,12 +1,6 @@
 terraform {
   backend "azurerm" {
   }
-  required_providers {
-    rediscloud = {
-      source = "RedisLabs/rediscloud"
-    }
-  }
-  required_version = ">= 0.13"
 }
 
 provider "azurerm" {
@@ -367,23 +361,4 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
   enabled = false
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
-
-provider "rediscloud" {
-}
-
-data "rediscloud_subscription" "nebamgmt-redis-subscription"{
-}
-
-variable "redis_cache_name" {
-  description = "value for the redis cache name"
-  type        = string
-}
-
-resource "rediscloud_subscription_database" "nebamgmt-redis-cache"{
-  subscription_id = data.rediscloud_subscription.nebamgmt-redis-subscription.id
-  name = var.redis_cache_name
-  throughput_measurement_by = "operations-per-second"
-  throughput_measurement_value = 10000
-  memory_limit_in_gb = 1
 }
