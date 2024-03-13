@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using Neba.Api;
 using Neba.Application;
+using Neba.Application.Caching;
+using Neba.Application.Clock;
 using Neba.Infrastructure;
 using Serilog;
 using Serilog.Debugging;
@@ -75,6 +77,22 @@ try
         })
         .WithName("GetWeatherForecast")
         .WithOpenApi();
+
+    app.MapGet("utcNowCache", async (IDateTimeProvider dateTimeProvider, ICacheService cacheService) =>
+    {
+        var cacheValue = await cacheService.GetAsync<DateTime?>("now", default);
+
+        if (cacheValue is not null)
+        {
+            return Results.Ok($"From Cache: {cacheValue}");
+        }
+
+        var utcNow = dateTimeProvider.UtcNow;
+
+        await cacheService.SetAsync("now", utcNow, TimeSpan.FromSeconds(10), default);
+
+        return Results.Ok(utcNow);
+    }).WithName("Utc Now with Cache").WithOpenApi();
 
     await app.RunAsync();
 }

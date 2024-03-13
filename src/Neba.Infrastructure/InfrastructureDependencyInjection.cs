@@ -39,10 +39,7 @@ public static class InfrastructureDependencyInjection
 
         services.AddDiagnostics();
 
-        var cacheConnectionString = configuration.GetConnectionString("Caching") ??
-                                    throw new InvalidOperationException("Cache ConnectionString is not set");
-
-        services.AddCaching(cacheConnectionString);
+        services.AddCaching();
 
         return services;
     }
@@ -81,9 +78,9 @@ public static class InfrastructureDependencyInjection
             .GetRequiredService<IObserver<DiagnosticListener>>());
     }
 
-    private static void AddCaching(this IServiceCollection services, string connectionString)
+    private static void AddCaching(this IServiceCollection services)
     {
-        services.AddStackExchangeRedisCache(options => options.Configuration = connectionString);
+        services.AddDistributedMemoryCache();
 
         services.AddSingleton<ICacheService, CacheService>();
     }
