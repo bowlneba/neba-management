@@ -36,7 +36,7 @@ internal static class InfrastructureConfiguration
 
     public static KeyClient AddKeyVault(this IConfigurationManager config)
     {
-        var kvUrl = config.GetValue<string>("KeyVault:Url") ??
+        var kvUrl = config.GetConnectionString("KeyVault") ??
                     throw new InvalidOperationException("KeyVault:Url is not set");
 
         #if DEBUG

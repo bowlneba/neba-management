@@ -169,6 +169,12 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
     value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
+  connection_string {
+    name = "KeyVault"
+    type = "Custom"
+    value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  }
+
   identity {
     type = "SystemAssigned"
   }
@@ -217,6 +223,12 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
     name = "AppConfig"
     type = "Custom"
     value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
+  }
+
+  connection_string {
+    name = "KeyVault"
+    type = "Custom"
+    value = azurerm_key_vault.nebamgmt-kv.vault_uri
   }
 
   identity {
@@ -335,14 +347,6 @@ resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admi
   scope = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
   principal_id = var.azure_infrastructure_management_group_id
-}
-
-resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "KeyVault:Url"
-  value = azurerm_key_vault.nebamgmt-kv.vault_uri
-
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
 resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
