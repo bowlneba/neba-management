@@ -24,7 +24,7 @@ internal static class InfrastructureConfiguration
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
-        Console.WriteLine($"AppConfig ConnectionString: {builder.Configuration.GetConnectionString("AppConfig")}");
+        Serilog.Log.Information("AppConfig ConnectionString: {ConnectionString}", builder.Configuration.GetConnectionString("AppConfig"));
 
         builder.Services.AddAzureAppConfiguration();
 
