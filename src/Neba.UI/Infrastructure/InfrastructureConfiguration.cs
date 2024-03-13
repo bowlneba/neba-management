@@ -33,8 +33,6 @@ internal static class InfrastructureConfiguration
             var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            Console.WriteLine($"AppConfig ConnectionString: builder.Configuration.GetConnectionString("AppConfig")");
-
             options.Connect(connectionString)
                    .UseFeatureFlags(options =>
                    {
