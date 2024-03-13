@@ -24,14 +24,12 @@ internal static class InfrastructureConfiguration
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
-        builder.Services.AddAzureAppConfiguration();
-
         builder.Configuration.AddAzureAppConfiguration(azureAppConfigOptions =>
         {
             var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            azureAppConfigOptions.Connect(new Uri(connectionString), new ManagedIdentityCredential())
+            azureAppConfigOptions.Connect(connectionString)
                    .UseFeatureFlags(featureFlagOptions =>
                    {
                        featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(30);

@@ -339,7 +339,7 @@ resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admi
 
 resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "KeyVault--Url"
+  key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
   label = "KeyVaultUrl"
 
@@ -348,9 +348,9 @@ resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
 
 resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "NebaApi--BaseUrl"
+  key = "NebaApi:BaseUrl"
   value = var.nebamgmt_api_url
-  label = "ApiUrl"
+  label = "NebaApiUrl"
   
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
