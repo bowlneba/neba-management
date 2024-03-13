@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 #if DEBUG
 using Microsoft.FeatureManagement;
+using Microsoft.Identity.Client;
 using Neba.UI.Services;
 #else
 using Microsoft.FeatureManagement;
@@ -21,7 +22,9 @@ internal static class InfrastructureConfiguration
 #if DEBUG
 
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
+
 #else
+        Console.WriteLine($"AppConfig ConnectionString: {builder.Configuration.GetConnectionString("AppConfig")}");
 
         builder.Services.AddAzureAppConfiguration();
 
@@ -30,7 +33,7 @@ internal static class InfrastructureConfiguration
             var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            Console.WriteLine($"AppConfig ConnectionString: {connectionString}");
+            Console.WriteLine($"AppConfig ConnectionString: builder.Configuration.GetConnectionString("AppConfig")");
 
             options.Connect(connectionString)
                    .UseFeatureFlags(options =>
