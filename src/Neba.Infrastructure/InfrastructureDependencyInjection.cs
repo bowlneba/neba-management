@@ -28,7 +28,7 @@ public static class InfrastructureDependencyInjection
 
 #if DEBUG
 
-        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
+        services.AddScopedFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
         AddFeatureManagement(services, configuration);
@@ -49,20 +49,12 @@ public static class InfrastructureDependencyInjection
     {
         services.AddAzureAppConfiguration();
 
-        configuration.AddAzureAppConfiguration(options =>
-        {
-            var connectionString = configuration.GetConnectionString("AppConfig") ??
+        var connectionString = configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            options.Connect(connectionString)
-                   .UseFeatureFlags(options =>
-                   {
-                       options.CacheExpirationInterval = TimeSpan.FromSeconds(30);
-                       options.Select(KeyFilter.Any);
-                   });
-        });
+        configuration.AddAzureAppConfiguration(connectionString);
 
-        services.AddFeatureManagement();
+        services.AddScopedFeatureManagement();
     }
 
 #endif
