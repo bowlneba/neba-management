@@ -8,8 +8,6 @@ using SerilogTracing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddConfiguration();
-
 var serilogger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 
 Log.Logger = serilogger;
@@ -23,6 +21,8 @@ builder.Host.UseSerilog();
 
 try
 {
+    builder.AddConfiguration();
+
     builder.Services.AddMudBlazor();
 
     builder.Configuration.AddKeyVault();
