@@ -35,7 +35,7 @@ jobs:
     infrastructure:
         name: 'Deploy Infrastructure'
         runs-on: ubuntu-latest
-        if: ${{ github.event.inputs.deployInfrastructure }}
+        if: ${{ github.event.inputs.deployInfrastructure == 'true' }}
         environment:
             name: 'Development'
         env:
@@ -70,7 +70,7 @@ jobs:
         name: 'Deploy API'
         runs-on: ubuntu-latest
         needs: infrastructure
-        if: success() && ${{ github.event.inputs.deployAPI }}
+        if: success() && ${{ github.event.inputs.deployAPI == 'true' }}
         env:
             CONFIGURATION: Release
             DOTNET_CORE_VERSION: 8.0.x
@@ -115,7 +115,7 @@ jobs:
       name: 'Deploy UI'
       runs-on: ubuntu-latest
       needs: [infrastructure, api]
-      if: success() && ${{ github.event.inputs.deployUI }}
+      if: success() && ${{ github.event.inputs.deployUI == 'true' }}
       env:
           CONFIGURATION: Release
           DOTNET_CORE_VERSION: 8.0.x
