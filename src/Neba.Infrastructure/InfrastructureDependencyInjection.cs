@@ -52,15 +52,21 @@ public static class InfrastructureDependencyInjection
         services.AddAzureAppConfiguration();
 
         var connectionString = configuration.GetValue<string>("APPCONFIG_ENDPOINT") ??
-                                  throw new InvalidOperationException("APPCONFIG_ENDPOINT is not set");
+                               throw new InvalidOperationException("APPCONFIG_ENDPOINT is not set");
 
-        configuration.AddAzureAppConfiguration(options
-            => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())
+        configuration.AddAzureAppConfiguration(options =>
+        {
+            var credential = new ManagedIdentityCredential();
+
+            options.Connect(new Uri(connectionString), credential)
                 .UseFeatureFlags(flagOptions =>
                 {
                     flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
                     flagOptions.Select(KeyFilter.Any);
-                }));
+                });
+
+            options.ConfigureKeyVault(keyVault => keyVault.SetCredential(credential));
+        });
 
         services.AddScopedFeatureManagement();
     }

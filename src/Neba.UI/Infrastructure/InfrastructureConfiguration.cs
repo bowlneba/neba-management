@@ -27,13 +27,19 @@ internal static class InfrastructureConfiguration
         var connectionString = builder.Configuration.GetValue<string>("APPCONFIG_ENDPOINT") ??
                                   throw new InvalidOperationException("APPCONFIG_ENDPOINT is not set");
 
-        builder.Configuration.AddAzureAppConfiguration(options
-            => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())
+        builder.Configuration.AddAzureAppConfiguration(options =>
+        {
+            var credential = new ManagedIdentityCredential();
+
+            options.Connect(new Uri(connectionString), credential)
                 .UseFeatureFlags(flagOptions =>
                 {
                     flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
                     flagOptions.Select(KeyFilter.Any);
-                }));
+                });
+
+            options.ConfigureKeyVault(keyVault => keyVault.SetCredential(credential));
+        });
 
         builder.Services.AddScopedFeatureManagement();
 
