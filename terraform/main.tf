@@ -364,30 +364,3 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
-
-resource "azurerm_mssql_server" "nebamgmt-sql-server" {
-  name = "nebamgmt-mssql-dev"
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  location = azurerm_resource_group.nebamgmt-rg.location
-  version = "12.0"
-
-  administrator_login = "nebamgmtadmin"
-  administrator_login_password = "Str0ngP@ssword"
-}
-
-resource "azurerm_mssql_database" "nebamgmt-sql-database"{
-  name = "nebamgmt-db-dev"
-  server_id = azurerm_mssql_server.nebamgmt-sql-server.id
-  collation = "SQL_Latin1_General_CP1_CI_AS"
-  license_type = "LicenseIncluded"
-  max_size_gb = 2
-  read_scale = false
-  sku_name = "Free - General Purpose - Serverless: Gen5, 4 vCores"
-  auto_pause_delay_in_minutes = 60
-
-  zone_redundant = false
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
