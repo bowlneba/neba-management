@@ -340,7 +340,7 @@ resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
-resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
+resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
   key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
