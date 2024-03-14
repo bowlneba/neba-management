@@ -2,13 +2,11 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.FeatureManagement;
 
 #if DEBUG
-using Microsoft.FeatureManagement;
-using Neba.UI.Services;
 #else
-using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 #endif
 
 namespace Neba.UI.Infrastructure;
@@ -17,32 +15,27 @@ internal static class InfrastructureConfiguration
 {
     public static void AddConfiguration(this WebApplicationBuilder builder)
     {
-        builder.Configuration.AddJsonFile("appsettings.json", false, true);
 
 #if DEBUG
 
-        builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
-        builder.Configuration.AddUserSecrets<NebaApiOptions>();
+        builder.Services.AddScopedFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
-        builder.Services.AddFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 #else
 
         builder.Services.AddAzureAppConfiguration();
 
-        builder.Configuration.AddAzureAppConfiguration(options =>
-        {
-            var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
+        var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            options.Connect(connectionString)
-                   .UseFeatureFlags(options =>
-                   {
-                       options.CacheExpirationInterval = TimeSpan.FromSeconds(30);
-                       options.Select(KeyFilter.Any);
-                   });
-        });
+        builder.Configuration.AddAzureAppConfiguration(options 
+            => options.Connect(connectionString)
+                .UseFeatureFlags(flagOptions =>
+                {
+                    flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
+                    flagOptions.Select(KeyFilter.Any);
+                }));
 
-        builder.Services.AddFeatureManagement();
+        builder.Services.AddScopedFeatureManagement();
 
 #endif
 
@@ -50,8 +43,8 @@ internal static class InfrastructureConfiguration
 
     public static KeyClient AddKeyVault(this IConfigurationManager config)
     {
-        var kvUrl = config.GetValue<string>("KeyVault:Url") ??
-                    throw new InvalidOperationException("KeyVault:Url is not set");
+        var kvUrl = config.GetConnectionString("KeyVault") ??
+                    throw new InvalidOperationException("KeyVaultUrl is not set");
 
         #if DEBUG
             var clientId = config.GetValue<string>("KeyVault:ClientId") ??

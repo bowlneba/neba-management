@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Microsoft.FeatureManagement;
 using Neba.Api;
 using Neba.Application;
+using Neba.Application.Caching;
 using Neba.Application.Clock;
 using Neba.Infrastructure;
 using Serilog;
@@ -78,13 +79,26 @@ try
         .WithName("GetWeatherForecast")
         .WithOpenApi();
 
-    app.MapGet("/utcNow", (IDateTimeProvider dateTimeProvider) => Results.Ok(dateTimeProvider.UtcNow));
-
-    app.MapGet("/feature", async (IFeatureManager featureManager) =>
+    app.MapGet("utcNowCache", async (IDateTimeProvider dateTimeProvider, ICacheService cacheService, IFeatureManager featureManagement) =>
     {
-        var feature = await featureManager.IsEnabledAsync("Test-Feature");
-        return Results.Ok($"Test-Feature is {(feature ? "enabled" : "disabled")}");
-    });
+        if (!await featureManagement.IsEnabledAsync(nameof(FeatureFlags.Caching)))
+        {
+            return Results.Ok($"Cache Feature is Off: {dateTimeProvider.UtcNow}");
+        }
+
+        var cacheValue = await cacheService.GetAsync<DateTime?>("now", default);
+
+        if (cacheValue is not null)
+        {
+            return Results.Ok($"From Cache: {cacheValue}");
+        }
+
+        var utcNow = dateTimeProvider.UtcNow;
+
+        await cacheService.SetAsync("now", utcNow, TimeSpan.FromSeconds(10), default);
+
+        return Results.Ok($"Added to Cache: {utcNow}");
+    }).WithName("Utc Now with Cache").WithOpenApi();
 
     await app.RunAsync();
 }

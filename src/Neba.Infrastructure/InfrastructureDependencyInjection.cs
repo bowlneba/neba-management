@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FeatureManagement;
+using Neba.Application.Caching;
 using Neba.Application.Clock;
+using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
-using Microsoft.FeatureManagement;
 
 #if DEBUG
 #else
@@ -18,44 +20,47 @@ public static class InfrastructureDependencyInjection
     public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services,
         IConfigurationManager configuration)
     {
+        Debug.Assert(configuration != null, nameof(configuration) + " != null");
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        #region Feature Flags
 
 #if DEBUG
 
-        Debug.Assert(configuration != null, nameof(configuration) + " != null");
-        services.AddFeatureManagement(configuration.GetSection("FeatureManagement"));
+        services.AddScopedFeatureManagement(configuration.GetSection("FeatureManagement"));
 
 #else
-
         AddFeatureManagement(services, configuration);
 
 #endif
 
+        #endregion
+
         services.AddDiagnostics();
+
+        services.AddCaching();
 
         return services;
     }
 
 #if !DEBUG
-
     private static void AddFeatureManagement(IServiceCollection services, IConfigurationManager configuration)
     {
         services.AddAzureAppConfiguration();
 
-        configuration.AddAzureAppConfiguration(options =>
-        {
-            var connectionString = configuration.GetConnectionString("AppConfig") ??
+        var connectionString = configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-            options.Connect(connectionString)
-                   .UseFeatureFlags(options =>
-                   {
-                       options.CacheExpirationInterval = TimeSpan.FromSeconds(30);
-                       options.Select(KeyFilter.Any);
-                   });
-        });
+        configuration.AddAzureAppConfiguration(options 
+            => options.Connect(connectionString)
+                .UseFeatureFlags(flagOptions =>
+                {
+                    flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
+                    flagOptions.Select(KeyFilter.Any);
+                }));
 
-        services.AddFeatureManagement();
+        services.AddScopedFeatureManagement();
     }
 
 #endif
@@ -69,5 +74,12 @@ public static class InfrastructureDependencyInjection
 
         DiagnosticListener.AllListeners.Subscribe(services.BuildServiceProvider()
             .GetRequiredService<IObserver<DiagnosticListener>>());
+    }
+
+    private static void AddCaching(this IServiceCollection services)
+    {
+        services.AddDistributedMemoryCache();
+
+        services.AddSingleton<ICacheService, CacheService>();
     }
 }

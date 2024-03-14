@@ -4,7 +4,7 @@ services:
   
   seq:
     image: datalust/seq:latest
-    container_name: neba.seq
+    container_name: seq
     environment:
       - ACCEPT_EULA=Y
     restart: always

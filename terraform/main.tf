@@ -1,10 +1,10 @@
-provider "azurerm" {
-  features {}
-}
-
 terraform {
   backend "azurerm" {
   }
+}
+
+provider "azurerm" {
+  features {}
 }
 
 data "azurerm_client_config" "current" {}
@@ -169,6 +169,12 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
     value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
   }
 
+  connection_string {
+    name = "KeyVault"
+    type = "Custom"
+    value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  }
+
   identity {
     type = "SystemAssigned"
   }
@@ -217,6 +223,12 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
     name = "AppConfig"
     type = "Custom"
     value = azurerm_app_configuration.nebamgmt-config.primary_read_key[0].connection_string
+  }
+
+  connection_string {
+    name = "KeyVault"
+    type = "Custom"
+    value = azurerm_key_vault.nebamgmt-kv.vault_uri
   }
 
   identity {
@@ -304,6 +316,11 @@ resource "azurerm_app_configuration" "nebamgmt-config"{
   location = azurerm_resource_group.nebamgmt-rg.location
 
   sku = "free"
+
+  identity {
+    type = "SystemAssigned"
+  
+  }
 }
 
 data "azurerm_role_definition" "app_config_data_reader" {
@@ -332,28 +349,18 @@ resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admi
   principal_id = var.azure_infrastructure_management_group_id
 }
 
-resource "azurerm_app_configuration_key" "nebamgmt-app-config-kv-url-value" {
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "KeyVault--Url"
-  value = azurerm_key_vault.nebamgmt-kv.vault_uri
-  label = "KeyVaultUrl"
-
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
-
 resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "NebaApi--BaseUrl"
+  key = "NebaApi:BaseUrl"
   value = var.nebamgmt_api_url
-  label = "ApiUrl"
   
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
-resource "azurerm_app_configuration_feature" "test-feature"{
-  name = "Test-Feature"
+resource "azurerm_app_configuration_feature" "caching-feature"{
+  name = "Caching"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  enabled = true
+  enabled = false
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
