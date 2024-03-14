@@ -363,7 +363,7 @@ resource "azurerm_app_configuration_key" "health-check-connection-string"{
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
   key = "ConnectionStrings:HealthCheck"
   type = "vault"
-  vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-key.secret_uri
+  vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-key.id
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
