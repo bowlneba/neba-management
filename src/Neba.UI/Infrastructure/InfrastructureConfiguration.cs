@@ -2,11 +2,11 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.FeatureManagement;
 
 #if DEBUG
-using Microsoft.FeatureManagement;
 #else
-using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 #endif
 
 namespace Neba.UI.Infrastructure;
@@ -22,12 +22,12 @@ internal static class InfrastructureConfiguration
 
 #else
 
-        services.AddAzureAppConfiguration();
+        builder.Services.AddAzureAppConfiguration();
 
-        var connectionString = configuration.GetConnectionString("AppConfig") ??
+        var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-        configuration.AddAzureAppConfiguration(options 
+        builder.Configuration.AddAzureAppConfiguration(options 
             => options.Connect(connectionString)
                 .UseFeatureFlags(flagOptions =>
                 {
@@ -35,7 +35,7 @@ internal static class InfrastructureConfiguration
                     flagOptions.Select(KeyFilter.Any);
                 }));
 
-        services.AddScopedFeatureManagement();
+        builder.Services.AddScopedFeatureManagement();
 
 #endif
 
@@ -44,7 +44,7 @@ internal static class InfrastructureConfiguration
     public static KeyClient AddKeyVault(this IConfigurationManager config)
     {
         var kvUrl = config.GetConnectionString("KeyVault") ??
-                    throw new InvalidOperationException("KeyVault:Url is not set");
+                    throw new InvalidOperationException("KeyVaultUrl is not set");
 
         #if DEBUG
             var clientId = config.GetValue<string>("KeyVault:ClientId") ??
