@@ -51,8 +51,8 @@ public static class InfrastructureDependencyInjection
     {
         services.AddAzureAppConfiguration();
 
-        var connectionString = configuration.GetConnectionString("AppConfig") ??
-                                  throw new InvalidOperationException("AppConfig ConnectionString is not set");
+        var connectionString = configuration.GetValue<string>("APPCONFIG_ENDPOINT") ??
+                                  throw new InvalidOperationException("APPCONFIG_ENDPOINT is not set");
 
         configuration.AddAzureAppConfiguration(options
             => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())

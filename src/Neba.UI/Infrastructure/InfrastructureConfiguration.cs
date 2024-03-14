@@ -24,8 +24,8 @@ internal static class InfrastructureConfiguration
 
         builder.Services.AddAzureAppConfiguration();
 
-        var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
-                                  throw new InvalidOperationException("AppConfig ConnectionString is not set");
+        var connectionString = builder.Configuration.GetValue<string>("APPCONFIG_ENDPOINT") ??
+                                  throw new InvalidOperationException("APPCONFIG_ENDPOINT is not set");
 
         builder.Configuration.AddAzureAppConfiguration(options
             => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())
