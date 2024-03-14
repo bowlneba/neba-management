@@ -38,8 +38,8 @@ public static class InfrastructureDependencyInjection
         #endregion
 
         services.AddDiagnostics();
-
         services.AddCaching();
+        services.AddHealthChecks(configuration);
 
         return services;
     }
@@ -81,5 +81,12 @@ public static class InfrastructureDependencyInjection
         services.AddDistributedMemoryCache();
 
         services.AddSingleton<ICacheService, CacheService>();
+    }
+
+    private static void AddHealthChecks(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddHealthChecks()
+            .AddSqlServer(config.GetConnectionString("HealthCheck") ??
+                          throw new InvalidOperationException("Cannot get HealthCheck ConnectionString"));
     }
 }
