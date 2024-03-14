@@ -85,7 +85,7 @@ try
         {
             return Results.Ok($"Cache Feature is Off: {dateTimeProvider.UtcNow}");
         }
-        
+
         var cacheValue = await cacheService.GetAsync<DateTime?>("now", default);
 
         if (cacheValue is not null)
