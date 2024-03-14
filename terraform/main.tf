@@ -382,7 +382,9 @@ resource "azurerm_mssql_database" "nebamgmt-sql-database"{
   license_type = "LicenseIncluded"
   max_size_gb = 2
   read_scale = false
-  sku_name = "S0"
+  sku_name = "Free - General Purpose - Serverless: Gen5, 4 vCores"
+  auto_pause_delay_in_minutes = 60
+
   zone_redundant = false
 
   lifecycle {
