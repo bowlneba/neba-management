@@ -27,8 +27,8 @@ internal static class InfrastructureConfiguration
         var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-        builder.Configuration.AddAzureAppConfiguration(options 
-            => options.Connect(connectionString)
+        builder.Configuration.AddAzureAppConfiguration(options
+            => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())
                 .UseFeatureFlags(flagOptions =>
                 {
                     flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);

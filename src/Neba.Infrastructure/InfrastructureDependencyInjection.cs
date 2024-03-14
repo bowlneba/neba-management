@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
@@ -7,6 +8,7 @@ using Neba.Application.Clock;
 using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
+using Uri = System.Uri;
 
 #if DEBUG
 #else
@@ -52,8 +54,8 @@ public static class InfrastructureDependencyInjection
         var connectionString = configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-        configuration.AddAzureAppConfiguration(options 
-            => options.Connect(connectionString)
+        configuration.AddAzureAppConfiguration(options
+            => options.Connect(new Uri(connectionString), new ManagedIdentityCredential())
                 .UseFeatureFlags(flagOptions =>
                 {
                     flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
