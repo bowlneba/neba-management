@@ -8,6 +8,11 @@ on:
             - 'release/*'
     workflow_dispatch:
         inputs:
+            deployInfrastructure:
+                description: 'Deploy Infrastructure'
+                required: true
+                default: true
+                type: boolean
             deployAPI:
                 description: 'Deploy API'
                 required: true
@@ -30,6 +35,7 @@ jobs:
     infrastructure:
         name: 'Deploy Infrastructure'
         runs-on: ubuntu-latest
+        if: ${{ github.event.inputs.deployInfrastructure }}
         environment:
             name: 'Development'
         env:
