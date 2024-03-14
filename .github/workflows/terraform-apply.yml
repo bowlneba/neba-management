@@ -1,16 +1,20 @@
 name: 'Terraform Apply'
 
 on:
-    workflow_dispatch:
-        inputs:
-            environment:
-                description: 'Selected Environment'
-                required: true
-                default: 'Development'
-                type: choice
-                options:
-                    - 'Development'
-                    - 'Staging'
+  workflow_run:
+    workflows: ["Deploy to Dev Environment"]
+    types:
+        - completed
+  workflow_dispatch:
+      inputs:
+          environment:
+              description: 'Selected Environment'
+              required: true
+              default: 'Development'
+              type: choice
+              options:
+                  - 'Development'
+                  - 'Staging'
 
 env:
   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -32,6 +36,7 @@ jobs:
             TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
             TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
             TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
+            TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
             
         steps:
             - name: Checkout

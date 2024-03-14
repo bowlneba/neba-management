@@ -364,3 +364,18 @@ resource "azurerm_app_configuration_feature" "caching-feature"{
 
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
+
+variable "nebamgmt_mssql_admin_password" {
+  description = "Admin password for SQL Server"
+  type = string
+}
+
+resource "azurerm_mssql_server" "nebamgmt-sql-server" {
+  name = "nebamgmt-mssql-dev"
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  version = "12.0"
+
+  administrator_login = "nebamgmtsa"
+  administrator_login_password = var.nebamgmt_mssql_admin_password
+}
