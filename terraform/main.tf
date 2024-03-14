@@ -146,10 +146,15 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
 
   site_config {
     always_on = var.api_always_on
+
     application_stack {
       dotnet_version = "8.0"
     }
+
     remote_debugging_version = "VS2022"
+
+    health_check_path = "/health"
+    health_check_eviction_time_in_min = 5
   }
 
   auth_settings {
@@ -188,7 +193,7 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   client_certificate_enabled = false
 
   site_config {
-    always_on = var.api_always_on
+    always_on = var.ui_always_on
     application_stack {
       dotnet_version = "8.0"
     }
