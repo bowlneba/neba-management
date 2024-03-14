@@ -8,16 +8,29 @@ on:
             - 'release/*'
     workflow_dispatch:
         inputs:
-            deployAPI:
-                description: 'Deploy API'
-                required: true
-                default: true
-                type: boolean
-            deployUI:
-                description: 'Deploy UI'
-                required: true
-                default: true
-                type: boolean
+          environment:
+            description: 'Selected Environment'
+            required: true
+            default: 'Development'
+            type: choice
+            options:
+                - 'Development'
+                - 'Staging'
+          deployInfrastructure:
+            description: 'Deploy Infrastructure'
+            required: true
+            default: true
+            type: boolean
+          deployAPI:
+              description: 'Deploy API'
+              required: true
+              default: true
+              type: boolean
+          deployUI:
+              description: 'Deploy UI'
+              required: true
+              default: true
+              type: boolean
         
 
 env:
@@ -27,61 +40,51 @@ env:
   ARM_TENANT_ID: ${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}
 
 jobs:
-    api:
-        name: 'Deploy API'
-        runs-on: ubuntu-latest
-        if: success() && ${{ github.event.inputs.deployAPI == 'true' }}
-        env:
-            CONFIGURATION: Release
-            DOTNET_CORE_VERSION: 8.0.x
-            WORKING_DIRECTORY: src/Neba.Api
-        environment:
-          name: 'Development'
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.deployInfrastructure == 'true' }}
+    environment:
+        name: ${{ github.event.inputs.environment }}
+    env:
+        TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
+        TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+        TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+        TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
+        TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
+        TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
+        TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
+        TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
         
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
 
-            - name: Setup .NET
-              uses: actions/setup-dotnet@v4
-              with:
-                  dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v3
+        
+        - name: Terraform Init
+          run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_INFRASTRUCTURE_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_INFRASTRUCTURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ vars.AZURE_TERRAFORM_STORAGE_CONTAINER_NAME }}" -backend-config="key=${{ vars.TERRAFORM_STATE_FILE_NAME }}"
+          working-directory: terraform
 
-            - name: Login to Azure
-              uses: azure/login@v2
-              with:
-                creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
-          
-            - name: Restore
-              run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-            
-            - name: Build
-              run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+        - name: Terraform Validate
+          run: terraform validate
+          working-directory: terraform
 
-            - name: Publish
-              run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
+        - name: Terraform Apply
+          run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
+          working-directory: terraform
 
-            - name: Archive Published Files
-              run: |
-                cd publishApi
-                zip -r ../publishApi.zip *
-
-            - name: Deploy API
-              run: |
-                az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
-                az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
-
-    ui:
-      name: 'Deploy UI'
+  api:
+      name: 'Deploy API'
       runs-on: ubuntu-latest
-      needs: api
-      if: success() && ${{ github.event.inputs.deployUI == 'true' }}
+      if: ${{ github.event.inputs.deployAPI == 'true' }}
       env:
           CONFIGURATION: Release
           DOTNET_CORE_VERSION: 8.0.x
-          WORKING_DIRECTORY: src/Neba.UI
+          WORKING_DIRECTORY: src/Neba.Api
       environment:
-        name: 'Development'
+        name: ${{ github.event.inputs.environment }}
       
       steps:
           - name: Checkout
@@ -104,14 +107,58 @@ jobs:
             run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
           - name: Publish
-            run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishUI
+            run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishApi
 
           - name: Archive Published Files
             run: |
-              cd publishUI
-              zip -r ../publishUI.zip *
-          
-          - name: Deploy UI
+              cd publishApi
+              zip -r ../publishApi.zip *
+
+          - name: Deploy API
             run: |
-              az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_UI_SERVICE_NAME }}
-              az webapp deployment source config-zip --src ./publishUI.zip --name ${{ vars.AZURE_UI_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+              az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_API_SERVICE_NAME }}
+              az webapp deployment source config-zip --src ./publishApi.zip --name ${{ vars.AZURE_API_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
+
+  ui:
+    name: 'Deploy UI'
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.deployUI == 'true' }}
+    env:
+        CONFIGURATION: Release
+        DOTNET_CORE_VERSION: 8.0.x
+        WORKING_DIRECTORY: src/Neba.UI
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v4
+          with:
+              dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+
+        - name: Login to Azure
+          uses: azure/login@v2
+          with:
+            creds: '{"clientId":"${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_TERRAFORM_APP_CLIENT_SECRET }}","subscriptionId":"${{ vars.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}"}'
+      
+        - name: Restore
+          run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+        
+        - name: Build
+          run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+        - name: Publish
+          run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output ./publishUI
+
+        - name: Archive Published Files
+          run: |
+            cd publishUI
+            zip -r ../publishUI.zip *
+        
+        - name: Deploy UI
+          run: |
+            az configure --defaults group=${{ vars.AZURE_RESOURCE_GROUP_NAME }} web=${{ vars.AZURE_UI_SERVICE_NAME }}
+            az webapp deployment source config-zip --src ./publishUI.zip --name ${{ vars.AZURE_UI_SERVICE_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
