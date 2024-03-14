@@ -238,6 +238,17 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
   enable_rbac_authorization = true
 }
 
+variable "database_connection_string"{
+  description = "Database connection string to MSSQL"
+  type = string
+}
+
+resource "azurerm_key_vault_secret" "database-health-check-connection-string-key"{
+  name = "Database-Health-Check-Connection-String"
+  value = var.database_connection_string
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
 data "azurerm_role_definition" "keyvault_admin" {
   name = "Key Vault Administrator"
 }
@@ -345,6 +356,15 @@ resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
   key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
   
+  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+}
+
+resource "azurerm_app_configuration_key" "health-check-connection-string"{
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = "ConnectionStrings:HealthCheck"
+  type = "vault"
+  vault_key_reference = azurerm_key_vault.nebamgmt-kv.id
+
   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 }
 
