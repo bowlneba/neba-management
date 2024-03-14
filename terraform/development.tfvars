@@ -4,7 +4,7 @@ log_analytics_workspace_name = "nebamgmt-log-analytics-dev"
 log_analytics_workspace_sku = "PerGB2018"
 
 app_service_plan_name = "nebamgmt-asp-dev"
-app_service_plan_sku_name = "B2"
+app_service_plan_sku_name = "F1"
 
 app_insights_name = "nebamgmt-ai-dev"
 
@@ -13,6 +13,7 @@ api_always_on = false
 ui_always_on = false
 
 nebamgmt_key_vault_name = "nebamgmt-kv-dev"
-nebamgmt_api_url = "https://nebamgmt-api-dev.azurewebsites.net"
 
 nebamgmt_config_name = "nebamgmt-config-dev"
+
+nebamgmt_mssql_server_name = "nebamgmt-db-dev"

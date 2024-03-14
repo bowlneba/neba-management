@@ -1,21 +1,20 @@
-name: 'Terraform Plan'
+name: 'Terraform Apply'
 
 on:
-    workflow_dispatch:
-        inputs:
-            environment:
-                description: 'Selected Environment'
-                required: true
-                default: 'Development'
-                type: choice
-                options:
-                    - 'Development'
-                    - 'Staging'
-                    - 'Production'
-    pull_request:
-        types: [opened, reopened, synchronize]
-        branches:
-            - 'develop'
+  workflow_run:
+    workflows: ["Deploy to Dev Environment"]
+    types:
+        - completed
+  workflow_dispatch:
+      inputs:
+          environment:
+              description: 'Selected Environment'
+              required: true
+              default: 'Development'
+              type: choice
+              options:
+                  - 'Development'
+                  - 'Staging'
 
 env:
   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -24,11 +23,11 @@ env:
   ARM_TENANT_ID: ${{ vars.AZURE_TERRAFORM_APP_TENANT_ID }}
 
 jobs:
-    terraform-plan:
-        name: 'Terraform Plan'
+    terraform-apply:
+        name: 'Terraform Apply'
         runs-on: ubuntu-latest
         environment:
-            name: ${{ github.event_name == 'pull_request' && 'Development' || github.event.inputs.environment }}
+            name: ${{ github.event.inputs.environment }}
         env:
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
@@ -54,6 +53,6 @@ jobs:
               run: terraform validate
               working-directory: terraform
 
-            - name: Terraform Plan
-              run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }}
+            - name: Terraform Apply
+              run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
               working-directory: terraform
