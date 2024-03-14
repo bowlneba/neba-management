@@ -21,14 +21,21 @@ internal static class InfrastructureConfiguration
         builder.Services.AddScopedFeatureManagement(builder.Configuration.GetSection("FeatureManagement"));
 
 #else
-        builder.Services.AddAzureAppConfiguration();
 
-        var connectionString = builder.Configuration.GetConnectionString("AppConfig") ??
+        services.AddAzureAppConfiguration();
+
+        var connectionString = configuration.GetConnectionString("AppConfig") ??
                                   throw new InvalidOperationException("AppConfig ConnectionString is not set");
 
-        builder.Configuration.AddAzureAppConfiguration(connectionString);
+        configuration.AddAzureAppConfiguration(options 
+            => options.Connect(connectionString)
+                .UseFeatureFlags(flagOptions =>
+                {
+                    flagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
+                    flagOptions.Select(KeyFilter.Any);
+                }));
 
-        builder.Services.AddScopedFeatureManagement();
+        services.AddScopedFeatureManagement();
 
 #endif
 
