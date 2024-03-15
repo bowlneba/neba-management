@@ -244,6 +244,12 @@ resource "azurerm_key_vault_secret" "database-health-check-connection-string-key
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
 }
 
+resource "azurerm_key_vault_secret" "health-check-secret"{
+  name = "Health"
+  value = "Check"
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
 data "azurerm_role_definition" "keyvault_admin" {
   name = "Key Vault Administrator"
 }

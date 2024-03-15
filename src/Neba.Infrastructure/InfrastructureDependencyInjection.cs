@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,10 @@ public static class InfrastructureDependencyInjection
 
         services.AddDiagnostics();
         services.AddCaching();
-        services.AddHealthChecks(configuration);
+
+        var keyVaultInfo = ConfigureKeyVault(configuration);
+
+        services.AddHealthChecks(configuration, keyVaultInfo);
 
         return services;
     }
@@ -91,10 +95,33 @@ public static class InfrastructureDependencyInjection
         services.AddSingleton<ICacheService, CacheService>();
     }
 
-    private static void AddHealthChecks(this IServiceCollection services, IConfiguration config)
+    private static (string url, TokenCredential credential) ConfigureKeyVault(IConfiguration config)
+    { 
+        var kvUrl = config.GetValue<string>("KeyVault:Url") ??
+                    throw new InvalidOperationException("KeyVault:Url is not set");
+
+#if DEBUG
+
+        var kvClientId = config.GetValue<string>("KeyVault:ClientId");
+        var kvClientSecret = config.GetValue<string>("KeyVault:ClientSecret");
+        var kvTenantId = config.GetValue<string>("KeyVault:TenantId");
+
+        var credential = new ClientSecretCredential(kvTenantId, kvClientId, kvClientSecret);
+
+#else
+
+        var credential = new ManagedIdentityCredential();
+
+#endif
+
+        return (kvUrl, credential);
+    }
+
+    private static void AddHealthChecks(this IServiceCollection services, IConfiguration config, (string kvUrl, TokenCredential credential) keyVaultInfo)
     {
         services.AddHealthChecks()
             .AddSqlServer(config.GetConnectionString("HealthCheck") ??
-                          throw new InvalidOperationException("Cannot get HealthCheck ConnectionString"));
+                          throw new InvalidOperationException("Cannot get HealthCheck ConnectionString"))
+            .AddAzureKeyVault(new Uri(keyVaultInfo.kvUrl), keyVaultInfo.credential, options => options.AddSecret("Health"));
     }
 }
