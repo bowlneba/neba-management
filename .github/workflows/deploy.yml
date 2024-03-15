@@ -1,4 +1,4 @@
-name: 'Deploy to Dev Environment'
+name: 'Deploy'
 
 on:
     push:
@@ -15,22 +15,7 @@ on:
             type: choice
             options:
                 - 'Development'
-                - 'Staging'
-          deployInfrastructure:
-            description: 'Deploy Infrastructure'
-            required: true
-            default: true
-            type: boolean
-          deployAPI:
-              description: 'Deploy API'
-              required: true
-              default: true
-              type: boolean
-          deployUI:
-              description: 'Deploy UI'
-              required: true
-              default: true
-              type: boolean
+                #- 'Staging'
         
 
 env:
@@ -41,9 +26,8 @@ env:
 
 jobs:
   terraform-apply:
-    name: 'Terraform Apply'
+    name: 'Deploy Infrastructure'
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.deployInfrastructure == 'true' }}
     environment:
         name: ${{ github.event.inputs.environment }}
     env:
@@ -55,6 +39,7 @@ jobs:
         TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
         TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
         TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
+        TF_VAR_database_connection_string: ${{ secrets.DATABASE_CONNECTION_STRING }}
         
     steps:
         - name: Checkout
@@ -78,7 +63,7 @@ jobs:
   api:
       name: 'Deploy API'
       runs-on: ubuntu-latest
-      if: ${{ github.event.inputs.deployAPI == 'true' }}
+      needs: terraform-apply
       env:
           CONFIGURATION: Release
           DOTNET_CORE_VERSION: 8.0.x
@@ -122,7 +107,7 @@ jobs:
   ui:
     name: 'Deploy UI'
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.deployUI == 'true' }}
+    needs: terraform-apply
     env:
         CONFIGURATION: Release
         DOTNET_CORE_VERSION: 8.0.x

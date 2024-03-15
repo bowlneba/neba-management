@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 using Neba.Api;
 using Neba.Application;
@@ -54,14 +56,23 @@ try
 
     app.UseHttpsRedirection();
 
+    app.MapHealthChecks("health", new HealthCheckOptions
+    {
+#if DEBUG
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+#else
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponseNoExceptionDetails
+#endif
+    });
+
     var summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    app.MapGet("/weather", (ILoggerFactory loggerFactory) =>
+    app.MapGet("/weather", (ILoggerFactory factory) =>
         {
-            var logger = loggerFactory.CreateLogger("GetWeatherForecast");
+            var logger = factory.CreateLogger("GetWeatherForecast");
 #pragma warning disable CA1848 // Use the LoggerMessage delegates
             logger.LogInformation("Get Weather Request");
 #pragma warning restore CA1848 // Use the LoggerMessage delegates

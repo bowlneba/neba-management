@@ -4,7 +4,7 @@ services:
   
   seq:
     image: datalust/seq:latest
-    container_name: seq
+    container_name: neba.seq
     environment:
       - ACCEPT_EULA=Y
     restart: always
@@ -14,5 +14,19 @@ services:
     volumes:
       - neba.seq:/data
 
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: neba.mssql
+    user: root
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=NebaSA123!!!
+    ports:
+      - "19632:1433"
+    volumes:
+      - neba.db:/var/opt/mssql
+    restart: always
+
 volumes:
   neba.seq:
+  neba.db:
