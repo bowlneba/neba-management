@@ -238,7 +238,7 @@ variable "database_connection_string"{
   type = string
 }
 
-resource "azurerm_key_vault_secret" "database-health-check-connection-string-key"{
+resource "azurerm_key_vault_secret" "database-health-check-connection-string-secret"{
   name = "Database-Health-Check-Connection-String"
   value = var.database_connection_string
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
