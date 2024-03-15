@@ -16,21 +16,6 @@ on:
             options:
                 - 'Development'
                 #- 'Staging'
-          deployInfrastructure:
-            description: 'Deploy Infrastructure'
-            required: true
-            default: true
-            type: boolean
-          deployAPI:
-              description: 'Deploy API'
-              required: true
-              default: true
-              type: boolean
-          deployUI:
-              description: 'Deploy UI'
-              required: true
-              default: true
-              type: boolean
         
 
 env:
@@ -43,7 +28,6 @@ jobs:
   terraform-apply:
     name: 'Deploy Infrastructure'
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.deployInfrastructure == 'true' }}
     environment:
         name: ${{ github.event.inputs.environment }}
     env:
@@ -79,7 +63,7 @@ jobs:
   api:
       name: 'Deploy API'
       runs-on: ubuntu-latest
-      if: ${{ github.event.inputs.deployAPI == 'true' }}
+      needs: terraform-apply
       env:
           CONFIGURATION: Release
           DOTNET_CORE_VERSION: 8.0.x
@@ -123,7 +107,7 @@ jobs:
   ui:
     name: 'Deploy UI'
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.deployUI == 'true' }}
+    needs: terraform-apply
     env:
         CONFIGURATION: Release
         DOTNET_CORE_VERSION: 8.0.x
