@@ -96,7 +96,7 @@ public static class InfrastructureDependencyInjection
     }
 
     private static (string url, TokenCredential credential) ConfigureKeyVault(IConfiguration config)
-    { 
+    {
         var kvUrl = config.GetValue<string>("KeyVault:Url") ??
                     throw new InvalidOperationException("KeyVault:Url is not set");
 
