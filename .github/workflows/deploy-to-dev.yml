@@ -1,4 +1,4 @@
-name: 'Deploy to Dev Environment'
+name: 'Deploy'
 
 on:
     push:
@@ -15,7 +15,7 @@ on:
             type: choice
             options:
                 - 'Development'
-                - 'Staging'
+                #- 'Staging'
           deployInfrastructure:
             description: 'Deploy Infrastructure'
             required: true
@@ -41,7 +41,7 @@ env:
 
 jobs:
   terraform-apply:
-    name: 'Terraform Apply'
+    name: 'Deploy Infrastructure'
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.deployInfrastructure == 'true' }}
     environment:
