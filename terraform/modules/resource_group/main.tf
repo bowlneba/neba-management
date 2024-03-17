@@ -24,3 +24,8 @@ output "resource_group_id" {
     description = "value for the resource group id"
     value       = azurerm_resource_group.nebamgmt-rg.id
 }
+
+output "resourse_group_location" {
+	description = "value for the resourse group location"
+	value = azurerm_resourse_group.nebamgmt-rg.location
+}
