@@ -7,392 +7,402 @@ provider "azurerm" {
   features {}
 }
 
-data "azurerm_client_config" "current" {}
+variable "east_us_region"{
+  description = "value for the east us region"
+  default     = "East US"
+  type        = string
+}
 
-variable "resource_group_name" {
+variable "east_us_2_region"{
+  description = "value for the east us 2 region"
+  default     = "East US 2"
+  type        = string
+}
+
+variable "nebamgmt_resource_group_name" {
   description = "value for the resource group name"
-  default     = "nebamgmt-rg-test"
   type        = string
 }
 
-resource "azurerm_resource_group" "nebamgmt-rg" {
-  name     = var.resource_group_name
-  location = "East US"
+module "resource_group"{
+  source = "./modules/resource_group"
+  resource_group_name = var.nebamgmt_resource_group_name
+  location = var.east_us_region
 }
 
-variable "system_admin_email" {
-  description = "value for the system admin email address"
-  default     = "info@bowlneba.com"
-  type        = string
-}
+# variable "system_admin_email" {
+#   description = "value for the system admin email address"
+#   default     = "info@bowlneba.com"
+#   type        = string
+# }
 
-variable "manager_email" {
-  description = "value for the manager email address"
-  default     = "manager@bowlneba.com"
-  type        = string
-}
+# variable "manager_email" {
+#   description = "value for the manager email address"
+#   default     = "manager@bowlneba.com"
+#   type        = string
+# }
 
-resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
-  name                = "Budget Action Group"
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  short_name          = "BudgetAG"
+# resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
+#   name                = "Budget Action Group"
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   short_name          = "BudgetAG"
 
-  email_receiver {
-    name          = "System Admin"
-    email_address = var.system_admin_email
-  }
+#   email_receiver {
+#     name          = "System Admin"
+#     email_address = var.system_admin_email
+#   }
 
-  email_receiver {
-    name          = "Manager"
-    email_address = var.manager_email
-  }
-}
+#   email_receiver {
+#     name          = "Manager"
+#     email_address = var.manager_email
+#   }
+# }
 
-variable "resource_group_budget_dollars" {
-  description = "value for the resource group budget in dollars"
-  type        = number
-}
+# variable "resource_group_budget_dollars" {
+#   description = "value for the resource group budget in dollars"
+#   type        = number
+# }
 
-resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
-  name              = "Resource Group Budget"
-  resource_group_id = azurerm_resource_group.nebamgmt-rg.id
-  amount            = var.resource_group_budget_dollars
-  time_grain        = "Monthly"
+# resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
+#   name              = "Resource Group Budget"
+#   resource_group_id = azurerm_resource_group.nebamgmt-rg.id
+#   amount            = var.resource_group_budget_dollars
+#   time_grain        = "Monthly"
 
-  time_period {
-    start_date = "2024-03-01T00:00:00Z"
-    end_date   = "2030-12-31T23:59:59Z"
-  }
-  notification {
-    operator       = "GreaterThan"
-    threshold      = 50
-    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
-  }
+#   time_period {
+#     start_date = "2024-03-01T00:00:00Z"
+#     end_date   = "2030-12-31T23:59:59Z"
+#   }
+#   notification {
+#     operator       = "GreaterThan"
+#     threshold      = 50
+#     contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
+#   }
 
-  notification {
-    operator       = "GreaterThan"
-    threshold      = 90
-    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
-  }
-}
+#   notification {
+#     operator       = "GreaterThan"
+#     threshold      = 90
+#     contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
+#   }
+# }
 
-variable "app_service_plan_name" {
-  description = "value for the app service plan name"
-  type        = string
-}
+# variable "app_service_plan_name" {
+#   description = "value for the app service plan name"
+#   type        = string
+# }
 
-variable "app_service_plan_sku_name" {
-  description = "value for the app service plan sku name"
-  type        = string
-}
+# variable "app_service_plan_sku_name" {
+#   description = "value for the app service plan sku name"
+#   type        = string
+# }
 
-resource "azurerm_service_plan" "nebamgmt-asp" {
-  name                = var.app_service_plan_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  os_type             = "Linux"
-  sku_name            = var.app_service_plan_sku_name
-}
+# resource "azurerm_service_plan" "nebamgmt-asp" {
+#   name                = var.app_service_plan_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   os_type             = "Linux"
+#   sku_name            = var.app_service_plan_sku_name
+# }
 
-variable "log_analytics_workspace_name" {
-  description = "value for the log analytics workspace name"
-  type        = string
-}
+# variable "log_analytics_workspace_name" {
+#   description = "value for the log analytics workspace name"
+#   type        = string
+# }
 
-variable "log_analytics_workspace_sku" {
-  description = "value for the log analytics workspace sku"
-  type        = string
-}
+# variable "log_analytics_workspace_sku" {
+#   description = "value for the log analytics workspace sku"
+#   type        = string
+# }
 
-resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
-  name                = var.log_analytics_workspace_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  sku                 = var.log_analytics_workspace_sku
-}
+# resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
+#   name                = var.log_analytics_workspace_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   sku                 = var.log_analytics_workspace_sku
+# }
 
-variable "app_insights_name" {
-  description = "value for the application insights name"
-  type        = string
-}
+# variable "app_insights_name" {
+#   description = "value for the application insights name"
+#   type        = string
+# }
 
-resource "azurerm_application_insights" "nebamgmt-ai" {
-  name                = var.app_insights_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  application_type    = "web"
-  workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
-  internet_ingestion_enabled = true
-  internet_query_enabled = true
-}
+# resource "azurerm_application_insights" "nebamgmt-ai" {
+#   name                = var.app_insights_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   application_type    = "web"
+#   workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
+#   internet_ingestion_enabled = true
+#   internet_query_enabled = true
+# }
 
-variable "api_service_name" {
-  description = "value for the api service name"
-  default     = "nebamgmt-api-test"
-  type        = string
-}
+# variable "api_service_name" {
+#   description = "value for the api service name"
+#   default     = "nebamgmt-api-test"
+#   type        = string
+# }
 
-variable "api_always_on" {
-  description = "value for the api always on setting"
-  type        = bool
-}
+# variable "api_always_on" {
+#   description = "value for the api always on setting"
+#   type        = bool
+# }
 
-resource "azurerm_linux_web_app" "nebamgmt-api" {
-  name                = var.api_service_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
-  client_certificate_enabled = false
+# resource "azurerm_linux_web_app" "nebamgmt-api" {
+#   name                = var.api_service_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
+#   client_certificate_enabled = false
 
-  site_config {
-    always_on = var.api_always_on
+#   site_config {
+#     always_on = var.api_always_on
 
-    application_stack {
-      dotnet_version = "8.0"
-    }
+#     application_stack {
+#       dotnet_version = "8.0"
+#     }
 
-    remote_debugging_version = "VS2022"
+#     remote_debugging_version = "VS2022"
 
-    health_check_path = "/health"
-    health_check_eviction_time_in_min = 5
-  }
+#     health_check_path = "/health"
+#     health_check_eviction_time_in_min = 5
+#   }
 
-  auth_settings {
-    enabled = false
-  }
+#   auth_settings {
+#     enabled = false
+#   }
 
-  https_only = true
+#   https_only = true
 
-  app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
-    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-    "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
-  }
+#   app_settings = {
+#     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+#     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+#     "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
+#   }
 
-  identity {
-    type = "SystemAssigned"
-  }
-}
+#   identity {
+#     type = "SystemAssigned"
+#   }
+# }
 
-variable "ui_service_name" {
-  description = "value for the ui service name"
-  default     = "nebamgmt-ui-test"
-  type        = string
-}
+# variable "ui_service_name" {
+#   description = "value for the ui service name"
+#   default     = "nebamgmt-ui-test"
+#   type        = string
+# }
 
-variable "ui_always_on" {
-  description = "value for the ui always on setting"
-  type        = bool
-}
+# variable "ui_always_on" {
+#   description = "value for the ui always on setting"
+#   type        = bool
+# }
 
-resource "azurerm_linux_web_app" "nebamgmt-ui" {
-  name                = var.ui_service_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
-  client_certificate_enabled = false
+# resource "azurerm_linux_web_app" "nebamgmt-ui" {
+#   name                = var.ui_service_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
+#   client_certificate_enabled = false
 
-  site_config {
-    always_on = var.ui_always_on
-    application_stack {
-      dotnet_version = "8.0"
-    }
-    remote_debugging_version = "VS2022"
-  }
+#   site_config {
+#     always_on = var.ui_always_on
+#     application_stack {
+#       dotnet_version = "8.0"
+#     }
+#     remote_debugging_version = "VS2022"
+#   }
 
-  auth_settings {
-    enabled = false
-  }
+#   auth_settings {
+#     enabled = false
+#   }
 
-  depends_on = [azurerm_linux_web_app.nebamgmt-api]
+#   depends_on = [azurerm_linux_web_app.nebamgmt-api]
 
-  https_only = true
+#   https_only = true
 
-  app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
-    "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-    "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
-  }
+#   app_settings = {
+#     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
+#     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
+#     "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
+#   }
 
-  identity {
-    type = "SystemAssigned"
-  }
-}
+#   identity {
+#     type = "SystemAssigned"
+#   }
+# }
 
-variable "nebamgmt_key_vault_name" {
-  description = "value for the key vault name"
-  type = string
-}
+# variable "nebamgmt_key_vault_name" {
+#   description = "value for the key vault name"
+#   type = string
+# }
 
-resource "azurerm_key_vault" "nebamgmt-kv" {
-  name                = var.nebamgmt_key_vault_name
-  location            = azurerm_resource_group.nebamgmt-rg.location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  sku_name            = "standard"
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  enable_rbac_authorization = true
-}
+# resource "azurerm_key_vault" "nebamgmt-kv" {
+#   name                = var.nebamgmt_key_vault_name
+#   location            = azurerm_resource_group.nebamgmt-rg.location
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   sku_name            = "standard"
+#   tenant_id           = data.azurerm_client_config.current.tenant_id
+#   enable_rbac_authorization = true
+# }
 
-variable "database_connection_string"{
-  description = "Database connection string to MSSQL"
-  type = string
-}
+# variable "database_connection_string"{
+#   description = "Database connection string to MSSQL"
+#   type = string
+# }
 
-resource "azurerm_key_vault_secret" "database-health-check-connection-string-secret"{
-  name = "Database-Health-Check-Connection-String"
-  value = var.database_connection_string
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-}
+# resource "azurerm_key_vault_secret" "database-health-check-connection-string-secret"{
+#   name = "Database-Health-Check-Connection-String"
+#   value = var.database_connection_string
+#   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+# }
 
-resource "azurerm_key_vault_secret" "health-check-secret"{
-  name = "Health"
-  value = "Check"
-  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-}
+# resource "azurerm_key_vault_secret" "health-check-secret"{
+#   name = "Health"
+#   value = "Check"
+#   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+# }
 
-data "azurerm_role_definition" "keyvault_admin" {
-  name = "Key Vault Administrator"
-}
+# data "azurerm_role_definition" "keyvault_admin" {
+#   name = "Key Vault Administrator"
+# }
 
-variable "azure_infrastructure_management_group_id"{
-  description = "value for the azure infrastructure management group id"
-  default     = "00000000-0000-0000-0000-000000000000"
-  type        = string
-}
+# variable "azure_infrastructure_management_group_id"{
+#   description = "value for the azure infrastructure management group id"
+#   default     = "00000000-0000-0000-0000-000000000000"
+#   type        = string
+# }
 
-variable "azure_nebamgmt_local_app_registration_principal_id"{
-  description = "value for the nebamgmt local app registration id"
-  default     = "00000000-0000-0000-0000-000000000000"
-  type        = string
-}
+# variable "azure_nebamgmt_local_app_registration_principal_id"{
+#   description = "value for the nebamgmt local app registration id"
+#   default     = "00000000-0000-0000-0000-000000000000"
+#   type        = string
+# }
 
-resource "azurerm_role_assignment" "infrastructure_mgmt_kv_admin" {
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
-  principal_id         = var.azure_infrastructure_management_group_id
-}
+# resource "azurerm_role_assignment" "infrastructure_mgmt_kv_admin" {
+#   scope                = azurerm_key_vault.nebamgmt-kv.id
+#   role_definition_name = data.azurerm_role_definition.keyvault_admin.name
+#   principal_id         = var.azure_infrastructure_management_group_id
+# }
 
-resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id         = var.azure_infrastructure_management_group_id
-}
+# resource "azurerm_role_assignment" "infrastructure_mgmt_kv_user" {
+#   scope                = azurerm_key_vault.nebamgmt-kv.id
+#   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+#   principal_id         = var.azure_infrastructure_management_group_id
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-local-kv-user" {
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-local-kv-user" {
+#   scope                = azurerm_key_vault.nebamgmt-kv.id
+#   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+#   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
+# }
 
-data "azurerm_role_definition" "keyvault_secrets_user" {
-  name = "Key Vault Secrets User"
-}
+# data "azurerm_role_definition" "keyvault_secrets_user" {
+#   name = "Key Vault Secrets User"
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-api-kv-secrets-user"{
-  scope = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-api-kv-secrets-user"{
+#   scope = azurerm_key_vault.nebamgmt-kv.id
+#   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
-  scope = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-ui-kv-secrets-user"{
+#   scope = azurerm_key_vault.nebamgmt-kv.id
+#   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+# }
 
-variable "nebamgmt_config_name" {
-  description = "value for the nebamgmt config name"
-  type        = string
-}
+# variable "nebamgmt_config_name" {
+#   description = "value for the nebamgmt config name"
+#   type        = string
+# }
 
-resource "azurerm_app_configuration" "nebamgmt-config"{
-  name = var.nebamgmt_config_name
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  location = azurerm_resource_group.nebamgmt-rg.location
+# resource "azurerm_app_configuration" "nebamgmt-config"{
+#   name = var.nebamgmt_config_name
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   location = azurerm_resource_group.nebamgmt-rg.location
 
-  sku = "free"
+#   sku = "free"
 
-  identity {
-    type = "SystemAssigned"
+#   identity {
+#     type = "SystemAssigned"
   
-  }
-}
+#   }
+# }
 
-data "azurerm_role_definition" "app_config_data_reader" {
-  name = "App Configuration Data Reader"
-}
+# data "azurerm_role_definition" "app_config_data_reader" {
+#   name = "App Configuration Data Reader"
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
-  scope = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-  principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
-  scope = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-  principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+# }
 
-data "azurerm_role_definition" "appconfig_data_owner"{
-  name = "App Configuration Data Owner"
-}
+# data "azurerm_role_definition" "appconfig_data_owner"{
+#   name = "App Configuration Data Owner"
+# }
 
-resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
-  scope = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-  principal_id = var.azure_infrastructure_management_group_id
-}
+# resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
+#   principal_id = var.azure_infrastructure_management_group_id
+# }
 
-resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "NebaApi:BaseUrl"
-  value = azurerm_linux_web_app.nebamgmt-api.default_hostname
+# resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "NebaApi:BaseUrl"
+#   value = azurerm_linux_web_app.nebamgmt-api.default_hostname
   
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
 
-resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "KeyVault:Url"
-  value = azurerm_key_vault.nebamgmt-kv.vault_uri
+# resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "KeyVault:Url"
+#   value = azurerm_key_vault.nebamgmt-kv.vault_uri
   
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
 
-resource "azurerm_app_configuration_key" "health-check-connection-string"{
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  key = "ConnectionStrings:HealthCheck"
-  type = "vault"
-  vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-secret.id
+# resource "azurerm_app_configuration_key" "health-check-connection-string"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "ConnectionStrings:HealthCheck"
+#   type = "vault"
+#   vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-secret.id
 
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
 
-resource "azurerm_app_configuration_feature" "caching-feature"{
-  name = "Caching"
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  enabled = false
+# resource "azurerm_app_configuration_feature" "caching-feature"{
+#   name = "Caching"
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   enabled = false
 
-  depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-}
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
 
-variable "nebamgmt_mssql_server_name"{
-  description = "SQL Server name"
-  type = string
-}
+# variable "nebamgmt_mssql_server_name"{
+#   description = "SQL Server name"
+#   type = string
+# }
 
-variable "nebamgmt_mssql_admin_password" {
-  description = "Admin password for SQL Server"
-  type = string
-}
+# variable "nebamgmt_mssql_admin_password" {
+#   description = "Admin password for SQL Server"
+#   type = string
+# }
 
-resource "azurerm_mssql_server" "nebamgmt-sql-server" {
-  name = "nebamgmt-mssql-dev"
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  location = azurerm_resource_group.nebamgmt-rg.location
-  version = "12.0"
+# resource "azurerm_mssql_server" "nebamgmt-sql-server" {
+#   name = "nebamgmt-mssql-dev"
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   location = azurerm_resource_group.nebamgmt-rg.location
+#   version = "12.0"
 
-  administrator_login = "nebamgmtsa"
-  administrator_login_password = var.nebamgmt_mssql_admin_password
-}
+#   administrator_login = "nebamgmtsa"
+#   administrator_login_password = var.nebamgmt_mssql_admin_password
+# }
