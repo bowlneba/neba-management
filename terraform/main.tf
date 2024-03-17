@@ -7,14 +7,14 @@ provider "azurerm" {
   features {}
 }
 
-variable "east_us_region"{
-  description = "value for the east us region"
+variable "primary_region"{
+  description = "value for the primary region"
   default     = "East US"
   type        = string
 }
 
-variable "east_us_2_region"{
-  description = "value for the east us 2 region"
+variable "secondary_region"{
+  description = "value for the secondary region"
   default     = "East US 2"
   type        = string
 }
@@ -27,7 +27,7 @@ variable "nebamgmt_resource_group_name" {
 module "resource_group"{
   source = "./modules/resource_group"
   resource_group_name = var.nebamgmt_resource_group_name
-  location = var.east_us_region
+  location = var.primary_region
 }
 
 # variable "system_admin_email" {
