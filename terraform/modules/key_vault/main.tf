@@ -31,3 +31,35 @@ resource "azurerm_key_vault" "nebamgmt-kv" {
 output "id" {
   value = azurerm_key_vault.nebamgmt-kv.id
 }
+
+data "azurerm_role_definition" "keyvault_admin" {
+  name = "Key Vault Administrator"
+}
+
+variable "key_vault_admin_principal_ids" {
+  description = "value for the key vault admin principal ids"
+  type = list(string)
+}
+
+resource "azurerm_role_assignment" "keyvault_admin" {
+  count = length(var.key_vault_admin_principal_ids)
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
+  principal_id         = var.key_vault_admin_principal_ids[count.index]
+}
+
+data "azurerm_role_definition" "keyvault_secrets_user" {
+  name = "Key Vault Secrets User"
+}
+
+variable "key_vault_secret_reader_principal_ids" {
+  description = "value for the key vault secret reader principal ids"
+    type = list(string)
+}
+
+resource "azurerm_role_assignment" "keyvault_secrets_user" {
+  count = length(var.key_vault_secret_reader_principal_ids)
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = var.key_vault_secret_reader_principal_ids[count.index]
+}
