@@ -73,3 +73,8 @@ resource "azurerm_linux_web_app" "nebamgmt-api" {
     type = "SystemAssigned"
   }
 }
+
+output "principal_id" {
+  description = "value for the api principal id"
+  value       = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
+}

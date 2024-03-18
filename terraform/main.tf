@@ -55,37 +55,25 @@ variable "nebamgmt_config_name" {
   type        = string
 }
 
+variable "azure_infrastructure_management_group_id"{
+  description = "value for the azure infrastructure management group id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
 module "app_configuration" {
   source = "./modules/app_configuration"
   name = var.nebamgmt_config_name
   resource_group_name = module.resource_group.name
   location = module.resource_group.location
+  data_reader_principal_ids = [module.api_application.principal_id]
+  data_owner_principal_ids = [var.azure_infrastructure_management_group_id]
 }
-
-# data "azurerm_role_definition" "app_config_data_reader" {
-#   name = "App Configuration Data Reader"
-# }
-
-# resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-#   principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-# }
 
 # resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
 #   scope = azurerm_app_configuration.nebamgmt-config.id
 #   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
 #   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-# }
-
-# data "azurerm_role_definition" "appconfig_data_owner"{
-#   name = "App Configuration Data Owner"
-# }
-
-# resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-#   principal_id = var.azure_infrastructure_management_group_id
 # }
 
 # resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
@@ -263,12 +251,6 @@ module "api_application"{
 
 # data "azurerm_role_definition" "keyvault_admin" {
 #   name = "Key Vault Administrator"
-# }
-
-# variable "azure_infrastructure_management_group_id"{
-#   description = "value for the azure infrastructure management group id"
-#   default     = "00000000-0000-0000-0000-000000000000"
-#   type        = string
 # }
 
 # variable "azure_nebamgmt_local_app_registration_principal_id"{
