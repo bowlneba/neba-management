@@ -80,9 +80,9 @@ variable "log_analytics_workspace_sku" {
 
 module "application_insights"{
   source = "./modules/application_insights"
+  location = module.resource_group.location
+  resource_group_name = module.resource_group.name
   log_analytics_workspace_name = var.log_analytics_workspace_name
-  log_analytics_location = module.resource_group.resource_group_location
-  log_analytics_resource_group_name = module.resource_group.resource_group_name
   log_analytics_workspace_sku = var.log_analytics_workspace_sku
 
 }
