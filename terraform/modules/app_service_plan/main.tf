@@ -28,5 +28,5 @@ resource "azurerm_service_plan" "nebamgmt-asp" {
 
 output "app_service_plan_id" {
     description = "value for the app service plan id"
-    value       = azurerm_resource_group.nebamgmt-rg.id
+    value       = azurerm_service_plan.nebamgmt-asp.id
 }
