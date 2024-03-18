@@ -50,6 +50,77 @@ module "resource_group"{
   budget_dollars = var.resource_group_budget_dollars
 }
 
+variable "nebamgmt_config_name" {
+  description = "value for the nebamgmt config name"
+  type        = string
+}
+
+module "app_configuration" {
+  source = "./modules/app_configuration"
+  name = var.nebamgmt_config_name
+  resource_group_name = module.resource_group.name
+  location = module.resource_group.location
+}
+
+# data "azurerm_role_definition" "app_config_data_reader" {
+#   name = "App Configuration Data Reader"
+# }
+
+# resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
+# }
+
+# resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
+#   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
+# }
+
+# data "azurerm_role_definition" "appconfig_data_owner"{
+#   name = "App Configuration Data Owner"
+# }
+
+# resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
+#   scope = azurerm_app_configuration.nebamgmt-config.id
+#   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
+#   principal_id = var.azure_infrastructure_management_group_id
+# }
+
+# resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "NebaApi:BaseUrl"
+#   value = azurerm_linux_web_app.nebamgmt-api.default_hostname
+  
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
+
+# resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "KeyVault:Url"
+#   value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
+
+# resource "azurerm_app_configuration_key" "health-check-connection-string"{
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   key = "ConnectionStrings:HealthCheck"
+#   type = "vault"
+#   vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-secret.id
+
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
+
+# resource "azurerm_app_configuration_feature" "caching-feature"{
+#   name = "Caching"
+#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+#   enabled = false
+
+#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
+# }
+
 variable "app_service_plan_name" {
   description = "value for the app service plan name"
   type        = string
@@ -111,7 +182,7 @@ module "api_application"{
   always_on = var.api_always_on
   dotnet_version = "8.0"
   app_insignts_connection_string = module.application_insights.connection_string
-  app_config_endpoint = "temp endpoint"
+  app_config_endpoint = module.app_configuration.endpoint
 }
 
 # variable "ui_service_name" {
@@ -238,83 +309,6 @@ module "api_application"{
 #   scope = azurerm_key_vault.nebamgmt-kv.id
 #   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
 #   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-# }
-
-# variable "nebamgmt_config_name" {
-#   description = "value for the nebamgmt config name"
-#   type        = string
-# }
-
-# resource "azurerm_app_configuration" "nebamgmt-config"{
-#   name = var.nebamgmt_config_name
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   location = azurerm_resource_group.nebamgmt-rg.location
-
-#   sku = "free"
-
-#   identity {
-#     type = "SystemAssigned"
-  
-#   }
-# }
-
-# data "azurerm_role_definition" "app_config_data_reader" {
-#   name = "App Configuration Data Reader"
-# }
-
-# resource "azurerm_role_assignment" "nebamgmt-api-app-config-data-reader"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-#   principal_id = azurerm_linux_web_app.nebamgmt-api.identity.0.principal_id
-# }
-
-# resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-#   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-# }
-
-# data "azurerm_role_definition" "appconfig_data_owner"{
-#   name = "App Configuration Data Owner"
-# }
-
-# resource "azurerm_role_assignment" "nebamgmt-infrastructure-mgmt-app-config-admin"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-#   principal_id = var.azure_infrastructure_management_group_id
-# }
-
-# resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "NebaApi:BaseUrl"
-#   value = azurerm_linux_web_app.nebamgmt-api.default_hostname
-  
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "KeyVault:Url"
-#   value = azurerm_key_vault.nebamgmt-kv.vault_uri
-  
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_key" "health-check-connection-string"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "ConnectionStrings:HealthCheck"
-#   type = "vault"
-#   vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-secret.id
-
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_feature" "caching-feature"{
-#   name = "Caching"
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   enabled = false
-
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
 # }
 
 # variable "nebamgmt_mssql_server_name"{
