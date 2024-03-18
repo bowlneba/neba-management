@@ -9,13 +9,13 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
-variable "primary_region"{
+variable "primary_location"{
   description = "value for the primary region"
   default     = "East US"
   type        = string
 }
 
-variable "secondary_region"{
+variable "secondary_location"{
   description = "value for the secondary region"
   default     = "East US 2"
   type        = string
@@ -24,6 +24,11 @@ variable "secondary_region"{
 variable "nebamgmt_resource_group_name" {
   description = "value for the resource group name"
   type        = string
+}
+
+resource "azurerm_resource_group" "nebamgmt-rg" {
+  name     = var.nebamgmt_resource_group_name
+  location = var.primary_location
 }
 
 variable "system_admin_email" {
@@ -38,18 +43,49 @@ variable "manager_email" {
   type        = string
 }
 
+resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
+  name                = "Budget Action Group"
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  short_name          = "BudgetAG"
+
+  email_receiver {
+    name          = "System Admin"
+    email_address = var.system_admin_email
+  }
+
+  email_receiver {
+    name          = "Manager"
+    email_address = var.manager_email
+  }
+}
+
 variable "resource_group_budget_dollars" {
   description = "value for the resource group budget in dollars"
   type        = number
 }
 
-module "resource_group"{
-  source = "./modules/resource_group"
-  name = var.nebamgmt_resource_group_name
-  location = var.primary_region
-  system_admin_email = var.system_admin_email
-  manager_email = var.manager_email
-  budget_dollars = var.resource_group_budget_dollars
+resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
+  name              = "Resource Group Budget"
+  resource_group_id = azurerm_resource_group.nebamgmt-rg.id
+  amount            = var.resource_group_budget_dollars
+  time_grain        = "Monthly"
+
+  time_period {
+    start_date = "2024-03-01T00:00:00Z"
+    end_date   = "2030-12-31T23:59:59Z"
+  }
+
+  notification {
+    operator       = "GreaterThan"
+    threshold      = 50
+    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
+  }
+
+  notification {
+    operator       = "GreaterThan"
+    threshold      = 90
+    contact_groups = [azurerm_monitor_action_group.nebamgmt-budget-ag.id]
+  }
 }
 
 variable "nebamgmt_config_name" {
@@ -238,7 +274,7 @@ module "mssql" {
   source = "./modules/mssql"
 
   depends_on = [ module.resource_group ]
-  
+
   primary_server_name = var.nebamgmt_mssql_primary_server_name
   resource_group_name = module.resource_group.name
   primary_location = module.resource_group.location
