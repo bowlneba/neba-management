@@ -78,29 +78,19 @@ variable "log_analytics_workspace_sku" {
   type        = string
 }
 
+variable "app_insights_name" {
+  description = "value for the application insights name"
+  type        = string
+}
+
 module "application_insights"{
   source = "./modules/application_insights"
   location = module.resource_group.location
   resource_group_name = module.resource_group.name
   log_analytics_workspace_name = var.log_analytics_workspace_name
   log_analytics_workspace_sku = var.log_analytics_workspace_sku
-
+  app_insights_name = var.app_insights_name
 }
-
-# variable "app_insights_name" {
-#   description = "value for the application insights name"
-#   type        = string
-# }
-
-# resource "azurerm_application_insights" "nebamgmt-ai" {
-#   name                = var.app_insights_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   application_type    = "web"
-#   workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
-#   internet_ingestion_enabled = true
-#   internet_query_enabled = true
-# }
 
 # variable "api_service_name" {
 #   description = "value for the api service name"
