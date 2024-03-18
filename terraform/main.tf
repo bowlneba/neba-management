@@ -204,32 +204,24 @@ module "key_vault" {
     module.ui_application.principal_id
   ]
   secrets = {
-    "Health" = "Check",
-    "HealthCheck-MSSQL-ConnectionString" = "Connection String"
+    "Health" = "Check"
   }
 }
 
-# variable "nebamgmt_mssql_server_name"{
-#   description = "SQL Server name"
-#   type = string
-# }
+variable "nebamgmt_mssql_primary_server_name"{
+  description = "SQL Server name"
+  type = string
+}
 
-# variable "database_connection_string"{
-#   description = "Database connection string to MSSQL"
-#   type = string
-# }
+variable "nebamgmt_mssql_admin_password" {
+  description = "Admin password for SQL Server"
+  type = string
+}
 
-# variable "nebamgmt_mssql_admin_password" {
-#   description = "Admin password for SQL Server"
-#   type = string
-# }
-
-# resource "azurerm_mssql_server" "nebamgmt-sql-server" {
-#   name = "nebamgmt-mssql-dev"
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   location = azurerm_resource_group.nebamgmt-rg.location
-#   version = "12.0"
-
-#   administrator_login = "nebamgmtsa"
-#   administrator_login_password = var.nebamgmt_mssql_admin_password
-# }
+module "mssql" {
+  source = "./modules/mssql"
+  primary_server_name = var.nebamgmt_mssql_primary_server_name
+  resource_group_name = module.resource_group.name
+  primary_location = module.resource_group.location
+  admin_password = var.nebamgmt_mssql_admin_password
+}
