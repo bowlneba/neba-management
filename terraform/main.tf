@@ -24,11 +24,11 @@ variable "nebamgmt_resource_group_name" {
   type        = string
 }
 
-# variable "system_admin_email" {
-#   description = "value for the system admin email address"
-#   default     = "info@bowlneba.com"
-#   type        = string
-# }
+variable "system_admin_email" {
+  description = "value for the system admin email address"
+  default     = "info@bowlneba.com"
+  type        = string
+}
 
 # variable "manager_email" {
 #   description = "value for the manager email address"
@@ -45,7 +45,7 @@ module "resource_group"{
   source = "./modules/resource_group"
   resource_group_name = var.nebamgmt_resource_group_name
   location = var.primary_region
-  # system_admin_email = var.system_admin_email
+  system_admin_email = var.system_admin_email
   # manager_email = var.manager_email
   # resource_group_budget_dollars = var.resource_group_budget_dollars
 }

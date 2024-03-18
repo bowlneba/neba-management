@@ -30,11 +30,11 @@ output "resource_group_location" {
 	value = azurerm_resource_group.nebamgmt-rg.location
 }
 
-# variable "system_admin_email" {
-#   description = "value for the system admin email address"
-#   default     = "info@bowlneba.com"
-#   type        = string
-# }
+variable "system_admin_email" {
+  description = "value for the system admin email address"
+  default     = "info@bowlneba.com"
+  type        = string
+}
 
 # variable "manager_email" {
 #   description = "value for the manager email address"
@@ -42,21 +42,21 @@ output "resource_group_location" {
 #   type        = string
 # }
 
-# resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
-#   name                = "Budget Action Group"
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   short_name          = "BudgetAG"
+resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
+  name                = "Budget Action Group"
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  short_name          = "BudgetAG"
 
-#   email_receiver {
-#     name          = "System Admin"
-#     email_address = var.system_admin_email
-#   }
+  email_receiver {
+    name          = "System Admin"
+    email_address = var.system_admin_email
+  }
 
-#   email_receiver {
-#     name          = "Manager"
-#     email_address = var.manager_email
-#   }
-# }
+  # email_receiver {
+  #   name          = "Manager"
+  #   email_address = var.manager_email
+  # }
+}
 
 # variable "resource_group_budget_dollars" {
 #   description = "value for the resource group budget in dollars"
