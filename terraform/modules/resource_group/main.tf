@@ -25,8 +25,8 @@ output "resource_group_id" {
     value       = azurerm_resource_group.nebamgmt-rg.id
 }
 
-output "resourse_group_location" {
-	description = "value for the resourse group location"
+output "resource_group_location" {
+	description = "value for the resource group location"
 	value = azurerm_resource_group.nebamgmt-rg.location
 }
 
@@ -42,21 +42,21 @@ variable "manager_email" {
   type        = string
 }
 
-resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
-  name                = "Budget Action Group"
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  short_name          = "BudgetAG"
+# resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
+#   name                = "Budget Action Group"
+#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+#   short_name          = "BudgetAG"
 
-  email_receiver {
-    name          = "System Admin"
-    email_address = var.system_admin_email
-  }
+#   email_receiver {
+#     name          = "System Admin"
+#     email_address = var.system_admin_email
+#   }
 
-  email_receiver {
-    name          = "Manager"
-    email_address = var.manager_email
-  }
-}
+#   email_receiver {
+#     name          = "Manager"
+#     email_address = var.manager_email
+#   }
+# }
 
 variable "resource_group_budget_dollars" {
   description = "value for the resource group budget in dollars"
