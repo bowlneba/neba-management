@@ -82,6 +82,6 @@ resource "azurerm_key_vault_secret" "nebamgmt-kv-secrets" {
 
 output "health_check_secret_id" {
   description = "value for the health check secret id"
-  value = azurerm_key_vault_secret.nebamgmt-kv-secrets["Health"].id
+  value = { for s in azurerm_key_vault_secret.nebamgmt-kv-secrets : s.name => s.id }["Health"]
   sensitive = false
 }
