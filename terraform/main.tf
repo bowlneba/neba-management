@@ -102,11 +102,9 @@ variable "azure_infrastructure_management_group_id"{
 module "app_configuration" {
   source = "./modules/app_configuration"
 
-  depends_on = [ module.resource_group, module.key_vault ]
-
   name = var.nebamgmt_config_name
-  resource_group_name = module.resource_group.name
-  location = module.resource_group.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  location = azurerm_resource_group.nebamgmt-rg.location
   data_reader_principal_ids = [
     module.api_application.principal_id,
     module.ui_application.principal_id]
@@ -134,11 +132,9 @@ variable "app_service_plan_sku_name" {
 module "app_service_plan"{
   source = "./modules/app_service_plan"
 
-  depends_on = [ module.resource_group ]
-
   name = var.app_service_plan_name
-  location = module.resource_group.location
-  resource_group_name = module.resource_group.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   sku_name = var.app_service_plan_sku_name
 }
 
@@ -160,10 +156,8 @@ variable "app_insights_name" {
 module "application_insights"{
   source = "./modules/application_insights"
 
-  depends_on = [ module.resource_group ]
-
-  location = module.resource_group.location
-  resource_group_name = module.resource_group.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   log_analytics_workspace_name = var.log_analytics_workspace_name
   log_analytics_workspace_sku = var.log_analytics_workspace_sku
   app_insights_name = var.app_insights_name
@@ -188,11 +182,9 @@ variable "dotnet_version"{
 module "api_application"{
   source = "./modules/api_application"
 
-  depends_on = [ module.resource_group, module.app_service_plan, module.application_insights, module.app_configuration]
-
   service_name = var.api_service_name
-  location = module.resource_group.location
-  resource_group_name = module.resource_group.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   app_service_plan_id = module.app_service_plan.id
   always_on = var.api_always_on
   dotnet_version = var.dotnet_version
@@ -214,11 +206,9 @@ variable "ui_always_on" {
 module "ui_application"{
   source = "./modules/ui_application"
 
-  depends_on = [ module.resource_group, module.app_service_plan, module.application_insights, module.app_configuration]
-
   service_name = var.ui_service_name
-  location = module.resource_group.location
-  resource_group_name = module.resource_group.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   app_service_plan_id = module.app_service_plan.id
   always_on = var.ui_always_on
   dotnet_version = var.dotnet_version
@@ -240,11 +230,9 @@ variable "azure_nebamgmt_local_app_registration_principal_id"{
 module "key_vault" {
   source = "./modules/key_vault"
 
-  depends_on = [ module.resource_group ]
-
   name = var.nebamgmt_key_vault_name
-  location = module.resource_group.location
-  resource_group_name = module.resource_group.name
+  location = azurerm_resource_group.nebamgmt-rg.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
   tenant_id = data.azurerm_client_config.current.tenant_id
   key_vault_admin_principal_ids = [
     var.azure_infrastructure_management_group_id,
@@ -273,10 +261,8 @@ variable "nebamgmt_mssql_admin_password" {
 module "mssql" {
   source = "./modules/mssql"
 
-  depends_on = [ module.resource_group ]
-
   primary_server_name = var.nebamgmt_mssql_primary_server_name
-  resource_group_name = module.resource_group.name
-  primary_location = module.resource_group.location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  primary_location = azurerm_resource_group.nebamgmt-rg.location
   admin_password = var.nebamgmt_mssql_admin_password
 }
