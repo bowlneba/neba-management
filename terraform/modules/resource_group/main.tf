@@ -27,7 +27,7 @@ output "resource_group_id" {
 
 output "resourse_group_location" {
 	description = "value for the resourse group location"
-	value = azurerm_resourse_group.nebamgmt-rg.location
+	value = azurerm_resource_group.nebamgmt-rg.location
 }
 
 variable "system_admin_email" {
