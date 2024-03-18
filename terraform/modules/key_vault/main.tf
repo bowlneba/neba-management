@@ -82,6 +82,6 @@ resource "azurerm_key_vault_secret" "nebamgmt-kv-secrets" {
 
 output "health_check_mssql_connection_string_secret_id" {
   description = "value for the health check secret id"
-  value = { for s in azurerm_key_vault_secret.nebamgmt-kv-secrets : s.name => s.id }["HealthCheck-MSSQL-ConnectionString"]
+  value = [for s in azurerm_key_vault_secret.nebamgmt-kv-secrets : s.id if s.name == "HealthCheck-MSSQL-ConnectionString"][0]
   sensitive = false
 }
