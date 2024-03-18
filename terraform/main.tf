@@ -129,6 +129,14 @@ variable "app_service_plan_sku_name" {
   type        = string
 }
 
+resource "azurerm_service_plan" "nebamgmt-asp" {
+  name                = var.app_service_plan_name
+  location            = var.primary_location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  os_type             = "Linux"
+  sku_name            = var.app_service_plan_sku_name
+}
+
 module "app_service_plan"{
   source = "./modules/app_service_plan"
 
@@ -153,14 +161,21 @@ variable "app_insights_name" {
   type        = string
 }
 
-module "application_insights"{
-  source = "./modules/application_insights"
-
-  location = azurerm_resource_group.nebamgmt-rg.location
+resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
+  name                = var.log_analytics_workspace_name
+  location            = var.primary_location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  log_analytics_workspace_name = var.log_analytics_workspace_name
-  log_analytics_workspace_sku = var.log_analytics_workspace_sku
-  app_insights_name = var.app_insights_name
+  sku                 = var.log_analytics_workspace_sku
+}
+
+resource "azurerm_application_insights" "nebamgmt-ai" {
+  name                = var.app_insights_name
+  location            = var.primary_location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
+  internet_ingestion_enabled = true
+  internet_query_enabled = true
 }
 
 variable "api_service_name" {
@@ -185,10 +200,10 @@ module "api_application"{
   service_name = var.api_service_name
   location = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  app_service_plan_id = module.app_service_plan.id
+  app_service_plan_id = azurerm_service_plan.nebamgmt-asp.id
   always_on = var.api_always_on
   dotnet_version = var.dotnet_version
-  app_insignts_connection_string = module.application_insights.connection_string
+  app_insignts_connection_string = azurerm_application_insights.nebamgmt-ai.connection_string
   app_config_endpoint = module.app_configuration.endpoint
 }
 
@@ -209,10 +224,10 @@ module "ui_application"{
   service_name = var.ui_service_name
   location = azurerm_resource_group.nebamgmt-rg.location
   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  app_service_plan_id = module.app_service_plan.id
+  app_service_plan_id = azurerm_service_plan.nebamgmt-asp.id
   always_on = var.ui_always_on
   dotnet_version = var.dotnet_version
-  app_insignts_connection_string = module.application_insights.connection_string
+  app_insignts_connection_string = azurerm_application_insights.nebamgmt-ai.connection_string
   app_config_endpoint = module.app_configuration.endpoint
 }
 
