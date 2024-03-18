@@ -92,53 +92,27 @@ module "application_insights"{
   app_insights_name = var.app_insights_name
 }
 
-# variable "api_service_name" {
-#   description = "value for the api service name"
-#   default     = "nebamgmt-api-test"
-#   type        = string
-# }
+variable "api_service_name" {
+  description = "value for the api service name"
+  type        = string
+}
 
-# variable "api_always_on" {
-#   description = "value for the api always on setting"
-#   type        = bool
-# }
+variable "api_always_on" {
+  description = "value for the api always on setting"
+  type        = bool
+}
 
-# resource "azurerm_linux_web_app" "nebamgmt-api" {
-#   name                = var.api_service_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
-#   client_certificate_enabled = false
-
-#   site_config {
-#     always_on = var.api_always_on
-
-#     application_stack {
-#       dotnet_version = "8.0"
-#     }
-
-#     remote_debugging_version = "VS2022"
-
-#     health_check_path = "/health"
-#     health_check_eviction_time_in_min = 5
-#   }
-
-#   auth_settings {
-#     enabled = false
-#   }
-
-#   https_only = true
-
-#   app_settings = {
-#     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
-#     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-#     "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
-#   }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-# }
+module "api_application"{
+  source = "./modules/api_application"
+  service_name = var.api_service_name
+  location = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  app_service_plan_id = module.app_service_plan.id
+  always_on = var.api_always_on
+  dotnet_version = "8.0"
+  app_insignts_connection_string = module.application_insights.connection_string
+  app_config_endpoint = "temp endpoint"
+}
 
 # variable "ui_service_name" {
 #   description = "value for the ui service name"

@@ -40,7 +40,7 @@ resource "azurerm_application_insights" "nebamgmt-ai" {
   internet_query_enabled = true
 }
 
-output "app_insights_id" {
-  description = "value for the application insights id"
-  value       = azurerm_application_insights.nebamgmt-ai.id
+output "app_insights_connection_string"{
+  description = "value for the application insights connection string"
+  value       = azurerm_application_insights.nebamgmt-ai.connection_string
 }

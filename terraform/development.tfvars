@@ -9,7 +9,8 @@ log_analytics_workspace_name = "nebamgmt-log-analytics-dev"
 log_analytics_workspace_sku = "PerGB2018"
 app_insights_name = "nebamgmt-ai-dev"
 
-# api_always_on = false
+api_service_name = "nebamgmt-api-dev"
+api_always_on = false
 
 # ui_always_on = false
 
