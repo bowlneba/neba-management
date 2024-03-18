@@ -1,7 +1,7 @@
 nebamgmt_resource_group_name = "nebamgmt-rg-dev"
 
 
-# resource_group_budget_dollars = 10
+resource_group_budget_dollars = 10
 
 # log_analytics_workspace_name = "nebamgmt-log-analytics-dev"
 # log_analytics_workspace_sku = "PerGB2018"
