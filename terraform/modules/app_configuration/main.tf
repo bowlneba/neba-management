@@ -90,7 +90,7 @@ resource "azurerm_app_configuration_key" "nebamgmt-config-secrets" {
 
 variable "features" {
   description = "value for the app config features"
-  type        = map(string,bool)
+  type        = map(bool)
 }
 
 resource "azurerm_app_configuration_feature" "nebamgmt-config-features" {
