@@ -63,8 +63,8 @@ variable "app_service_plan_sku_name" {
 module "app_service_plan"{
   source = "./modules/app_service_plan"
   name = var.app_service_plan_name
-  location = module.resource_group.resource_group_location
-  resource_group_name = module.resource_group.resource_group_name
+  location = module.resource_group.location
+  resource_group_name = module.resource_group.name
   sku_name = var.app_service_plan_sku_name
 }
 
