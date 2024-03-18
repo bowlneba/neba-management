@@ -1,10 +1,4 @@
 terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~>2.46.0"
-    }
-  }
   backend "azurerm" {
   }
 }
@@ -122,13 +116,13 @@ data "azurerm_role_definition" "app_config_data_reader" {
   name = "App Configuration Data Reader"
 }
 
-resource "azure_role_assignment" "api-app-config-reader-assignment" {
+resource "azurerm_role_assignment" "api-app-config-reader-assignment" {
   scope                = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
   principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
 }
 
-resource "azure_role_assignment" "ui-app-config-reader-assignment" {
+resource "azurerm_role_assignment" "ui-app-config-reader-assignment" {
   scope                = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
@@ -144,22 +138,24 @@ resource "azurerm_role_assignment" "infrastructure-group-app-config-data-owner-a
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-resource "azure_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
-  name = "NebaApi:BaseUrl"
+resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
+  key = "NebaApi:BaseUrl"
   value = azurerm_linux_web_app.nebamgmt-api.default_hostname
-  app_configuration_id = azurerm_app_configuration.nebamgmt-config.id
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
-resource "azure_app_configuration_key" "keyvault-url-config-value" {
-  name = "KeyVault:Url"
+resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
+  key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.uri
-  app_configuration_id = azurerm_app_configuration.nebamgmt-config.id
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
-resource "azure_app_configuration_feature" "caching-feature" {
+resource "azurerm_app_configuration_feature" "caching-feature" {
   name = "Caching"
+  label = "Caching Feature"
+  description = "Feature flag to enable caching"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
   enabled = false
-  app_configuration_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
 variable "app_service_plan_name" {
@@ -334,13 +330,13 @@ resource "azurerm_role_assignment" "infrastructure-group-kv-admin-assignment" {
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-resource "azure_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
+resource "azurerm_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurere_role_definition.keyvault_admin.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
 }
 
-resource "azure_key_vault_secret" "kv-health-secret"{
+resource "azurerm_key_vault_secret" "kv-health-secret"{
   name = "Health"
   value = "Check"
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
@@ -350,25 +346,25 @@ data "azurerm_role_definition" "keyvault_secrets_user" {
   name = "Key Vault Secrets User"
 }
 
-resource "azure_role_assignment" "infrastructure-group-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "infrastructure-group-kv-secret-user-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-resource "azure_role_assignment" "nebamgmt-local-app-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
 }
 
-resource "azure_role_assignment" "nebamgmt-api-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-api-kv-secret-user-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
 }
 
-resource "azure_role_assignment" "nebamgmt-ui-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-ui-kv-secret-user-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
