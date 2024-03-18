@@ -30,11 +30,11 @@ variable "system_admin_email" {
   type        = string
 }
 
-# variable "manager_email" {
-#   description = "value for the manager email address"
-#   default     = "manager@bowlneba.com"
-#   type        = string
-# }
+variable "manager_email" {
+  description = "value for the manager email address"
+  default     = "manager@bowlneba.com"
+  type        = string
+}
 
 # variable "resource_group_budget_dollars" {
 #   description = "value for the resource group budget in dollars"
@@ -46,7 +46,7 @@ module "resource_group"{
   resource_group_name = var.nebamgmt_resource_group_name
   location = var.primary_region
   system_admin_email = var.system_admin_email
-  # manager_email = var.manager_email
+  manager_email = var.manager_email
   # resource_group_budget_dollars = var.resource_group_budget_dollars
 }
 

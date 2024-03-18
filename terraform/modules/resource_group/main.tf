@@ -36,11 +36,11 @@ variable "system_admin_email" {
   type        = string
 }
 
-# variable "manager_email" {
-#   description = "value for the manager email address"
-#   default     = "manager@bowlneba.com"
-#   type        = string
-# }
+variable "manager_email" {
+  description = "value for the manager email address"
+  default     = "manager@bowlneba.com"
+  type        = string
+}
 
 resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
   name                = "Budget Action Group"
@@ -52,10 +52,10 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
     email_address = var.system_admin_email
   }
 
-  # email_receiver {
-  #   name          = "Manager"
-  #   email_address = var.manager_email
-  # }
+  email_receiver {
+    name          = "Manager"
+    email_address = var.manager_email
+  }
 }
 
 # variable "resource_group_budget_dollars" {
