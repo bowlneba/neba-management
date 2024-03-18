@@ -76,7 +76,7 @@ variable "secrets" {
 resource "azurerm_key_vault_secret" "nebamgmt-kv-secrets" {
   count = length(keys(var.secrets))
   name         = keys(var.secrets)[count.index]
-  value        = var.secrets[keys(var.secrets)[count.index]]
+  value        = values(var.secrets)[count.index]
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
 }
 

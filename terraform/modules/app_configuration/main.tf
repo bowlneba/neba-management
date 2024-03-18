@@ -97,5 +97,5 @@ resource "azurerm_app_configuration_feature" "nebamgmt-config-features" {
   count = length(keys(var.features))
   name = keys(var.features)[count.index]
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-  enabled = keys(var.features)[count.index]
+  enabled = values(var.features)[count.index]
 }
