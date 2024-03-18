@@ -1,13 +1,12 @@
 nebamgmt_resource_group_name = "nebamgmt-rg-dev"
 
-
 resource_group_budget_dollars = 10
+
+app_service_plan_name = "nebamgmt-asp-dev"
+app_service_plan_sku_name = "B1"
 
 # log_analytics_workspace_name = "nebamgmt-log-analytics-dev"
 # log_analytics_workspace_sku = "PerGB2018"
-
-# app_service_plan_name = "nebamgmt-asp-dev"
-# app_service_plan_sku_name = "B1"
 
 # app_insights_name = "nebamgmt-ai-dev"
 

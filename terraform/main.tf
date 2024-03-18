@@ -50,23 +50,23 @@ module "resource_group"{
   resource_group_budget_dollars = var.resource_group_budget_dollars
 }
 
-# variable "app_service_plan_name" {
-#   description = "value for the app service plan name"
-#   type        = string
-# }
+variable "app_service_plan_name" {
+  description = "value for the app service plan name"
+  type        = string
+}
 
-# variable "app_service_plan_sku_name" {
-#   description = "value for the app service plan sku name"
-#   type        = string
-# }
+variable "app_service_plan_sku_name" {
+  description = "value for the app service plan sku name"
+  type        = string
+}
 
-# resource "azurerm_service_plan" "nebamgmt-asp" {
-#   name                = var.app_service_plan_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   os_type             = "Linux"
-#   sku_name            = var.app_service_plan_sku_name
-# }
+module "app_service_plan"{
+  source = "./modules/app_service_plan"
+  app_service_plan_name = var.app_service_plan_name
+  app_service_plan_location = module.resource_group.resource_group_location
+  app_service_plan_resource_group_name = module.resource_group.resource_group_name
+  app_service_plan_sku_name = var.app_service_plan_sku_name
+}
 
 # variable "log_analytics_workspace_name" {
 #   description = "value for the log analytics workspace name"
