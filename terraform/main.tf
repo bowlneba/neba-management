@@ -43,11 +43,11 @@ variable "resource_group_budget_dollars" {
 
 module "resource_group"{
   source = "./modules/resource_group"
-  resource_group_name = var.nebamgmt_resource_group_name
+  name = var.nebamgmt_resource_group_name
   location = var.primary_region
   system_admin_email = var.system_admin_email
   manager_email = var.manager_email
-  resource_group_budget_dollars = var.resource_group_budget_dollars
+  budget_dollars = var.resource_group_budget_dollars
 }
 
 variable "app_service_plan_name" {
@@ -62,28 +62,30 @@ variable "app_service_plan_sku_name" {
 
 module "app_service_plan"{
   source = "./modules/app_service_plan"
-  app_service_plan_name = var.app_service_plan_name
-  app_service_plan_location = module.resource_group.resource_group_location
-  app_service_plan_resource_group_name = module.resource_group.resource_group_name
-  app_service_plan_sku_name = var.app_service_plan_sku_name
+  name = var.app_service_plan_name
+  location = module.resource_group.resource_group_location
+  resource_group_name = module.resource_group.resource_group_name
+  sku_name = var.app_service_plan_sku_name
 }
 
-# variable "log_analytics_workspace_name" {
-#   description = "value for the log analytics workspace name"
-#   type        = string
-# }
+variable "log_analytics_workspace_name" {
+  description = "value for the log analytics workspace name"
+  type        = string
+}
 
-# variable "log_analytics_workspace_sku" {
-#   description = "value for the log analytics workspace sku"
-#   type        = string
-# }
+variable "log_analytics_workspace_sku" {
+  description = "value for the log analytics workspace sku"
+  type        = string
+}
 
-# resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
-#   name                = var.log_analytics_workspace_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   sku                 = var.log_analytics_workspace_sku
-# }
+module "application_insights"{
+  source = "./modules/application_insights"
+  log_analytics_workspace_name = var.log_analytics_workspace_name
+  log_analytics_location = module.resource_group.resource_group_location
+  log_analytics_resource_group_name = module.resource_group.resource_group_name
+  log_analytics_workspace_sku = var.log_analytics_workspace_sku
+
+}
 
 # variable "app_insights_name" {
 #   description = "value for the application insights name"

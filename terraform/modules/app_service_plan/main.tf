@@ -1,32 +1,32 @@
-variable "app_service_plan_name" {
+variable "name" {
   description = "value for the app service plan name"
   type        = string
 }
 
-variable "app_service_plan_location"{
+variable "location"{
     description = "value for the app service plan location"
     type        = string
 }
 
-variable "app_service_plan_resource_group_name"{
+variable "resource_group_name"{
     description = "value for the app service plan resource group name"
     type        = string
 }
 
-variable "app_service_plan_sku_name" {
+variable "sku_name" {
   description = "value for the app service plan sku name"
   type        = string
 }
 
 resource "azurerm_service_plan" "nebamgmt-asp" {
-  name                = var.app_service_plan_name
-  location            = var.app_service_plan_location
-  resource_group_name = var.app_service_plan_resource_group_name
+  name                = var.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
   os_type             = "Linux"
-  sku_name            = var.app_service_plan_sku_name
+  sku_name            = var.sku_name
 }
 
-output "app_service_plan_id" {
+output "id" {
     description = "value for the app service plan id"
     value       = azurerm_service_plan.nebamgmt-asp.id
 }

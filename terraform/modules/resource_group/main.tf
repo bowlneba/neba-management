@@ -1,4 +1,4 @@
-variable "resource_group_name" {
+variable "name" {
   description = "value for the resource group name"
   default     = "nebamgmt-rg-test"
   type        = string
@@ -11,21 +11,21 @@ variable "location"{
 }
 
 resource "azurerm_resource_group" "nebamgmt-rg" {
-  name     = var.resource_group_name
+  name     = var.name
   location = var.location
 }
 
-output "resource_group_name" {
+output "name" {
   description = "value for the resource group name"
   value       = azurerm_resource_group.nebamgmt-rg.name
 }
 
-output "resource_group_id" {
+output "id" {
     description = "value for the resource group id"
     value       = azurerm_resource_group.nebamgmt-rg.id
 }
 
-output "resource_group_location" {
+output "location" {
 	description = "value for the resource group location"
 	value = azurerm_resource_group.nebamgmt-rg.location
 }
@@ -58,7 +58,7 @@ resource "azurerm_monitor_action_group" "nebamgmt-budget-ag" {
   }
 }
 
-variable "resource_group_budget_dollars" {
+variable "budget_dollars" {
   description = "value for the resource group budget in dollars"
   type        = number
 }
@@ -66,7 +66,7 @@ variable "resource_group_budget_dollars" {
 resource "azurerm_consumption_budget_resource_group" "nebamgmt-rg-budget" {
   name              = "Resource Group Budget"
   resource_group_id = azurerm_resource_group.nebamgmt-rg.id
-  amount            = var.resource_group_budget_dollars
+  amount            = var.budget_dollars
   time_grain        = "Monthly"
 
   time_period {
