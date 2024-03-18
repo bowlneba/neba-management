@@ -77,7 +77,7 @@ module "app_configuration" {
     "KeyVault:Url" = module.key_vault.uri
   }
   secret_values = {
-    "ConnectionStrings:HealthCheck" = module.key_vault.health_check_secret_id
+    "ConnectionStrings:HealthCheck" = module.key_vault.health_check_mssql_connection_string_secret_id
   }
   features = {
     "Caching" = false
@@ -204,7 +204,8 @@ module "key_vault" {
     module.ui_application.principal_id
   ]
   secrets = {
-    "Health" = "Check"
+    "Health" = "Check",
+    "HealthCheck-MSSQL-ConnectionString" = "Connection String"
   }
 }
 
