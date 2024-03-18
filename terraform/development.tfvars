@@ -18,4 +18,4 @@ ui_always_on = false
 
 nebamgmt_key_vault_name = "nebamgmt-kv-dev"
 
-nebamgmt_mssql_primary_server_name = "nebamgmt-db-1-dev"
+nebamgmt_mssql_primary_server_name = "nebamgmt-mssql-1-dev"
