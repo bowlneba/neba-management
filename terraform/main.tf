@@ -7,6 +7,8 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {}
+
 variable "primary_region"{
   description = "value for the primary region"
   default     = "East US"
@@ -198,19 +200,18 @@ module "ui_application"{
   app_config_endpoint = module.app_configuration.endpoint
 }
 
-# variable "nebamgmt_key_vault_name" {
-#   description = "value for the key vault name"
-#   type = string
-# }
+variable "nebamgmt_key_vault_name" {
+  description = "value for the key vault name"
+  type = string
+}
 
-# resource "azurerm_key_vault" "nebamgmt-kv" {
-#   name                = var.nebamgmt_key_vault_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   sku_name            = "standard"
-#   tenant_id           = data.azurerm_client_config.current.tenant_id
-#   enable_rbac_authorization = true
-# }
+module "key_vault" {
+  source = "./modules/key_vault"
+  name = var.nebamgmt_key_vault_name
+  location = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  tenant_id = data.azurerm_client_config.current.tenant_id
+}
 
 # variable "database_connection_string"{
 #   description = "Database connection string to MSSQL"

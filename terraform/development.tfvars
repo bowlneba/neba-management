@@ -16,6 +16,6 @@ api_always_on = false
 ui_service_name = "nebamgmt-dev"
 ui_always_on = false
 
-# nebamgmt_key_vault_name = "nebamgmt-kv-dev"
+nebamgmt_key_vault_name = "nebamgmt-kv-dev"
 
 # nebamgmt_mssql_server_name = "nebamgmt-db-dev"
