@@ -332,7 +332,7 @@ resource "azurerm_role_assignment" "infrastructure-group-kv-admin-assignment" {
 
 resource "azurerm_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
   scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurere_role_definition.keyvault_admin.name
+  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
 }
 
