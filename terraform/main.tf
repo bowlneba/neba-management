@@ -36,10 +36,10 @@ variable "manager_email" {
   type        = string
 }
 
-# variable "resource_group_budget_dollars" {
-#   description = "value for the resource group budget in dollars"
-#   type        = number
-# }
+variable "resource_group_budget_dollars" {
+  description = "value for the resource group budget in dollars"
+  type        = number
+}
 
 module "resource_group"{
   source = "./modules/resource_group"
@@ -47,7 +47,7 @@ module "resource_group"{
   location = var.primary_region
   system_admin_email = var.system_admin_email
   manager_email = var.manager_email
-  # resource_group_budget_dollars = var.resource_group_budget_dollars
+  resource_group_budget_dollars = var.resource_group_budget_dollars
 }
 
 # variable "app_service_plan_name" {
