@@ -76,9 +76,7 @@ module "app_configuration" {
     "NebaApi:BaseUrl" = module.api_application.default_hostname
     "KeyVault:Url" = module.key_vault.uri
   }
-  secret_values = {
-    "ConnectionStrings:HealthCheck" = module.key_vault.health_check_mssql_connection_string_secret_id
-  }
+  secret_values = {}
   features = {
     "Caching" = false
   }
