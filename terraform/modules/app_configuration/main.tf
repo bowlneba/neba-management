@@ -62,3 +62,40 @@ resource "azurerm_role_assignment" "app_config_data_owners" {
   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
   principal_id = var.data_owner_principal_ids[count.index]
 }
+
+variable "config_values" {
+  description = "value for the config values"
+  type        = map(string)
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-config-values" {
+  count = length(keys(var.config_values))
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = keys(var.config_values)[count.index]
+  value = values(var.config_values)[count.index]
+}
+
+variable "secret_values"{
+  description = "value for the secret values"
+  type        = map(string)
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-config-secrets" {
+  count = length(keys(var.secret_values))
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  key = keys(var.secret_values)[count.index]
+  type = "vault"
+  vault_key_reference = values(var.config_values)[count.index]
+}
+
+variable "features" {
+  description = "value for the app config features"
+  type        = map(string,bool)
+}
+
+resource "azurerm_app_configuration_feature" "nebamgmt-config-features" {
+  count = length(keys(var.features))
+  name = keys(var.features)[count.index]
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  enabled = keys(var.features)[count.index]
+}

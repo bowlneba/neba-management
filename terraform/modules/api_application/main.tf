@@ -78,3 +78,8 @@ output "principal_id" {
   description = "value for the api principal id"
   value       = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
 }
+
+output "default_hostname" {
+  description = "value for the api default hostname"
+  value       = azurerm_linux_web_app.nebamgmt-api.default_hostname
+}

@@ -72,40 +72,17 @@ module "app_configuration" {
     module.api_application.principal_id,
     module.ui_application.principal_id]
   data_owner_principal_ids = [var.azure_infrastructure_management_group_id]
+  config_values = {
+    "NebaApi:BaseUrl" = module.api_application.default_hostname
+    "KeyVault:Url" = module.key_vault.uri
+  }
+  secret_values = {
+    "ConnectionStrings:HealthCheck" = module.key_vault.health_check_secret_id
+  }
+  features = {
+    "Caching" = false
+  }
 }
-
-# resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "NebaApi:BaseUrl"
-#   value = azurerm_linux_web_app.nebamgmt-api.default_hostname
-  
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_key" "nebamgmt-kv-url-key"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "KeyVault:Url"
-#   value = azurerm_key_vault.nebamgmt-kv.vault_uri
-  
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_key" "health-check-connection-string"{
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   key = "ConnectionStrings:HealthCheck"
-#   type = "vault"
-#   vault_key_reference = azurerm_key_vault_secret.database-health-check-connection-string-secret.id
-
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
-
-# resource "azurerm_app_configuration_feature" "caching-feature"{
-#   name = "Caching"
-#   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-#   enabled = false
-
-#   depends_on = [ azurerm_role_assignment.nebamgmt-infrastructure-mgmt-app-config-admin ]
-# }
 
 variable "app_service_plan_name" {
   description = "value for the app service plan name"

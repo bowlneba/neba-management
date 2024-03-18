@@ -32,6 +32,10 @@ output "id" {
   value = azurerm_key_vault.nebamgmt-kv.id
 }
 
+output "uri" {
+  value = azurerm_key_vault.nebamgmt-kv.vault_uri
+}
+
 data "azurerm_role_definition" "keyvault_admin" {
   name = "Key Vault Administrator"
 }
@@ -74,4 +78,10 @@ resource "azurerm_key_vault_secret" "nebamgmt-kv-secrets" {
   name         = keys(var.secrets)[count.index]
   value        = var.secrets[keys(var.secrets)[count.index]]
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
+output "health_check_secret_id" {
+  description = "value for the health check secret id"
+  value = azurerm_key_vault_secret.nebamgmt-kv-secrets["Health"].id
+  sensitive = false
 }
