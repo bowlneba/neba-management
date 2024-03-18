@@ -66,15 +66,11 @@ module "app_configuration" {
   name = var.nebamgmt_config_name
   resource_group_name = module.resource_group.name
   location = module.resource_group.location
-  data_reader_principal_ids = [module.api_application.principal_id]
+  data_reader_principal_ids = [
+    module.api_application.principal_id,
+    module.ui_application.principal_id]
   data_owner_principal_ids = [var.azure_infrastructure_management_group_id]
 }
-
-# resource "azurerm_role_assignment" "nebamgmt-ui-app-config-data-reader"{
-#   scope = azurerm_app_configuration.nebamgmt-config.id
-#   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-#   principal_id = azurerm_linux_web_app.nebamgmt-ui.identity.0.principal_id
-# }
 
 # resource "azurerm_app_configuration_key" "nebamgmt-api-url-key"{
 #   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
@@ -161,6 +157,12 @@ variable "api_always_on" {
   type        = bool
 }
 
+variable "dotnet_version"{
+  description = "value for the api dotnet version"
+  type        = string
+  default = "8.0"
+}
+
 module "api_application"{
   source = "./modules/api_application"
   service_name = var.api_service_name
@@ -168,55 +170,33 @@ module "api_application"{
   resource_group_name = module.resource_group.name
   app_service_plan_id = module.app_service_plan.id
   always_on = var.api_always_on
-  dotnet_version = "8.0"
+  dotnet_version = var.dotnet_version
   app_insignts_connection_string = module.application_insights.connection_string
   app_config_endpoint = module.app_configuration.endpoint
 }
 
-# variable "ui_service_name" {
-#   description = "value for the ui service name"
-#   default     = "nebamgmt-ui-test"
-#   type        = string
-# }
+variable "ui_service_name" {
+  description = "value for the ui service name"
+  default     = "nebamgmt-ui-test"
+  type        = string
+}
 
-# variable "ui_always_on" {
-#   description = "value for the ui always on setting"
-#   type        = bool
-# }
+variable "ui_always_on" {
+  description = "value for the ui always on setting"
+  type        = bool
+}
 
-# resource "azurerm_linux_web_app" "nebamgmt-ui" {
-#   name                = var.ui_service_name
-#   location            = azurerm_resource_group.nebamgmt-rg.location
-#   resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-#   service_plan_id     = azurerm_service_plan.nebamgmt-asp.id
-#   client_certificate_enabled = false
-
-#   site_config {
-#     always_on = var.ui_always_on
-#     application_stack {
-#       dotnet_version = "8.0"
-#     }
-#     remote_debugging_version = "VS2022"
-#   }
-
-#   auth_settings {
-#     enabled = false
-#   }
-
-#   depends_on = [azurerm_linux_web_app.nebamgmt-api]
-
-#   https_only = true
-
-#   app_settings = {
-#     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.nebamgmt-ai.instrumentation_key
-#     "APPINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.nebamgmt-ai.connection_string
-#     "APPCONFIG_ENDPOINT" = azurerm_app_configuration.nebamgmt-config.endpoint
-#   }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-# }
+module "ui_application"{
+  source = "./modules/ui_application"
+  service_name = var.ui_service_name
+  location = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  app_service_plan_id = module.app_service_plan.id
+  always_on = var.ui_always_on
+  dotnet_version = var.dotnet_version
+  app_insignts_connection_string = module.application_insights.connection_string
+  app_config_endpoint = module.app_configuration.endpoint
+}
 
 # variable "nebamgmt_key_vault_name" {
 #   description = "value for the key vault name"
