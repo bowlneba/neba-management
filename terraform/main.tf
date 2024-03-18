@@ -146,7 +146,7 @@ resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
 
 resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
   key = "KeyVault:Url"
-  value = azurerm_key_vault.nebamgmt-kv.uri
+  value = azurerm_key_vault.nebamgmt-kv.vault_uri
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
