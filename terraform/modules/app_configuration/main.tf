@@ -41,10 +41,10 @@ variable "data_reader_principal_ids"{
 }
 
 resource "azurerm_role_assignment" "app_config_data_readers" {
-  for_each = toset(var.data_reader_principal_ids)
+  count = length(var.data_reader_principal_ids)
   scope = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-  principal_id = each.value
+  principal_id = var.data_reader_principal_ids[count.index]
 }
 
 data "azurerm_role_definition" "appconfig_data_owner"{
@@ -57,8 +57,8 @@ variable "data_owner_principal_ids"{
 }
 
 resource "azurerm_role_assignment" "app_config_data_owners" {
-  for_each = toset(var.data_owner_principal_ids)
+  count = length(var.data_owner_principal_ids)
   scope = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-  principal_id = each.value
+  principal_id = var.data_owner_principal_ids[count.index]
 }
