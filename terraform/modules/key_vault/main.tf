@@ -63,3 +63,15 @@ resource "azurerm_role_assignment" "keyvault_secrets_user" {
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.key_vault_secret_reader_principal_ids[count.index]
 }
+
+variable "secrets" {
+  description = "value for the key vault secrets"
+  type = map(string)
+}
+
+resource "azurerm_key_vault_secret" "nebamgmt-kv-secrets" {
+  count = length(keys(var.secrets))
+  name         = keys(var.secrets)[count.index]
+  value        = var.secrets[keys(var.secrets)[count.index]]
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}

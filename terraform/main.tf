@@ -226,19 +226,10 @@ module "key_vault" {
     module.api_application.principal_id,
     module.ui_application.principal_id
   ]
+  secrets = {
+    "Health" = "Check"
+  }
 }
-
-# resource "azurerm_key_vault_secret" "database-health-check-connection-string-secret"{
-#   name = "Database-Health-Check-Connection-String"
-#   value = var.database_connection_string
-#   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-# }
-
-# resource "azurerm_key_vault_secret" "health-check-secret"{
-#   name = "Health"
-#   value = "Check"
-#   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
-# }
 
 # variable "nebamgmt_mssql_server_name"{
 #   description = "SQL Server name"
