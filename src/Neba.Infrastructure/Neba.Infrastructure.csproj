@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <InternalsVisibleTo Include="Neba.Infrastructure.UnitTests" />
+	  <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" />
+	  <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+	  <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
+	  <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+	</ItemGroup>
+
+</Project>

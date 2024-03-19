@@ -1,0 +1,19 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "NEBA",
+        "projectKey": "bowlneba_neba-management"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[csharp]": {
+        "editor.maxTokenizationLineLength": 2500,
+        "editor.inlineSuggest.suppressSuggestions": false,
+        "editor.defaultFormatter": "ms-dotnettools.csharp"
+    },
+    "cSpell.words": [
+        "Antiforgery",
+        "appsettings",
+        "Blazor",
+        "Neba",
+        "Serilog"
+    ]
+}

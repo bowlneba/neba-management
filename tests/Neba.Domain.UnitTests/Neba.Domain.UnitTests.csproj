@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup />
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Neba.Domain\Neba.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Update="coverlet.msbuild">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+</Project>

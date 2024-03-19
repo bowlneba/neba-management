@@ -1,41 +1,68 @@
+using System.Diagnostics;
 using Neba.UI.Components;
-using Neba.UI.Services;
-
-#if !DEBUG
 using Neba.UI.Infrastructure;
-#endif
+using Neba.UI.Services;
+using Serilog;
+using Serilog.Debugging;
+using SerilogTracing;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-builder.Services.AddMudBlazor();
+var serilogger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+
+Log.Logger = serilogger;
+SelfLog.Enable(message => Debug.WriteLine(message));
+
+using var _ = new ActivityListenerConfiguration()
+    .Instrument.AspNetCoreRequests()
+    .TraceTo(serilogger);
+
+builder.Host.UseSerilog();
+
+try
+{
+    builder.AddConfiguration();
+
+    builder.Services.AddMudBlazor();
+
+    builder.Configuration.AddKeyVault();
+
+    builder.Services.AddServices();
+
+    builder.Services.AddApplicationInsightsTelemetry();
+
+    var app = builder.Build();
 
 #if !DEBUG
-
-builder.Configuration.AddKeyVault();
-
+    app.UseAzureAppConfiguration();
 #endif
 
-builder.Services.AddServices();
+    app.UseSerilogRequestLogging();
 
-builder.Services.AddApplicationInsightsTelemetry();
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 
-var app = builder.Build();
+    app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseStaticFiles();
+    app.UseAntiforgery();
+
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode();
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();
+#pragma warning disable CA1031
+catch (Exception ex)
+{
+    serilogger.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}

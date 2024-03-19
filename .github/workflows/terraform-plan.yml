@@ -32,9 +32,9 @@ jobs:
         env:
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
-            TF_VAR_terraform_app_client_id: ${{ vars.AZURE_TERRAFORM_APP_CLIENT_ID }}
-            TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
             TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
+            TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
+            TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
             
         steps:
             - name: Checkout

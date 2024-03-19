@@ -10,8 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3B3C6A7A-7B66-4B07-A339-D0EA4042FA08}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
+		docker-compose.yml = docker-compose.yml
+		package-update.bat = package-update.bat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2B90D457-5715-424A-AC32-410511977BD7}"
@@ -26,11 +30,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI", "src\Neba.UI\Neba
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_infrastructure", "_infrastructure", "{405DBE70-4B83-4C58-8CA0-1DA08FCE7780}"
 	ProjectSection(SolutionItems) = preProject
-		terraform\main.tf = terraform\main.tf
 		terraform\development.tfvars = terraform\development.tfvars
+		terraform\main.tf = terraform\main.tf
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.UI.UnitTests", "tests\Neba.UI.UnitTests\Neba.UI.UnitTests.csproj", "{137DF66A-D8FF-41F9-88BC-62AE3F52340F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.UI.UnitTests", "tests\Neba.UI.UnitTests\Neba.UI.UnitTests.csproj", "{137DF66A-D8FF-41F9-88BC-62AE3F52340F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Kernel", "Shared Kernel", "{FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Domain", "src\Neba.Domain\Neba.Domain.csproj", "{180DEB4A-8C13-4193-BDDE-60EC55BAFC67}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Kernel", "Shared Kernel", "{73BAC724-D21B-41A7-818E-23DEAF334D90}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Domain.UnitTests", "tests\Neba.Domain.UnitTests\Neba.Domain.UnitTests.csproj", "{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Application", "src\Neba.Application\Neba.Application.csproj", "{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Application.UnitTests", "tests\Neba.Application.UnitTests\Neba.Application.UnitTests.csproj", "{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Infrastructure", "src\Neba.Infrastructure\Neba.Infrastructure.csproj", "{B76AEE60-9768-45CF-9817-75467ABB14C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neba.Infrastructure.UnitTests", "tests\Neba.Infrastructure.UnitTests\Neba.Infrastructure.UnitTests.csproj", "{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +74,30 @@ Global
 		{137DF66A-D8FF-41F9-88BC-62AE3F52340F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{137DF66A-D8FF-41F9-88BC-62AE3F52340F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{137DF66A-D8FF-41F9-88BC-62AE3F52340F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B76AEE60-9768-45CF-9817-75467ABB14C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B76AEE60-9768-45CF-9817-75467ABB14C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B76AEE60-9768-45CF-9817-75467ABB14C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B76AEE60-9768-45CF-9817-75467ABB14C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +107,14 @@ Global
 		{2D4AB709-8617-4550-B208-924E7DF76573} = {2B90D457-5715-424A-AC32-410511977BD7}
 		{81223505-884A-40FB-88A4-28C95734DCE8} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
 		{137DF66A-D8FF-41F9-88BC-62AE3F52340F} = {2B90D457-5715-424A-AC32-410511977BD7}
+		{FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915} = {C3BB71CC-D914-4B1B-8F0C-488C2BC0F779}
+		{180DEB4A-8C13-4193-BDDE-60EC55BAFC67} = {FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}
+		{73BAC724-D21B-41A7-818E-23DEAF334D90} = {2B90D457-5715-424A-AC32-410511977BD7}
+		{00E4F3E5-7CD0-42DD-92A0-41F622ECD93F} = {73BAC724-D21B-41A7-818E-23DEAF334D90}
+		{5414A7A3-E509-4A6F-AA25-B6CE51CA0371} = {FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}
+		{4E5D43F8-B7F5-4AF0-BB0E-0EF79582EBFE} = {73BAC724-D21B-41A7-818E-23DEAF334D90}
+		{B76AEE60-9768-45CF-9817-75467ABB14C9} = {FAD9EBE4-539B-4E22-B2B2-1C35AE5AE915}
+		{93AD3DF9-085E-40DC-B0BB-46B9C9333BDC} = {73BAC724-D21B-41A7-818E-23DEAF334D90}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A836566F-366B-4B94-B30D-7C093CBD2805}
