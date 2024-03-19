@@ -56,5 +56,5 @@ jobs:
               working-directory: terraform
 
             - name: Terraform Apply
-              run: terraform apply terraplan
+              run: terraform apply terraplan -auto-approve
               working-directory: terraform
