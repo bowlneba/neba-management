@@ -37,10 +37,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "::set-output name=environment::${{ github.event.inputs.environment }}"
-          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "::set-output name=environment::Development"
-          else
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "::set-output name=environment::Production"
+          elif [[ "${{ github.ref }}" == refs/heads/release/* ]] || [[ "${{ github.ref }}" == refs/heads/hotfix/* ]]; then
+            echo "::set-output name=environment::Staging"
+          else
+            echo "::set-output name=environment::Development"
           fi
 
   terraform-apply:
