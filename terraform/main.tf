@@ -140,7 +140,7 @@ resource "azurerm_role_assignment" "infrastructure-group-app-config-data-owner-a
 
 resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
   key = "NebaApi:BaseUrl"
-  value = azurerm_linux_web_app.nebamgmt-api.default_hostname
+  value = "https://${azurerm_linux_web_app.nebamgmt-api.default_hostname}"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
