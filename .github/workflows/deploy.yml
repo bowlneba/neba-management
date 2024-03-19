@@ -31,15 +31,11 @@ jobs:
     environment:
         name: ${{ github.event.inputs.environment }}
     env:
-        TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
-        TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
-        TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
-        TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
-        TF_VAR_api_service_name: ${{ vars.AZURE_API_SERVICE_NAME }}
-        TF_VAR_ui_service_name: ${{ vars.AZURE_UI_SERVICE_NAME }}
-        TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
-        TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
-        TF_VAR_database_connection_string: ${{ secrets.DATABASE_CONNECTION_STRING }}
+      TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
+      TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+      TF_VAR_azure_infrastructure_management_group_id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGEMENT_GROUP_ID }}
+      TF_VAR_azure_nebamgmt_local_app_registration_principal_id: ${{ secrets.AZURE_NEBAMGMT_LOCAL_APP_REGISTRATION_PRINCIPAL_ID }}
+      TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.SQL_SERVER_ADMIN_PASSWORD }}
         
     steps:
         - name: Checkout
@@ -56,8 +52,12 @@ jobs:
           run: terraform validate
           working-directory: terraform
 
+        - name: Terraform Plan
+          run: terraform plan -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -out terraplan
+          working-directory: terraform
+
         - name: Terraform Apply
-          run: terraform apply -var-file ${{ vars.TERRAFORM_TFVARS_FILE }} -auto-approve
+          run: terraform apply terraplan -auto-approve
           working-directory: terraform
 
   api:
