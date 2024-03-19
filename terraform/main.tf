@@ -152,7 +152,6 @@ resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
 
 resource "azurerm_app_configuration_feature" "caching-feature" {
   name = "Caching"
-  label = "Caching Feature"
   description = "Feature flag to enable caching"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
   enabled = false
