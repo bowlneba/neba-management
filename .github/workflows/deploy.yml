@@ -78,7 +78,7 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Apply
-        run: terraform apply terraplan -auto-approve
+        run: terraform apply -auto-approve terraplan
         working-directory: terraform
 
   api:
