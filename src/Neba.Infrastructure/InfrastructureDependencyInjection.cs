@@ -25,6 +25,8 @@ public static class InfrastructureDependencyInjection
     {
         Debug.Assert(configuration != null, nameof(configuration) + " != null");
 
+        services.AddDiagnostics();
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         #region Feature Flags
@@ -40,12 +42,11 @@ public static class InfrastructureDependencyInjection
 
         #endregion
 
-        services.AddDiagnostics();
         services.AddCaching();
 
         var keyVaultInfo = ConfigureKeyVault(configuration);
 
-        services.AddHealthChecks(configuration, keyVaultInfo);
+        services.AddHealthChecks(keyVaultInfo);
 
         return services;
     }
@@ -117,11 +118,9 @@ public static class InfrastructureDependencyInjection
         return (kvUrl, credential);
     }
 
-    private static void AddHealthChecks(this IServiceCollection services, IConfiguration config, (string kvUrl, TokenCredential credential) keyVaultInfo)
+    private static void AddHealthChecks(this IServiceCollection services, (string kvUrl, TokenCredential credential) keyVaultInfo)
     {
         services.AddHealthChecks()
-            .AddSqlServer(config.GetConnectionString("HealthCheck") ??
-                          throw new InvalidOperationException("Cannot get HealthCheck ConnectionString"))
             .AddAzureKeyVault(new Uri(keyVaultInfo.kvUrl), keyVaultInfo.credential, options => options.AddSecret("Health"));
     }
 }
