@@ -2,7 +2,7 @@
 
 namespace Neba.UI.Services;
 
-internal sealed class WeatherService 
+internal sealed class WeatherService
     : NebaApiService, IWeatherService
 {
     public WeatherService(IHttpClientFactory httpClientFactory)
