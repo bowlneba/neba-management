@@ -4,7 +4,7 @@ using Neba.Application.Security;
 
 namespace Neba.Infrastructure.Security;
 
-internal class Encryption : IEncryption
+internal sealed class Encryption : IEncryption
 {
     private readonly CryptographyClient _cryptographyClient;
 

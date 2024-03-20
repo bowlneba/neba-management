@@ -5,7 +5,7 @@ using Neba.Infrastructure.Security;
 
 namespace Neba.Infrastructure.UnitTests.Security;
 
-public class EncryptionTests
+public sealed class EncryptionTests
 {
     private readonly Encryption _encryption;
 
