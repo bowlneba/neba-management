@@ -155,9 +155,15 @@ resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
-resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-config-value" {
+resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-url-config-value" {
   key = "Encryption:Url"
   value = "${azurerm_key_vault.nebamgmt-kv.vault_uri}/keys/${azurerm_key_vault_key.nebamgmt-encryption-key.name}/${azurerm_key_vault_key.nebamgmt-encryption-key.version}"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-name-config-value" {
+  key = "Encryption:KeyName"
+  value = azurerm_key_vault_key.nebamgmt-encryption-key.name
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
