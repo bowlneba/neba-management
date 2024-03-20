@@ -1,8 +1,10 @@
-﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.FeatureManagement;
+using Neba.UI.Services;
 
 #if DEBUG
 #else
@@ -69,5 +71,17 @@ internal static class InfrastructureConfiguration
         config.AddAzureKeyVault(new SecretClient(new Uri(kvUrl), credential), new KeyVaultSecretManager());
 
         return keyClient;
+    }
+
+    public static void AddEncryption(this IServiceCollection services, IConfiguration config, KeyClient keyClient)
+    {
+        var keyResponse = keyClient.GetKey(config.GetValue<string>("Encryption:KeyName"));
+
+        if (!keyResponse.HasValue)
+        {
+            throw new InvalidOperationException("Encryption:KeyName does not exist");
+        }
+
+        services.AddSingleton<IEncryption>(new Encryption(keyResponse.Value.Key));
     }
 }

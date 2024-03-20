@@ -1,14 +1,17 @@
 ﻿using System.Diagnostics;
 using Azure.Core;
 using Azure.Identity;
+using Azure.Security.KeyVault.Keys.Cryptography;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
 using Neba.Application.Caching;
 using Neba.Application.Clock;
+using Neba.Application.Security;
 using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Diagnostics;
+using Neba.Infrastructure.Security;
 using Uri = System.Uri;
 
 #if DEBUG
@@ -47,6 +50,7 @@ public static class InfrastructureDependencyInjection
         var keyVaultInfo = ConfigureKeyVault(configuration);
 
         services.AddHealthChecks(keyVaultInfo);
+        services.AddEncryption(configuration, keyVaultInfo.credential);
 
         return services;
     }
@@ -122,5 +126,15 @@ public static class InfrastructureDependencyInjection
     {
         services.AddHealthChecks()
             .AddAzureKeyVault(new Uri(keyVaultInfo.kvUrl), keyVaultInfo.credential, options => options.AddSecret("Health"));
+    }
+
+    private static void AddEncryption(this IServiceCollection services, IConfiguration config, TokenCredential credential)
+    {
+        var keyUrl = new Uri(config.GetValue<string>("Encryption:Url") ??
+                             throw new InvalidOperationException("Cannot get Encryption:Url"));
+
+        var cryptographyClient = new CryptographyClient(keyUrl, credential);
+
+        services.AddSingleton<IEncryption>(new Encryption(cryptographyClient));
     }
 }
