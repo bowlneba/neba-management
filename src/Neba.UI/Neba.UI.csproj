@@ -33,6 +33,7 @@
   
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.UI.UnitTests" />
+    <InternalsVisibleTo Include="Neba.FunctionalTests" />
   </ItemGroup>
 
 </Project>
