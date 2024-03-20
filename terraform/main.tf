@@ -4,7 +4,12 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_deleted_keys_on_destroy = false
+      recover_soft_deleted_keys = true
+    }
+  }
 }
 
 data "azurerm_client_config" "current" {}
@@ -147,6 +152,12 @@ resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
 resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
   key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-config-value" {
+  key = "Encryption:Url"
+  value = "${azurerm_key_vault.nebamgmt-kv.vault_uri}/keys/${azurerm_key_vault_key.nebamgmt-encryption-key.name}/${azurerm_key_vault_key.nebamgmt-encryption-key.version}"
   configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
@@ -339,6 +350,18 @@ resource "azurerm_key_vault_secret" "kv-health-secret"{
   name = "Health"
   value = "Check"
   key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
+resource "azurerm_key_vault_key" "nebamgmt-encryption-key"{
+  name = "nebamgmt-encryption-key"
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  key_type = "RSA"
+  key_size = 2048
+
+  key_opts = [
+    "decrypt",
+    "encrypt"
+  ]
 }
 
 data "azurerm_role_definition" "keyvault_secrets_user" {
