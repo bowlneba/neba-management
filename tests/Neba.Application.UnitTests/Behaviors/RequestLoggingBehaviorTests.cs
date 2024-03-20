@@ -7,14 +7,14 @@ namespace Neba.Application.UnitTests.Behaviors;
 
 public sealed class RequestLoggingBehaviorTests
 {
-    private readonly ILogger<TestRequest> _mockLogger;
+    private readonly ILogger<RequestLoggingBehavior<TestRequest, ErrorOr<TestResponse>>> _mockLogger;
     private readonly RequestHandlerDelegate<ErrorOr<TestResponse>> _mockNext;
 
     private readonly RequestLoggingBehavior<TestRequest, ErrorOr<TestResponse>> _requestLoggingBehavior;
 
     public RequestLoggingBehaviorTests()
     {
-        _mockLogger = Substitute.For<ILogger<TestRequest>>();
+        _mockLogger = Substitute.For<ILogger<RequestLoggingBehavior<TestRequest, ErrorOr<TestResponse>>>>();
         _mockNext = Substitute.For<RequestHandlerDelegate<ErrorOr<TestResponse>>>();
 
         _requestLoggingBehavior = new RequestLoggingBehavior<TestRequest, ErrorOr<TestResponse>>(_mockLogger);

@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Neba.Api\Neba.Api.csproj" />
+    <ProjectReference Include="..\..\src\Neba.UI\Neba.UI.csproj" />
+  </ItemGroup>
+	  
+</Project>

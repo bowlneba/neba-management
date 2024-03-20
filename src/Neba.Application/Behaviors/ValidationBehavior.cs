@@ -10,7 +10,7 @@ internal sealed class ValidationBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
-    
+
     public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
     {
         _validators = validators;

@@ -10,9 +10,9 @@ internal sealed class RequestLoggingBehavior<TRequest, TResponse>
     where TRequest : IRequest
     where TResponse : IErrorOr
 {
-    private readonly ILogger<TRequest> _logger;
+    private readonly ILogger<RequestLoggingBehavior<TRequest, TResponse>> _logger;
 
-    public RequestLoggingBehavior(ILogger<TRequest> logger)
+    public RequestLoggingBehavior(ILogger<RequestLoggingBehavior<TRequest, TResponse>> logger)
     {
         _logger = logger;
     }

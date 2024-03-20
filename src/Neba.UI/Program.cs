@@ -25,7 +25,8 @@ try
 
     builder.Services.AddMudBlazor();
 
-    builder.Configuration.AddKeyVault();
+    var keyClient = builder.Configuration.AddKeyVault();
+    builder.Services.AddEncryption(builder.Configuration, keyClient);
 
     builder.Services.AddServices();
 
