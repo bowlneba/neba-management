@@ -374,27 +374,43 @@ data "azurerm_role_definition" "keyvault_secrets_user" {
   name = "Key Vault Secrets User"
 }
 
-resource "azurerm_role_assignment" "infrastructure-group-kv-secret-user-assignment" {
+data "azurerm_role_definition" "keyvault_key_user"{
+  name = "Key Vault Crypto User"
+}
+
+resource "azurerm_role_assignment" "infrastructure-group-kv-secret-user-role-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_infrastructure_management_group_id
 }
 
-resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-role-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
 }
 
-resource "azurerm_role_assignment" "nebamgmt-api-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-api-kv-secret-user-role-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "nebamgmt-ui-kv-secret-user-assignment" {
+resource "azurerm_role_assignment" "nebamgmt-ui-kv-secret-user-role-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "nebamgmt-api-kv-key-user-role-assignment"{
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_key_user.name
+  principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "nebamgmt-ui-kv-key-user-role-assignment"{
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_key_user.name
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
 }
 
