@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
@@ -17,10 +16,10 @@
 	<ItemGroup>
 	  <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" />
 	  <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+	  <PackageReference Include="Microsoft.Data.SqlClient" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
 	  <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
-	  <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
 	</ItemGroup>
 
 </Project>
