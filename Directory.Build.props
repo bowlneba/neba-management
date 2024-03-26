@@ -3,6 +3,8 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NuGetAuditMode>all</NuGetAuditMode>
+		<NuGetAuditLevel>low</NuGetAuditLevel>
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
