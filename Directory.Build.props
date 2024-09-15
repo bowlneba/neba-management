@@ -12,8 +12,6 @@
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 		<PathMap>$([System.IO.Path]::GetFullPath(('$(MSBuildThisFileDirectory)'))=./</PathMap>
 
-        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-
 		<AnalysisLevel>latest</AnalysisLevel>
 		<AnalysisMode>All</AnalysisMode>
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
