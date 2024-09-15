@@ -1,4 +1,4 @@
-﻿namespace Neba.WebApi.Endpoints;
+﻿namespace Neba.Neba.Api.Endpoints;
 
 /// <summary>
 /// Represents a weather forecast.

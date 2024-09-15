@@ -8,7 +8,7 @@ builder.Services.AddOpenApi();
 
 // Specify the assembly containing your endpoints
 builder.Services.AddFastEndpoints(options
-    => options.Assemblies = [Neba.WebApi.Endpoints.AssemblyMarker.Assembly]);
+    => options.Assemblies = [Neba.Neba.Api.Endpoints.AssemblyMarker.Assembly]);
 
 var app = builder.Build();
 

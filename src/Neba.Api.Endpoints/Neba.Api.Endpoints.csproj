@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <RootNamespace>Neba.WebApi.Endpoints</RootNamespace>
-    </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="FastEndpoints" />
     </ItemGroup>

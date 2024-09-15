@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Neba.WebApi.Endpoints;
+namespace Neba.Neba.Api.Endpoints;
 
 /// <summary>
 /// Provides a marker for the assembly containing the endpoints.

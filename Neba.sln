@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35309.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "src/WebApi/WebApi.csproj", "{9CEE6878-5976-49C3-982D-A61186AA5462}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api", "src/Neba.Api/Neba.Api.csproj", "{9CEE6878-5976-49C3-982D-A61186AA5462}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Endpoints", "src\WebApi.Endpoints\WebApi.Endpoints.csproj", "{B152D954-1334-4725-9C2D-2BBFA6CB589C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api.Endpoints", "src\Neba.Api.Endpoints\Neba.Api.Endpoints.csproj", "{B152D954-1334-4725-9C2D-2BBFA6CB589C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Directory Props", "Directory Props", "{1B6C9600-369C-46D5-A7C3-4FBD7DAB7F83}"
 	ProjectSection(SolutionItems) = preProject
