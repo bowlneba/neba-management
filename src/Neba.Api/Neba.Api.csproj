@@ -7,4 +7,5 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Neba.Api.Endpoints\Neba.Api.Endpoints.csproj" />
 	</ItemGroup>
+	
 </Project>
