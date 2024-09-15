@@ -9,6 +9,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 		<PathMap>$([System.IO.Path]::GetFullPath(('$(MSBuildThisFileDirectory)'))=./</PathMap>
 
