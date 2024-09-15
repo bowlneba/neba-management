@@ -10,6 +10,7 @@ internal sealed class GetWeatherForecast
     public override void Configure()
     {
         Get("weatherforecast");
+        Version(1);
         AllowAnonymous();
     }
 

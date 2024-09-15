@@ -20,6 +20,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseFastEndpoints();
+app.UseFastEndpoints(config =>
+{
+    config.Endpoints.RoutePrefix = "api";
+
+    config.Versioning.Prefix = "v";
+    config.Versioning.PrependToRoute = true;
+});
 
 await app.RunAsync();
