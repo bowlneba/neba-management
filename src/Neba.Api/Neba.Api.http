@@ -1,7 +1,7 @@
-@Api_HostAddress = http://localhost:5000
-@apiVersion = 1
+@Api_HostAddressV1 = http://localhost:5000/api/v1
 
-GET {{Api_HostAddress}}/api/v{{apiVersion}}/weatherforecast
+### Get Weather Forecast V1
+GET {{Api_HostAddressV1}}/weatherforecast
 Accept: application/json
 
 ###
