@@ -10,6 +10,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddFastEndpoints(options
     => options.Assemblies = [Neba.Api.Endpoints.AssemblyMarker.Assembly]);
 
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

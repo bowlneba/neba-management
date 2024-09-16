@@ -20,7 +20,14 @@ internal sealed class GetCounterIncrementor
     {
         await Task.Delay(5, ct);
 
-        var incrementor = RandomNumberGenerator.GetInt32(2, 10);
+        var incrementor = RandomNumberGenerator.GetInt32(-4, 10);
+
+        if (incrementor <= 0)
+        {
+            AddError($"Invalid Incrementor: {incrementor}", );
+
+            return new ProblemDetails(ValidationFailures);
+        }
 
         return TypedResults.Ok(incrementor);
     }
