@@ -1,5 +1,6 @@
 ﻿namespace Neba.Web;
 
+#pragma warning disable CA1812
 internal sealed class WeatherForecast
 {
     public DateOnly Date { get; set; }

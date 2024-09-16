@@ -4,6 +4,6 @@ namespace Neba.Web.Services.NebaApi;
 
 internal interface INebaApiV1
 {
-    [Get("/v1/weatherforecast")]
+    [Get("/weatherforecast")]
     Task<WeatherForecast[]> GetWeatherForecastsAsync();
 }

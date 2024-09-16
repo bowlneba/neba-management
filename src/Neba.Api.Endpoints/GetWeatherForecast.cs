@@ -16,6 +16,8 @@ internal sealed class GetWeatherForecast
 
     public override async Task HandleAsync(CancellationToken ct)
     {
+        await Task.Delay(1000, ct);
+
         var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
                 (
