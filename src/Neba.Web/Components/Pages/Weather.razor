@@ -3,6 +3,7 @@
 @using Neba.Web.Services.NebaApi
 
 @inject INebaApiV1 NebaApiV1;
+@inject NavigationManager NavigationManager;
 
 @attribute [StreamRendering]
 
@@ -46,6 +47,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await NebaApiV1.GetWeatherForecastsAsync();
+        var response = await NebaApiV1.GetWeatherForecastsAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            forecasts = response.Content;
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/error");
+        }
     }
 }
