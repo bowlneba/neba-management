@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Neba.Web.Client\Neba.Web.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Refit.HttpClientFactory" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
 </Project>
