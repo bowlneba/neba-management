@@ -1,6 +1,7 @@
 using Refit;
 using Neba.Web.Components;
 using Neba.Web.Services.NebaApi;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +10,17 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-var nebaApiOptions = builder.Configuration.GetSection(NebaApiOptions.SectionName).Get<NebaApiOptions>()
-    ?? throw new InvalidOperationException($"Cannot read {NebaApiOptions.SectionName} from appsettings");
+builder.Services.Configure<NebaApiOptions>(builder.Configuration.GetSection(NebaApiOptions.SectionName));
+
+builder.Services.AddTransient<NebaApiAuthenticationDelegatingHandler>();
 
 builder.Services.AddRefitClient<INebaApiV1>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri($"{nebaApiOptions.BaseUrl}/v1"));
+    .ConfigureHttpClient((serviceProvider, client) =>
+    {
+        var options = serviceProvider.GetRequiredService<IOptions<NebaApiOptions>>().Value;
+        client.BaseAddress = new Uri($"{options.BaseUrl}/v1");
+    })
+    .AddHttpMessageHandler<NebaApiAuthenticationDelegatingHandler>();
 
 var app = builder.Build();
 

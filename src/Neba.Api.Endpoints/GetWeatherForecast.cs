@@ -13,7 +13,6 @@ internal sealed class GetWeatherForecast
     {
         Get("weather");
         Version(1);
-        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<IReadOnlyCollection<WeatherForecast>>, InternalServerError>> ExecuteAsync(CancellationToken ct)

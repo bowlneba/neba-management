@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,10 @@ builder.Services.AddOpenApi();
 
 // Specify the assembly containing your endpoints
 builder.Services.AddFastEndpoints(options
-    => options.Assemblies = [Neba.Api.Endpoints.AssemblyMarker.Assembly]);
+    => options.Assemblies = [Neba.Api.Endpoints.AssemblyMarker.Assembly])
+    .AddAuthorization() // this moves to infrastructure
+    .AddAuthentication(Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication>(Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication.SchemeName, null);
 
 builder.Services.AddProblemDetails();
 
