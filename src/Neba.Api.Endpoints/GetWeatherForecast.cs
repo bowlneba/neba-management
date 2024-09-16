@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using FastEndpoints;
 
-namespace Neba.Neba.Api.Endpoints;
+namespace Neba.Api.Endpoints;
 
 #pragma warning disable CA1812
 internal sealed class GetWeatherForecast
