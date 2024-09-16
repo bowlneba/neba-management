@@ -13,6 +13,7 @@ internal sealed class GetWeatherForecast
     {
         Get("weather");
         Version(1);
+        AuthSchemes("ApiKey"); //this constant is defined in the ApiKeyAuthentication class, when infrastructure is created, look to leverage that if possible since this will reference application
     }
 
     public override async Task<Results<Ok<IReadOnlyCollection<WeatherForecast>>, InternalServerError>> ExecuteAsync(CancellationToken ct)
