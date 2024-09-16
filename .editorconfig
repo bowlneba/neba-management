@@ -5,6 +5,8 @@
 # CA1040: Avoid empty interfaces
 dotnet_diagnostic.CA1040.severity = none
 
+dotnet_diagnostic.IDE0058.severity = none
+
 #### Naming styles ####
 
 # Naming rules
