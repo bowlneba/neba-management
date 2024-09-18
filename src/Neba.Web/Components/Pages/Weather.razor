@@ -3,7 +3,6 @@
 @using Neba.Web.Services.NebaApi
 
 @inject INebaApiV1 NebaApiV1;
-@inject NavigationManager NavigationManager;
 
 @attribute [StreamRendering]
 
@@ -13,7 +12,11 @@
 
 <p>This component demonstrates showing data.</p>
 
-@if (forecasts == null)
+@if (_errorMessage is not null)
+{
+    <p><em>Error: @_errorMessage</em></p>
+}
+else if (forecasts == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -44,6 +47,7 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+    private string? _errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,10 +56,12 @@ else
         if (response.IsSuccessStatusCode)
         {
             forecasts = response.Content;
+            _errorMessage = null;
         }
         else
         {
-            NavigationManager.NavigateTo("/error");
+            _errorMessage = response.Error.Content;
+            forecasts = null;
         }
     }
 }
