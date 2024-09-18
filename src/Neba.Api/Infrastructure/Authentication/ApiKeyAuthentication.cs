@@ -12,7 +12,7 @@ internal sealed class ApiKeyAuthentication(IOptionsMonitor<AuthenticationSchemeO
     : AuthenticationHandler<AuthenticationSchemeOptions>(Options, Logger, Encoder)
 {
     public const string SchemeName = "ApiKey";
-    public const string HeaderName = "x-api-key";
+    public const string HeaderName = "X-Api-Key";
 
     private readonly string _apiKey = Config["ApiKey"]
         ?? throw new InvalidOperationException("Api key not set in appsettings.json");

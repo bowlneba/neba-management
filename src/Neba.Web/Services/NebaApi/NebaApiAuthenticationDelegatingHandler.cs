@@ -8,7 +8,7 @@ internal sealed class NebaApiAuthenticationDelegatingHandler(IOptions<NebaApiOpt
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        request.Headers.Add("x-api-key", Options.Value.Key);
+        request.Headers.Add("X-Api-Key", Options.Value.Key);
 
         return base.SendAsync(request, cancellationToken);
     }
