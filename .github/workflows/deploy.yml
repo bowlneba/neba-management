@@ -6,10 +6,13 @@ on:
 permissions:
     id-token: write
     contents: read
-    
-jobs:
 
-    deploy:
+env:
+    AZURE_NEBA_TENANT_ID: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+    AZURE_NEBAMGMT_SUBSCRIPTION_ID: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+
+jobs:
+    deploy_stage:
         name: "Deploy to Stage"
         runs-on: ubuntu-latest
         environment:
@@ -20,5 +23,5 @@ jobs:
               uses: azure/login@v2
               with:
                 client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID}}
-                tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+                tenant-id: $AZURE_NEBA_TENANT_ID
+                subscription-id: $AZURE_NEBAMGMT_SUBSCRIPTION_ID
