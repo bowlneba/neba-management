@@ -1,0 +1,28 @@
+name: "Deploy to Azure"
+
+on:
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Selected environment"
+                required: true
+                default: "Stage"
+                type: choice
+                options:
+                    - "Stage"
+
+env:
+    ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_BOWLNEBA_SUBSCRIPTION_ID}}
+    ARM_CLIENT_ID: ${{ secrets.AZURE_APP_REGISTRATION_CLIENT_ID}}
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_APP_REGISTRATION_CLIENT_SECRET}}
+    ARM_TENANT_ID: ${{ secrets.AZURE_NEBA_TENANT_ID}}
+
+jobs:
+    build:
+        name: "Build UI and API"
+        
+    deploy:
+        name: "Deploy to Azure"
+        runs-on: ubuntu-latest
+        environment:
+            name: ${{ github.event.inputs.environment }}
