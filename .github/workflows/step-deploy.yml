@@ -47,8 +47,7 @@ jobs:
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
         env:
-            environment: ${{ inputs.env.toLowerCase }}
-            directory: infrastructure/environments/${{ inputs.env.toLowerCase }}
+            directory: infrastructure/environments/${{ inputs.env }}
             
         steps:
             - name: Checkout
@@ -70,8 +69,8 @@ jobs:
                 subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
 
             - name: Terraform Init
+              run: terraform init
               working-directory: ${{ env.directory }}
-              run: terraform init -chdir=../../
 
             - name: Terraform Validate
               run: terraform validate
