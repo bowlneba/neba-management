@@ -1,4 +1,4 @@
-name: "Step- Terraform Apply"
+name: "Terraform Apply"
 
 on:
     workflow_call:
