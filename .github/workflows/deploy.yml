@@ -39,8 +39,8 @@ jobs:
 
 ### Continuous Deployment (CD) ###
 ### Download Artifacts
+### Deploy IAC
 ### Deploy Artifacts
 ### Zero Downtime
-### Deploy IAC
 ### Smoke Tests
 ### Alerting on Failure
