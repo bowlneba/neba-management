@@ -48,20 +48,20 @@ jobs:
         environment: ${{ inputs.env }}
 
         steps:
-            ## Make sure to upload the infrastructure folder in CI step
-            # - name: Deploy Infrastructure
-            #   uses: ./.github/workflows/terraform-apply.yml
-            #   with:
-            #     env: ${{ inputs.env }}
-            #   secrets:
-            #     inherit
-
-            - name: Azure login
-              uses: azure/login@v2
+            # Make sure to upload the infrastructure folder in CI step
+            - name: Deploy Infrastructure
+              uses: ./.github/workflows/terraform-apply.yml
               with:
-                client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+                env: ${{ inputs.env }}
+                secrets:
+                    inherit
+
+            # - name: Azure login
+            #   uses: azure/login@v2
+            #   with:
+            #     client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
+            #     tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+            #     subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
 
             # - name: Deploy API to Azure App Service
             #   uses: azure/webapps-deploy@v2

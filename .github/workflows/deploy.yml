@@ -8,6 +8,18 @@ permissions:
     contents: read
 
 jobs:
+    checkout:
+        name: Checkout
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
+
     deploy_stage:
         name: Deploy to Stage
         uses: ./.github/workflows/step-deploy.yml
@@ -16,14 +28,14 @@ jobs:
         secrets:
             inherit
 
-    deploy_production:
-        name: Deploy to Production
-        needs: deploy_stage
-        uses: ./.github/workflows/step-deploy.yml
-        with:
-            env: Production
-        secrets:
-            inherit
+    # deploy_production:
+    #     name: Deploy to Production
+    #     needs: deploy_stage
+    #     uses: ./.github/workflows/step-deploy.yml
+    #     with:
+    #         env: Production
+    #     secrets:
+    #         inherit
 
 
 
