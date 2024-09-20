@@ -24,3 +24,23 @@ jobs:
             env: Production
         secrets:
             inherit
+
+
+
+#### Continuous Integration (CI) ####
+### Restore Packages
+### Compile
+### Run Tests
+### Format Code
+### Linting
+### Security Scanning
+### Upload Artifacts
+### Alerting on Failure
+
+### Continuous Deployment (CD) ###
+### Download Artifacts
+### Deploy Artifacts
+### Zero Downtime
+### Deploy IAC
+### Smoke Tests
+### Alerting on Failure
