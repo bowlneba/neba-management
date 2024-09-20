@@ -1,0 +1,61 @@
+name: "Step- Terraform Apply"
+
+on:
+    workflow_call:
+        inputs:
+            env:
+                required: true
+                type: string
+                description: The environment to deploy to
+            resource_group_name:
+                required: true
+                type: string
+                description: The name of the Azure resource group
+        secrets:
+            AZURE_INFRASTRUCTURE_MANAGED_IDENTITY_CLIENT_ID:
+                required: true
+                description: The Azure managed identity client ID to run the Terraform as
+            AZURE_NEBA_TENANT_ID:
+                required: true
+                description: The Azure tenant ID
+            AZURE_NEBAMGMT_SUBSCRIPTION_ID:
+                required: true
+                description: The Azure subscription ID
+
+jobs:
+    terraform_apply:
+        name: Terraform Apply
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.env }}
+        env:
+            environment: ${{ inputs.env.toLowerCase }}
+            directory: infrastructure/environments/${{ inputs.env.toLowerCase }}
+
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                name: nebamgmt.iac
+                path: infrastructure/
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Azure login
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGED_IDENTITY_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+
+            - name: Terraform Init
+              working-directory: ${{ env.directory }}
+              run: terraform init -chdir=../../
+
+            - name: Terraform Validate
+              run: terraform validate
+              working-directory: ${{ env.directory }}
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve
+              working-directory: ${{ env.directory }}
+              
