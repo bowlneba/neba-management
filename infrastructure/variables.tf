@@ -1,8 +1,3 @@
-variable "azure_subscription_id" {
-    description = "The Azure subscription ID"
-    type = string
-}
-
 variable "primary_location" {
     description = "The primary location of the resource"
     type = string
