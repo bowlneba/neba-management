@@ -1,0 +1,33 @@
+name: "Step - Deploy to Azure"
+
+on:
+    workflow_call:
+        inputs:
+            env:
+                required: true
+                type: string
+                description: The environment to deploy to
+        secrets:
+            AZURE_NEBA_TENANT_ID:
+                required: true
+                description: The Azure tenant ID
+            AZURE_NEBAMGMT_SUBSCRIPTION_ID:
+                required: true
+                description: The Azure subscription ID
+            AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID:
+                required: true
+                description: The Azure managed identity client ID to run the GitHub Action as
+
+jobs:
+    deploy:
+        name: Deploy to ${{ inputs.env }}
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.env }}
+
+        steps:
+            - name: Azure login
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}

@@ -1,4 +1,4 @@
-name: "Deploy to Azure"
+name: Deploy to Azure
 
 on:
     workflow_dispatch:
@@ -7,21 +7,20 @@ permissions:
     id-token: write
     contents: read
 
-env:
-    AZURE_NEBA_TENANT_ID: ${{ secrets.AZURE_NEBA_TENANT_ID }}
-    AZURE_NEBAMGMT_SUBSCRIPTION_ID: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
-
 jobs:
     deploy_stage:
-        name: "Deploy to Stage"
-        runs-on: ubuntu-latest
-        environment:
-            name: "Stage"
+        name: Deploy to Stage
+        uses: ./.github/workflows/step-deploy.yml
+        with:
+            env: Stage
+        secrets:
+            inherit
 
-        steps:
-            - name: Azure login
-              uses: azure/login@v2
-              with:
-                client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
-                tenant-id: ${{ env.AZURE_NEBA_TENANT_ID }}
-                subscription-id: ${{ env.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+    deploy_production:
+        name: Deploy to Production
+        needs: deploy_stage
+        uses: ./.github/workflows/step-deploy.yml
+        with:
+            env: Production
+        secrets:
+            inherit
