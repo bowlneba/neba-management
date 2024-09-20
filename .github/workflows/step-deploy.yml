@@ -46,12 +46,12 @@ on:
 
 jobs:
     infrastrucutre:
-        name: Deploy Infrastructure to ${{ inputs.env }}
+        name: Deploy Infrastructure
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
         env:
             directory: infrastructure/
-            environment: environment/${{ inputs.env}}
+            environment: environments/${{ inputs.env}}
             TF_VAR_azure_subscription_id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
 
             ARM_CLIENT_ID: ${{ secrets.AZURE_APP_REGISTRATION_CLIENT_ID }}
@@ -84,7 +84,7 @@ jobs:
               working-directory: ${{ env.directory }}
 
     # deploy:
-    #     name: Deploy to ${{ inputs.env }}
+    #     name: Deploy Application
     #     runs-on: ubuntu-latest
     #     environment: ${{ inputs.env }}
     #     needs: infrastrucutre
