@@ -8,8 +8,21 @@ permissions:
     contents: read
 
 jobs:
+    checkout:
+        name: Checkout
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
+
     deploy_stage:
         name: Deploy to Stage
+        needs: checkout
         uses: ./.github/workflows/step-deploy.yml
         with:
             env: Stage

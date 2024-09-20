@@ -42,12 +42,15 @@ on:
                 description: The Azure managed identity client ID to run the GitHub Action as
 
 jobs:
-    deploy:
-        name: Deploy to ${{ inputs.env }}
+    infrastrucutre:
+        name: 
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
 
         steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
             # Make sure to upload the infrastructure folder in CI step
             - name: Deploy Infrastructure
               uses: ./.github/workflows/terraform-apply.yml
@@ -56,31 +59,48 @@ jobs:
                 secrets:
                     inherit
 
-            # - name: Azure login
-            #   uses: azure/login@v2
-            #   with:
-            #     client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
-            #     tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
-            #     subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+    # deploy:
+    #     name: Deploy to ${{ inputs.env }}
+    #     runs-on: ubuntu-latest
+    #     environment: ${{ inputs.env }}
+    #     needs: infrastrucutre
 
-            # - name: Deploy API to Azure App Service
-            #   uses: azure/webapps-deploy@v2
-            #   with:
-            #     app-name: ${{ inputs.api_app_name }}
-            #     package: ${{ inputs.api_package_path }}
-            #     # slot-name: slot
+    #     steps:
+    #         - name: Azure login
+    #           uses: azure/login@v2
+    #           with:
+    #             client-id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
+    #             tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+    #             subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+            
+    #         - uses: actions/download-artifact@v4
+    #           with:
+    #             name: nebamgmt.api
+    #             path: ${{ inputs.api_package_path }}
 
-            # # - name: Swap API Slots
-            # #   run: |
-            # #     az webapp deployment slot swap --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.api_app_name }} --slot slot --target-slot production --verbose
-    
-            # - name: Deploy Web to Azure App Service
-            #   uses: azure/webapps-deploy@v2
-            #   with:
-            #     app-name: ${{ inputs.web_app_name }}
-            #     package: ${{ inputs.web_package_path }}
-            #     # slot-name: slot
+    #         - name: Deploy API to Azure App Service
+    #           uses: azure/webapps-deploy@v2
+    #           with:
+    #             app-name: ${{ inputs.api_app_name }}
+    #             package: ${{ inputs.api_package_path }}
+    #             # slot-name: slot
 
-            # # - name: Swap Web Slots
-            # #   run: |
-            # #     az webapp deployment slot swap --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.web_app_name }} --slot slot --target-slot production --verbose
+    #         # - name: Swap API Slots
+    #         #   run: |
+    #         #     az webapp deployment slot swap --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.api_app_name }} --slot slot --target-slot production --verbose
+                
+    #         - uses: actions/download-artifact@v4
+    #           with:
+    #             name: nebamgmt.web
+    #             path: ${{ inputs.web_package_path }}
+
+    #         - name: Deploy Web to Azure App Service
+    #           uses: azure/webapps-deploy@v2
+    #           with:
+    #             app-name: ${{ inputs.web_app_name }}
+    #             package: ${{ inputs.web_package_path }}
+    #             # slot-name: slot
+
+    #         # - name: Swap Web Slots
+    #         #   run: |
+    #         #     az webapp deployment slot swap --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.web_app_name }} --slot slot --target-slot production --verbose
