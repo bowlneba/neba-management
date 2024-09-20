@@ -34,6 +34,9 @@ on:
             AZURE_NEBAMGMT_SUBSCRIPTION_ID:
                 required: true
                 description: The Azure subscription ID
+            AZURE_INFRASTRUCTURE_MANAGED_IDENTITY_CLIENT_ID:
+                required: true
+                description: The Azure managed identity client ID to run the Terraform as
             AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID:
                 required: true
                 description: The Azure managed identity client ID to run the GitHub Action as
@@ -45,6 +48,14 @@ jobs:
         environment: ${{ inputs.env }}
 
         steps:
+            ## Make sure to upload the infrastructure folder in CI step
+            # - name: Deploy Infrastructure
+            #   uses: ./.github/workflows/terraform-apply.yml
+            #   with:
+            #     env: ${{ inputs.env }}
+            #   secrets:
+            #     inherit
+
             - name: Azure login
               uses: azure/login@v2
               with:
