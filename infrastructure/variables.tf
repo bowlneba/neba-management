@@ -1,12 +1,12 @@
+variable "azure_subscription_id" {
+    description = "The Azure subscription ID"
+    type = string
+}
+
 variable "primary_location" {
     description = "The primary location of the resource"
     type = string
     default = "East US"
-}
-
-variable "resource_group_name" {
-    description = "The name of the resource group"
-    type = string
 }
 
 variable "environment" {
@@ -18,4 +18,9 @@ variable "owner" {
     description = "The owner of the resource"
     type = string
     default = "David Kipperman"
+}
+
+variable "resource_group_name" {
+    description = "The name of the resource group"
+    type = string
 }

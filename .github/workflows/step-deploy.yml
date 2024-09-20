@@ -48,6 +48,7 @@ jobs:
         environment: ${{ inputs.env }}
         env:
             directory: infrastructure/environments/${{ inputs.env }}
+            TF_VAR_azure_subscription_id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
             
         steps:
             - name: Checkout
