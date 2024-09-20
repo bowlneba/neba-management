@@ -23,7 +23,7 @@ jobs:
     deploy_stage:
         name: Deploy to Stage
         needs: checkout
-        uses: ./.github/actions/deploy-to-azure
+        uses: ./.github/workflows/step-deploy.yml
         with:
             env: Stage
         secrets:

@@ -1,4 +1,4 @@
-name: "Deploy to Azure"
+name: "Step - Deploy to Azure"
 
 on:
     workflow_call:
@@ -43,7 +43,7 @@ on:
 
 jobs:
     infrastrucutre:
-        name: Deploy IAC to ${{ inputs.env }}
+        name: 
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
 
@@ -53,7 +53,7 @@ jobs:
 
             # Make sure to upload the infrastructure folder in CI step
             - name: Deploy Infrastructure
-              uses: ./.github/actions/terraform-apply
+              uses: ./.github/workflows/terraform-apply.yml
               with:
                 env: ${{ inputs.env }}
                 secrets:
