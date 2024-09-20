@@ -46,18 +46,40 @@ jobs:
         name: 
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
-
+        env:
+            environment: ${{ inputs.env.toLowerCase }}
+            directory: infrastructure/environments/${{ inputs.env.toLowerCase }}
+            
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              
+            # - uses: actions/download-artifact@v4
+            #   with:
+            #     name: nebamgmt.iac
+            #     path: infrastructure/
 
-            # Make sure to upload the infrastructure folder in CI step
-            - name: Deploy Infrastructure
-              uses: ./.github/workflows/terraform-apply.yml
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Azure login
+              uses: azure/login@v2
               with:
-                env: ${{ inputs.env }}
-                secrets:
-                    inherit
+                client-id: ${{ secrets.AZURE_INFRASTRUCTURE_MANAGED_IDENTITY_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+
+            - name: Terraform Init
+              working-directory: ${{ env.directory }}
+              run: terraform init -chdir=../../
+
+            - name: Terraform Validate
+              run: terraform validate
+              working-directory: ${{ env.directory }}
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve
+              working-directory: ${{ env.directory }}
 
     # deploy:
     #     name: Deploy to ${{ inputs.env }}
