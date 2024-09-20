@@ -32,10 +32,13 @@ jobs:
             directory: infrastructure/environments/${{ inputs.env.toLowerCase }}
 
         steps:
-            - uses: actions/download-artifact@v4
-              with:
-                name: nebamgmt.iac
-                path: infrastructure/
+            - name: Checkout
+              uses: actions/checkout@v4
+              
+            # - uses: actions/download-artifact@v4
+            #   with:
+            #     name: nebamgmt.iac
+            #     path: infrastructure/
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
