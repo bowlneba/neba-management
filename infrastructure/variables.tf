@@ -19,3 +19,8 @@ variable "resource_group_name" {
     description = "The name of the resource group"
     type = string
 }
+
+variable "resource_group_budget_threshold" {
+    description = "The budget threshold for the action group"
+    type = number
+}

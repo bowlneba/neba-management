@@ -1,4 +1,11 @@
 terraform {
+  # required_providers {
+  #   azurerm = {
+  #     source  = "hashicorp/azurerm"
+  #     version = "~> 4.0"
+  #   }
+  # }
+
   backend "azurerm" {
     resource_group_name = ""
     storage_account_name = ""
@@ -17,4 +24,5 @@ module "resource_group" {
   location  = var.primary_location
   environment = var.environment
   owner = var.owner
+  budget_threshold = var.resource_group_budget_threshold
 }
