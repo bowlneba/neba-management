@@ -60,13 +60,13 @@ jobs:
 #### Continuous Integration (CI) ####
 ### Publish
 ### Security Scanning (also a separate job that runs weekly)
-### Upload Artifacts
+### Upload Artifacts/Infrastructure
 ### Alerting on Failure
 
 ### Continuous Deployment (CD) ###
-### Download Artifacts
-### Deploy Infrastructure
-### Deploy Artifacts
+### Deploy Infrastructure (download artifacts in action)
+### Deploy Artifacts (download artifacts in action)
+### EF Migrations
 ### Zero Downtime (deployment slots)
 ### Smoke Tests
 ### Alerting on Failure

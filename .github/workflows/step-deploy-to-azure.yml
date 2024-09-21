@@ -1,3 +1,5 @@
+### Commented out code is for deploying to a slot, which is not currently used in the workflow
+
 name: "Step - Deploy to Azure"
 
 on:
