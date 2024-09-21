@@ -29,3 +29,8 @@ variable "manager_email" {
   default     = "manager@bowlneba.com"
   type        = string
 }
+
+variable "budget_threshold" {
+  description = "The budget threshold for the action group"
+  type        = number
+}
