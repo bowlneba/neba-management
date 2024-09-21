@@ -17,3 +17,15 @@ variable "owner" {
   description = "The owner of the resource"
   type = string
 }
+
+variable "system_admin_email" {
+  description = "value for the system admin email address"
+  default     = "tech@bowlneba.com"
+  type        = string
+}
+
+variable "manager_email" {
+  description = "value for the manager email address"
+  default     = "manager@bowlneba.com"
+  type        = string
+}
