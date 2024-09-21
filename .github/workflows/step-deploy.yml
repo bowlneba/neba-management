@@ -46,7 +46,7 @@ on:
 
 jobs:
     infrastrucutre:
-        name: Deploy Infrastructure
+        name: Infrastructure
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
         env:
@@ -71,7 +71,7 @@ jobs:
               uses: hashicorp/setup-terraform@v3
 
             - name: Terraform Init
-              run: terraform init -backend-config=${{ env.directory}}/environments/${{ inputs.env }}/backend.tfvars
+              run: terraform init -backend-config=environments/${{ inputs.env }}/backend.tfvars
               working-directory: ${{ env.directory }}
 
             - name: Terraform Validate
@@ -79,7 +79,7 @@ jobs:
               working-directory: ${{ env.directory }}
 
             - name: Terraform Apply
-              run: terraform apply -var-file ${{ env.directory }}/environments/${{ inputs.env }}/terraform.tfvars  -auto-approve
+              run: terraform apply -var-file environments/${{ inputs.env }}/terraform.tfvars  -auto-approve
               working-directory: ${{ env.directory }}
 
     # deploy:
