@@ -1,4 +1,4 @@
-name: Deploy to Azure
+name: Deploy Application
 
 on:
     workflow_dispatch:
@@ -8,26 +8,35 @@ permissions:
     contents: read
 
 jobs:
-    # checkout:
-    #     name: Checkout
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - name: Checkout code
-    #           uses: actions/checkout@v2
+    checkout:
+        name: Checkout code
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
 
-    #         - uses: actions/upload-artifact@v4
-    #           with:
-    #               name: nebamgmt.iac
-    #               path: infrastructure/
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
 
-    deploy_stage:
-        name: Deploy to Stage
-        # needs: checkout
-        uses: ./.github/workflows/step-deploy.yml
+    deploy_infrastructure_stage:
+        name: Deploy Infrastructure to Stage
+        needs: checkout
+        uses: ./.github/workflows/step-terraform-plan.yml
         with:
             env: Stage
         secrets:
             inherit
+
+    # deploy_app_stage:
+    #     name: Deploy to Stage
+    #     needs: deploy_infrastructure_stage
+    #     uses: ./.github/workflows/step-deploy.yml
+    #     with:
+    #         env: Stage
+    #     secrets:
+    #         inherit
 
     # deploy_production:
     #     name: Deploy to Production

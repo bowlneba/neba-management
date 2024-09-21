@@ -36,8 +36,10 @@ jobs:
             ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
             
         steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
