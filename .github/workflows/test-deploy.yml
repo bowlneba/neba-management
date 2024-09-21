@@ -1,13 +1,7 @@
-## This job will either go away once the CI/CD pipeline jobs are created or will be repurposed to run the CD pipeline jobs
-
-name: Manual Application Deployment
+name: Test Deployment
 
 on:
     workflow_dispatch:
-
-permissions:
-    id-token: write
-    contents: read
 
 jobs:
     checkout:
@@ -17,36 +11,12 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: nebamgmt.iac
-                  path: infrastructure/
-
-    deploy_infrastructure_stage:
-        name: Deploy Infrastructure to Stage
-        needs: checkout
-        uses: ./.github/workflows/step-terraform.yml
-        with:
-            env: Stage
-            command: Apply
-        secrets:
-            inherit
-
     # deploy_app_stage:
     #     name: Deploy to Stage
     #     needs: deploy_infrastructure_stage
     #     uses: ./.github/workflows/step-deploy-to-azure.yml
     #     with:
     #         env: Stage
-    #     secrets:
-    #         inherit
-
-    # deploy_production:
-    #     name: Deploy to Production
-    #     needs: deploy_stage
-    #     uses: ./.github/workflows/step-deploy-to-azure.yml
-    #     with:
-    #         env: Production
     #     secrets:
     #         inherit
 
