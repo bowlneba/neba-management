@@ -1,0 +1,55 @@
+name: "Step - Terraform Plan"
+
+on:
+    workflow_call:
+        inputs:
+            env:
+                required: true
+                type: string
+                description: The environment to deploy to
+
+        secrets:
+            AZURE_NEBA_TENANT_ID:
+                required: true
+                description: The Azure tenant ID
+            AZURE_NEBAMGMT_SUBSCRIPTION_ID:
+                required: true
+                description: The Azure subscription ID
+            AZURE_APP_REGISTRATION_CLIENT_ID:
+                required: true
+                description: The Azure app registration client ID
+            AZURE_APP_REGISTRATION_CLIENT_SECRET:
+                required: true
+                description: The Azure app registration client secret
+
+jobs:
+    plan:
+        name: Perform Terraform Plan
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.env }}
+        env:
+            directory: infrastructure/
+
+            ARM_CLIENT_ID: ${{ secrets.AZURE_APP_REGISTRATION_CLIENT_ID }}
+            ARM_CLIENT_SECRET: ${{ secrets.AZURE_APP_REGISTRATION_CLIENT_SECRET }}
+            ARM_TENANT_ID: ${{ secrets.AZURE_NEBA_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
+            
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Terraform Init
+              run: terraform init -backend-config=environments/${{ inputs.env }}/backend.tfvars
+              working-directory: ${{ env.directory }}
+
+            - name: Terraform Validate
+              run: terraform validate
+              working-directory: ${{ env.directory }}
+
+            - name: Terraform Plan
+              run: terraform plan -var-file environments/${{ inputs.env }}/terraform.tfvars
+              working-directory: ${{ env.directory }}
