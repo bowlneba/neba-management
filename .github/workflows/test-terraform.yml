@@ -1,0 +1,31 @@
+name: Test Terraform
+
+on:
+    workflow_dispatch:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    checkout:
+        name: Checkout code
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
+
+    test_infrastructure:
+        name: Test Change in Infrastructure to Stage
+        needs: checkout
+        uses: ./.github/workflows/step-terraform.yml
+        with:
+            env: Stage
+            command: Plan
+        secrets:
+            inherit
