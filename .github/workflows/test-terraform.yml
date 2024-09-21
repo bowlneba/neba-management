@@ -23,7 +23,7 @@ jobs:
     test_infrastructure:
         name: Test Change in Infrastructure to Stage
         needs: checkout
-        uses: ./.github/actions/step-terraform.yml
+        uses: ./.github/workflows/step-terraform.yml
         with:
             env: Stage
             command: Plan

@@ -25,7 +25,7 @@ jobs:
     deploy_infrastructure_stage:
         name: Deploy Infrastructure to Stage
         needs: checkout
-        uses: ./.github/actions/step-terraform.yml
+        uses: ./.github/workflows/step-terraform.yml
         with:
             env: Stage
             command: Apply
@@ -35,7 +35,7 @@ jobs:
     # deploy_app_stage:
     #     name: Deploy to Stage
     #     needs: deploy_infrastructure_stage
-    #     uses: ./.github/actions/step-deploy-to-azure.yml
+    #     uses: ./.github/workflows/step-deploy-to-azure.yml
     #     with:
     #         env: Stage
     #     secrets:
@@ -44,7 +44,7 @@ jobs:
     # deploy_production:
     #     name: Deploy to Production
     #     needs: deploy_stage
-    #     uses: ./.github/actions/step-deploy-to-azure.yml
+    #     uses: ./.github/workflows/step-deploy-to-azure.yml
     #     with:
     #         env: Production
     #     secrets:
