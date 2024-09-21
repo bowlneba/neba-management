@@ -1,3 +1,5 @@
+## This job will either go away once the CI/CD pipeline jobs are created or will be repurposed to run the CD pipeline jobs
+
 name: Deploy Application
 
 on:
@@ -48,15 +50,16 @@ jobs:
     #     secrets:
     #         inherit
 
-
-
-#### Continuous Integration (CI) ####
+#### PR Review ####
 ### Restore Packages
 ### Compile
 ### Run Tests
-### Format Code
-### Linting
-### Security Scanning
+### Verify Formatting
+### Terraform Plan (confirm infrastructure changes)
+
+#### Continuous Integration (CI) ####
+### Publish
+### Security Scanning (also a separate job that runs weekly)
 ### Upload Artifacts
 ### Alerting on Failure
 
@@ -64,6 +67,6 @@ jobs:
 ### Download Artifacts
 ### Deploy Infrastructure
 ### Deploy Artifacts
-### Zero Downtime
+### Zero Downtime (deployment slots)
 ### Smoke Tests
 ### Alerting on Failure
