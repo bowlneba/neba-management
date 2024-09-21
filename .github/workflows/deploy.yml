@@ -26,7 +26,7 @@ jobs:
         uses: ./.github/workflows/step-terraform.yml
         with:
             env: Stage
-            command: Plan
+            command: Apply
         secrets:
             inherit
 
