@@ -40,6 +40,10 @@ on:
                 required: true
                 description: The Azure managed identity client ID to run the GitHub Action as
 
+permissions:
+    id-token: write
+    contents: read
+
 jobs:
     deploy:
         name: Deploy Application
@@ -54,7 +58,8 @@ jobs:
                 tenant-id: ${{ secrets.AZURE_NEBA_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_NEBAMGMT_SUBSCRIPTION_ID }}
             
-            - uses: actions/download-artifact@v4
+            - name: Download API Artifact
+              uses: actions/download-artifact@v4
               with:
                 name: nebamgmt.api
                 path: ${{ inputs.api_package_path }}
@@ -70,7 +75,8 @@ jobs:
             #   run: |
             #     az webapp deployment slot swap --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.api_app_name }} --slot slot --target-slot production --verbose
                 
-            - uses: actions/download-artifact@v4
+            - name: Download Web Artifact
+              uses: actions/download-artifact@v4
               with:
                 name: nebamgmt.web
                 path: ${{ inputs.web_package_path }}
