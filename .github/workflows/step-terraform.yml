@@ -1,8 +1,13 @@
-name: "Step - Terraform Plan"
+name: "Step - Terraform"
 
 on:
     workflow_call:
         inputs:
+            command:
+                required: true
+                type: string
+                description: The command to run
+                default: plan
             env:
                 required: true
                 type: string
@@ -23,8 +28,8 @@ on:
                 description: The Azure app registration client secret
 
 jobs:
-    plan:
-        name: Perform Terraform Plan
+    terraform:
+        name: Run Terraform ${{ inputs.command }}
         runs-on: ubuntu-latest
         environment: ${{ inputs.env }}
         env:
@@ -52,6 +57,11 @@ jobs:
               run: terraform validate
               working-directory: ${{ env.directory }}
 
-            - name: Terraform Plan
-              run: terraform plan -var-file environments/${{ inputs.env }}/terraform.tfvars
+            - name: Terraform ${{ inputs.command }}
+              run: |
+                if [ "${{ inputs.command }}" == "Plan" ]; then
+                    terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars
+                elif [ "${{ inputs.command }}" == "Apply" ]; then
+                    terraform apply -var-file=environments/${{ inputs.env }}/terraform.tfvars -auto-approve
+                fi
               working-directory: ${{ env.directory }}

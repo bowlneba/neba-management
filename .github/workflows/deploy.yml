@@ -23,9 +23,10 @@ jobs:
     deploy_infrastructure_stage:
         name: Deploy Infrastructure to Stage
         needs: checkout
-        uses: ./.github/workflows/step-terraform-plan.yml
+        uses: ./.github/workflows/step-terraform.yml
         with:
             env: Stage
+            command: Plan
         secrets:
             inherit
 
