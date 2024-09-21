@@ -23,7 +23,7 @@ resource "azurerm_monitor_action_group" "ag-nebamgmt-budget" {
   }
 }
 
-resource "azure_consumption_budget_resource_group" "budget-nebamgmt" {
+resource "azurerm_consumption_budget_resource_group" "budget-nebamgmt" {
   name = "Resource Group Budget"
   resource_group_id = azurerm_resource_group.rg-nebamgmt.id
   amount = var.budget_threshold
