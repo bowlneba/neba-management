@@ -19,4 +19,6 @@ module "resource_group" {
   environment = var.environment
   owner = var.owner
   budget_threshold = var.resource_group_budget_threshold
+  system_admin_email = var.system_admin_email
+  manager_email = var.manager_email
 }
