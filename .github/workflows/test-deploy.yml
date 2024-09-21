@@ -1,6 +1,6 @@
 ## This job will either go away once the CI/CD pipeline jobs are created or will be repurposed to run the CD pipeline jobs
 
-name: Deploy Application
+name: Manual Application Deployment
 
 on:
     workflow_dispatch:
