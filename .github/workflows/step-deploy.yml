@@ -78,8 +78,8 @@ jobs:
               run: terraform validate
               working-directory: ${{ env.directory }}
 
-            - name: Terraform Apply
-              run: terraform apply -var-file environments/${{ inputs.env }}/terraform.tfvars  -auto-approve
+            - name: Terraform Plan
+              run: terraform plan -var-file environments/${{ inputs.env }}/terraform.tfvars
               working-directory: ${{ env.directory }}
 
     # deploy:
