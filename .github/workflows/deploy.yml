@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - uses: actions/upload-artifact@v4
               with:
@@ -33,7 +33,7 @@ jobs:
     # deploy_app_stage:
     #     name: Deploy to Stage
     #     needs: deploy_infrastructure_stage
-    #     uses: ./.github/workflows/step-deploy.yml
+    #     uses: ./.github/workflows/step-deploy-to-azure.yml
     #     with:
     #         env: Stage
     #     secrets:
@@ -42,7 +42,7 @@ jobs:
     # deploy_production:
     #     name: Deploy to Production
     #     needs: deploy_stage
-    #     uses: ./.github/workflows/step-deploy.yml
+    #     uses: ./.github/workflows/step-deploy-to-azure.yml
     #     with:
     #         env: Production
     #     secrets:
