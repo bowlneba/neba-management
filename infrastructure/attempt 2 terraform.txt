@@ -20,28 +20,10 @@ variable "secondary_location"{
   type        = string
 }
 
-variable "nebamgmt_config_name" {
-  description = "value for the nebamgmt config name"
-  type        = string
-}
-
 variable "azure_infrastructure_management_group_id"{
   description = "value for the azure infrastructure management group id"
   default     = "00000000-0000-0000-0000-000000000000"
   type        = string
-}
-
-resource "azurerm_app_configuration" "nebamgmt-config"{
-  name = var.nebamgmt_config_name
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  location = var.primary_location
-
-  sku = "free"
-
-  identity {
-    type = "SystemAssigned"
-  
-  }
 }
 
 data "azurerm_role_definition" "app_config_data_reader" {
