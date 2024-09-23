@@ -1,0 +1,19 @@
+variable "key_vault_name" {
+  description = "The name of the key vault"
+  type = string
+}
+
+variable "resource_group_name" {
+  description = "The name of the resource group"
+  type = string
+}
+
+variable "location" {
+  description = "value of the primary location"
+  type = string
+}
+
+variable "environment" {
+  description = "The environment to deploy (stage, prod)"
+  type = string
+}

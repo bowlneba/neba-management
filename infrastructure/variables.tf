@@ -36,3 +36,8 @@ variable "manager_email" {
   default     = "manager@bowlneba.com"
   type        = string
 }
+
+variable "key_vault_name" {
+  description = "The name of the key vault"
+  type = string
+}

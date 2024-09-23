@@ -254,15 +254,6 @@ variable "azure_nebamgmt_local_app_registration_principal_id"{
   type        = string
 }
 
-resource "azurerm_key_vault" "nebamgmt-kv" {
-  name                = var.nebamgmt_key_vault_name
-  location            = var.primary_location
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  sku_name            = "standard"
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  enable_rbac_authorization = true
-}
-
 data "azurerm_role_definition" "keyvault_admin" {
   name = "Key Vault Administrator"
 }

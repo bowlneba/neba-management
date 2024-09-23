@@ -22,3 +22,11 @@ module "resource_group" {
   system_admin_email = var.system_admin_email
   manager_email = var.manager_email
 }
+
+module "app_configuration" {
+  source = "./modules/app_configuration"
+  key_vault_name = var.key_vault_name
+  resource_group_name = module.resource_group.resource_group_name
+  location = var.primary_location
+  environment = var.environment
+}
