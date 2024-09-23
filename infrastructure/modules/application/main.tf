@@ -49,3 +49,9 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
     "owner" = var.owner
   }
 }
+
+resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
+  key = "NebaApi:BaseUrl"
+  value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_site_hostname}"
+  configuration_store_id = var.app_config_id
+}

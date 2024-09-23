@@ -44,6 +44,11 @@ variable "api_always_on" {
   type = bool
 }
 
+variable "app_config_id" {
+  description = "The ID of the app configuration"
+  type = string
+}
+
 variable "app_config_endpoint" {
   description = "The endpoint of the app configuration"
   type = string

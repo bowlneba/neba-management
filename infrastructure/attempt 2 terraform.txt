@@ -22,12 +22,6 @@ resource "azurerm_role_assignment" "ui-app-config-reader-assignment" {
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
 }
 
-resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
-  key = "NebaApi:BaseUrl"
-  value = "https://${azurerm_linux_web_app.nebamgmt-api.default_hostname}"
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
-}
-
 resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
   key = "KeyVault:Url"
   value = azurerm_key_vault.nebamgmt-kv.vault_uri
