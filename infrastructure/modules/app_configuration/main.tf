@@ -25,6 +25,8 @@ resource "azurerm_app_configuration" "appcs-nebamgmt" {
     type = "SystemAssigned"
   }
 
+  local_auth_enabled = false
+
   tags = {
     "environment" = var.environment,
     "owner" = var.owner
