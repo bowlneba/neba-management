@@ -25,12 +25,14 @@ variable "resource_group_budget_threshold" {
     type = number
 }
 
+# This is set in environment variable in github action
 variable "system_admin_email" {
   description = "value for the system admin email address"
   default     = "tech@bowlneba.com"
   type        = string
 }
 
+# This is set in environment variable in github action
 variable "manager_email" {
   description = "value for the manager email address"
   default     = "manager@bowlneba.com"
