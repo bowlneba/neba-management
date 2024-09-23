@@ -14,6 +14,10 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
   }
 }
 
+data "azurerm_role_definition" "key_vault_contributor" {
+  name = "Key Vault Contributor"
+}
+
 resource "azurerm_app_configuration" "appcs-nebamgmt" {
   name = var.app_configuration_name
   resource_group_name = var.resource_group_name
@@ -33,11 +37,17 @@ resource "azurerm_app_configuration" "appcs-nebamgmt" {
   }
 }
 
-data "azurerm_role_definition" "app_configuration_data_owner" {
-  name = "App Configuration Data Owner"
+resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
+  scope = azurerm_key_vault.kv-nebamgmt.id
+  role_definition_id = data.azurerm_role_definition.key_vault_contributor.name
+  principal_id = data.azurerm_client_config.current.object_id
 }
 
-resource "azurerm_role_assignment" "infrastructure-app-config-data-owner" {
+data "azurerm_role_definition" "app_configuration_contributor" {
+  name = "App Configuration Contributor"
+}
+
+resource "azurerm_role_assignment" "infrastructure-app-config-contributor" {
   scope = azurerm_app_configuration.appcs-nebamgmt.id
   role_definition_id = data.azurerm_role_definition.app_configuration_data_owner.name
   principal_id = data.azurerm_client_config.current.object_id

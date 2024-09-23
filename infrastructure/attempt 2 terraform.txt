@@ -177,11 +177,6 @@ resource "azurerm_linux_web_app" "nebamgmt-ui" {
   }
 }
 
-variable "nebamgmt_key_vault_name" {
-  description = "value for the key vault name"
-  type = string
-}
-
 variable "azure_nebamgmt_local_app_registration_principal_id"{
   description = "value for the nebamgmt local app registration id"
   default     = "00000000-0000-0000-0000-000000000000"
@@ -190,12 +185,6 @@ variable "azure_nebamgmt_local_app_registration_principal_id"{
 
 data "azurerm_role_definition" "keyvault_admin" {
   name = "Key Vault Administrator"
-}
-
-resource "azurerm_role_assignment" "infrastructure-group-kv-admin-assignment" {
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
-  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
 }
 
 resource "azurerm_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
