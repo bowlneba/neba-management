@@ -6,26 +6,10 @@ variable "secondary_location"{
   type        = string
 }
 
-data "azurerm_role_definition" "app_config_data_reader" {
-  name = "App Configuration Data Reader"
-}
-
-resource "azurerm_role_assignment" "api-app-config-reader-assignment" {
-  scope                = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-  principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
-}
-
 resource "azurerm_role_assignment" "ui-app-config-reader-assignment" {
   scope                = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
-}
-
-resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
-  key = "KeyVault:Url"
-  value = azurerm_key_vault.nebamgmt-kv.vault_uri
-  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
 }
 
 resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-url-config-value" {
