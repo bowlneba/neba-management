@@ -29,4 +29,5 @@ module "app_configuration" {
   resource_group_name = module.resource_group.resource_group_name
   location = var.primary_location
   environment = var.environment
+  owner = var.owner
 }

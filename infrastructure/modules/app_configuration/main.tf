@@ -7,4 +7,9 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
   sku_name = "standard"
   tenant_id = data.azurerm_client_config.current.tenant_id
   enable_rbac_authorization = true
+
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
 }
