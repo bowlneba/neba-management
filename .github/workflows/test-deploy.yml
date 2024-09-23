@@ -40,3 +40,6 @@ jobs:
 ### Zero Downtime (deployment slots)
 ### Smoke Tests
 ### Alerting on Failure
+
+### When deploying to prod, after stage is complete, run a terraform plan on production and wait for approval for production deployment
+### how would this work since terraform plan would be in prod, and approval might be needed
