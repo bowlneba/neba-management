@@ -32,3 +32,13 @@ resource "azurerm_app_configuration" "appcs-nebamgmt" {
     "owner" = var.owner
   }
 }
+
+data "azurerm_role_definition" "app_configuration_data_owner" {
+  name = "App Configuration Data Owner"
+}
+
+resource "azurerm_role_assignment" "infrastructure-app-config-data-owner" {
+  scope = azurerm_app_configuration.appcs-nebamgmt.id
+  role_definition_id = data.azurerm_role_definition.app_configuration_data_owner.name
+  principal_id = data.azurerm_client_config.current.object_id
+}

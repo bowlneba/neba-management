@@ -6,12 +6,6 @@ variable "secondary_location"{
   type        = string
 }
 
-variable "azure_infrastructure_management_group_id"{
-  description = "value for the azure infrastructure management group id"
-  default     = "00000000-0000-0000-0000-000000000000"
-  type        = string
-}
-
 data "azurerm_role_definition" "app_config_data_reader" {
   name = "App Configuration Data Reader"
 }
@@ -26,16 +20,6 @@ resource "azurerm_role_assignment" "ui-app-config-reader-assignment" {
   scope                = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
   principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
-}
-
-data "azurerm_role_definition" "appconfig_data_owner"{
-  name = "App Configuration Data Owner"
-}
-
-resource "azurerm_role_assignment" "infrastructure-group-app-config-data-owner-assignment" {
-  scope                = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
 }
 
 resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
