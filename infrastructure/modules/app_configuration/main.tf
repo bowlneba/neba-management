@@ -47,7 +47,7 @@ data "azurerm_role_definition" "key_vault_secrets_user" {
   name = "Key Vault Secrets User"
 }
 
-resource "azurerm_role_assignment" "infrastructure-key-vault-secrets-user" {
+resource "azurerm_role_assignment" "app-nebamgmt-api-key-vault-secrets-user" {
   scope = azurerm_key_vault.kv-nebamgmt.id
   role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.name
   principal_id = var.api_principal_id
@@ -61,4 +61,14 @@ resource "azurerm_role_assignment" "infrastructure-app-config-contributor" {
   scope = azurerm_app_configuration.appcs-nebamgmt.id
   role_definition_id = data.azurerm_role_definition.app_configuration_contributor.name
   principal_id = data.azurerm_client_config.current.object_id
+}
+
+data "azurerm_role_definition" "app_config_data_reader" {
+  name = "App Configuration Data Reader"
+}
+
+resource "azurerm_role_assignment" "app-nebamgmt-api-app-config-reader" {
+  scope = azurerm_app_configuration.appcs-nebamgmt.id
+  role_definition_id = data.azurerm_role_definition.app_config_data_reader.name
+  principal_id = var.api_principal_id
 }

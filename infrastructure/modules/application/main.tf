@@ -54,6 +54,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-key-secret" {
   name = "Api-Key"
   value = var.api_key
   key_vault_id = var.key_vault_id
+  content_type = "text/plain"
 
   tags = {
     "environment" = var.environment,
@@ -77,13 +78,14 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value"
   }
 }
 
-# resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
-#   key = "NebaApi:BaseUrl"
-#   value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_site_hostname}"
-#   configuration_store_id = var.app_config_id
+resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
+  key = "NebaApi:BaseUrl"
+  value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_site_hostname}"
+  configuration_store_id = var.app_config_id
+  content_type = "text/plain"
 
-#   tags = {
-#     "environment" = var.environment,
-#     "owner" = var.owner
-#   }
-# }
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
+}
