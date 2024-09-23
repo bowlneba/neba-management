@@ -1,6 +1,7 @@
 resource "azurerm_resource_group" "rg-nebamgmt" {
   name = var.resource_group_name
   location = var.location
+
   tags = {
     environment = var.environment
     owner = var.owner
@@ -20,6 +21,11 @@ resource "azurerm_monitor_action_group" "ag-nebamgmt-budget" {
   email_receiver {
     name = "Manager"
     email_address = var.manager_email
+  }
+
+  tags = {
+    environment = var.environment
+    owner = var.owner
   }
 }
 
