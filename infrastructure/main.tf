@@ -38,6 +38,7 @@ module "app_configuration" {
 
   key_vault_name = var.key_vault_name
   app_configuration_name = var.app_configuration_name
+  api_principal_id = module.application.api_principal_id
 }
 
 module "application" {
