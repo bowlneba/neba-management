@@ -27,3 +27,8 @@ variable "app_configuration_name" {
   description = "The name of the app configuration"
   type = string
 }
+
+variable "api_principal_id" {
+  description = "The principal id of the API"
+  type = string
+}
