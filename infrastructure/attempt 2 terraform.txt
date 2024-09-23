@@ -35,7 +35,7 @@ data "azurerm_role_definition" "appconfig_data_owner"{
 resource "azurerm_role_assignment" "infrastructure-group-app-config-data-owner-assignment" {
   scope                = azurerm_app_configuration.nebamgmt-config.id
   role_definition_name = data.azurerm_role_definition.appconfig_data_owner.name
-  principal_id         = var.azure_infrastructure_management_group_id
+  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
 }
 
 resource "azurerm_app_configuration_key" "nebamgmt-api-baseurl-config-value" {
@@ -211,7 +211,7 @@ data "azurerm_role_definition" "keyvault_admin" {
 resource "azurerm_role_assignment" "infrastructure-group-kv-admin-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_admin.name
-  principal_id         = var.azure_infrastructure_management_group_id
+  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
 }
 
 resource "azurerm_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
@@ -249,7 +249,7 @@ data "azurerm_role_definition" "keyvault_key_user"{
 resource "azurerm_role_assignment" "infrastructure-group-kv-secret-user-role-assignment" {
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id         = var.azure_infrastructure_management_group_id
+  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
 }
 
 resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-role-assignment" {
