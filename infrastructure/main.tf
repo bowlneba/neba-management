@@ -49,4 +49,8 @@ module "application" {
 
   app_service_plan_name = var.app_service_plan_name
   app_service_plan_sku_name = var.app_service_plan_sku_name
+
+  api_service_name = var.api_service_name
+  api_always_on = var.api_always_on
+  app_config_endpoint = module.app_configuration.endpoint
 }

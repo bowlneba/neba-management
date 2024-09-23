@@ -27,3 +27,24 @@ variable "app_service_plan_sku_name" {
   description = "The SKU of the app service plan"
   type = string
 }
+
+variable "dotnet_version" {
+  description = "The version of .NET to use"
+  type = string
+  default = "9.0"
+}
+
+variable "api_service_name" {
+  description = "The name of the API service"
+  type = string
+}
+
+variable "api_always_on" {
+  description = "The always on setting for the API service"
+  type = bool
+}
+
+variable "app_config_endpoint" {
+  description = "The endpoint of the app configuration"
+  type = string
+}
