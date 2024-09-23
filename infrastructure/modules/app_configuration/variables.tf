@@ -22,3 +22,8 @@ variable "owner" {
   description = "The owner of the resource"
   type = string
 }
+
+variable "app_configuration_name" {
+  description = "The name of the app configuration"
+  type = string
+}

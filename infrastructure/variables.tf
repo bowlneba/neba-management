@@ -43,3 +43,8 @@ variable "key_vault_name" {
   description = "The name of the key vault"
   type = string
 }
+
+variable "app_configuration_name" {
+  description = "The name of the app configuration"
+  type = string
+}

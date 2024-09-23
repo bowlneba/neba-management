@@ -13,3 +13,20 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
     "owner" = var.owner
   }
 }
+
+resource "azurerm_app_configuration" "appcs-nebamgmt" {
+  name = var.app_configuration_name
+  resource_group_name = var.resource_group_name
+  location = var.location
+
+  sku = "free"
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
+}
