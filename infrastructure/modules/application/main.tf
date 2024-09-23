@@ -50,8 +50,25 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
   }
 }
 
-resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
-  key = "NebaApi:BaseUrl"
-  value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_site_hostname}"
-  configuration_store_id = var.app_config_id
+resource "azurerm_key_vault_secret" "nebamgmt-api-key-secret" {
+  name = "Api-Key"
+  value = var.api_key
+  key_vault_id = var.key_vault_id
 }
+
+resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value" {
+  configuration_store_id = var.app_config_id
+  key = "ApiKey"
+  type = "vault"
+  label = "Api-Key"
+  vault_key_reference = azurerm_key_vault_secret.nebamgmt-api-key-secret.versionless_id
+
+  depends_on = [ 
+    var.infrastructure-key-vault-contributor-id ]
+}
+
+# resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
+#   key = "NebaApi:BaseUrl"
+#   value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_site_hostname}"
+#   configuration_store_id = var.app_config_id
+# }

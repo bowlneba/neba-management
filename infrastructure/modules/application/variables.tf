@@ -44,6 +44,16 @@ variable "api_always_on" {
   type = bool
 }
 
+variable "infrastructure-key-vault-contributor-id" {
+  description = "The ID of the contributor role for the key vault"
+  type = string
+}
+
+variable "api_key" {
+  description = "The API key for the API service"
+  type = string
+}
+
 variable "app_config_id" {
   description = "The ID of the app configuration"
   type = string
@@ -51,5 +61,10 @@ variable "app_config_id" {
 
 variable "app_config_endpoint" {
   description = "The endpoint of the app configuration"
+  type = string
+}
+
+variable "key_vault_id" {
+  description = "The ID of the key vault"
   type = string
 }

@@ -42,6 +42,7 @@ jobs:
 
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
+            TF_VAR_api_key: ${{ secrets.API_KEY }}
             
         steps:
             - uses: actions/download-artifact@v4
