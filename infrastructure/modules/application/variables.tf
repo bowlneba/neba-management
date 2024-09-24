@@ -31,7 +31,7 @@ variable "app_service_plan_sku_name" {
 variable "dotnet_version" {
   description = "The version of .NET to use"
   type = string
-  default = "9.0"
+  default = "8.0"
 }
 
 variable "api_service_name" {
