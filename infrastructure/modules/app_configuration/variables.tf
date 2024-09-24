@@ -32,3 +32,8 @@ variable "api_principal_id" {
   description = "The principal id of the API"
   type = string
 }
+
+variable "web_principal_id" {
+  description = "The principal id of the web application"
+  type = string
+}

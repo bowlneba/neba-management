@@ -6,12 +6,6 @@ variable "secondary_location"{
   type        = string
 }
 
-resource "azurerm_role_assignment" "ui-app-config-reader-assignment" {
-  scope                = azurerm_app_configuration.nebamgmt-config.id
-  role_definition_name = data.azurerm_role_definition.app_config_data_reader.name
-  principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
-}
-
 resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-url-config-value" {
   key = "Encryption:Url"
   value = "${azurerm_key_vault.nebamgmt-kv.vault_uri}/keys/${azurerm_key_vault_key.nebamgmt-encryption-key.name}/${azurerm_key_vault_key.nebamgmt-encryption-key.version}"
@@ -111,24 +105,6 @@ resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-role-assig
   scope                = azurerm_key_vault.nebamgmt-kv.id
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
-}
-
-resource "azurerm_role_assignment" "nebamgmt-ui-kv-secret-user-role-assignment" {
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
-  principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "nebamgmt-api-kv-key-user-role-assignment"{
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_key_user.name
-  principal_id         = azurerm_linux_web_app.nebamgmt-api.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "nebamgmt-ui-kv-key-user-role-assignment"{
-  scope                = azurerm_key_vault.nebamgmt-kv.id
-  role_definition_name = data.azurerm_role_definition.keyvault_key_user.name
-  principal_id         = azurerm_linux_web_app.nebamgmt-ui.identity[0].principal_id
 }
 
 variable "nebamgmt_mssql_primary_server_name"{

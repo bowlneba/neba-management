@@ -109,14 +109,14 @@ resource "azurerm_linuz_web_app" "app-nebamgmt-web" {
   }
 }
 
-# resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
-#   key = "NebaApi:BaseUrl"
-#   value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
-#   configuration_store_id = var.app_config_id
-#   content_type = "text/plain"
+resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
+  key = "NebaApi:BaseUrl"
+  value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
+  configuration_store_id = var.app_config_id
+  content_type = "text/plain"
 
-#   tags = {
-#     "environment" = var.environment,
-#     "owner" = var.owner
-#   }
-# }
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
+}
