@@ -44,6 +44,16 @@ variable "api_always_on" {
   type = bool
 }
 
+variable "web_service_name" {
+  description = "The name of the web service"
+  type = string
+}
+
+variable "web_always_on" {
+  description = "The always on setting for the web service"
+  type = bool
+}
+
 variable "infrastructure-key-vault-contributor-id" {
   description = "The ID of the contributor role for the key vault"
   type = string

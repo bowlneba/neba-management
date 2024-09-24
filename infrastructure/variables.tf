@@ -73,3 +73,13 @@ variable "api_key" {
   description = "The API key for the API service"
   type = string
 }
+
+variable "web_service_name" {
+  description = "The name of the web service"
+  type = string
+}
+
+variable "web_always_on" {
+  description = "The always on setting for the web service"
+  type = bool
+}

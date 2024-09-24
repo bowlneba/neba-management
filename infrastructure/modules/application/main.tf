@@ -78,6 +78,37 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value"
   }
 }
 
+resource "azurerm_linuz_web_app" "app-nebamgmt-web" {
+  name = var.web_service_name
+  location = var.location
+  resource_group_name = var.resource_group_name
+  service_plan_id = azurerm_service_plan.asp-nebamgmt.id
+  client_certificate_enabled = false
+
+  site_config {
+    always_on = var.web_always_on
+
+    application_stack {
+      dotnet_version = var.dotnet_version
+    }
+  }
+
+  auth_settings {
+    enabled = false
+  }
+
+  https_only = true
+
+  app_settings = {
+    "APPCONFIG_ENDPOINT" = var.app_config_endpoint
+    #"APPINSIGHTS_CONNECTION_STRING" = ""
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
 # resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
 #   key = "NebaApi:BaseUrl"
 #   value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"

@@ -54,6 +54,9 @@ module "application" {
   api_service_name = var.api_service_name
   api_always_on = var.api_always_on
 
+  web_service_name = var.web_service_name
+  web_always_on = var.web_always_on
+
   app_config_endpoint = module.app_configuration.app_config_endpoint
   app_config_id = module.app_configuration.app_configuration_id
   
