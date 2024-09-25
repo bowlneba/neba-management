@@ -120,3 +120,19 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value"
     "owner" = var.owner
   }
 }
+
+resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value" {
+  configuration_store_id = var.app_config_id
+  key = "NebaApi:Key"
+  type = "vault"
+  label = "Api-Key"
+  vault_key_reference = azurerm_key_vault_secret.nebamgmt-api-key-secret.versionless_id
+
+  depends_on = [ 
+    var.infrastructure-key-vault-contributor-id ]
+
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
+}
