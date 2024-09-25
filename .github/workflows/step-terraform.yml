@@ -61,11 +61,18 @@ jobs:
               run: terraform validate
               working-directory: ${{ env.directory }}
 
-            - name: Terraform ${{ inputs.command }}
+            - name: Terraform Plan
               run: |
                 if [ "${{ inputs.command }}" == "Plan" ]; then
+                    terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars -out=tfplan
+                else
                     terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars
-                elif [ "${{ inputs.command }}" == "Apply" ]; then
-                    terraform apply -var-file=environments/${{ inputs.env }}/terraform.tfvars -auto-approve
+                fi
+              working-directory: ${{ env.directory }}
+
+            - name: Terraform Apply
+              run: |
+                if [ "${{ inputs.command }}" == "Apply" ]; then
+                    terraform apply -auto-approve tfplan
                 fi
               working-directory: ${{ env.directory }}
