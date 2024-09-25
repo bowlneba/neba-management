@@ -67,7 +67,7 @@ resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-api-api-key"
   key = "ApiKey"
   type = "vault"
   label = "Api-Key"
-  vault_key_reference = azurerm_key_vault_secret.nebamgmt-api-key-secret.versionless_id
+  vault_key_reference = azurerm_key_vault_secret.secret-nebamgmt-api-key.versionless_id
 
   depends_on = [ 
     var.infrastructure-key-vault-contributor-id ]
@@ -126,7 +126,7 @@ resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-web-api-key"
   key = "NebaApi:Key"
   type = "vault"
   label = "Api-Key"
-  vault_key_reference = azurerm_key_vault_secret.nebamgmt-api-key-secret.versionless_id
+  vault_key_reference = azurerm_key_vault_secret.secret-nebamgmt-api-key.versionless_id
 
   depends_on = [ 
     var.infrastructure-key-vault-contributor-id ]
