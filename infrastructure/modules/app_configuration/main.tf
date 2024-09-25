@@ -37,6 +37,10 @@ resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
   key = "KeyVault:Url"
   value = azurerm_key_vault.kv-nebamgmt.vault_uri
   configuration_store_id = azurerm_app_configuration.appcs-nebamgmt.id
+
+  depends_on = [  
+    azurerm_role_assignment.infrastructure-app-config-data-owner
+  ]
 }
 
 data "azurerm_role_definition" "key_vault_contributor" {
@@ -69,7 +73,7 @@ data "azurerm_role_definition" "app_configuration_data_owner" {
   name = "App Configuration Data Owner"
 }
 
-resource "azurerm_role_assignment" "infrastructure-app-config-contributor" {
+resource "azurerm_role_assignment" "infrastructure-app-config-data-owner" {
   scope = azurerm_app_configuration.appcs-nebamgmt.id
   role_definition_id = data.azurerm_role_definition.app_configuration_data_owner.name
   principal_id = data.azurerm_client_config.current.object_id
