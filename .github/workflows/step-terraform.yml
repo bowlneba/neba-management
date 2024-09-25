@@ -64,9 +64,9 @@ jobs:
             - name: Terraform Plan
               run: |
                 if [ "${{ inputs.command }}" == "Plan" ]; then
-                    terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars -out=tfplan
-                else
                     terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars
+                else
+                    terraform plan -var-file=environments/${{ inputs.env }}/terraform.tfvars -out=tfplan
                 fi
               working-directory: ${{ env.directory }}
 
