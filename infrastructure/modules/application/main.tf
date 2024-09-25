@@ -78,7 +78,7 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value"
   }
 }
 
-resource "azurerm_linuz_web_app" "app-nebamgmt-web" {
+resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   name = var.web_service_name
   location = var.location
   resource_group_name = var.resource_group_name
