@@ -33,7 +33,7 @@ resource "azurerm_app_configuration" "appcs-nebamgmt" {
   }
 }
 
-resource "azurerm_app_configuration_key" "keyvault-url-config-value" {
+resource "azurerm_app_configuration_key" "config-value-keyvault-url" {
   key = "KeyVault:Url"
   value = azurerm_key_vault.kv-nebamgmt.vault_uri
   configuration_store_id = azurerm_app_configuration.appcs-nebamgmt.id

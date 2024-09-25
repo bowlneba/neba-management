@@ -50,7 +50,7 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
   }
 }
 
-resource "azurerm_key_vault_secret" "nebamgmt-api-key-secret" {
+resource "azurerm_key_vault_secret" "secret-nebamgmt-api-key" {
   name = "Api-Key"
   value = var.api_key
   key_vault_id = var.key_vault_id
@@ -62,7 +62,7 @@ resource "azurerm_key_vault_secret" "nebamgmt-api-key-secret" {
   }
 }
 
-resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value" {
+resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-api-api-key" {
   configuration_store_id = var.app_config_id
   key = "ApiKey"
   type = "vault"
@@ -109,7 +109,7 @@ resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   }
 }
 
-resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value" {
+resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-api-baseurl" {
   key = "NebaApi:BaseUrl"
   value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
   configuration_store_id = var.app_config_id
@@ -121,7 +121,7 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value"
   }
 }
 
-resource "azurerm_app_configuration_key" "app-nebamgmt-web-api-key-config-value" {
+resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-web-api-key" {
   configuration_store_id = var.app_config_id
   key = "NebaApi:Key"
   type = "vault"
