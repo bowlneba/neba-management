@@ -121,7 +121,7 @@ resource "azurerm_app_configuration_key" "app-nebamgmt-api-baseurl-config-value"
   }
 }
 
-resource "azurerm_app_configuration_key" "app-nebamgmt-api-api-key-config-value" {
+resource "azurerm_app_configuration_key" "app-nebamgmt-web-api-key-config-value" {
   configuration_store_id = var.app_config_id
   key = "NebaApi:Key"
   type = "vault"
