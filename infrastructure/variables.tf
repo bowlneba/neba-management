@@ -78,3 +78,8 @@ variable "web_always_on" {
   description = "The always on setting for the web service"
   type = bool
 }
+
+variable "azure_github_action_managed_identity_client_id" {
+  description = "The client ID of the managed identity for the GitHub action"
+  type = string
+}

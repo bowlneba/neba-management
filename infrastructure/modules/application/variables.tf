@@ -54,6 +54,11 @@ variable "web_always_on" {
   type = bool
 }
 
+variable "azure_github_action_managed_identity_client_id" {
+  description = "The client ID of the managed identity for the GitHub action"
+  type = string
+}
+
 variable "api_key" {
   description = "The API key for the API service"
   type = string
