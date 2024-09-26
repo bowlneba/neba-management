@@ -44,11 +44,6 @@ variable "key_vault_name" {
   type = string
 }
 
-variable "app_configuration_name" {
-  description = "The name of the app configuration"
-  type = string
-}
-
 variable "app_service_plan_name" {
   description = "The name of the app service plan"
   type = string

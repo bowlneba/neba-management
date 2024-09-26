@@ -29,16 +29,15 @@ module "resource_group" {
   manager_email = var.manager_email
 }
 
-module "app_configuration" {
-  source = "./modules/app_configuration"
+module "secrets" {
+  source = "./modules/secrets"
   resource_group_name = module.resource_group.resource_group_name
   location = var.primary_location
   environment = var.environment
   owner = var.owner
 
   key_vault_name = var.key_vault_name
-  app_configuration_name = var.app_configuration_name
-
+  
   api_principal_id = module.application.api_principal_id
   web_principal_id = module.application.web_principal_id
 }
@@ -58,12 +57,10 @@ module "application" {
 
   web_service_name = var.web_service_name
   web_always_on = var.web_always_on
-
-  app_config_endpoint = module.app_configuration.app_config_endpoint
-  app_config_id = module.app_configuration.app_configuration_id
   
-  key_vault_id = module.app_configuration.key_vault_id
-  infrastructure-key-vault-contributor-id = module.app_configuration.infrastructure-key-vault-contributor-id
+  key_vault_id = module.secrets.key_vault_id
+  key_vault_url = module.secrets.key_vault_url
+  infrastructure-key-vault-contributor-id = module.secrets.infrastructure-key-vault-contributor-id
 
   api_key = var.api_key
 }

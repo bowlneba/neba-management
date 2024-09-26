@@ -36,7 +36,6 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
   https_only = true
 
   app_settings = {
-    "APPCONFIG_ENDPOINT" = var.app_config_endpoint
     #"APPINSIGHTS_CONNECTION_STRING" = ""
   }
 
@@ -55,22 +54,6 @@ resource "azurerm_key_vault_secret" "secret-nebamgmt-api-key" {
   value = var.api_key
   key_vault_id = var.key_vault_id
   content_type = "text/plain"
-
-  tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
-  }
-}
-
-resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-api-api-key" {
-  configuration_store_id = var.app_config_id
-  key = "ApiKey"
-  type = "vault"
-  label = "Api-Key"
-  vault_key_reference = azurerm_key_vault_secret.secret-nebamgmt-api-key.versionless_id
-
-  depends_on = [ 
-    var.infrastructure-key-vault-contributor-id ]
 
   tags = {
     "environment" = var.environment,
@@ -100,39 +83,14 @@ resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   https_only = true
 
   app_settings = {
-    "APPCONFIG_ENDPOINT" = var.app_config_endpoint
     #"APPINSIGHTS_CONNECTION_STRING" = ""
+
+    "APPSETTING_KeyVaultUrl" = var.key_vault_url
+    "APPSETTING_ApiBaseUrl" = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
+    "APPSETTING_ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
   }
 
   identity {
     type = "SystemAssigned"
-  }
-}
-
-resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-api-baseurl" {
-  key = "NebaApi:BaseUrl"
-  value = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
-  configuration_store_id = var.app_config_id
-  content_type = "text/plain"
-
-  tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
-  }
-}
-
-resource "azurerm_app_configuration_key" "config-value-app-nebamgmt-web-api-key" {
-  configuration_store_id = var.app_config_id
-  key = "NebaApi:Key"
-  type = "vault"
-  label = "Api-Key"
-  vault_key_reference = azurerm_key_vault_secret.secret-nebamgmt-api-key.versionless_id
-
-  depends_on = [ 
-    var.infrastructure-key-vault-contributor-id ]
-
-  tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
   }
 }

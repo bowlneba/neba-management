@@ -64,17 +64,12 @@ variable "api_key" {
   type = string
 }
 
-variable "app_config_id" {
-  description = "The ID of the app configuration"
-  type = string
-}
-
-variable "app_config_endpoint" {
-  description = "The endpoint of the app configuration"
-  type = string
-}
-
 variable "key_vault_id" {
   description = "The ID of the key vault"
+  type = string
+}
+
+variable "key_vault_url" {
+  description = "The URL of the key vault"
   type = string
 }
