@@ -68,3 +68,8 @@ variable "key_vault_url" {
   description = "The URL of the key vault"
   type = string
 }
+
+variable "infrastructure_key_vault_contributor_role_id" {
+  description = "The ID of the infrastructure key vault administrator role"
+  type = string
+}

@@ -61,6 +61,10 @@ resource "azurerm_key_vault_secret" "secret-nebamgmt-api-key" {
     "environment" = var.environment,
     "owner" = var.owner
   }
+
+  depends_on = [ 
+    var.infrastructure_key_vault_contributor_role_id
+   ]
 }
 
 resource "azurerm_linux_web_app" "app-nebamgmt-web" {

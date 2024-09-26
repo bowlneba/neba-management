@@ -14,13 +14,13 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
   }
 }
 
-data "azurerm_role_definition" "key_vault_administrator" {
-  name = "Key Vault Administrator"
+data "azurerm_role_definition" "key_vault_contributor" {
+  name = "Key Vault Contributor"
 }
 
-resource "azurerm_role_assignment" "infrastructure-key-vault-administrator" {
+resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_name = data.azurerm_role_definition.key_vault_administrator.name
+  role_definition_name = data.azurerm_role_definition.key_vault_contributor.name
   principal_id = data.azurerm_client_config.current.object_id
 }
 
