@@ -99,6 +99,11 @@ resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = {
+    "environment" = var.environment,
+    "owner" = var.owner
+  }
 }
 
 data "azurerm_role_definition" "website-contributor" {
