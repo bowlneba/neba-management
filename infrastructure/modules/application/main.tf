@@ -106,13 +106,13 @@ data "azurerm_role_definition" "website-contributor" {
 }
 
 resource "azurerm_role_assignment" "github-action-app-nebamgmt-web-website-contributor" {
-  scope = azurerm_linux_web_app.app-nebamgmt-web.identity[0].principal_id
+  scope = azurerm_linux_web_app.app-nebamgmt-web.id
   role_definition_name = data.azurerm_role_definition.website-contributor.name
   principal_id = var.azure_github_action_managed_identity_client_id
 }
 
 resource "azurerm_role_assignment" "github-action-app-nebamgmt-api-website-contributor" {
-  scope = azurerm_linux_web_app.app-nebamgmt-api.identity[0].principal_id
+  scope = azurerm_linux_web_app.app-nebamgmt-api.id
   role_definition_name = data.azurerm_role_definition.website-contributor.name
   principal_id = var.azure_github_action_managed_identity_client_id
 }
