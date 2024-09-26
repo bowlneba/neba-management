@@ -20,7 +20,7 @@ data "azurerm_role_definition" "key_vault_contributor" {
 
 resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_contributor.name
+  role_definition_id = data.azurerm_role_definition.key_vault_contributor.role_definition_id
   principal_id = data.azurerm_client_config.current.object_id
 }
 
@@ -30,12 +30,12 @@ data "azurerm_role_definition" "key_vault_secrets_user" {
 
 resource "azurerm_role_assignment" "app-nebamgmt-api-key-vault-secrets-user" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.name
+  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.role_definition_id
   principal_id = var.api_principal_id
 }
 
 resource "azurerm_role_assignment" "app-nebamgmt-web-key-vault-secrets-user" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.name
+  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.role_definition_id
   principal_id = var.web_principal_id
 }
