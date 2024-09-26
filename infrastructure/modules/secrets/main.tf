@@ -39,3 +39,9 @@ resource "azurerm_role_assignment" "app-nebamgmt-web-key-vault-secrets-user" {
   role_definition_name = data.azurerm_role_definition.key_vault_secrets_user.name
   principal_id = var.web_principal_id
 }
+
+resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
+  scope = azurerm_key_vault.kv-nebamgmt.id
+  role_definition_name = data.azurerm_role_definition.key_vault_secrets_user.name
+  principal_id = data.azurerm_client_config.current.object_id
+}
