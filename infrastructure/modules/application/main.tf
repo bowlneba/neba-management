@@ -37,6 +37,8 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
 
   app_settings = {
     #"APPINSIGHTS_CONNECTION_STRING" = ""
+    "APPSETTING_ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
+    "APPSETTING_KeyVaultUrl" = var.key_vault_url
   }
 
   identity {
