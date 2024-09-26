@@ -5,7 +5,7 @@ on:
 
 jobs:
     publish:
-        name: Checkout code
+        name: Publish and Upload Artifacts
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
