@@ -54,9 +54,6 @@ jobs:
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
-            - name: Debug Environment Variables
-              run: env
-
             - name: Terraform Init
               run: terraform init -backend-config=environments/${{ inputs.env }}/backend.tfvars
               working-directory: ${{ env.directory }}
