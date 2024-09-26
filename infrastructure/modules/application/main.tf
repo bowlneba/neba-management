@@ -37,8 +37,8 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
 
   app_settings = {
     #"APPINSIGHTS_CONNECTION_STRING" = ""
-    "APPSETTING_ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
-    "APPSETTING_KeyVaultUrl" = var.key_vault_url
+    "ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
+    "KeyVaultUrl" = var.key_vault_url
   }
 
   identity {
@@ -91,9 +91,9 @@ resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   app_settings = {
     #"APPINSIGHTS_CONNECTION_STRING" = ""
 
-    "APPSETTING_KeyVaultUrl" = var.key_vault_url
-    "APPSETTING_ApiBaseUrl" = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
-    "APPSETTING_ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
+    "KeyVaultUrl" = var.key_vault_url
+    "ApiBaseUrl" = "https://${azurerm_linux_web_app.app-nebamgmt-api.default_hostname}"
+    "ApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.secret-nebamgmt-api-key.id})"
   }
 
   identity {
