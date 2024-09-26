@@ -60,7 +60,6 @@ module "application" {
   
   key_vault_id = module.secrets.key_vault_id
   key_vault_url = module.secrets.key_vault_url
-  infrastructure-key-vault-contributor-id = module.secrets.infrastructure-key-vault-contributor-id
 
   api_key = var.api_key
 }

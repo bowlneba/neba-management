@@ -54,11 +54,6 @@ variable "web_always_on" {
   type = bool
 }
 
-variable "infrastructure-key-vault-contributor-id" {
-  description = "The ID of the contributor role for the key vault"
-  type = string
-}
-
 variable "api_key" {
   description = "The API key for the API service"
   type = string
