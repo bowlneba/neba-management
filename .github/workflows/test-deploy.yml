@@ -4,21 +4,52 @@ on:
     workflow_dispatch:
 
 jobs:
-    checkout:
+    publish:
         name: Checkout code
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
-    # deploy_app_stage:
-    #     name: Deploy to Stage
-    #     needs: deploy_infrastructure_stage
-    #     uses: ./.github/workflows/step-deploy-to-azure.yml
-    #     with:
-    #         env: Stage
-    #     secrets:
-    #         inherit
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 9.x
+
+            # run unit tests
+
+            - name: Publish API
+              run: dotnet publish -c Release -o ./publish/api ./src/Neba.Api
+
+            - name: Publish Web
+              run: dotnet publish -c Release -o ./publish/web ./src/Neba.Web
+
+            - name: Upload API Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: neba.api
+                path: ./publish/api
+
+            - name: Upload Web Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: neba.web
+                path: ./publish/web
+
+
+    deploy_stage:
+        name: Deploy to Stage
+        needs: publish
+        uses: ./.github/workflows/step-deploy-to-azure.yml
+        with:
+            env: Stage
+            api_app_name: app-nebamgmt-api-stage
+            api_package_path: neba.api
+
+            web_app_name: app-nebamgmt-web-stage
+            web_package_path: neba.web
+        secrets:
+            inherit
 
 #### PR Review ####
 ### Restore Packages

@@ -43,6 +43,7 @@ jobs:
             TF_VAR_system_admin_email: ${{ vars.SYSTEM_ADMIN_EMAIL }}
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
             TF_VAR_api_key: ${{ secrets.API_KEY }}
+            TF_VAR_azure_github_action_managed_identity_client_id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_CLIENT_ID }}
             
         steps:
             - uses: actions/download-artifact@v4
@@ -52,6 +53,9 @@ jobs:
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
+
+            - name: Debug Environment Variables
+              run: env
 
             - name: Terraform Init
               run: terraform init -backend-config=environments/${{ inputs.env }}/backend.tfvars
