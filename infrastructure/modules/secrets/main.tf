@@ -18,7 +18,7 @@ data "azurerm_role_definition" "key_vault_administrator" {
   name = "Key Vault Administrator"
 }
 
-resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
+resource "azurerm_role_assignment" "infrastructure-key-vault-administrator" {
   scope = azurerm_key_vault.kv-nebamgmt.id
   role_definition_name = data.azurerm_role_definition.key_vault_administrator.name
   principal_id = data.azurerm_client_config.current.object_id
