@@ -63,7 +63,7 @@ resource "azurerm_key_vault_secret" "secret-nebamgmt-api-key" {
   }
 
   depends_on = [ 
-    var.infrastructure_key_vault_contributor_role_id
+    var.infrastructure_key_vault_secrets_officer_role_id
    ]
 }
 

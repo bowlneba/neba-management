@@ -69,7 +69,7 @@ variable "key_vault_url" {
   type = string
 }
 
-variable "infrastructure_key_vault_contributor_role_id" {
-  description = "The ID of the infrastructure key vault administrator role"
+variable "infrastructure_key_vault_secrets_officer_role_id" {
+  description = "The ID of the infrastructure key vault secrets officer role"
   type = string
 }

@@ -8,7 +8,7 @@ output "key_vault_url" {
     value       = azurerm_key_vault.kv-nebamgmt.vault_uri
 }
 
-output "infrastructure_key_vault_contributor_role_id" {
-    description = "The ID of the infrastructure key vault contributor role"
-    value       = azurerm_role_assignment.infrastructure-key-vault-contributor.id
+output "infrastructure_key_vault_secrets_officer_role_id" {
+    description = "The ID of the infrastructure key vault secrets_officer role"
+    value       = azurerm_role_assignment.infrastructure-key-vault-secrets-officer.id
 }
