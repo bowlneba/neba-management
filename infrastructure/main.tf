@@ -49,6 +49,8 @@ module "application" {
   environment = var.environment
   owner = var.owner
 
+  azure_github_action_managed_identity_client_id = var.azure_github_action_managed_identity_client_id
+
   app_service_plan_name = var.app_service_plan_name
   app_service_plan_sku_name = var.app_service_plan_sku_name
 
