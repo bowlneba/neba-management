@@ -14,13 +14,13 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
   }
 }
 
-data "azurerm_role_definition" "key_vault_contributor" {
-  name = "Key Vault Contributor"
+data "azurerm_role_definition" "key_vault_administrator" {
+  name = "Key Vault Administrator"
 }
 
 resource "azurerm_role_assignment" "infrastructure-key-vault-contributor" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_contributor.role_definition_id
+  role_definition_name = data.azurerm_role_definition.key_vault_administrator.name
   principal_id = data.azurerm_client_config.current.object_id
 }
 
@@ -30,12 +30,12 @@ data "azurerm_role_definition" "key_vault_secrets_user" {
 
 resource "azurerm_role_assignment" "app-nebamgmt-api-key-vault-secrets-user" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.role_definition_id
+  role_definition_name = data.azurerm_role_definition.key_vault_secrets_user.name
   principal_id = var.api_principal_id
 }
 
 resource "azurerm_role_assignment" "app-nebamgmt-web-key-vault-secrets-user" {
   scope = azurerm_key_vault.kv-nebamgmt.id
-  role_definition_id = data.azurerm_role_definition.key_vault_secrets_user.role_definition_id
+  role_definition_name = data.azurerm_role_definition.key_vault_secrets_user.name
   principal_id = var.web_principal_id
 }
