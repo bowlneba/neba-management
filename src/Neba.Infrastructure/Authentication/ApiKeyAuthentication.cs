@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Encodings.Web;
 
-namespace Neba.Api.Infrastructure.Authentication;
+namespace Neba.Infrastructure.Authentication;
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 internal sealed class ApiKeyAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> Options, ILoggerFactory Logger, UrlEncoder Encoder, IConfiguration Config)
