@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35309.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api", "src\Neba.Api\Neba.Api.csproj", "{9CEE6878-5976-49C3-982D-A61186AA5462}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Api.Endpoints", "src\Neba.Api.Endpoints\Neba.Api.Endpoints.csproj", "{B152D954-1334-4725-9C2D-2BBFA6CB589C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neba.Endpoints", "src\Neba.Endpoints\Neba.Endpoints.csproj", "{B152D954-1334-4725-9C2D-2BBFA6CB589C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Directory Props", "Directory Props", "{1B6C9600-369C-46D5-A7C3-4FBD7DAB7F83}"
 	ProjectSection(SolutionItems) = preProject
@@ -86,6 +86,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{B152D954-1334-4725-9C2D-2BBFA6CB589C} = {1BC32D72-41E4-49A7-B79D-F849D7F650AD}
 		{625A9427-F497-4793-A5D0-6E530F7427E0} = {1BC32D72-41E4-49A7-B79D-F849D7F650AD}
 		{EBA3F755-21E0-4310-81D8-06AD3F1A8B6F} = {1BC32D72-41E4-49A7-B79D-F849D7F650AD}
 		{B29D71E3-B3A8-4686-8229-47CD05E4F666} = {1BC32D72-41E4-49A7-B79D-F849D7F650AD}

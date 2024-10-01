@@ -1,5 +1,5 @@
-using FastEndpoints;
 using Neba.Application;
+using Neba.Endpoints;
 using Neba.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 // Specify the assembly containing your endpoints
-builder.Services.AddFastEndpoints(options
-    => options.Assemblies = [Neba.Api.Endpoints.AssemblyMarker.Assembly]);
+builder.Services.AddNebaEndpoints();
 
 builder.Services
     .AddSharedApplicationServices()
@@ -30,12 +29,6 @@ app.UseHttpsRedirection();
 
 app.UseSharedInfrastructure();
 
-app.UseFastEndpoints(config =>
-{
-    config.Endpoints.RoutePrefix = "api";
-
-    config.Versioning.Prefix = "v";
-    config.Versioning.PrependToRoute = true;
-});
+app.UseNebaEndpoints();
 
 await app.RunAsync();
