@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.Behaviors;
 
 namespace Neba.Application;
 
@@ -17,6 +18,8 @@ public static class ApplicationDependencyInjection
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(typeof(ApplicationDependencyInjection).Assembly);
+
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
         return services;

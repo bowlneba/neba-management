@@ -6,6 +6,7 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\Neba.Api.Endpoints\Neba.Api.Endpoints.csproj" />
+	  <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
 	</ItemGroup>
 	
 </Project>
