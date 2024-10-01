@@ -3,6 +3,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
@@ -26,4 +28,10 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
         <PackageReference Include="ReportGenerator" />
     </ItemGroup>
+
+    <ItemGroup>
+		<Using Include="Xunit"/>
+		<Using Include="FluentAssertions"/>
+		<Using Include="NSubstitute"/>
+	</ItemGroup>
 </Project>

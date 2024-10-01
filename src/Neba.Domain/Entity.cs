@@ -32,6 +32,7 @@ public abstract class Entity<TId>
     public override int GetHashCode()
         => Id.GetHashCode();
 
+#nullable disable
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
@@ -39,6 +40,7 @@ public abstract class Entity<TId>
     /// <returns>
     /// true if the specified object is equal to the current object; otherwise, false.
     /// </returns>
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
         => obj is Entity<TId> other && other.Id.Equals(Id);
+#nullable restore
 }
