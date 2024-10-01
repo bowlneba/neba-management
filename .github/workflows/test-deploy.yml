@@ -1,0 +1,76 @@
+name: Test Deployment
+
+on:
+    workflow_dispatch:
+
+jobs:
+    publish:
+        name: Publish and Upload Artifacts
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 9.x
+
+            # run unit tests
+
+            - name: Publish API
+              run: dotnet publish -c Release -o ./publish/api ./src/Neba.Api
+
+            - name: Publish Web
+              run: dotnet publish -c Release -o ./publish/web ./src/Neba.Web
+
+            - name: Upload API Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: nebamgmt.api
+                path: ./publish/api
+
+            - name: Upload Web Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: nebamgmt.web
+                path: ./publish/web
+
+
+    deploy_stage:
+        name: Deploy to Stage
+        needs: publish
+        uses: ./.github/workflows/step-deploy-to-azure.yml
+        with:
+            env: Stage
+            api_app_name: app-nebamgmt-api-stage
+            api_package_path: nebamgmt.api
+
+            web_app_name: app-nebamgmt-web-stage
+            web_package_path: nebamgmt.web
+        secrets:
+            inherit
+
+#### PR Review ####
+### Restore Packages
+### Compile
+### Run Tests
+### Verify Formatting
+### Terraform Plan (confirm infrastructure changes)
+
+#### Continuous Integration (CI) ####
+### Publish
+### Security Scanning (also a separate job that runs weekly)
+### Upload Artifacts/Infrastructure
+### Alerting on Failure
+
+### Continuous Deployment (CD) ###
+### Deploy Infrastructure (download artifacts in action)
+### Deploy Artifacts (download artifacts in action)
+### EF Migrations
+### Zero Downtime (deployment slots)
+### Smoke Tests
+### Alerting on Failure
+
+### When deploying to prod, after stage is complete, run a terraform plan on production and wait for approval for production deployment
+### how would this work since terraform plan would be in prod, and approval might be needed
