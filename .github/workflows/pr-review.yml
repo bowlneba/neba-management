@@ -10,6 +10,7 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+              name: Checkout code
 
             - name: Set up .NET
               uses: actions/setup-dotnet@v4
@@ -27,6 +28,12 @@ jobs:
 
             - name: Fix Formatting
               run: dotnet format -v detailed --verify-no-changes
+
+            - name: Upload Infrastructure Code
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nebamgmt.iac
+                  path: infrastructure/
 
     infrastructure:
         name: Infrastructure Verification
