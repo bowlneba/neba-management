@@ -106,23 +106,3 @@ resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-role-assig
   role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
   principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
 }
-
-variable "nebamgmt_mssql_primary_server_name"{
-  description = "SQL Server name"
-  type = string
-}
-
-variable "nebamgmt_mssql_admin_password" {
-  description = "Admin password for SQL Server"
-  type = string
-}
-
-resource "azurerm_mssql_server" "nebamgmt-primary-sql-server" {
-  name = var.nebamgmt_mssql_primary_server_name
-  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
-  location = var.primary_location
-  version = "12.0"
-
-  administrator_login = "nebamgmtsa"
-  administrator_login_password = var.nebamgmt_mssql_admin_password
-}

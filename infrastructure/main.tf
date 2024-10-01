@@ -66,3 +66,14 @@ module "application" {
 
   api_key = var.api_key
 }
+
+module "database" {
+  source = "./modules/database"
+  resource_group_name = module.resource_group.resource_group_name
+  primary_location = var.primary_location
+  environment = var.environment
+  owner = var.owner
+
+  nebamgmt_mssql_primary_server_name = var.nebamgmt_mssql_primary_server_name
+  nebamgmt_mssql_admin_password = var.nebamgmt_mssql_admin_password
+}

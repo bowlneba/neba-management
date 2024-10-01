@@ -83,3 +83,13 @@ variable "azure_github_action_managed_identity_principal_id" {
   description = "The principal ID of the managed identity for the GitHub action"
   type = string
 }
+
+variable "nebamgmt_mssql_primary_server_name" {
+  description = "Primary SQL Server name"
+  type        = string
+}
+
+variable "nebamgmt_mssql_admin_password" {
+  description = "SQL Server admin password"
+  type        = string
+}
