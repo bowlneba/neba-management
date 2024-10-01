@@ -74,6 +74,6 @@ module "database" {
   environment = var.environment
   owner = var.owner
 
-  nebamgmt_mssql_primary_server_name = var.nebamgmt_mssql_primary_server_name
-  nebamgmt_mssql_admin_password = var.nebamgmt_mssql_admin_password
+  mssql_primary_server_name = var.nebamgmt_mssql_primary_server_name
+  mssql_admin_password = var.nebamgmt_mssql_admin_password
 }

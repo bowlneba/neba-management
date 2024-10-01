@@ -19,12 +19,12 @@ variable "owner" {
     default = "David Kipperman"
 }
 
-variable "nebamgmt_mssql_primary_server_name" {
+variable "mssql_primary_server_name" {
   description = "Primary SQL Server name"
   type        = string
 }
 
-variable "nebamgmt_mssql_admin_password" {
+variable "mssql_admin_password" {
   description = "SQL Server admin password"
   type        = string
 }
