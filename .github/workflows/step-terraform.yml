@@ -45,7 +45,7 @@ jobs:
             TF_VAR_manager_email: ${{ vars.MANAGER_EMAIL }}
             TF_VAR_api_key: ${{ secrets.API_KEY }}
             TF_VAR_azure_github_action_managed_identity_principal_id: ${{ secrets.AZURE_GITHUB_ACTION_MANAGED_IDENTITY_PRINCIPAL_ID }}
-            TF_VAR_azure_nebamgmt_mssql_admin_password: ${{ secrets.AZURE_NEBAMGMT_MSSQL_ADMIN_PASSWORD }}
+            TF_VAR_nebamgmt_mssql_admin_password: ${{ secrets.AZURE_NEBAMGMT_MSSQL_ADMIN_PASSWORD }}
             
         steps:
             - uses: actions/download-artifact@v4
