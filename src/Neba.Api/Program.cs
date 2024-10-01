@@ -1,6 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication;
 using Neba.Application;
+using Neba.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,9 @@ builder.Services.AddFastEndpoints(options
     .AddAuthentication(Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication>(Neba.Api.Infrastructure.Authentication.ApiKeyAuthentication.SchemeName, null);
 
-builder.Services.AddSharedApplicationServices();
+builder.Services
+    .AddSharedApplicationServices()
+    .AddSharedInfrastructureServices();
 
 builder.Services.AddProblemDetails();
 
@@ -28,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSharedInfrastructure();
 
 app.UseFastEndpoints(config =>
 {
