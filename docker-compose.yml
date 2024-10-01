@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: nebamgmt.mssql
+    user: root
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=NebaSA123!!!
+    ports:
+      - "19630:1433"
+    volumes:
+      - nebamgmt.mssql:/var/opt/mssql
+
+volumes:
+  nebamgmt.mssql:
