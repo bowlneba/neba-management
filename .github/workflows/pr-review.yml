@@ -1,0 +1,39 @@
+name: PR Review
+
+on:
+    pull_request:
+
+jobs:
+    build:
+        name: PR Review
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                dotnet-version: 9.x
+
+            - name: Install dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Unit Tests
+              run: dotnet test --configuration Release --no-build 
+
+            - name: Fix Formatting
+              run: dotnet format -v detailed --verify-no-changes
+
+    infrastructure:
+        name: Infrastructure Verification
+        needs: build
+        uses: ./.github/workflows/step-terraform.yml
+        with:
+            env: Stage
+            command: Apply
+        secrets:
+            inherit
