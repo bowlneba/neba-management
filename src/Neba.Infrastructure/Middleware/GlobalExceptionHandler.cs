@@ -32,7 +32,7 @@ public sealed class GlobalExceptionHandler
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the exception was handled.</returns>
     public async ValueTask<bool> TryHandleAsync([NotNull] HttpContext httpContext, [NotNull] Exception exception, CancellationToken cancellationToken)
     {
-        _logger.ExceptionOccurred(exception.Message);
+        _logger.LogExceptionOccurred(exception.Message);
 
         var problemDetails = new ProblemDetails
         {
@@ -59,5 +59,5 @@ internal static partial class GlobalExceptionHandlerLogMessages
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The error message.</param>
     [LoggerMessage(Level = LogLevel.Error, Message = "Exception occurred: {Message}")]
-    public static partial void ExceptionOccurred(this ILogger<GlobalExceptionHandler> logger, string message);
+    public static partial void LogExceptionOccurred(this ILogger<GlobalExceptionHandler> logger, string message);
 }
