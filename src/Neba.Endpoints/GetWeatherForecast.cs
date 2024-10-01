@@ -3,7 +3,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace Neba.Api.Endpoints;
+namespace Neba.Endpoints;
 
 #pragma warning disable CA1812
 internal sealed class GetWeatherForecast

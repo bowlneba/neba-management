@@ -51,13 +51,6 @@ jobs:
         secrets:
             inherit
 
-#### PR Review ####
-### Restore Packages
-### Compile
-### Run Tests
-### Verify Formatting
-### Terraform Plan (confirm infrastructure changes)
-
 #### Continuous Integration (CI) ####
 ### Publish
 ### Security Scanning (also a separate job that runs weekly)
