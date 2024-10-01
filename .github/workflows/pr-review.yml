@@ -4,8 +4,8 @@ on:
     pull_request:
 
 jobs:
-    build:
-        name: PR Review
+    code:
+        name: Code Verification
         runs-on: ubuntu-latest
 
         steps:
@@ -37,7 +37,7 @@ jobs:
 
     infrastructure:
         name: Infrastructure Verification
-        needs: build
+        needs: code
         uses: ./.github/workflows/step-terraform.yml
         with:
             env: Stage
