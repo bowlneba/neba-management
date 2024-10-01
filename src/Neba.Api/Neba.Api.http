@@ -1,0 +1,8 @@
+@Api_HostAddressV1 = http://localhost:5000/api/v1
+@ApiKey = dev1963
+
+### Get Weather Forecast V1
+GET {{Api_HostAddressV1}}/weather
+Accept: application/json
+X-Api-Key: {{ApiKey}}
+###

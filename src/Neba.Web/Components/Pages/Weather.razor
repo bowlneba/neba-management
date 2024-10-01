@@ -1,0 +1,67 @@
+﻿@page "/weather"
+
+@using Neba.Web.Services.NebaApi
+
+@inject INebaApiV1 NebaApiV1;
+
+@attribute [StreamRendering]
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (_errorMessage is not null)
+{
+    <p><em>Error: @_errorMessage</em></p>
+}
+else if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await NebaApiV1.GetWeatherForecastsAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            forecasts = response.Content;
+            _errorMessage = null;
+        }
+        else
+        {
+            _errorMessage = response.Error.Content;
+            forecasts = null;
+        }
+    }
+}

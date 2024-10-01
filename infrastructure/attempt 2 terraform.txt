@@ -1,0 +1,128 @@
+data "azurerm_client_config" "current" {}
+
+variable "secondary_location"{
+  description = "value for the secondary region"
+  default     = "East US 2"
+  type        = string
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-url-config-value" {
+  key = "Encryption:Url"
+  value = "${azurerm_key_vault.nebamgmt-kv.vault_uri}/keys/${azurerm_key_vault_key.nebamgmt-encryption-key.name}/${azurerm_key_vault_key.nebamgmt-encryption-key.version}"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+}
+
+resource "azurerm_app_configuration_key" "nebamgmt-encryption-key-name-config-value" {
+  key = "Encryption:KeyName"
+  value = azurerm_key_vault_key.nebamgmt-encryption-key.name
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+}
+
+resource "azurerm_app_configuration_feature" "caching-feature" {
+  name = "Caching"
+  description = "Feature flag to enable caching"
+  configuration_store_id = azurerm_app_configuration.nebamgmt-config.id
+  enabled = false
+}
+
+variable "log_analytics_workspace_name" {
+  description = "value for the log analytics workspace name"
+  type        = string
+}
+
+variable "log_analytics_workspace_sku" {
+  description = "value for the log analytics workspace sku"
+  type        = string
+}
+
+variable "app_insights_name" {
+  description = "value for the application insights name"
+  type        = string
+}
+
+resource "azurerm_log_analytics_workspace" "nebamgmt-log-analytics" {
+  name                = var.log_analytics_workspace_name
+  location            = var.primary_location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  sku                 = var.log_analytics_workspace_sku
+}
+
+resource "azurerm_application_insights" "nebamgmt-ai" {
+  name                = var.app_insights_name
+  location            = var.primary_location
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.nebamgmt-log-analytics.id
+  internet_ingestion_enabled = true
+  internet_query_enabled = true
+}
+
+variable "azure_nebamgmt_local_app_registration_principal_id"{
+  description = "value for the nebamgmt local app registration id"
+  default     = "00000000-0000-0000-0000-000000000000"
+  type        = string
+}
+
+data "azurerm_role_definition" "keyvault_admin" {
+  name = "Key Vault Administrator"
+}
+
+resource "azurerm_role_assignment" "nebamgmt-local-app-kv-admin-assignment"{
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_admin.name
+  principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
+}
+
+resource "azurerm_key_vault_secret" "kv-health-secret"{
+  name = "Health"
+  value = "Check"
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+}
+
+resource "azurerm_key_vault_key" "nebamgmt-encryption-key"{
+  name = "nebamgmt-encryption-key"
+  key_vault_id = azurerm_key_vault.nebamgmt-kv.id
+  key_type = "RSA"
+  key_size = 2048
+
+  key_opts = [
+    "decrypt",
+    "encrypt"
+  ]
+}
+
+data "azurerm_role_definition" "keyvault_key_user"{
+  name = "Key Vault Crypto User"
+}
+
+resource "azurerm_role_assignment" "infrastructure-group-kv-secret-user-role-assignment" {
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = var.azure_infrastructure_management_group_id # this can be current.object_id
+}
+
+resource "azurerm_role_assignment" "nebamgmt-local-app-kv-secret-user-role-assignment" {
+  scope                = azurerm_key_vault.nebamgmt-kv.id
+  role_definition_name = data.azurerm_role_definition.keyvault_secrets_user.name
+  principal_id         = var.azure_nebamgmt_local_app_registration_principal_id
+}
+
+variable "nebamgmt_mssql_primary_server_name"{
+  description = "SQL Server name"
+  type = string
+}
+
+variable "nebamgmt_mssql_admin_password" {
+  description = "Admin password for SQL Server"
+  type = string
+}
+
+resource "azurerm_mssql_server" "nebamgmt-primary-sql-server" {
+  name = var.nebamgmt_mssql_primary_server_name
+  resource_group_name = azurerm_resource_group.nebamgmt-rg.name
+  location = var.primary_location
+  version = "12.0"
+
+  administrator_login = "nebamgmtsa"
+  administrator_login_password = var.nebamgmt_mssql_admin_password
+}
