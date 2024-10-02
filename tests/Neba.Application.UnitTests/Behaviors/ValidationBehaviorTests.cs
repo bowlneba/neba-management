@@ -8,8 +8,6 @@ namespace Neba.Application.UnitTests.Behaviors;
 
 public sealed class ValidationBehaviorTests
 {
-    private ValidationBehavior<TestCommandRequest, TestResponse> _validationBehavior = null!;
-
     private readonly ILogger<ValidationBehavior<TestCommandRequest, TestResponse>> _logger =
         Substitute.For<ILogger<ValidationBehavior<TestCommandRequest, TestResponse>>>();
     private IEnumerable<IValidator<TestCommandRequest>> _validators = [];
@@ -18,14 +16,14 @@ public sealed class ValidationBehaviorTests
     public async Task Handle_WhenValidatorsIsEmpty_ShouldCallAndReturnNext()
     {
         // Arrange
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
+        var validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
         var next = new RequestHandlerDelegate<ErrorOr<TestResponse>>(() => Task.FromResult(response.ToErrorOr()));
 
         // Act
-        var result = await _validationBehavior.Handle(request, next, CancellationToken.None);
+        var result = await validationBehavior.Handle(request, next, CancellationToken.None);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -37,14 +35,14 @@ public sealed class ValidationBehaviorTests
     {
         // Arrange
         _validators = [new ValidTestCommandRequest()];
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
+        var validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
         var next = new RequestHandlerDelegate<ErrorOr<TestResponse>>(() => Task.FromResult(response.ToErrorOr()));
 
         // Act
-        var result = await _validationBehavior.Handle(request, next, CancellationToken.None);
+        var result = await validationBehavior.Handle(request, next, CancellationToken.None);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -56,14 +54,14 @@ public sealed class ValidationBehaviorTests
     {
         // Arrange
         _validators = [new InvalidTestCommandRequest1(), new ValidTestCommandRequest(), new InvalidTestCommandRequest2()];
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
+        var validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
         var next = new RequestHandlerDelegate<ErrorOr<TestResponse>>(() => Task.FromResult(response.ToErrorOr()));
 
         // Act
-        var result = await _validationBehavior.Handle(request, next, CancellationToken.None);
+        var result = await validationBehavior.Handle(request, next, CancellationToken.None);
 
         // Assert
         result.IsError.Should().BeTrue();
