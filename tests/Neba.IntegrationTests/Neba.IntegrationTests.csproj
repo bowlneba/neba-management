@@ -3,6 +3,7 @@
   <PropertyGroup />
 
   <ItemGroup>
+    <PackageReference Include="MediatR.Contracts" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Testcontainers.MsSql" />
   </ItemGroup>
