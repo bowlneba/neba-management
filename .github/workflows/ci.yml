@@ -1,0 +1,47 @@
+name: Continuous Integration
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    publish:
+        name: Publish and Upload Artifacts
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 9.x
+
+            - name: Run Unit Tests
+              run: dotnet test --configuration Release
+
+            - name: Publish API
+              run: dotnet publish -c Release -o ./publish/api ./src/Neba.Api
+
+            - name: Publish Web
+              run: dotnet publish -c Release -o ./publish/web ./src/Neba.Web
+
+            - name: Upload API Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: nebamgmt.api
+                path: ./publish/api
+
+            - name: Upload Web Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: nebamgmt.web
+                path: ./publish/web
+
+    code_scan:
+        name: SonarCloud Scan
+        uses: ./.github/workflows/step-sonarcloud.yml
+        secrets:
+          inherit
