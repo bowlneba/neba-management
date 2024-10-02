@@ -1,0 +1,11 @@
+name: Test SonarCloud
+
+on:
+    workflow_dispatch:
+
+jobs:
+    test_scanning:
+        name: Test SonarCloud Scan
+        uses: ./.github/workflows/step-sonarcloud.yml
+        secrets:
+            inherit
