@@ -1,20 +1,24 @@
 using ErrorOr;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Neba.Application.Behaviors;
 
 namespace Neba.Application.UnitTests.Behaviors;
 
-public sealed class ValiationBehaviorTests
+public sealed class ValidationBehaviorTests
 {
     private ValidationBehavior<TestCommandRequest, TestResponse> _validationBehavior = null!;
+
+    private ILogger<ValidationBehavior<TestCommandRequest, TestResponse>> _logger =
+        Substitute.For<ILogger<ValidationBehavior<TestCommandRequest, TestResponse>>>();
     private IEnumerable<IValidator<TestCommandRequest>> _validators = [];
 
     [Fact]
     public async Task Handle_WhenValidatorsIsEmpty_ShouldCallAndReturnNext()
     {
         // Arrange
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators);
+        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
@@ -33,7 +37,7 @@ public sealed class ValiationBehaviorTests
     {
         // Arrange
         _validators = [new ValidTestCommandRequest()];
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators);
+        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
@@ -52,7 +56,7 @@ public sealed class ValiationBehaviorTests
     {
         // Arrange
         _validators = [new InvalidTestCommandRequest1(), new ValidTestCommandRequest(), new InvalidTestCommandRequest2()];
-        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators);
+        _validationBehavior = new ValidationBehavior<TestCommandRequest, TestResponse>(_validators, _logger);
 
         var request = new TestCommandRequest();
         var response = new TestResponse();
