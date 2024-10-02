@@ -14,3 +14,5 @@ api_always_on = false
 
 web_service_name = "app-nebamgmt-web-stage"
 web_always_on = false
+
+nebamgmt_mssql_primary_server_name = "sql-nebamgmt-stage-eastus2"
