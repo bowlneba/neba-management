@@ -84,7 +84,6 @@ internal sealed class AuditInterceptor
 
         if (_auditEntries.Count > 0)
         {
-            //todo: offload this to a background task
             eventData.Context.Set<AuditEntry>().AddRange(_auditEntries);
             _auditEntries.Clear();
 
@@ -120,7 +119,6 @@ internal sealed class AuditInterceptor
 
         if (_auditEntries.Count > 0)
         {
-            //todo: offload this to a background task
             eventData.Context.Set<AuditEntry>().AddRange(_auditEntries);
             _auditEntries.Clear();
 
