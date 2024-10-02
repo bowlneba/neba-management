@@ -15,6 +15,17 @@ public abstract class BaseIntegrationTest
         Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _scope.Dispose();
+        }
+    }
+
     public void Dispose()
-        => _scope.Dispose();
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }
