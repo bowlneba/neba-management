@@ -6,8 +6,8 @@ resource "azurerm_service_plan" "asp-nebamgmt" {
   sku_name = var.app_service_plan_sku_name
 
   tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
+    "Environment" = var.environment,
+    "Owner" = var.owner
   }
 }
 
@@ -46,8 +46,8 @@ resource "azurerm_linux_web_app" "app-nebamgmt-api" {
   }
 
   tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
+    "Environment" = var.environment,
+    "Owner" = var.owner
   }
 }
 
@@ -58,8 +58,8 @@ resource "azurerm_key_vault_secret" "secret-nebamgmt-api-key" {
   content_type = "text/plain"
 
   tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
+    "Environment" = var.environment,
+    "Owner" = var.owner
   }
 
   depends_on = [ 
@@ -101,8 +101,8 @@ resource "azurerm_linux_web_app" "app-nebamgmt-web" {
   }
 
   tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
+    "Environment" = var.environment,
+    "Owner" = var.owner
   }
 }
 

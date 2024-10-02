@@ -9,8 +9,8 @@ resource "azurerm_key_vault" "kv-nebamgmt" {
   enable_rbac_authorization = true
 
   tags = {
-    "environment" = var.environment,
-    "owner" = var.owner
+    "Environment" = var.environment,
+    "Owner" = var.owner
   }
 }
 
