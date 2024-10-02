@@ -10,7 +10,7 @@ public sealed class ValidationBehaviorTests
 {
     private ValidationBehavior<TestCommandRequest, TestResponse> _validationBehavior = null!;
 
-    private ILogger<ValidationBehavior<TestCommandRequest, TestResponse>> _logger =
+    private readonly ILogger<ValidationBehavior<TestCommandRequest, TestResponse>> _logger =
         Substitute.For<ILogger<ValidationBehavior<TestCommandRequest, TestResponse>>>();
     private IEnumerable<IValidator<TestCommandRequest>> _validators = [];
 
