@@ -19,6 +19,11 @@ public abstract class NebaDbContext
     private readonly ILoggerFactory _loggerFactory;
 
     /// <summary>
+    /// Gets the schema for the database context.
+    /// </summary>
+    protected abstract string Schema { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="NebaDbContext"/> class.
     /// </summary>
     /// <param name="options">The options to be used by the DbContext.</param>
@@ -58,6 +63,7 @@ public abstract class NebaDbContext
     /// <param name="modelBuilder">The model builder to apply configurations to.</param>
     protected override void OnModelCreating([NotNull] ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
         base.OnModelCreating(modelBuilder);
