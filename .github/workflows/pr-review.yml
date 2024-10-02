@@ -50,3 +50,10 @@ jobs:
             command: Plan
         secrets:
             inherit
+
+    scanning:
+        name: SonarCloud Scan
+        needs: code
+        uses: ./.github/workflows/step-sonarcloud.yml
+        secrets:
+            inherit
