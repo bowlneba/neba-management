@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -47,6 +48,7 @@ public sealed class AuditEntry
 /// <summary>
 /// Configures the <see cref="AuditEntry"/> entity.
 /// </summary>
+[SuppressMessage("Design", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by Entity Framework Core.")]
 internal sealed class AuditEntryConfiguration
     : IEntityTypeConfiguration<AuditEntry>
 {

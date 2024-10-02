@@ -6,10 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Neba.Infrastructure.Middleware;
 
-/// <summary>
-/// Handles global exceptions and returns a standardized error response.
-/// </summary>
-public sealed class GlobalExceptionHandler
+[SuppressMessage("Design", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by ASP.NET Core.")]
+internal sealed class GlobalExceptionHandler
     : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;
