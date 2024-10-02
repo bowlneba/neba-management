@@ -60,6 +60,8 @@ internal sealed class AuditEntryConfiguration
 
         builder.HasKey(audit => audit.Id);
 
+        builder.HasIndex(audit => audit.TransactionId);
+
         builder.Property(audit => audit.TransactionId)
             .IsRequired();
 

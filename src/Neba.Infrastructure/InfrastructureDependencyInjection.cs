@@ -39,7 +39,7 @@ public static class InfrastructureDependencyInjection
     /// </summary>
     /// <param name="services">The service collection to add the services to.</param>
     /// <returns>The service collection with the added services.</returns>
-    public static IServiceCollection AddAuditLogging(this IServiceCollection services)
+    private static IServiceCollection AddAuditLogging(this IServiceCollection services)
     {
         services.AddKeyedScoped<List<AuditEntry>>("Audit", (_, _) => []);
 
