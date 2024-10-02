@@ -51,7 +51,6 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
       - name: Install DotNet Coverage
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: dotnet tool update -g dotnet-coverage
 
       - name: Build and analyze
