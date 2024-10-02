@@ -17,6 +17,7 @@ public abstract class NebaDbContext
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly int _slowQueryThresholdInMilliseconds;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<NebaDbContext> _logger;
 
     /// <summary>
     /// Gets the schema for the database context.
@@ -43,6 +44,7 @@ public abstract class NebaDbContext
         _dateTimeProvider = dateTimeProvider;
         _loggerFactory = loggerFactory;
         _slowQueryThresholdInMilliseconds = config.GetValue<int>("Database:SlowQueryThresholdInMilliseconds");
+        _logger = loggerFactory.CreateLogger<NebaDbContext>();
     }
 
     /// <summary>
@@ -51,10 +53,14 @@ public abstract class NebaDbContext
     /// <param name="optionsBuilder">The options builder to configure.</param>
     protected override void OnConfiguring([NotNull] DbContextOptionsBuilder optionsBuilder)
     {
+        _logger.LogConfiguringDbContext();
+
         optionsBuilder.AddInterceptors(new SlowQueryInterceptor(_loggerFactory.CreateLogger<SlowQueryInterceptor>(), _slowQueryThresholdInMilliseconds));
         optionsBuilder.AddInterceptors(new AuditInterceptor(_auditEntries, _dateTimeProvider, _loggerFactory.CreateLogger<AuditInterceptor>()));
 
         base.OnConfiguring(optionsBuilder);
+
+        _logger.LogConfiguredDbContext();
     }
 
     /// <summary>
@@ -63,10 +69,14 @@ public abstract class NebaDbContext
     /// <param name="modelBuilder">The model builder to apply configurations to.</param>
     protected override void OnModelCreating([NotNull] ModelBuilder modelBuilder)
     {
+        _logger.LogApplyingConfigurations();
+
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
         base.OnModelCreating(modelBuilder);
+
+        _logger.LogAppliedConfigurations();
     }
 
     /// <summary>
@@ -74,4 +84,19 @@ public abstract class NebaDbContext
     /// </summary>
     public DbSet<AuditEntry> AuditEntries
         => Set<AuditEntry>();
+}
+
+internal static partial class NebaDbContextLogMessages
+{
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Configuring the DbContext")]
+    public static partial void LogConfiguringDbContext(this ILogger<NebaDbContext> logger);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Configured the DbContext")]
+    public static partial void LogConfiguredDbContext(this ILogger<NebaDbContext> logger);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Applying entity configurations")]
+    public static partial void LogApplyingConfigurations(this ILogger<NebaDbContext> logger);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Applied entity configurations")]
+    public static partial void LogAppliedConfigurations(this ILogger<NebaDbContext> logger);
 }

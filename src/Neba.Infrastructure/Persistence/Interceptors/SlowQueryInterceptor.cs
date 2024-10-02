@@ -32,7 +32,7 @@ internal sealed class SlowQueryInterceptor
 
     private void CheckDuration(CommandEndEventData eventData, DbCommand command)
     {
-        _logger.CheckDuration();
+        _logger.LogCheckDurationBegin();
 
         if (eventData.Duration.TotalMilliseconds > _slowQueryThresholdInMilliseconds)
         {
@@ -42,17 +42,22 @@ internal sealed class SlowQueryInterceptor
         {
             _logger.LogQuery(command.CommandText, eventData.Duration.TotalMilliseconds);
         }
+
+        _logger.LogCheckDurationComplete();
     }
 }
 
 internal static partial class SlowQueryInterceptorLogMessages
 {
     [LoggerMessage(Level = LogLevel.Trace, Message = "Checking Query Execution Time")]
-    public static partial void CheckDuration(this ILogger<SlowQueryInterceptor> logger);
+    public static partial void LogCheckDurationBegin(this ILogger<SlowQueryInterceptor> logger);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Slow query detected: {Query} took {ElapsedMilliseconds}ms")]
     public static partial void LogSlowQuery(this ILogger<SlowQueryInterceptor> logger, string query, double elapsedMilliseconds);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Query executed: {Query} took {ElapsedMilliseconds}ms")]
     public static partial void LogQuery(this ILogger<SlowQueryInterceptor> logger, string query, double elapsedMilliseconds);
+
+    [LoggerMessage(Level = LogLevel.Trace, Message = "Checked Query Execution Time")]
+    public static partial void LogCheckDurationComplete(this ILogger<SlowQueryInterceptor> logger);
 }
