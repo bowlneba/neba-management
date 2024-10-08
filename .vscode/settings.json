@@ -1,5 +1,9 @@
 {
     "cSpell.words": [
         "Neba"
-    ]
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "bowlneba",
+        "projectKey": "bowlneba_neba-management"
+    }
 }
