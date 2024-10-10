@@ -12,5 +12,15 @@ services:
     volumes:
       - nebamgmt.mssql:/var/opt/mssql
 
+  tracing:
+    image: jaegertracing/all-in-one:latest
+    container_name: nebamgmt.tracing
+    ports:
+      - "19631:16686" # Web UI
+      - "19632:4317" # OTLP
+    volumes:
+      - nebamgmt.tracing:/jaeger-data
+
 volumes:
   nebamgmt.mssql:
+  nebamgmt.tracing:
