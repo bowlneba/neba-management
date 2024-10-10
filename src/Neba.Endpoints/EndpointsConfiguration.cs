@@ -1,6 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using FastEndpoints;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Neba.Endpoints;
 
@@ -10,16 +10,16 @@ namespace Neba.Endpoints;
 public static class EndpointsConfiguration
 {
     /// <summary>
-    /// Adds Neba endpoints to the specified <see cref="IServiceCollection"/>.
+    /// Adds Neba endpoints to the specified <see cref="WebApplicationBuilder"/>.
     /// </summary>
-    /// <param name="services">The service collection to add the endpoints to.</param>
-    /// <returns>The service collection with the added endpoints.</returns>
-    public static IServiceCollection AddNebaEndpoints(this IServiceCollection services)
+    /// <param name="builder">The web application builder to add the endpoints to.</param>
+    /// <returns>The web application builder with the added endpoints.</returns>
+    public static WebApplicationBuilder AddNebaEndpoints([NotNull] this WebApplicationBuilder builder)
     {
-        services.AddFastEndpoints(config =>
+        builder.Services.AddFastEndpoints(config =>
             config.Assemblies = [typeof(EndpointsConfiguration).Assembly]);
 
-        return services;
+        return builder;
     }
 
     /// <summary>

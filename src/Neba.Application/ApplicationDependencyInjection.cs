@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Behaviors;
 
@@ -9,19 +11,19 @@ namespace Neba.Application;
 public static class ApplicationDependencyInjection
 {
     /// <summary>
-    /// Adds shared application services to the specified <see cref="IServiceCollection"/>.
+    /// Adds shared application services to the specified <see cref="WebApplicationBuilder"/>.
     /// </summary>
-    /// <param name="services">The service collection to add the services to.</param>
-    /// <returns>The service collection with the added services.</returns>
-    public static IServiceCollection AddSharedApplicationServices(this IServiceCollection services)
+    /// <param name="builder">The web application builder to add the services to.</param>
+    /// <returns>The web application builder with the added services.</returns>
+    public static WebApplicationBuilder AddSharedApplicationServices([NotNull] this WebApplicationBuilder builder)
     {
-        services.AddMediatR(config =>
+        builder.Services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(typeof(ApplicationDependencyInjection).Assembly);
 
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
-        return services;
+        return builder;
     }
 }

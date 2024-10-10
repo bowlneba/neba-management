@@ -8,20 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseDefaultServiceProvider(config
     => config.ValidateOnBuild = true);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Specify the assembly containing your endpoints
-builder.Services.AddNebaEndpoints();
+builder.AddNebaEndpoints();
 
-builder.Services
-    .AddSharedApplicationServices()
+builder.AddSharedApplicationServices()
     .AddSharedInfrastructureServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

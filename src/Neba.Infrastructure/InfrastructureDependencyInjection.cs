@@ -5,6 +5,7 @@ using Neba.Infrastructure.Middleware;
 using Neba.Application.Clock;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Persistence;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Neba.Infrastructure;
 
@@ -14,24 +15,24 @@ namespace Neba.Infrastructure;
 public static class InfrastructureDependencyInjection
 {
     /// <summary>
-    /// Adds shared infrastructure services to the specified <see cref="IServiceCollection"/>.
+    /// Adds shared infrastructure services to the specified <see cref="WebApplicationBuilder"/>.
     /// </summary>
-    /// <param name="services">The service collection to add the services to.</param>
-    /// <returns>The service collection with the added services.</returns>
-    public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services)
+    /// <param name="builder">The web application builder to add the services to.</param>
+    /// <returns>The web application builder with the added services.</returns>
+    public static WebApplicationBuilder AddSharedInfrastructureServices([NotNull] this WebApplicationBuilder builder)
     {
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        services.AddAuditLogging();
+        builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        builder.Services.AddAuditLogging();
 
-        services.AddAuthorization();
+        builder.Services.AddAuthorization();
 
-        services.AddAuthentication(Authentication.ApiKeyAuthentication.SchemeName)
+        builder.Services.AddAuthentication(Authentication.ApiKeyAuthentication.SchemeName)
             .AddScheme<AuthenticationSchemeOptions, Authentication.ApiKeyAuthentication>(Authentication.ApiKeyAuthentication.SchemeName, null);
 
-        services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
 
-        return services;
+        return builder;
     }
 
     /// <summary>
