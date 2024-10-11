@@ -2,6 +2,7 @@ using Refit;
 using Neba.Web.Components;
 using Neba.Web.Services.NebaApi;
 using Microsoft.Extensions.Options;
+using Neba.Web.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddRefitClient<INebaApiV1>()
         client.BaseAddress = new Uri($"{options.BaseUrl}/v1");
     })
     .AddHttpMessageHandler<NebaApiAuthenticationDelegatingHandler>();
+
+builder.AddOpenTelemetry();
 
 var app = builder.Build();
 

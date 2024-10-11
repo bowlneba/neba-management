@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,6 +22,8 @@ internal sealed class GetWeatherForecast
         await Task.Delay(1000, ct);
 
         var random = RandomNumberGenerator.GetInt32(1, 10);
+
+        Activity.Current?.SetTag("neba.api.random", random);
 
         if (random % 2 == 0)
         {

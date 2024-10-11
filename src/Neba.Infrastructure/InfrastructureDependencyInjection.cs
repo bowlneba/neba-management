@@ -6,6 +6,7 @@ using Neba.Application.Clock;
 using Neba.Infrastructure.Clock;
 using Neba.Infrastructure.Persistence;
 using System.Diagnostics.CodeAnalysis;
+using Neba.Infrastructure.Diagnostics;
 
 namespace Neba.Infrastructure;
 
@@ -31,6 +32,8 @@ public static class InfrastructureDependencyInjection
 
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
+
+        builder.AddOpenTelemetry();
 
         return builder;
     }
