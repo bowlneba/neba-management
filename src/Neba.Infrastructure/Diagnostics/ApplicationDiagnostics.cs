@@ -17,6 +17,6 @@ public static class ApplicationDiagnostics
     /// <summary>
     /// Gets the counter for tracking the number of weather requests.
     /// </summary>
-    public static Counter<long> WeatherRequestCounter
-        => Meter.CreateCounter<long>("WeatherRequestCounter", "Number of weather requests");
+    public static readonly Counter<long> WeatherRequestCounter
+        = Meter.CreateCounter<long>(name: "weather.requested", description: "Number of weather requests");
 }
