@@ -58,6 +58,7 @@ public static class InfrastructureDependencyInjection
     public static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
     {
         app.UseExceptionHandler();
+        app.UseOpenTelemetry();
 
         return app;
     }

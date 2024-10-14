@@ -25,7 +25,8 @@ internal sealed class GetWeatherForecast
         var random = RandomNumberGenerator.GetInt32(1, 10);
 
         Activity.Current?.SetTag("neba.api.random", random);
-        ApplicationDiagnostics.WeatherRequestCounter.Add(1);
+        ApplicationDiagnostics.WeatherRequestCounter.Add(1,
+            new KeyValuePair<string, object?>("neba.api.random", random)); //this is a custom metric, it is not required, but it is a good example of how to create a custom metric
 
         if (random % 2 == 0)
         {

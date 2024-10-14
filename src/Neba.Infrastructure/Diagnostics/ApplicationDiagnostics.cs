@@ -14,11 +14,9 @@ public static class ApplicationDiagnostics
     /// </summary>
     public static readonly Meter Meter = new(_serviceName);
 
-    private static readonly Counter<long> _weatherRequestCounter = Meter.CreateCounter<long>("WeatherRequestCounter", "Number of weather requests");
-
     /// <summary>
     /// Gets the counter for tracking the number of weather requests.
     /// </summary>
     public static Counter<long> WeatherRequestCounter
-        => _weatherRequestCounter;
+        => Meter.CreateCounter<long>("WeatherRequestCounter", "Number of weather requests");
 }

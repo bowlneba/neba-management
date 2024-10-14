@@ -19,5 +19,15 @@ services:
       - "19631:16686" # Web UI
       - "19632:4317" # OTLP
 
+  metrics:
+    image: prom/prometheus:latest
+    container_name: nebamgmt.metrics
+    ports:
+      - "19633:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
 volumes:
   nebamgmt.mssql:

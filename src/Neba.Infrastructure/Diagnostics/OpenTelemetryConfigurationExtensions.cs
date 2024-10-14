@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -29,11 +30,17 @@ internal static class OpenTelemetryConfigurationExtensions
                     .AddOtlpExporter(options =>
                         options.Endpoint = new Uri(builder.Configuration.GetValue<string>("Jaeger")!))
             )
-            .WithMetrics(metrics =>
-            {
-                metrics.AddMeter(ApplicationDiagnostics.Meter.Name);
-            });
+            .WithMetrics(metrics
+                => metrics.AddMeter(ApplicationDiagnostics.Meter.Name)
+                    .AddPrometheusExporter());
 
         return builder;
+    }
+
+    public static IApplicationBuilder UseOpenTelemetry(this IApplicationBuilder app)
+    {
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+        return app;
     }
 }
