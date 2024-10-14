@@ -4,4 +4,8 @@
       <PackageReference Include="FastEndpoints" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

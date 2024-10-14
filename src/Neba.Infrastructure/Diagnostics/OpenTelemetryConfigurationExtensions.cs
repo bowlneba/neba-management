@@ -28,7 +28,11 @@ internal static class OpenTelemetryConfigurationExtensions
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddOtlpExporter(options =>
                         options.Endpoint = new Uri(builder.Configuration.GetValue<string>("Jaeger")!))
-            );
+            )
+            .WithMetrics(metrics =>
+            {
+                metrics.AddMeter(ApplicationDiagnostics.Meter.Name);
+            });
 
         return builder;
     }

@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Neba.Infrastructure.Diagnostics;
 
 namespace Neba.Endpoints;
 
@@ -24,6 +25,7 @@ internal sealed class GetWeatherForecast
         var random = RandomNumberGenerator.GetInt32(1, 10);
 
         Activity.Current?.SetTag("neba.api.random", random);
+        ApplicationDiagnostics.WeatherRequestCounter.Add(1);
 
         if (random % 2 == 0)
         {
