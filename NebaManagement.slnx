@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Backend/">
+    <File Path="backend\docker-compose.yaml" />
+    <Project Path="backend/Neba.Api/Neba.Api.csproj" />
+  </Folder>
   <Folder Name="/Directory/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
@@ -6,5 +10,8 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
   </Folder>
 </Solution>

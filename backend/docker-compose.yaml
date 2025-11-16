@@ -1,0 +1,8 @@
+﻿name: neba-management-backend
+services:
+  neba.api:
+    image: neba.api
+    build:
+      context: .
+      dockerfile: backend/Neba.Api/Dockerfile
+
