@@ -19,6 +19,7 @@
     <Project Path="frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <File Path="tests/Directory.Build.props" />
     <Project Path="tests/Neba.Tests/Neba.Tests.csproj" Id="4aca03db-a5f1-4c36-8457-855ffd9c32c4" />
     <Project Path="tests/Neba.UnitTests/Neba.UnitTests.csproj" Id="acc9f264-c527-4bb7-9844-4cdc2edb1db5" />
   </Folder>
