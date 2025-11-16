@@ -2,6 +2,7 @@
   <Folder Name="/Backend/">
     <File Path="backend\docker-compose.yaml" />
     <Project Path="backend/Neba.Api/Neba.Api.csproj" />
+    <Project Path="backend/Neba.Application/Neba.Application.csproj" />
     <Project Path="backend/Neba.Domain/Neba.Domain.csproj" />
   </Folder>
   <Folder Name="/Directory/">
