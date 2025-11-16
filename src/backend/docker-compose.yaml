@@ -4,5 +4,9 @@ services:
     image: neba.api
     build:
       context: .
-      dockerfile: backend/Neba.Api/Dockerfile
+      dockerfile: Neba.Api/Dockerfile
+    ports:
+      - "5100:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
 

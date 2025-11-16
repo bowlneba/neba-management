@@ -2,15 +2,19 @@
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["backend/Neba.Api/Neba.Api.csproj", "backend/Neba.Api/"]
-RUN dotnet restore "backend/Neba.Api/Neba.Api.csproj"
+COPY ["../../Directory.Build.props", "./"]
+COPY ["../../Directory.Packages.props", "./"]
+COPY ["Neba.Api/Neba.Api.csproj", "Neba.Api/"]
+COPY ["Neba.Application/Neba.Application.csproj", "Neba.Application/"]
+COPY ["Neba.Domain/Neba.Domain.csproj", "Neba.Domain/"]
+COPY ["Neba.Infrastructure/Neba.Infrastructure.csproj", "Neba.Infrastructure/"]
+RUN dotnet restore "Neba.Api/Neba.Api.csproj"
 COPY . .
-WORKDIR "/src/backend/Neba.Api"
+WORKDIR "/src/Neba.Api"
 RUN dotnet build "./Neba.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
