@@ -1,10 +1,10 @@
 <Solution>
   <Folder Name="/Backend/">
-    <File Path="backend\docker-compose.yaml" />
-    <Project Path="backend/Neba.Api/Neba.Api.csproj" />
-    <Project Path="backend/Neba.Application/Neba.Application.csproj" />
-    <Project Path="backend/Neba.Domain/Neba.Domain.csproj" />
-    <Project Path="backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
+    <File Path="src\backend\docker-compose.yaml" />
+    <Project Path="src/backend/Neba.Api/Neba.Api.csproj" />
+    <Project Path="src/backend/Neba.Application/Neba.Application.csproj" />
+    <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
+    <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Directory/">
     <File Path=".editorconfig" />
@@ -15,8 +15,8 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Frontend/">
-    <Project Path="frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
-    <Project Path="frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
+    <Project Path="src/frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
+    <Project Path="src/frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <File Path="tests/Directory.Build.props" />
