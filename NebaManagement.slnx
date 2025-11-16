@@ -14,7 +14,8 @@
     <File Path="Directory.Packages.props" />
     <File Path="README.md" />
   </Folder>
-  <Folder Name="/Solution Items/">
-    <File Path="compose.yaml" />
+  <Folder Name="/Frontend/">
+    <Project Path="frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
+    <Project Path="frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
 </Solution>
