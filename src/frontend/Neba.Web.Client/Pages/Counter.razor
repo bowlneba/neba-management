@@ -3,11 +3,11 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<h1 class="text-3xl font-semibold mb-4 text-[var(--neba-text)]">Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status" class="mb-4 text-[var(--neba-text)]">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="neba-btn neba-btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
     private int currentCount = 0;
