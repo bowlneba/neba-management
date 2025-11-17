@@ -22,9 +22,11 @@ string[] summaries =
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 ];
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/weather", (IConfiguration config) =>
     {
-        WeatherForecast[] forecast = [.. Enumerable.Range(1, 5).Select(index =>
+        int count = config.GetValue<int>("Weather");
+
+        WeatherForecast[] forecast = [.. Enumerable.Range(1, count).Select(index =>
                 new WeatherForecast
                 (
                     DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
