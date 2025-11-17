@@ -1,6 +1,7 @@
 ---
 agent: 'agent'
 description: 'Ensure .NET/C# code meets best practices for the solution/project.'
+tools: ['search/codebase', 'problems']
 ---
 # .NET/C# Best Practices
 

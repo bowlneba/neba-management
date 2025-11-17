@@ -1,6 +1,7 @@
 ---
 agent: 'agent'
 description: 'Review and refactor code in your project according to defined instructions'
+tools: ['search/codebase', 'edit/editFiles', 'changes', 'problems', 'runTests']
 ---
 
 ## Role

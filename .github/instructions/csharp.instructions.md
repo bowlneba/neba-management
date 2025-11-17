@@ -6,8 +6,8 @@ applyTo: '**/*.cs'
 # C# Development
 
 ## C# Instructions
-- Always use the latest version C#, currently C# 14 features.
-- Write clear and concise comments for each function.
+- Always use the latest stable C# version supported by this solution (currently C# 14).
+- Prefer self-explanatory code. Add comments sparingly to explain WHY decisions were made or to clarify non-obvious logic. Document public APIs with XML comments.
 
 ## General Instructions
 - Make only high confidence suggestions when reviewing code changes.
@@ -89,12 +89,13 @@ applyTo: '**/*.cs'
 
 - Always include test cases for critical paths of the application.
 - Guide users through creating unit tests.
-- Emit "Act", "Arrange" or "Assert" comments.
+- Follow the Arrange-Act-Assert (AAA) structure adding "Arrange/Act/Assert" comments; use whitespace to delineate phases when helpful.
 - Copy existing style in nearby files for test method names and capitalization.
 - Explain integration testing approaches for API endpoints.
 - Demonstrate how to mock dependencies for effective testing.
 - Show how to test authentication and authorization logic.
 - Explain test-driven development principles as applied to API development.
+- Prefer xUnit with FluentAssertions to align with this repository's existing tests.
 
 ## Performance Optimization
 
@@ -108,7 +109,7 @@ applyTo: '**/*.cs'
 
 - Guide users through containerizing their API using .NET's built-in container support (`dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer`).
 - Explain the differences between manual Dockerfile creation and .NET's container publishing features.
-- Explain CI/CD pipelines for NET applications.
+- Explain CI/CD pipelines for .NET applications.
 - Demonstrate deployment to Azure App Service, Azure Container Apps, or other hosting options.
 - Show how to implement health checks and readiness probes.
 - Explain environment-specific configurations for different deployment stages.

@@ -2,6 +2,7 @@
 name: 'EditorConfig-Expert'
 description: 'Generates a comprehensive and best-practice-oriented .editorconfig file based on project analysis and user preferences.'
 agent: 'agent'
+tools: ['search/codebase', 'edit/editFiles', 'changes']
 ---
 
 ## 📜 MISSION

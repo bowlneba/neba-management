@@ -1,6 +1,6 @@
 ---
 description: 'Tailwind CSS guidelines for NEBA UI'
-applyTo: '**/*.razor , **/*.razor.css'
+applyTo: '**/*.razor, **/*.razor.css'
 ---
 
 ## Foundational Design Principles
@@ -71,7 +71,7 @@ html, body {
 }
 ```
 
-These override `app.css safely because they load last.
+These override `app.css` safely because they load last.
 
 ## Semantic Utility Classes
 
@@ -258,7 +258,7 @@ Use Tailwind Flex for components
 - Inputs
 - Table actions
 
-## Accessability Requirements
+## Accessibility Requirements
 
 Mandatory for all PRs:
 

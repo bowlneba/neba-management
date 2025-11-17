@@ -24,7 +24,7 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - Use data binding effectively with @bind.
 - Leverage Dependency Injection for services in Blazor.
 - Structure Blazor components and services following Separation of Concerns.
-- Always use the latest version C#, currently C# 13 features like record types, pattern matching, and global usings.
+- Always use the latest version C#, currently C# 14 features like record types, pattern matching, and global usings.
 
 ## Error Handling and Validation
 
@@ -66,6 +66,7 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - Use Moq or NSubstitute for mocking dependencies during tests.
 - Debug Blazor UI issues using browser developer tools and Visual Studio's debugging tools for backend and server-side issues.
 - For performance profiling and optimization, rely on Visual Studio's diagnostics tools.
+- This repository uses xUnit; prefer xUnit for consistency.
 
 ## Security and Authentication
 
