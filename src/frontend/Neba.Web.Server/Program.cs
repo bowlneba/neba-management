@@ -7,6 +7,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOptions<NebaApiConfiguration>()
     .Bind(builder.Configuration.GetSection("NebaApi"))
+    .ValidateDataAnnotations()
     .ValidateOnStart();
 
 builder.Services.AddSingleton(sp =>
