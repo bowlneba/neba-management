@@ -41,7 +41,7 @@ else
 @code {
     private WeatherForecast[]? _forecasts;
 
-    async protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
