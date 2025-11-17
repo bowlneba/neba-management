@@ -1,31 +1,113 @@
 ﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
 
-<dialog id="components-reconnect-modal" data-nosnippet>
-    <div class="components-reconnect-container">
-        <div class="components-rejoining-animation" aria-hidden="true">
-            <div></div>
-            <div></div>
+<dialog id="components-reconnect-modal" data-nosnippet class="bg-[var(--neba-bg-panel)] w-80 mx-auto mt-[20vh] p-8 border-0 rounded-lg shadow-2xl opacity-0">
+    <div class="flex flex-col items-center gap-4">
+        <div class="components-rejoining-animation hidden relative w-20 h-20" aria-hidden="true">
+            <div class="absolute border-[3px] border-[#0087ff] opacity-100 rounded-full"></div>
+            <div class="absolute border-[3px] border-[#0087ff] opacity-100 rounded-full"></div>
         </div>
-        <p class="components-reconnect-first-attempt-visible">
+        <p class="components-reconnect-first-attempt-visible hidden m-0 text-center text-[var(--neba-text)]">
             Rejoining the server...
         </p>
-        <p class="components-reconnect-repeated-attempt-visible">
+        <p class="components-reconnect-repeated-attempt-visible hidden m-0 text-center text-[var(--neba-text)]">
             Rejoin failed... trying again in <span id="components-seconds-to-next-attempt"></span> seconds.
         </p>
-        <p class="components-reconnect-failed-visible">
+        <p class="components-reconnect-failed-visible hidden m-0 text-center text-[var(--neba-text)]">
             Failed to rejoin.<br />Please retry or reload the page.
         </p>
-        <button id="components-reconnect-button" class="components-reconnect-failed-visible">
+        <button id="components-reconnect-button" class="components-reconnect-failed-visible hidden neba-btn neba-btn-primary">
             Retry
         </button>
-        <p class="components-pause-visible">
+        <p class="components-pause-visible hidden m-0 text-center text-[var(--neba-text)]">
             The session has been paused by the server.
         </p>
-        <button id="components-resume-button" class="components-pause-visible">
+        <button id="components-resume-button" class="components-pause-visible hidden neba-btn neba-btn-primary">
             Resume
         </button>
-        <p class="components-resume-failed-visible">
+        <p class="components-resume-failed-visible hidden m-0 text-center text-[var(--neba-text)]">
             Failed to resume the session.<br />Please reload the page.
         </p>
     </div>
 </dialog>
+
+<style>
+    #components-reconnect-modal.components-reconnect-show .components-reconnect-first-attempt-visible,
+    #components-reconnect-modal.components-reconnect-show .components-rejoining-animation,
+    #components-reconnect-modal.components-reconnect-paused .components-pause-visible,
+    #components-reconnect-modal.components-reconnect-resume-failed .components-resume-failed-visible,
+    #components-reconnect-modal.components-reconnect-retrying,
+    #components-reconnect-modal.components-reconnect-retrying .components-reconnect-repeated-attempt-visible,
+    #components-reconnect-modal.components-reconnect-retrying .components-rejoining-animation,
+    #components-reconnect-modal.components-reconnect-failed,
+    #components-reconnect-modal.components-reconnect-failed .components-reconnect-failed-visible {
+        display: block;
+    }
+
+    #components-reconnect-modal[open] {
+        animation: components-reconnect-modal-slideUp 1.5s cubic-bezier(.05, .89, .25, 1.02) 0.3s, components-reconnect-modal-fadeInOpacity 0.5s ease-in-out 0.3s;
+        animation-fill-mode: both;
+    }
+
+    #components-reconnect-modal::backdrop {
+        background-color: rgba(0, 0, 0, 0.4);
+        animation: components-reconnect-modal-fadeInOpacity 0.5s ease-in-out;
+        opacity: 1;
+    }
+
+    @@keyframes components-reconnect-modal-slideUp {
+        0% {
+            transform: translateY(30px) scale(0.95);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes components-reconnect-modal-fadeInOpacity {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .components-rejoining-animation div {
+        animation: components-rejoining-animation 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+    .components-rejoining-animation div:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+
+    @@keyframes components-rejoining-animation {
+        0% {
+            top: 40px;
+            left: 40px;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        4.9% {
+            top: 40px;
+            left: 40px;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        5% {
+            top: 40px;
+            left: 40px;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+        100% {
+            top: 0px;
+            left: 0px;
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+        }
+    }
+</style>

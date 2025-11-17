@@ -33,3 +33,145 @@
   --neba-text: #E6EEF7;
   --neba-border: #30363D;
 }
+
+/* Global overrides */
+html, body {
+  background-color: var(--neba-bg);
+  color: var(--neba-text);
+  font-family: var(--neba-font-base);
+}
+
+/* Button base */
+.neba-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--neba-radius);
+  transition: var(--neba-transition);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+/* Primary button */
+.neba-btn-primary {
+  background-color: var(--neba-blue-700);
+  color: white;
+}
+
+.neba-btn-primary:hover {
+  background-color: var(--neba-blue-600);
+}
+
+/* Secondary button */
+.neba-btn-secondary {
+  background-color: transparent;
+  border-color: var(--neba-blue-600);
+  color: var(--neba-blue-700);
+}
+
+.neba-btn-secondary:hover {
+  background-color: var(--neba-blue-300);
+  color: white;
+}
+
+/* Danger button */
+.neba-btn-danger {
+  background-color: var(--neba-accent-red);
+  color: white;
+}
+
+.neba-btn-danger:hover {
+  background-color: #a50608;
+}
+
+/* Spinner */
+.neba-spinner {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--neba-border);
+  border-top-color: var(--neba-blue-600);
+  animation: neba-spin 0.7s linear infinite;
+}
+
+@keyframes neba-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Table */
+.neba-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.neba-table thead th {
+  padding: 0.75rem;
+  border-bottom: 2px solid var(--neba-border);
+  font-weight: 600;
+  text-align: left;
+}
+
+.neba-table tbody td {
+  border-bottom: 1px solid var(--neba-border);
+}
+
+.neba-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.dark .neba-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Panel */
+.neba-panel {
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius-lg);
+  padding: 1rem;
+}
+
+/* Card */
+.neba-card {
+  background: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  padding: 1rem;
+  border-radius: var(--neba-radius-lg);
+}
+
+/* Divider */
+.neba-divider {
+  border-bottom: 1px solid var(--neba-border);
+  margin: 1rem 0;
+}
+
+/* Heading */
+.neba-heading {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Form elements */
+.neba-input,
+.neba-select,
+.neba-textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--neba-radius);
+  border: 1px solid var(--neba-border);
+  background-color: var(--neba-bg-panel);
+  color: var(--neba-text);
+  transition: var(--neba-transition);
+}
+
+.neba-input:focus,
+.neba-select:focus,
+.neba-textarea:focus {
+  outline: none;
+  border-color: var(--neba-blue-500);
+  box-shadow: 0 0 0 3px rgba(2, 102, 200, 0.3);
+}
