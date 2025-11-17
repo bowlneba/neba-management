@@ -1,6 +1,10 @@
 <Project>
-  
+
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" Condition="Exists('$(MSBuildThisFileDirectory)..\Directory.Build.props')" />
+
+  <PropertyGroup>
+    <RootNamespace>Neba.Tests</RootNamespace>
+  </PropertyGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
@@ -13,5 +17,5 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
-  
+
 </Project>
