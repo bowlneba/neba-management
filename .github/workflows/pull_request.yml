@@ -8,6 +8,24 @@ permissions:
 on: [pull_request]
 
 jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --no-restore
+        
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -26,20 +44,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Upload Unit Tests artifacts
-        uses: actions/upload-artifact@v5
-        with:
-          name: unit-tests-build
-          path: tests/Neba.UnitTests/bin/Release/
-          retention-days: 1
-
-      - name: Upload Integration Tests artifacts
-        uses: actions/upload-artifact@v5
-        with:
-          name: integration-tests-build
-          path: tests/Neba.IntegrationTests/bin/Release/
-          retention-days: 1
-
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -48,10 +52,8 @@ jobs:
       matrix:
         include:
           - test-project: tests/Neba.UnitTests/Neba.UnitTests.csproj
-            artifact-name: unit-tests-build
             test-name: Unit Tests
           - test-project: tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj
-            artifact-name: integration-tests-build
             test-name: Integration Tests
       fail-fast: false
 
@@ -69,29 +71,5 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: ${{ matrix.artifact-name }}
-          path: ./
-
       - name: Run tests
-        run: dotnet run --project ${{ matrix.test-project }} --no-build --configuration Release
-
-  code-quality:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup .Net
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Check formatting
-        run: dotnet format --verify-no-changes --no-restore
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release
