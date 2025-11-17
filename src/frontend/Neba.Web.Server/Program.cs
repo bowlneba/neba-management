@@ -1,6 +1,23 @@
+using Microsoft.Extensions.Options;
+using Neba.Web.Server;
 using Neba.Web.Server.Components;
+using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions<NebaApiConfiguration>()
+    .Bind(builder.Configuration.GetSection("NebaApi"))
+    .ValidateOnStart();
+
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<NebaApiConfiguration>>().Value);
+
+builder.Services.AddRefitClient<INebaApi>()
+    .ConfigureHttpClient((sp, client) =>
+    {
+        NebaApiConfiguration config = sp.GetRequiredService<NebaApiConfiguration>();
+        client.BaseAddress = new Uri(config.BaseUrl);
+    });
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
