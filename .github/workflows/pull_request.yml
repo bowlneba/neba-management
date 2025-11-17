@@ -1,0 +1,71 @@
+name: Pull Request Workflow
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+on: [pull_request]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --no-restore
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        include:
+          - test-project: tests/Neba.UnitTests/Neba.UnitTests.csproj
+            test-name: Unit Tests
+          - test-project: tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj
+            test-name: Integration Tests
+      fail-fast: false
+
+    name: ${{ matrix.test-name }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Run tests
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release

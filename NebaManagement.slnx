@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/Backend/">
+    <File Path="src\backend\docker-compose.yaml" />
+    <Project Path="src/backend/Neba.Api/Neba.Api.csproj" />
+    <Project Path="src/backend/Neba.Application/Neba.Application.csproj" />
+    <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
+    <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Directory/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Frontend/">
+    <Project Path="src/frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
+    <Project Path="src/frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <File Path="tests/Directory.Build.props" />
+    <Project Path="tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj" />
+    <Project Path="tests/Neba.Tests/Neba.Tests.csproj" Id="4aca03db-a5f1-4c36-8457-855ffd9c32c4" />
+    <Project Path="tests/Neba.UnitTests/Neba.UnitTests.csproj" Id="acc9f264-c527-4bb7-9844-4cdc2edb1db5" />
+  </Folder>
+</Solution>
