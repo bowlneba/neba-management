@@ -25,7 +25,7 @@ jobs:
 
       - name: Check formatting
         run: dotnet format --verify-no-changes --no-restore
-        
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -61,10 +61,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          sparse-checkout: |
-            tests/
-          sparse-checkout-cone-mode: false
 
       - name: Setup .Net
         uses: actions/setup-dotnet@v5
