@@ -1,0 +1,5 @@
+# Test projects - disable XML documentation requirements
+[*.cs]
+
+# Don't require XML comments for public members in test projects
+dotnet_diagnostic.CS1591.severity = none
