@@ -1,6 +1,26 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }" NotFoundPage="typeof(Pages.NotFound)">
+﻿@inject NavigationManager NavigationManager
+
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        <ErrorBoundary>
+            <ChildContent>
+                <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </ChildContent>
+            <ErrorContent Context="ex">
+                <article class="px-4 py-6">
+                    <h1 class="text-2xl font-semibold mb-2 text-[var(--neba-accent-red)]">Something went wrong</h1>
+                    <p class="mb-4 text-[var(--neba-text)]">An unexpected error occurred while rendering this page.</p>
+                    <details class="mb-4 text-sm text-[var(--neba-text-muted)]">
+                        <summary>Details</summary>
+                        <pre class="whitespace-pre-wrap mt-2">@ex.Message</pre>
+                    </details>
+                    <div class="flex gap-3">
+                        <a href="/Error" class="neba-btn neba-btn-secondary">View Error Page</a>
+                        <button class="neba-btn neba-btn-primary" @onclick="() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true)">Reload</button>
+                    </div>
+                </article>
+            </ErrorContent>
+        </ErrorBoundary>
     </Found>
 </Router>

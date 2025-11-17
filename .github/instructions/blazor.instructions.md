@@ -10,6 +10,7 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - Use Razor Components appropriately for component-based UI development.
 - Prefer inline functions for smaller components but separate complex logic into code-behind or service classes.
 - Async/await should be used where applicable to ensure non-blocking UI operations.
+- Avoid inline `<style>` and `<script>` tags in Razor components. Extract styles to `.razor.css` files and scripts to `.razor.js` files for better maintainability, CSP compliance, and separation of concerns.
 
 ## Naming Conventions
 
