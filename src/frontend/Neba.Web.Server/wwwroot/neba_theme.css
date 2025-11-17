@@ -3,6 +3,7 @@
   --neba-blue-600: #0E6CC8;
   --neba-blue-500: #1B72C8;
   --neba-blue-300: #80A6CA;
+  --neba-blue-brand: #052767;
 
   --neba-gray-050: #FAFAFA;
   --neba-gray-100: #F5F5F5;
@@ -10,11 +11,15 @@
   --neba-gray-300: #CCCCCC;
   --neba-gray-400: #A3A3A3;
   --neba-gray-700: #333333;
+  --neba-gray-800: #1a1a1a;
   --neba-black: #000000;
 
   --neba-accent-red: #CC080A;
   --neba-success: #16A34A;
   --neba-warning: #D97706;
+  --neba-info: #0087ff;
+
+  --neba-nav-text: #d7d7d7;
 
   --neba-font-base: var(--tw-font-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
   --neba-radius: 0.375rem;
@@ -54,13 +59,34 @@ html, body {
   border: 1px solid transparent;
 }
 
+.neba-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.neba-btn:focus-visible {
+  outline: 2px solid var(--neba-blue-500);
+  outline-offset: 2px;
+}
+
+/* Button sizes */
+.neba-btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.neba-btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
 /* Primary button */
 .neba-btn-primary {
   background-color: var(--neba-blue-700);
   color: white;
 }
 
-.neba-btn-primary:hover {
+.neba-btn-primary:hover:not(:disabled) {
   background-color: var(--neba-blue-600);
 }
 
@@ -71,7 +97,7 @@ html, body {
   color: var(--neba-blue-700);
 }
 
-.neba-btn-secondary:hover {
+.neba-btn-secondary:hover:not(:disabled) {
   background-color: var(--neba-blue-300);
   color: white;
 }
@@ -82,7 +108,7 @@ html, body {
   color: white;
 }
 
-.neba-btn-danger:hover {
+.neba-btn-danger:hover:not(:disabled) {
   background-color: #a50608;
 }
 
@@ -174,4 +200,138 @@ html, body {
   outline: none;
   border-color: var(--neba-blue-500);
   box-shadow: 0 0 0 3px rgba(2, 102, 200, 0.3);
+}
+
+.neba-input:disabled,
+.neba-select:disabled,
+.neba-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--neba-gray-100);
+}
+
+.dark .neba-input:disabled,
+.dark .neba-select:disabled,
+.dark .neba-textarea:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Links */
+a.neba-link {
+  color: var(--neba-blue-700);
+  text-decoration: none;
+  transition: var(--neba-transition);
+}
+
+a.neba-link:hover {
+  color: var(--neba-blue-600);
+  text-decoration: underline;
+}
+
+a.neba-link:focus-visible {
+  outline: 2px solid var(--neba-blue-500);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Alerts */
+.neba-alert {
+  padding: 1rem;
+  border-radius: var(--neba-radius);
+  border: 1px solid transparent;
+  margin-bottom: 1rem;
+}
+
+.neba-alert-success {
+  background-color: rgba(22, 163, 74, 0.1);
+  border-color: var(--neba-success);
+  color: var(--neba-success);
+}
+
+.neba-alert-warning {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: var(--neba-warning);
+  color: var(--neba-warning);
+}
+
+.neba-alert-error {
+  background-color: rgba(204, 8, 10, 0.1);
+  border-color: var(--neba-accent-red);
+  color: var(--neba-accent-red);
+}
+
+.neba-alert-info {
+  background-color: rgba(2, 102, 200, 0.1);
+  border-color: var(--neba-blue-600);
+  color: var(--neba-blue-700);
+}
+
+/* Badges */
+.neba-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--neba-radius);
+  line-height: 1;
+}
+
+.neba-badge-primary {
+  background-color: var(--neba-blue-700);
+  color: white;
+}
+
+.neba-badge-success {
+  background-color: var(--neba-success);
+  color: white;
+}
+
+.neba-badge-warning {
+  background-color: var(--neba-warning);
+  color: white;
+}
+
+.neba-badge-error {
+  background-color: var(--neba-accent-red);
+  color: white;
+}
+
+.neba-badge-neutral {
+  background-color: var(--neba-gray-300);
+  color: var(--neba-gray-700);
+}
+
+/* Modal overlay */
+.neba-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.neba-modal-content {
+  background-color: var(--neba-bg-panel);
+  border-radius: var(--neba-radius-lg);
+  padding: 1.5rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Focus visible global enhancement */
+*:focus-visible {
+  outline: 2px solid var(--neba-blue-500);
+  outline-offset: 2px;
+}
+
+/* Ensure buttons and links get proper focus */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--neba-blue-500);
+  outline-offset: 2px;
 }
