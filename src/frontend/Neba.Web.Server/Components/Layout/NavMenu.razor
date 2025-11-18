@@ -38,15 +38,4 @@
     </div>
 </nav>
 
-<script>
-    // Close mobile nav when clicking a link
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('nav-toggle');
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (toggle) toggle.checked = false;
-            });
-        });
-    });
-</script>
+<script type="module" src="@Assets["Components/Layout/NavMenu.razor.js"]"></script>

@@ -9,7 +9,14 @@
 
 <p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data.</p>
 
-@if (_forecasts == null)
+@if (!string.IsNullOrEmpty(_error))
+{
+    <div class="p-4 border border-[var(--neba-border)] bg-[var(--neba-bg-panel)] rounded">
+        <p class="mb-3 text-[var(--neba-accent-red)] font-medium">@_error</p>
+        <button class="neba-btn neba-btn-primary" @onclick="RetryLoad">Retry</button>
+    </div>
+}
+else if (_isLoading || _forecasts is null)
 {
     <div class="flex items-center gap-3">
         <div class="neba-spinner" aria-label="Loading"></div>
@@ -43,12 +50,34 @@ else
 
 @code {
     private WeatherForecast[]? _forecasts;
+    private string? _error;
+    private bool _isLoading;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        _forecasts = await NebaApi.GetWeatherAsync();
+        await LoadAsync();
     }
+
+    private async Task LoadAsync()
+    {
+        _error = null;
+        _isLoading = true;
+        try
+        {
+            // Simulate asynchronous loading to demonstrate streaming rendering
+            await Task.Delay(500);
+            _forecasts = await NebaApi.GetWeatherAsync();
+        }
+        catch (Exception)
+        {
+            _error = "Failed to load weather data. Please try again.";
+            _forecasts = null;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private Task RetryLoad() => LoadAsync();
 }
