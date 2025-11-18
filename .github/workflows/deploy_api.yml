@@ -76,11 +76,27 @@ jobs:
           APP_URL="https://${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net"
           echo "🔍 Verifying API deployment at: $APP_URL"
 
-          # Wait for app to be ready
-          sleep 10
+          # Wait for app to be ready using exponential backoff
+          MAX_ATTEMPTS=10
+          INITIAL_DELAY=2
+          ATTEMPT=1
+          DELAY=$INITIAL_DELAY
+          HTTP_STATUS="000"
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "✅ API is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
+              break
+            fi
+            echo "Waiting for API to be ready (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)..."
+            sleep $DELAY
+            ATTEMPT=$((ATTEMPT + 1))
+            DELAY=$((DELAY * 2))
+            if [ $DELAY -gt 30 ]; then DELAY=30; fi
+          done
 
-          # Check health endpoint (adjust if you have a specific health check)
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
+          # Check health endpoint (final status after retries)
+          # HTTP_STATUS already set above
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
             echo "✅ API is responding with status code: $HTTP_STATUS"
