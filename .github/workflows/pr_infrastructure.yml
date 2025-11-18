@@ -1,4 +1,4 @@
-name: PR Infrastructure
+name: Pull Request Workflow (Infrastructure)
 
 on:
   pull_request:
