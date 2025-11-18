@@ -13,6 +13,9 @@ param appServicePlanId string
 @description('App settings (environment variables)')
 param appSettings array = []
 
+@description('CORS allowed origins')
+param corsAllowedOrigins array = []
+
 @description('.NET version')
 param dotnetVersion string = '8.0'
 

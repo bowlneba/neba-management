@@ -23,9 +23,6 @@ param azureApiAppServiceName string
 @description('Name of the Web App Service')
 param azureWebAppServiceName string
 
-@description('Custom domain for the web app (optional)')
-param azureWebCustomDomain string = ''
-
 @description('App Service Plan SKU. Common values: B1, B2, B3 (Basic), S1, S2, S3 (Standard), P1v3, P2v3, P3v3 (Premium v3)')
 param azureAppServicePlanSku string = 'B1'
 
