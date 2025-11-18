@@ -17,6 +17,7 @@ jobs:
   validate:
     name: Validate Bicep Templates
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -51,7 +52,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: validate
-    environment: production
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
