@@ -1,0 +1,109 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/deploy_infrastructure.yml'
+
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Bicep Templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Bicep syntax
+        run: |
+          az bicep build --file infrastructure/main.bicep
+          echo "✅ Bicep syntax validation passed"
+
+      - name: Run What-If analysis
+        run: |
+          az deployment sub what-if \
+            --location ${{ vars.AZURE_LOCATION }} \
+            --template-file infrastructure/main.bicep \
+            --parameters \
+              azureResourceGroupName='${{ vars.AZURE_RESOURCE_GROUP_NAME }}' \
+              azureLocation='${{ vars.AZURE_LOCATION }}' \
+              azureEnvironment='${{ vars.AZURE_ENVIRONMENT }}' \
+              azureAppServicePlanName='${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}' \
+              azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
+              azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
+              azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}'
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Infrastructure
+        id: deploy
+        run: |
+          echo "🚀 Deploying infrastructure to ${{ vars.AZURE_ENVIRONMENT }} environment in ${{ vars.AZURE_LOCATION }}"
+
+          az deployment sub create \
+            --name "infrastructure-${{ vars.AZURE_ENVIRONMENT }}-$(date +%Y%m%d-%H%M%S)" \
+            --location ${{ vars.AZURE_LOCATION }} \
+            --template-file infrastructure/main.bicep \
+            --parameters \
+              azureResourceGroupName='${{ vars.AZURE_RESOURCE_GROUP_NAME }}' \
+              azureLocation='${{ vars.AZURE_LOCATION }}' \
+              azureEnvironment='${{ vars.AZURE_ENVIRONMENT }}' \
+              azureAppServicePlanName='${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}' \
+              azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
+              azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
+              azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}' \
+            --output json > deployment-output.json
+
+          echo "✅ Infrastructure deployment completed"
+
+      - name: Extract Deployment Outputs
+        id: outputs
+        run: |
+          API_URL=$(cat deployment-output.json | jq -r '.properties.outputs.apiAppServiceUrl.value')
+          WEB_URL=$(cat deployment-output.json | jq -r '.properties.outputs.webAppServiceUrl.value')
+
+          echo "api-url=$API_URL" >> $GITHUB_OUTPUT
+          echo "web-url=$WEB_URL" >> $GITHUB_OUTPUT
+
+          echo "### 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** ${{ vars.AZURE_LOCATION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**API URL:** $API_URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Web URL:** $WEB_URL" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: deployment-output-${{ vars.AZURE_ENVIRONMENT }}
+          path: deployment-output.json
+          retention-days: 30
