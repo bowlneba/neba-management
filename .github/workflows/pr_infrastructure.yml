@@ -1,0 +1,175 @@
+name: Pull Request Workflow (Infrastructure)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/pr_infrastructure.yml'
+
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read
+  pull-requests: write  # Required to post comments on PRs
+
+jobs:
+  validate:
+    name: Validate Infrastructure Changes
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Bicep syntax
+        id: validate
+        run: |
+          echo "### 🔍 Bicep Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Show current directory and file structure for debugging
+          echo "Current directory: $(pwd)" >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure files:" >> $GITHUB_STEP_SUMMARY
+          ls -la infrastructure/ >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if az bicep build --file infrastructure/main.bicep; then
+            echo "✅ Bicep syntax validation passed" >> $GITHUB_STEP_SUMMARY
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Bicep syntax validation failed" >> $GITHUB_STEP_SUMMARY
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Run What-If Analysis
+        id: whatif
+        run: |
+          echo "### 📋 Infrastructure What-If Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Analyzing changes for **production** environment in **${{ vars.AZURE_LOCATION }}**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run what-if and capture output
+          set +e  # Don't exit on error immediately
+          WHATIF_OUTPUT=$(az deployment sub what-if \
+            --location ${{ vars.AZURE_LOCATION }} \
+            --template-file infrastructure/main.bicep \
+            --parameters \
+              azureResourceGroupName='${{ vars.AZURE_RESOURCE_GROUP_NAME }}' \
+              azureLocation='${{ vars.AZURE_LOCATION }}' \
+              azureEnvironment='${{ vars.AZURE_ENVIRONMENT }}' \
+              azureAppServicePlanName='${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}' \
+              azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
+              azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
+              azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}' \
+            --result-format FullResourcePayloads 2>&1)
+          WHATIF_EXIT_CODE=$?
+          set -e  # Re-enable exit on error
+
+          # Save output to file for PR comment
+          echo "$WHATIF_OUTPUT" > whatif-output.txt
+
+          # Add to step summary
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$WHATIF_OUTPUT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Check if command succeeded
+          if [ $WHATIF_EXIT_CODE -ne 0 ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **What-If analysis failed with exit code $WHATIF_EXIT_CODE**" >> $GITHUB_STEP_SUMMARY
+            echo "has_changes=error" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Detect if there are changes
+          if echo "$WHATIF_OUTPUT" | grep -q "No changes detected\|Resource changes: no"; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR with What-If Results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const whatifOutput = fs.readFileSync('whatif-output.txt', 'utf8');
+            const hasChanges = '${{ steps.whatif.outputs.has_changes }}' === 'true';
+
+            let body;
+
+            if (hasChanges) {
+              // Changes detected - show detailed output
+              body = `## ⚠️ Infrastructure Changes Detected
+
+            **Environment:** production
+            **Region:** ${{ vars.AZURE_LOCATION }}
+
+            <details>
+            <summary>📋 Click to view detailed what-if analysis</summary>
+
+            \`\`\`
+            ${whatifOutput}
+            \`\`\`
+
+            </details>
+
+            ---
+
+            ⚠️ **This PR will modify infrastructure when merged to main.**
+            `;
+            } else {
+              // No changes - simple message
+              body = `## ✅ No Infrastructure Changes
+
+            **Environment:** production
+            **Region:** ${{ vars.AZURE_LOCATION }}
+
+            This PR will not make any changes to the infrastructure.
+            `;
+            }
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              (comment.body.includes('Infrastructure Changes Detected') ||
+               comment.body.includes('No Infrastructure Changes'))
+            );
+
+            // Update or create comment
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
+        timeout-minutes: 2
