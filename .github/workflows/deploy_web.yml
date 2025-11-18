@@ -82,20 +82,31 @@ jobs:
           APP_URL="https://${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net"
           echo "🔍 Verifying Web App deployment at: $APP_URL"
 
-          # Wait for app to be ready
-          sleep 10
-
-          # Check if site is responding
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
+          # Wait for app to be ready with exponential backoff (max 60s)
+          MAX_ATTEMPTS=6
+          ATTEMPT=1
+          DELAY=2
+          HTTP_STATUS="000"
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "✅ Web App is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
+              break
+            else
+              echo "Waiting for Web App... (attempt $ATTEMPT, status: $HTTP_STATUS)"
+              sleep $DELAY
+              ATTEMPT=$((ATTEMPT + 1))
+              DELAY=$((DELAY * 2))
+            fi
+          done
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-            echo "✅ Web App is responding with status code: $HTTP_STATUS"
             echo "### 🎉 Web App Deployment Successful" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Web App URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
             echo "**Status:** Healthy ($HTTP_STATUS)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Web App returned status code: $HTTP_STATUS"
+            echo "❌ Web App did not become healthy after $MAX_ATTEMPTS attempts (last status: $HTTP_STATUS)"
             echo "### ⚠️ Web App Deployment Warning" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Web App URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
