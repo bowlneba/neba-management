@@ -37,6 +37,7 @@ Coming from Terraform, here are the main differences:
    - `tenant` - Tenant-wide
 
 2. **Module Scope**: Unlike Terraform, you explicitly set the scope:
+
    ```bicep
    module myModule 'module.bicep' = {
      scope: rg  // Deploy into this resource group
@@ -129,12 +130,14 @@ Parameters will be injected from GitHub environment variables:
 ## 📝 Current Infrastructure
 
 **Phase 1: Core Compute** ✅
+
 - Resource Group
 - App Service Plan (Linux, B1 SKU)
 - API App Service (.NET 8)
 - Web App Service (.NET 8, Blazor)
 
 **Phase 2: Coming Soon** 🚧
+
 - Azure Database for PostgreSQL (or SQL Server)
 - Azure Cosmos DB for MongoDB API
 - Application Insights
@@ -175,13 +178,16 @@ az group delete --name rg-neba-dev --yes
 
 ## 🆘 Troubleshooting
 
-**Error: "Scope is not valid"**
+### Error: "Scope is not valid"
+
 - Make sure `targetScope = 'subscription'` is at the top of `main.bicep`
 
-**Error: "Resource already exists"**
+### Error: "Resource already exists"
+
 - Bicep is idempotent - re-running updates existing resources
 - Check if names are unique globally (App Service names must be globally unique)
 
-**Error: "API version is invalid"**
+### Error: "API version is invalid"
+
 - Update the API version in the resource declaration
 - Find latest versions: `az provider show --namespace Microsoft.Web --query "resourceTypes[?resourceType=='sites'].apiVersions" --output table`
