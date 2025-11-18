@@ -46,7 +46,7 @@ param tags object = {
 
 // Resource Group - In Bicep, we explicitly create the RG at subscription scope
 resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
-  name: '${azureResourceGroupName}-${azureLocation}'
+  name: azureResourceGroupName
   location: azureLocation
   tags: tags
 }
@@ -56,7 +56,7 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
   scope: rg
   name: 'appServicePlan-deployment'
   params: {
-    name: '${azureAppServicePlanName}-${azureLocation}'
+    name: azureAppServicePlanName
     location: azureLocation
     sku: azureAppServicePlanSku
     tags: tags
@@ -68,7 +68,7 @@ module apiAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'apiAppService-deployment'
   params: {
-    name: '${azureApiAppServiceName}-${azureLocation}'
+    name: azureApiAppServiceName
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'API' })
@@ -90,7 +90,7 @@ module webAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'webAppService-deployment'
   params: {
-    name: '${azureWebAppServiceName}-${azureLocation}'
+    name: azureWebAppServiceName
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'Web' })
