@@ -17,7 +17,7 @@ param appSettings array = []
 param corsAllowedOrigins array = []
 
 @description('.NET version')
-param dotnetVersion string = '8.0'
+param dotnetVersion string = '10.0'
 
 @description('Always On setting - keeps app loaded (requires Basic tier or higher)')
 param alwaysOn bool = true
