@@ -35,6 +35,12 @@ jobs:
           echo "### 🔍 Bicep Validation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
+          # Show current directory and file structure for debugging
+          echo "Current directory: $(pwd)" >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure files:" >> $GITHUB_STEP_SUMMARY
+          ls -la infrastructure/ >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
           if az bicep build --file infrastructure/main.bicep; then
             echo "✅ Bicep syntax validation passed" >> $GITHUB_STEP_SUMMARY
             echo "status=success" >> $GITHUB_OUTPUT
