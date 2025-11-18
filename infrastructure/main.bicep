@@ -45,7 +45,7 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
   scope: rg
   name: 'appServicePlan-deployment'
   params: {
-    name: azureAppServicePlanName
+    name: '${azureAppServicePlanName}-${azureLocation}'
     location: azureLocation
     sku: azureAppServicePlanSku
     tags: tags
@@ -57,12 +57,12 @@ module apiAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'apiAppService-deployment'
   params: {
-    name: azureApiAppServiceName
+    name: '${azureApiAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'API' })
     corsAllowedOrigins: [
-      'https://${azureWebAppServiceName}.azurewebsites.net'
+      'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
     ]
     appSettings: [
       {
@@ -82,7 +82,7 @@ module webAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'webAppService-deployment'
   params: {
-    name: azureWebAppServiceName
+    name: '${azureWebAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'Web' })
