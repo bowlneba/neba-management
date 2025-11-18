@@ -7,18 +7,7 @@ param name string
 @description('Azure region for the App Service Plan')
 param location string
 
-@description('App Service Plan SKU')
-@allowed([
-  'B1'
-  'B2'
-  'B3'
-  'S1'
-  'S2'
-  'S3'
-  'P1v2'
-  'P2v2'
-  'P3v2'
-])
+@description('App Service Plan SKU. Common values: B1, B2, B3 (Basic), S1, S2, S3 (Standard), P1v3, P2v3, P3v3 (Premium v3)')
 param sku string
 
 @description('Tags to apply to the resource')
