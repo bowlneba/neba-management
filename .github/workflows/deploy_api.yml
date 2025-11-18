@@ -1,0 +1,108 @@
+name: Deploy API
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/backend/Neba.Api/**'
+      - 'src/backend/Neba.Application/**'
+      - 'src/backend/Neba.Domain/**'
+      - 'src/backend/Neba.Infrastructure/**'
+      - '.github/workflows/deploy_api.yml'
+
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  AZURE_WEBAPP_PACKAGE_PATH: 'src/backend/Neba.Api'
+
+jobs:
+  build:
+    name: Build API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/Neba.Api.csproj
+
+      - name: Build
+        run: dotnet build ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/Neba.Api.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Publish
+        run: dotnet publish ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/Neba.Api.csproj --configuration Release --no-build --output ./publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-package
+          path: ./publish
+          retention-days: 1
+
+  deploy:
+    name: Deploy API to Production
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: api-package
+          path: ./publish
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}
+          package: ./publish
+
+      - name: Verify deployment
+        run: |
+          APP_URL="https://${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net"
+          echo "🔍 Verifying API deployment at: $APP_URL"
+
+          # Wait for app to be ready
+          sleep 10
+
+          # Check health endpoint (adjust if you have a specific health check)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ API is responding with status code: $HTTP_STATUS"
+            echo "### 🎉 API Deployment Successful" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**API URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** Healthy ($HTTP_STATUS)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ API returned status code: $HTTP_STATUS"
+            echo "### ⚠️ API Deployment Warning" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**API URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** Unhealthy ($HTTP_STATUS)" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
