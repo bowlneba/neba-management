@@ -16,6 +16,27 @@ param appSettings array = []
 @description('.NET version')
 param dotnetVersion string = '8.0'
 
+@description('Always On setting - keeps app loaded (requires Basic tier or higher)')
+param alwaysOn bool = true
+
+@description('Enable detailed error logging')
+param detailedErrorLoggingEnabled bool = true
+
+@description('Enable HTTP logging')
+param httpLoggingEnabled bool = true
+
+@description('Enable request tracing')
+param requestTracingEnabled bool = true
+
+@description('Enable Application Insights')
+param enableApplicationInsights bool = false
+
+@description('Application Insights connection string')
+param applicationInsightsConnectionString string = ''
+
+@description('Health check path')
+param healthCheckPath string = ''
+
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -27,15 +48,39 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
   kind: 'app,linux'
   properties: {
     serverFarmId: appServicePlanId
+    httpsOnly: true
+    clientAffinityEnabled: false
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|${dotnetVersion}'
-      alwaysOn: true
+      alwaysOn: alwaysOn
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       http20Enabled: true
-      appSettings: appSettings
+      detailedErrorLoggingEnabled: detailedErrorLoggingEnabled
+      httpLoggingEnabled: httpLoggingEnabled
+      requestTracingEnabled: requestTracingEnabled
+      healthCheckPath: healthCheckPath != '' ? healthCheckPath : null
+      appSettings: union(
+        appSettings,
+        enableApplicationInsights && applicationInsightsConnectionString != '' ? [
+          {
+            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            value: applicationInsightsConnectionString
+          }
+          {
+            name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+            value: '~3'
+          }
+        ] : []
+      )
+      cors: {
+        allowedOrigins: corsAllowedOrigins
+        supportCredentials: false
+      }
+      ipSecurityRestrictions: []
+      scmIpSecurityRestrictions: []
+      scmIpSecurityRestrictionsUseMain: false
     }
-    httpsOnly: true
   }
 }
 
