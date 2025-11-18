@@ -108,7 +108,7 @@ jobs:
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-restore
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-restore
 
       - name: Upload test results
         if: always()
