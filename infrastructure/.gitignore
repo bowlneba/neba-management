@@ -1,0 +1,5 @@
+# Bicep compiled ARM templates
+*.json
+
+# Bicep build output
+.bicep/
