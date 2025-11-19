@@ -70,6 +70,10 @@ module apiAppService 'modules/appService.bicep' = {
         value: azureEnvironment
       }
       {
+        name: 'ASPNETCORE_URLS'
+        value: 'http://+:8080'
+      }
+      {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: '1'
       }
@@ -90,6 +94,10 @@ module webAppService 'modules/appService.bicep' = {
       {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: azureEnvironment
+      }
+      {
+        name: 'ASPNETCORE_URLS'
+        value: 'http://+:8080'
       }
       {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
