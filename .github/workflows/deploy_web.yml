@@ -2,13 +2,13 @@ name: Deploy Web App
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/frontend/Neba.Web.Client/**'
-      - 'src/frontend/Neba.Web.Server/**'
-      - '.github/workflows/deploy_web.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/frontend/Neba.Web.Client/**'
+  #     - 'src/frontend/Neba.Web.Server/**'
+  #     - '.github/workflows/deploy_web.yml'
 
 permissions:
   id-token: write  # Required for OIDC authentication
@@ -22,6 +22,7 @@ jobs:
   build:
     name: Build Web App
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -56,7 +57,7 @@ jobs:
     name: Deploy Web App to Production
     runs-on: ubuntu-latest
     needs: build
-    environment: production
+    environment: Production
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v6

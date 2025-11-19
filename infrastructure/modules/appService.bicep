@@ -17,7 +17,7 @@ param appSettings array = []
 param corsAllowedOrigins array = []
 
 @description('.NET version')
-param dotnetVersion string = '8.0'
+param dotnetVersion string = '10.0'
 
 @description('Always On setting - keeps app loaded (requires Basic tier or higher)')
 param alwaysOn bool = true
@@ -39,6 +39,9 @@ param applicationInsightsConnectionString string = ''
 
 @description('Health check path')
 param healthCheckPath string = ''
+
+@description('Startup command to run the application')
+param startupCommand string = ''
 
 @description('Tags to apply to the resource')
 param tags object = {}
@@ -63,6 +66,7 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
       httpLoggingEnabled: httpLoggingEnabled
       requestTracingEnabled: requestTracingEnabled
       healthCheckPath: healthCheckPath != '' ? healthCheckPath : null
+      appCommandLine: startupCommand != '' ? startupCommand : null
       appSettings: union(
         appSettings,
         enableApplicationInsights && applicationInsightsConnectionString != '' ? [

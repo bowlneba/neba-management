@@ -45,7 +45,7 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
   scope: rg
   name: 'appServicePlan-deployment'
   params: {
-    name: azureAppServicePlanName
+    name: '${azureAppServicePlanName}-${azureLocation}'
     location: azureLocation
     sku: azureAppServicePlanSku
     tags: tags
@@ -57,17 +57,22 @@ module apiAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'apiAppService-deployment'
   params: {
-    name: azureApiAppServiceName
+    name: '${azureApiAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'API' })
     corsAllowedOrigins: [
-      'https://${azureWebAppServiceName}.azurewebsites.net'
+      'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
     ]
+    startupCommand: 'dotnet Neba.Api.dll'
     appSettings: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: azureEnvironment
+      }
+      {
+        name: 'ASPNETCORE_URLS'
+        value: 'http://+:8080'
       }
       {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
@@ -82,14 +87,19 @@ module webAppService 'modules/appService.bicep' = {
   scope: rg
   name: 'webAppService-deployment'
   params: {
-    name: azureWebAppServiceName
+    name: '${azureWebAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'Web' })
+    startupCommand: 'dotnet Neba.Web.Server.dll'
     appSettings: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: azureEnvironment
+      }
+      {
+        name: 'ASPNETCORE_URLS'
+        value: 'http://+:8080'
       }
       {
         name: 'WEBSITE_RUN_FROM_PACKAGE'

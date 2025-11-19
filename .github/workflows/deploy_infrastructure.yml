@@ -2,12 +2,12 @@ name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/deploy_infrastructure.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'infrastructure/**'
+  #     - '.github/workflows/deploy_infrastructure.yml'
 
 permissions:
   id-token: write  # Required for OIDC authentication
@@ -17,6 +17,7 @@ jobs:
   validate:
     name: Validate Bicep Templates
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -51,7 +52,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: validate
-    environment: production
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
