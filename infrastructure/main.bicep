@@ -64,6 +64,7 @@ module apiAppService 'modules/appService.bicep' = {
     corsAllowedOrigins: [
       'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
     ]
+    startupCommand: 'dotnet Neba.Api.dll'
     appSettings: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
@@ -90,6 +91,7 @@ module webAppService 'modules/appService.bicep' = {
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
     tags: union(tags, { Component: 'Web' })
+    startupCommand: 'dotnet Neba.Web.Server.dll'
     appSettings: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
