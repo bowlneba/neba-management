@@ -2,13 +2,13 @@ name: Deploy Web App
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/frontend/Neba.Web.Client/**'
-      - 'src/frontend/Neba.Web.Server/**'
-      - '.github/workflows/deploy_web.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/frontend/Neba.Web.Client/**'
+  #     - 'src/frontend/Neba.Web.Server/**'
+  #     - '.github/workflows/deploy_web.yml'
 
 permissions:
   id-token: write  # Required for OIDC authentication
