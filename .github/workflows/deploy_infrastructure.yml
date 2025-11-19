@@ -2,12 +2,12 @@ name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/deploy_infrastructure.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'infrastructure/**'
+  #     - '.github/workflows/deploy_infrastructure.yml'
 
 permissions:
   id-token: write  # Required for OIDC authentication
