@@ -47,6 +47,25 @@ function initializeNavigation() {
             });
         }
     });
+
+    // Add scroll shadow effect to navbar
+    const navbar = document.querySelector('.neba-navbar');
+    let lastScrollY = window.scrollY;
+    
+    function handleScroll() {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 10) {
+            navbar?.classList.add('scrolled');
+        } else {
+            navbar?.classList.remove('scrolled');
+        }
+        
+        lastScrollY = currentScrollY;
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
 }
 
 // Initialize on DOM ready and after Blazor updates
