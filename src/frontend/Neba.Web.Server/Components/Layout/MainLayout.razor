@@ -12,8 +12,15 @@
                 </a>
             </div>
             <div class="flex items-center gap-2">
-                <input type="search" placeholder="Search" class="neba-input" style="max-width: 200px;" />
-                <button class="neba-btn neba-btn-primary neba-btn-sm">🔍</button>
+                <div class="relative">
+                    <input type="search"
+                           placeholder="Search tournaments, bowlers..."
+                           class="neba-input pr-10 transition-all duration-200 focus:w-64"
+                           style="width: 200px;" />
+                    <button class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--neba-blue-700)] transition-colors">
+                        🔍
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -79,7 +86,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1">
+    <main class="flex-1 animate-fade-in">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             @Body
         </article>
