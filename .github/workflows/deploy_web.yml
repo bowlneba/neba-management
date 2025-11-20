@@ -32,6 +32,27 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Cache npm packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install Tailwind dependencies
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: npm run build:css
+
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
