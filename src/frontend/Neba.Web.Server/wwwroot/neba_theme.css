@@ -58,7 +58,7 @@ html, body {
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: var(--neba-radius);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
   border: 1px solid transparent;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -163,7 +163,7 @@ html, body {
 }
 
 .neba-table tbody tr {
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .neba-table tbody tr:hover {
@@ -188,7 +188,7 @@ html, body {
   border: 1px solid var(--neba-border);
   padding: 1rem;
   border-radius: var(--neba-radius-lg);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
@@ -508,7 +508,7 @@ a:focus-visible {
   color: var(--neba-text);
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
   text-transform: uppercase;
   font-size: 0.875rem;
   letter-spacing: 0.025em;
@@ -524,7 +524,7 @@ a:focus-visible {
   width: 0;
   height: 3px;
   background: var(--neba-blue-700);
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
   transform: translateX(-50%);
 }
 
