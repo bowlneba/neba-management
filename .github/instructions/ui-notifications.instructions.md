@@ -150,6 +150,48 @@ builder.Services.AddSingleton<INotificationService, NotificationService>();
 
 ---
 
+## Toast Placement Configuration
+
+### Default Placement
+- **Top-Right** is the global default toast position.
+- Chosen for maximum visibility without blocking form content.
+
+### Configuration Model (Layout-Level Override)
+- Toast placement is **configurable at the layout level**, not per-toast and not per-component.
+- Prevents UX inconsistency while allowing page-level control.
+
+### Enum Definition
+```csharp
+public enum ToastPosition
+{
+    TopRight,
+    TopCenter,
+    BottomRight,
+    BottomCenter
+}
+```
+
+### Global UI Preferences Example
+```csharp
+public class UiPreferences
+{
+    public ToastPosition ToastPlacement { get; set; } = ToastPosition.TopRight;
+}
+```
+
+### Layout Override Example
+```razor
+<AppLayout ToastPlacement="ToastPosition.BottomRight">
+    @Body
+</AppLayout>
+```
+
+### ToastManager Behavior
+- `ToastManager` reads from the cascading or injected UI preference.
+- All toasts render according to the selected layout-level position.
+
+---
+
 ## Tailwind Design Tokens (suggested)
 
 Create CSS utility classes or a `neba-theme` partial to centralize color variables. Use `xl` rounded corners for alerts/cards. Keep icons consistent.
