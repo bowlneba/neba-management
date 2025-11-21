@@ -3,6 +3,7 @@
   --neba-blue-600: #5563DD;
   --neba-blue-500: #6C77E1;
   --neba-blue-300: #A5AEEB;
+  --neba-blue-100: #D4D9F5;
   --neba-blue-brand: #052767;
 
   --neba-gray-050: #FAFAFA;
@@ -94,28 +95,32 @@ html, body {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
 }
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 /* Primary button */
 .neba-btn-primary {
-  background-color: var(--neba-blue-700);
+  background-color: var(--neba-blue-600);
   color: white;
 }
 
 .neba-btn-primary:hover:not(:disabled) {
-  background-color: var(--neba-blue-600);
+  background-color: var(--neba-blue-500);
+}
+
+.neba-btn-primary:active:not(:disabled) {
+  background-color: var(--neba-blue-700);
 }
 
 /* Secondary button */
 .neba-btn-secondary {
-  background-color: transparent;
-  border-color: var(--neba-blue-600);
-  color: var(--neba-blue-700);
+  background-color: var(--neba-gray-300);
+  border-color: var(--neba-gray-400);
+  color: var(--neba-gray-800);
 }
 
 .neba-btn-secondary:hover:not(:disabled) {
-  background-color: var(--neba-blue-300);
-  color: white;
+  background-color: var(--neba-gray-200);
 }
+
+
 
 /* Danger button */
 .neba-btn-danger {
@@ -123,9 +128,7 @@ html, body {
   color: white;
 }
 
-.neba-btn-danger:hover:not(:disabled) {
-  background-color: #a50608;
-}
+
 
 /* Spinner */
 .neba-spinner {
