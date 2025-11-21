@@ -110,6 +110,7 @@ function initializeNavigation() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
+
 }// Initialize on DOM ready and after Blazor updates
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeNavigation);
