@@ -94,7 +94,7 @@ html, body {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
 }
-
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 /* Primary button */
 .neba-btn-primary {
   background-color: var(--neba-blue-700);
@@ -159,7 +159,7 @@ html, body {
 .neba-table tbody td {
   border-bottom: 1px solid var(--neba-border);
   padding: 0.75rem;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .neba-table tbody tr {
@@ -188,7 +188,7 @@ html, body {
   border: 1px solid var(--neba-border);
   padding: 1rem;
   border-radius: var(--neba-radius-lg);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
@@ -249,7 +249,7 @@ html, body {
 a.neba-link {
   color: var(--neba-blue-700);
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
   position: relative;
 }
 
@@ -571,7 +571,7 @@ a:focus-visible {
   padding: 0.75rem 1rem;
   color: var(--neba-text);
   text-decoration: none;
-  transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   border-left: 3px solid transparent;
 }
@@ -613,7 +613,7 @@ a:focus-visible {
   .neba-top-banner {
     display: none;
   }
-
+  transition: background-color 0.3s ease;
   .neba-menu-toggle {
     display: flex;
   }
