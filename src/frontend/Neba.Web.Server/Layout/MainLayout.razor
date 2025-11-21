@@ -18,15 +18,14 @@
                 </a>
             </div>
             <div class="flex items-center gap-2">
-                <form method="get" action="/search" class="relative" role="search" aria-label="Site search">
+                <form method="get" action="/search" class="relative group" role="search" aria-label="Site search">
                     <label for="site-search" class="sr-only">Search site</label>
-                    <input type="search"
-                           id="site-search"
-                           name="q"
-                           placeholder="Search tournaments, bowlers..."
-                           class="neba-input pr-10 transition-all duration-200 focus:w-64"
-                           style="width: 200px;"
-                           aria-label="Search tournaments, bowlers, and news" />
+                          <input type="search"
+                              id="site-search"
+                              name="q"
+                              placeholder="Search tournaments, bowlers..."
+                              class="neba-input pr-10 w-[200px] md:w-[220px] focus:w-[260px] md:focus:w-[300px] transition-[width] duration-300 ease-out focus:shadow-sm"
+                              aria-label="Search tournaments, bowlers, and news" />
                     <button type="submit"
                             class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--neba-blue-700)] transition-colors"
                             aria-label="Submit search">
