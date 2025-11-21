@@ -59,9 +59,68 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 ### Accessibility
 - Ensure all interactive elements have visible focus states
 - Use `aria-label` and `aria-expanded` for navigation toggles
-- Maintain color contrast ratios for WCAG compliance
+- Maintain color contrast ratios for WCAG compliance (minimum 4.5:1 for normal text, 3:1 for large text)
 - Test keyboard navigation for all interactive features
 - Provide alternative text for images and icons
+
+**ARIA Attributes - Required for Interactive Elements:**
+- Navigation menus: `aria-label="Main navigation"` on `<nav>`
+- Dropdown menus: `aria-haspopup="true"`, `aria-expanded="false/true"` on trigger elements
+- Dropdown content: `role="menu"` on container, `role="menuitem"` on links
+- Mobile menu toggle: `aria-label`, `aria-expanded`, `aria-controls` attributes
+- Search inputs: Proper `<label>` elements (can be `.sr-only`) and `id` association
+- Buttons: `aria-label` when text content is not descriptive (e.g., icon-only buttons)
+- Error messages: `role="alert"` and `aria-live="assertive"` for critical errors
+- Loading states: `aria-busy="true"` and `aria-live="polite"` for status updates
+- Modals: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, `aria-describedby`
+
+**Keyboard Support - Required Patterns:**
+- All interactive elements must be keyboard accessible (Tab, Enter, Space)
+- Dropdowns: Open with Enter/Space, close with Escape
+- Mobile menu: Close with Escape key
+- Modal dialogs: Focus trap, close with Escape, return focus on close
+- Skip links: "Skip to main content" link as first focusable element
+- Tab order must follow logical reading order
+- No keyboard traps (users can always Tab away)
+
+**Focus Management:**
+- Always show visible focus indicators (2px solid outline with offset)
+- Focus states should be more prominent than hover states
+- When opening modals/dropdowns, move focus appropriately
+- When closing, return focus to trigger element
+- Use `:focus-visible` for keyboard-only focus indicators where appropriate
+
+**Screen Reader Support:**
+- Use semantic HTML elements (`<nav>`, `<main>`, `<footer>`, `<article>`, `<section>`)
+- Provide landmarks with `aria-label` when multiple of same type exist
+- Use `.sr-only` class for screen-reader-only content
+- Ensure all images have descriptive `alt` text (empty `alt=""` for decorative)
+- Button text must describe the action, not just "Click here"
+- Use `aria-live` regions for dynamic content updates
+
+**Reduced Motion Support:**
+- Respect `prefers-reduced-motion` media query
+- Disable or significantly reduce animations when enabled
+- Keep essential functionality without motion dependency
+- Use instant state changes instead of transitions
+
+**Color and Contrast:**
+- Never rely on color alone to convey information
+- Maintain WCAG AA contrast ratios (4.5:1 text, 3:1 large text, 3:1 UI components)
+- Test with color blindness simulators
+- Provide visual indicators beyond color (icons, text, patterns)
+
+**Form Accessibility:**
+- All inputs must have associated `<label>` elements
+- Use `autocomplete` attributes for common fields
+- Provide inline validation feedback with `aria-invalid` and `aria-describedby`
+- Group related inputs with `<fieldset>` and `<legend>`
+- Mark required fields with `required` attribute and visual indicator
+
+**Touch Target Sizing:**
+- Minimum 44x44 pixels for touch targets (buttons, links, form controls)
+- Adequate spacing between interactive elements (8px minimum)
+- Larger targets for primary actions
 
 ### CSS Organization
 - Use CSS custom properties (CSS variables) for theming and consistency

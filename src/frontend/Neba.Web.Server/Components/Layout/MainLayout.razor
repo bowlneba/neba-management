@@ -2,6 +2,11 @@
 
 <script src="./Components/Layout/MainLayout.razor.js" type="module"></script>
 
+<!-- Skip to main content for accessibility -->
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 neba-btn neba-btn-primary">
+    Skip to main content
+</a>
+
 <div class="flex flex-col min-h-screen">
     <!-- Top Banner -->
     <div class="neba-top-banner">
@@ -13,11 +18,17 @@
             </div>
             <div class="flex items-center gap-2">
                 <div class="relative">
+                    <label for="site-search" class="sr-only">Search site</label>
                     <input type="search"
+                           id="site-search"
+                           name="q"
                            placeholder="Search tournaments, bowlers..."
                            class="neba-input pr-10 transition-all duration-200 focus:w-64"
-                           style="width: 200px;" />
-                    <button class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--neba-blue-700)] transition-colors">
+                           style="width: 200px;"
+                           aria-label="Search tournaments, bowlers, and news" />
+                    <button type="submit"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--neba-blue-700)] transition-colors"
+                            aria-label="Submit search">
                         🔍
                     </button>
                 </div>
@@ -26,17 +37,22 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="neba-navbar">
+    <nav class="neba-navbar" aria-label="Main navigation">
         <div class="neba-navbar-wrapper">
             <div class="neba-navbar-content">
                 <a href="/" class="flex items-center flex-shrink-0">
                     <img src="neba-1963.png" alt="NEBA | 1963" style="height: 40px; width: auto; min-width: 120px;" />
                 </a>
 
-            <button class="neba-menu-toggle" data-action="toggle-menu" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
+            <button class="neba-menu-toggle"
+                    data-action="toggle-menu"
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="main-menu">
+                <span class="sr-only">Menu</span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
             </button>                <ul class="neba-nav-menu" id="main-menu">
                     <li class="neba-nav-item">
                         <a href="/tournaments" class="neba-nav-link">Tournaments</a>
@@ -51,17 +67,20 @@
                         <a href="/news" class="neba-nav-link">News</a>
                     </li>
                 <li class="neba-nav-item" data-action="toggle-dropdown">
-                    <a href="/history" class="neba-nav-link">History</a>
-                        <div class="neba-dropdown">
-                            <a href="/history/champions" class="neba-dropdown-link">Champions</a>
-                            <a href="/history/bowler-of-the-year" class="neba-dropdown-link">Bowler of the Year</a>
-                            <a href="/history/rookie-of-the-year" class="neba-dropdown-link">Rookie of the Year</a>
-                            <a href="/history/senior-bowler-of-the-year" class="neba-dropdown-link">Senior Bowler of the Year</a>
-                            <a href="/history/woman-bowler-of-the-year" class="neba-dropdown-link">Woman Bowler of the Year</a>
-                            <a href="/history/super-senior-bowler-of-the-year" class="neba-dropdown-link">Super Senior Bowler of the Year</a>
-                            <a href="/history/youth-bowler-of-the-year" class="neba-dropdown-link">Youth Bowler of the Year</a>
-                            <a href="/history/high-average" class="neba-dropdown-link">High Average</a>
-                            <a href="/history/high-block" class="neba-dropdown-link">High Block</a>
+                    <a href="/history"
+                       class="neba-nav-link"
+                       aria-haspopup="true"
+                       aria-expanded="false">History</a>
+                        <div class="neba-dropdown" role="menu">
+                            <a href="/history/champions" class="neba-dropdown-link" role="menuitem">Champions</a>
+                            <a href="/history/bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Bowler of the Year</a>
+                            <a href="/history/rookie-of-the-year" class="neba-dropdown-link" role="menuitem">Rookie of the Year</a>
+                            <a href="/history/senior-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Senior Bowler of the Year</a>
+                            <a href="/history/woman-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Woman Bowler of the Year</a>
+                            <a href="/history/super-senior-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Super Senior Bowler of the Year</a>
+                            <a href="/history/youth-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Youth Bowler of the Year</a>
+                            <a href="/history/high-average" class="neba-dropdown-link" role="menuitem">High Average</a>
+                            <a href="/history/high-block" class="neba-dropdown-link" role="menuitem">High Block</a>
                         </div>
                     </li>
                     <li class="neba-nav-item">
@@ -74,10 +93,13 @@
                         <a href="/centers" class="neba-nav-link">Centers</a>
                     </li>
                     <li class="neba-nav-item" data-action="toggle-dropdown">
-                        <a href="/testing" class="neba-nav-link">Testing</a>
-                        <div class="neba-dropdown">
-                            <a href="/weather" class="neba-dropdown-link">Weather</a>
-                            <a href="/counter" class="neba-dropdown-link">Counter</a>
+                        <a href="/testing"
+                           class="neba-nav-link"
+                           aria-haspopup="true"
+                           aria-expanded="false">Testing</a>
+                        <div class="neba-dropdown" role="menu">
+                            <a href="/weather" class="neba-dropdown-link" role="menuitem">Weather</a>
+                            <a href="/counter" class="neba-dropdown-link" role="menuitem">Counter</a>
                         </div>
                     </li>
                 </ul>
@@ -86,15 +108,35 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 animate-fade-in">
+    <main class="flex-1 animate-fade-in" id="main-content">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             @Body
         </article>
     </main>
+
+    <!-- Footer -->
+    <footer class="neba-footer" role="contentinfo" aria-label="Site footer">
+        <div class="max-w-[1400px] mx-auto px-4 py-8 md:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-sm text-gray-600">&copy; @DateTime.Now.Year New England Bowling Association. All rights reserved.</p>
+                </div>
+                <div class="flex gap-6">
+                    <a href="/privacy" class="text-sm text-gray-600 hover:text-[var(--neba-blue-700)] transition-colors">Privacy Policy</a>
+                    <a href="/terms" class="text-sm text-gray-600 hover:text-[var(--neba-blue-700)] transition-colors">Terms of Service</a>
+                    <a href="/contact" class="text-sm text-gray-600 hover:text-[var(--neba-blue-700)] transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 right-0 bg-yellow-100 border-t border-yellow-300 px-5 py-2 shadow-lg z-[1000]">
-    An unhandled error has occurred.
-    <a href="." class="reload underline ml-2">Reload</a>
-    <span class="dismiss absolute right-3 top-2 cursor-pointer text-xl">🗙</span>
+<div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 right-0 z-[1000]" role="alert" aria-live="assertive">
+    <div class="neba-alert neba-alert-error flex items-center justify-between shadow-lg">
+        <span>An unhandled error has occurred.</span>
+        <div class="flex gap-2">
+            <a href="." class="neba-btn neba-btn-sm neba-btn-primary">Reload</a>
+            <button class="dismiss neba-btn neba-btn-sm neba-btn-secondary" aria-label="Dismiss error">✕</button>
+        </div>
+    </div>
 </div>
