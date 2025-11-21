@@ -1,0 +1,22 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="text-3xl font-semibold mb-4 text-[var(--neba-text)]">Hello, world!</h1>
+
+<p class="text-[var(--neba-text)] mb-4">Welcome to your new app.</p>
+
+@for (int i = 1; i <= 50; i++)
+{
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-2 text-[var(--neba-blue-700)]">Section @i</h2>
+        <p class="text-[var(--neba-text)] mb-2">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p class="text-[var(--neba-text)]">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+    </div>
+}

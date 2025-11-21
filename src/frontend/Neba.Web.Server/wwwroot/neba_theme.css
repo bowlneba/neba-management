@@ -1,8 +1,8 @@
 :root {
-  --neba-blue-700: #0266C8;
-  --neba-blue-600: #0E6CC8;
-  --neba-blue-500: #1B72C8;
-  --neba-blue-300: #80A6CA;
+  --neba-blue-700: #3E4FD9;
+  --neba-blue-600: #5563DD;
+  --neba-blue-500: #6C77E1;
+  --neba-blue-300: #A5AEEB;
   --neba-blue-brand: #052767;
 
   --neba-gray-050: #FAFAFA;
@@ -20,6 +20,10 @@
   --neba-info: #0087ff;
 
   --neba-nav-text: #d7d7d7;
+  --neba-nav-bg: #ffffff;
+  --neba-nav-hover: #f5f5f5;
+  --neba-banner-bg: #3E4FD9;
+  --neba-banner-gradient-end: #2A3AA0;
 
   --neba-font-base: var(--tw-font-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
   --neba-radius: 0.375rem;
@@ -54,9 +58,20 @@ html, body {
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: var(--neba-radius);
-  transition: var(--neba-transition);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
   border: 1px solid transparent;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.neba-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.neba-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .neba-btn:disabled {
@@ -79,7 +94,7 @@ html, body {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
 }
-
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 /* Primary button */
 .neba-btn-primary {
   background-color: var(--neba-blue-700);
@@ -143,14 +158,20 @@ html, body {
 
 .neba-table tbody td {
   border-bottom: 1px solid var(--neba-border);
+  padding: 0.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.neba-table tbody tr {
+  transition: background-color 0.2s ease;
 }
 
 .neba-table tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(62, 79, 217, 0.05);
 }
 
 .dark .neba-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(62, 79, 217, 0.1);
 }
 
 /* Panel */
@@ -167,6 +188,14 @@ html, body {
   border: 1px solid var(--neba-border);
   padding: 1rem;
   border-radius: var(--neba-radius-lg);
+   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.neba-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--neba-blue-300);
 }
 
 /* Divider */
@@ -199,7 +228,7 @@ html, body {
 .neba-textarea:focus {
   outline: none;
   border-color: var(--neba-blue-500);
-  box-shadow: 0 0 0 3px rgba(2, 102, 200, 0.3);
+  box-shadow: 0 0 0 3px rgba(62, 79, 217, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .neba-input:disabled,
@@ -220,18 +249,52 @@ html, body {
 a.neba-link {
   color: var(--neba-blue-700);
   text-decoration: none;
-  transition: var(--neba-transition);
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  position: relative;
+}
+
+a.neba-link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--neba-blue-700);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
 }
 
 a.neba-link:hover {
   color: var(--neba-blue-600);
-  text-decoration: underline;
+}
+
+a.neba-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 a.neba-link:focus-visible {
   outline: 2px solid var(--neba-blue-500);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
 }
 
 /* Alerts */
@@ -327,6 +390,11 @@ a.neba-link:focus-visible {
 *:focus-visible {
   outline: 2px solid var(--neba-blue-500);
   outline-offset: 2px;
+  transition: outline-offset 0.2s ease;
+}
+
+*:focus-visible:hover {
+  outline-offset: 4px;
 }
 
 /* Ensure buttons and links get proper focus */
@@ -334,4 +402,391 @@ button:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--neba-blue-500);
   outline-offset: 2px;
+}
+
+/* Top Banner */
+.neba-top-banner {
+  background: linear-gradient(135deg, var(--neba-banner-bg) 0%, var(--neba-banner-gradient-end) 100%);
+  padding: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.neba-top-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.neba-banner-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.neba-banner-ads {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.neba-banner-ad {
+  background: var(--neba-gray-200);
+  border-radius: var(--neba-radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neba-gray-700);
+  font-weight: 600;
+  padding: 2rem 3rem;
+  min-width: 280px;
+  height: 120px;
+}
+
+/* Navigation Bar */
+.neba-navbar {
+  background-color: var(--neba-nav-bg);
+  border-bottom: 1px solid var(--neba-border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: box-shadow 0.2s ease;
+}
+
+.neba-navbar.scrolled {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.neba-navbar-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.neba-navbar-content {
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4rem;
+}
+
+.neba-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.neba-nav-item {
+  position: relative;
+}
+
+.neba-nav-link {
+  display: block;
+  padding: 1rem 1.25rem;
+  color: var(--neba-text);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  position: relative;
+}
+
+.neba-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--neba-blue-700);
+  transition: width 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.neba-nav-link:hover {
+  background-color: var(--neba-nav-hover);
+  color: var(--neba-blue-700);
+}
+
+.neba-nav-link:hover::after {
+  width: 80%;
+}
+
+/* Dropdown Menu */
+.neba-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--neba-nav-bg);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+  display: none;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.neba-nav-item:hover .neba-dropdown {
+  display: block;
+  animation: slideDown 0.2s ease forwards;
+}
+
+@keyframes slideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.neba-dropdown-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--neba-text);
+  text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
+
+.neba-dropdown-link:hover {
+  background-color: var(--neba-nav-hover);
+  color: var(--neba-blue-700);
+  border-left-color: var(--neba-blue-700);
+  padding-left: 1.25rem;
+}
+
+/* Mobile Menu Toggle */
+.neba-menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.neba-menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+.neba-menu-toggle span {
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  background-color: var(--neba-text);
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Mobile (< 768px): Logo + Hamburger only, no top banner */
+@media (max-width: 767px) {
+  .neba-top-banner {
+    display: none;
+  }
+  transition: background-color 0.3s ease;
+  .neba-menu-toggle {
+    display: flex;
+  }
+
+  .neba-navbar-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .neba-navbar-content {
+    flex-wrap: wrap;
+  }
+
+  .neba-nav-menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--neba-nav-bg);
+    border-top: 1px solid var(--neba-border);
+    gap: 0;
+  }
+
+  .neba-nav-menu.active {
+    display: flex;
+  }
+
+  .neba-nav-link {
+    padding: 1rem;
+    border-bottom: 1px solid var(--neba-border);
+  }
+
+  .neba-dropdown {
+    position: static;
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+  }
+
+  .neba-nav-item:hover .neba-dropdown {
+    display: none;
+  }
+
+  .neba-nav-item.active .neba-dropdown {
+    display: block;
+  }
+}
+
+/* Tablet (768px - 1024px): Top banner + Hamburger menu */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .neba-banner-ads {
+    flex-direction: column;
+  }
+
+  .neba-banner-ad {
+    min-width: 100%;
+    height: 80px;
+    padding: 1rem 2rem;
+    font-size: 0.875rem;
+  }
+
+  .neba-menu-toggle {
+    display: flex;
+  }
+
+  .neba-navbar-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .neba-navbar-content {
+    flex-wrap: wrap;
+  }
+
+  .neba-nav-menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--neba-nav-bg);
+    border-top: 1px solid var(--neba-border);
+    gap: 0;
+  }
+
+  .neba-nav-menu.active {
+    display: flex;
+  }
+
+  .neba-nav-link {
+    padding: 1rem;
+    border-bottom: 1px solid var(--neba-border);
+  }
+
+  .neba-dropdown {
+    position: static;
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+  }
+
+  .neba-nav-item:hover .neba-dropdown {
+    display: none;
+  }
+
+  .neba-nav-item.active .neba-dropdown {
+    display: block;
+  }
+}
+
+/* Desktop intermediate (1025px - 1200px): Tighter spacing */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .neba-nav-link {
+    padding: 1rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Desktop intermediate (1201px - 1400px): Medium spacing */
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .neba-nav-link {
+    padding: 1rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Desktop (> 1024px): Full horizontal menu, no hamburger */
+/* Default styles above already handle this - just ensure hamburger is hidden */
+
+/* Footer */
+.neba-footer {
+  background-color: var(--neba-gray-100);
+  border-top: 1px solid var(--neba-border);
+  margin-top: auto;
+}
+
+.dark .neba-footer {
+  background-color: var(--neba-bg-panel);
+}
+
+/* Screen reader utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .neba-top-banner::before {
+    animation: none !important;
+  }
 }

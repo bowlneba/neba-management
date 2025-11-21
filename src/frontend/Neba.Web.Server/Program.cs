@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
-using Neba.Web.Server.Components;
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
