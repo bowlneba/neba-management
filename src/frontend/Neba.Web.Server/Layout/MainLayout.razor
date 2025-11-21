@@ -18,7 +18,7 @@
                 </a>
             </div>
             <div class="flex items-center gap-2">
-                <div class="relative">
+                <form method="get" action="/search" class="relative" role="search" aria-label="Site search">
                     <label for="site-search" class="sr-only">Search site</label>
                     <input type="search"
                            id="site-search"
@@ -32,7 +32,7 @@
                             aria-label="Submit search">
                         🔍
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -159,7 +159,7 @@
         {
             path = "/";
         }
-        
+
         // Exact match or section match (e.g., stats or stats/details)
         return current == path || current.StartsWith(path + "/");
     }
