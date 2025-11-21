@@ -168,7 +168,6 @@ html, body {
 
 .neba-table tbody tr:hover {
   background-color: rgba(62, 79, 217, 0.05);
-  transform: scale(1.01);
 }
 
 .dark .neba-table tbody tr:hover {
