@@ -230,7 +230,6 @@ html, body {
   outline: none;
   border-color: var(--neba-blue-500);
   box-shadow: 0 0 0 3px rgba(62, 79, 217, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
 }
 
 .neba-input:disabled,
