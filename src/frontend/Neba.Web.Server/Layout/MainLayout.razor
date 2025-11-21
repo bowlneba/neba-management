@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Nav
 
-<script src="./Components/Layout/MainLayout.razor.js" type="module"></script>
+<script src="./Layout/MainLayout.razor.js" type="module"></script>
 
 <!-- Skip to main content for accessibility -->
 <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 neba-btn neba-btn-primary">
@@ -37,7 +38,7 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="neba-navbar" aria-label="Main navigation">
+    <nav class="neba-navbar" role="navigation" aria-label="Main navigation">
         <div class="neba-navbar-wrapper">
             <div class="neba-navbar-content">
                 <a href="/" class="flex items-center flex-shrink-0">
@@ -55,16 +56,16 @@
                 <span aria-hidden="true"></span>
             </button>                <ul class="neba-nav-menu" id="main-menu">
                     <li class="neba-nav-item">
-                        <a href="/tournaments" class="neba-nav-link">Tournaments</a>
+                        <a href="/tournaments" class="neba-nav-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)">Tournaments</a>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/stats" class="neba-nav-link">Stats</a>
+                        <a href="/stats" class="neba-nav-link @(IsActive("stats") ? "active" : null)" aria-current="@(IsActive("stats") ? "page" : null)">Stats</a>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/about" class="neba-nav-link">About</a>
+                        <a href="/about" class="neba-nav-link @(IsActive("about") ? "active" : null)" aria-current="@(IsActive("about") ? "page" : null)">About</a>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/news" class="neba-nav-link">News</a>
+                        <a href="/news" class="neba-nav-link @(IsActive("news") ? "active" : null)" aria-current="@(IsActive("news") ? "page" : null)">News</a>
                     </li>
                 <li class="neba-nav-item" data-action="toggle-dropdown">
                     <a href="/history"
@@ -72,34 +73,35 @@
                        aria-haspopup="true"
                        aria-expanded="false">History</a>
                         <div class="neba-dropdown" role="menu">
-                            <a href="/history/champions" class="neba-dropdown-link" role="menuitem">Champions</a>
-                            <a href="/history/bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Bowler of the Year</a>
-                            <a href="/history/rookie-of-the-year" class="neba-dropdown-link" role="menuitem">Rookie of the Year</a>
-                            <a href="/history/senior-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Senior Bowler of the Year</a>
-                            <a href="/history/woman-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Woman Bowler of the Year</a>
-                            <a href="/history/super-senior-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Super Senior Bowler of the Year</a>
-                            <a href="/history/youth-bowler-of-the-year" class="neba-dropdown-link" role="menuitem">Youth Bowler of the Year</a>
-                            <a href="/history/high-average" class="neba-dropdown-link" role="menuitem">High Average</a>
-                            <a href="/history/high-block" class="neba-dropdown-link" role="menuitem">High Block</a>
+                            <a href="/history/champions" class="neba-dropdown-link @(IsActive("history/champions") ? "active" : null)" aria-current="@(IsActive("history/champions") ? "page" : null)" role="menuitem">Champions</a>
+                            <a href="/history/bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/bowler-of-the-year") ? "page" : null)" role="menuitem">Bowler of the Year</a>
+                            <a href="/history/rookie-of-the-year" class="neba-dropdown-link @(IsActive("history/rookie-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/rookie-of-the-year") ? "page" : null)" role="menuitem">Rookie of the Year</a>
+                            <a href="/history/senior-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/senior-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/senior-bowler-of-the-year") ? "page" : null)" role="menuitem">Senior Bowler of the Year</a>
+                            <a href="/history/woman-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/woman-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/woman-bowler-of-the-year") ? "page" : null)" role="menuitem">Woman Bowler of the Year</a>
+                            <a href="/history/super-senior-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/super-senior-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/super-senior-bowler-of-the-year") ? "page" : null)" role="menuitem">Super Senior Bowler of the Year</a>
+                            <a href="/history/youth-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/youth-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/youth-bowler-of-the-year") ? "page" : null)" role="menuitem">Youth Bowler of the Year</a>
+                            <a href="/history/high-average" class="neba-dropdown-link @(IsActive("history/high-average") ? "active" : null)" aria-current="@(IsActive("history/high-average") ? "page" : null)" role="menuitem">High Average</a>
+                            <a href="/history/high-block" class="neba-dropdown-link @(IsActive("history/high-block") ? "active" : null)" aria-current="@(IsActive("history/high-block") ? "page" : null)" role="menuitem">High Block</a>
                         </div>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/hall-of-fame" class="neba-nav-link">Hall of Fame</a>
+                        <a href="/hall-of-fame" class="neba-nav-link @(IsActive("hall-of-fame") ? "active" : null)" aria-current="@(IsActive("hall-of-fame") ? "page" : null)">Hall of Fame</a>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/sponsors" class="neba-nav-link">Sponsors</a>
+                        <a href="/sponsors" class="neba-nav-link @(IsActive("sponsors") ? "active" : null)" aria-current="@(IsActive("sponsors") ? "page" : null)">Sponsors</a>
                     </li>
                     <li class="neba-nav-item">
-                        <a href="/centers" class="neba-nav-link">Centers</a>
+                        <a href="/centers" class="neba-nav-link @(IsActive("centers") ? "active" : null)" aria-current="@(IsActive("centers") ? "page" : null)">Centers</a>
                     </li>
                     <li class="neba-nav-item" data-action="toggle-dropdown">
                         <a href="/testing"
-                           class="neba-nav-link"
+                           class="neba-nav-link @(IsActive("testing") ? "active" : null)"
                            aria-haspopup="true"
-                           aria-expanded="false">Testing</a>
+                           aria-expanded="false"
+                           aria-current="@(IsActive("testing") ? "page" : null)">Testing</a>
                         <div class="neba-dropdown" role="menu">
-                            <a href="/weather" class="neba-dropdown-link" role="menuitem">Weather</a>
-                            <a href="/counter" class="neba-dropdown-link" role="menuitem">Counter</a>
+                            <a href="/weather" class="neba-dropdown-link @(IsActive("weather") ? "active" : null)" aria-current="@(IsActive("weather") ? "page" : null)" role="menuitem">Weather</a>
+                            <a href="/counter" class="neba-dropdown-link @(IsActive("counter") ? "active" : null)" aria-current="@(IsActive("counter") ? "page" : null)" role="menuitem">Counter</a>
                         </div>
                     </li>
                 </ul>
@@ -108,7 +110,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 animate-fade-in" id="main-content">
+    <main class="flex-1 animate-fade-in" role="main" id="main-content">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             @Body
         </article>
@@ -140,3 +142,25 @@
         </div>
     </div>
 </div>
+
+@code {
+    bool IsActive(string path)
+    {
+        string current = Nav.ToBaseRelativePath(Nav.Uri);
+
+        if (string.IsNullOrEmpty(current))
+        {
+            current = "/";
+        }
+
+        path = path.TrimStart('/');
+
+        if (string.IsNullOrEmpty(path))
+        {
+            path = "/";
+        }
+        
+        // Exact match or section match (e.g., stats or stats/details)
+        return current == path || current.StartsWith(path + "/");
+    }
+}

@@ -1,0 +1,5 @@
+.neba-nav-link.active, .neba-dropdown-link.active {
+  color: var(--neba-blue-700);
+  font-weight: 600;
+  text-decoration: none;
+}
