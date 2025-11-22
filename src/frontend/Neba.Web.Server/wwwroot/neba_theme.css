@@ -416,32 +416,32 @@ a.neba-link:focus-visible {
 }
 
 .neba-toast-success {
-  background-color: rgba(22, 163, 74, 0.95);
-  border-color: var(--neba-success);
+  background-color: rgba(15, 122, 58, 0.95);
+  border-color: #0F7A3A;
   color: white;
 }
 
 .neba-toast-warning {
-  background-color: rgba(217, 119, 6, 0.95);
-  border-color: var(--neba-warning);
+  background-color: rgba(245, 158, 11, 0.95);
+  border-color: #F59E0B;
   color: white;
 }
 
 .neba-toast-error {
-  background-color: rgba(204, 8, 10, 0.95);
-  border-color: var(--neba-accent-red);
+  background-color: rgba(153, 27, 27, 0.95);
+  border-color: #991B1B;
   color: white;
 }
 
 .neba-toast-info {
-  background-color: rgba(62, 79, 217, 0.95);
-  border-color: var(--neba-blue-700);
+  background-color: rgba(5, 39, 103, 0.95);
+  border-color: var(--neba-blue-brand);
   color: white;
 }
 
 .neba-toast-normal {
-  background-color: rgba(163, 163, 163, 0.95);
-  border-color: var(--neba-gray-400);
+  background-color: rgba(82, 82, 82, 0.95);
+  border-color: #525252;
   color: white;
 }
 
