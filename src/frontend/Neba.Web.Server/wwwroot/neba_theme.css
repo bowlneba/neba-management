@@ -35,6 +35,16 @@
   --neba-bg-panel: #fff;
   --neba-text: #1f2937;
   --neba-border: var(--neba-gray-300);
+
+  /* Responsive breakpoints */
+  --neba-breakpoint-mobile: 767px;
+  --neba-breakpoint-tablet-min: 768px;
+  --neba-breakpoint-tablet-max: 1024px;
+  --neba-breakpoint-desktop-tight-min: 1025px;
+  --neba-breakpoint-desktop-tight-max: 1150px;
+  --neba-breakpoint-desktop-medium-min: 1151px;
+  --neba-breakpoint-desktop-medium-max: 1300px;
+  --neba-breakpoint-desktop-wide-min: 1301px;
 }
 
 .dark {
@@ -516,11 +526,11 @@ a:focus-visible {
 
 .neba-nav-link {
   display: block;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1rem;
   color: var(--neba-text);
   font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
   text-transform: uppercase;
   font-size: 0.875rem;
   letter-spacing: 0.025em;
@@ -558,7 +568,7 @@ a:focus-visible {
   border: 1px solid var(--neba-border);
   border-radius: var(--neba-radius);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 200px;
+  width: max-content;
   display: none;
   z-index: 50;
   opacity: 0;
@@ -580,10 +590,10 @@ a:focus-visible {
 
 .neba-dropdown-link {
   display: block;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.5rem 0.75rem 1rem;
   color: var(--neba-text);
   text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   border-left: 3px solid transparent;
 }
@@ -683,8 +693,8 @@ a:focus-visible {
   }
 }
 
-/* Tablet (768px - 1200px): Top banner + Hamburger menu */
-@media (min-width: 768px) and (max-width: 1200px) {
+/* Tablet (768px - 1024px): Top banner + Hamburger menu */
+@media (min-width: 768px) and (max-width: 1024px) {
   .neba-banner-ads {
     flex-direction: column;
   }
@@ -753,16 +763,32 @@ a:focus-visible {
   }
 }
 
-/* Desktop (1201px - 1400px): Medium spacing */
-@media (min-width: 1201px) and (max-width: 1400px) {
+/* Desktop Tight (1025px - 1150px): Very tight spacing */
+@media (min-width: 1025px) and (max-width: 1150px) {
   .neba-nav-link {
-    padding: 1rem 0.875rem;
-    font-size: 0.8125rem;
+    padding: 1rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .neba-navbar-content {
+    gap: 1rem;
   }
 }
 
-/* Desktop (> 1024px): Full horizontal menu, no hamburger */
-/* Default styles above already handle this - just ensure hamburger is hidden */
+/* Desktop Medium (1151px - 1300px): Medium spacing */
+@media (min-width: 1151px) and (max-width: 1300px) {
+  .neba-nav-link {
+    padding: 1rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .neba-navbar-content {
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop Wide (> 1300px): Full spacing */
+/* Default styles above already handle this */
 
 /* Footer */
 .neba-footer {
