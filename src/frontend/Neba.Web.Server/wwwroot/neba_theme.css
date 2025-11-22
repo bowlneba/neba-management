@@ -480,11 +480,12 @@ a:focus-visible {
 }
 
 .neba-navbar-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
+  /* No max-width here - let content control it */
 }
 
 .neba-navbar-content {
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 0 1rem;
   display: flex;
   align-items: center;
