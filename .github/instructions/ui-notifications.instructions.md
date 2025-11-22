@@ -143,54 +143,104 @@ public interface INotificationService
 
 ```csharp
 // Startup / Program.cs
-builder.Services.AddSingleton<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 ```
 
-**Notes:** Singleton is appropriate because the service mediates UI-level messaging across components in the same browser session. For server-side multi-user scenarios you may prefer scoped instances tied to a circuit/session.
+**Notes:** Scoped is appropriate for Blazor Server circuits, ensuring each user session has its own notification state.
 
 ---
 
-## Toast Placement Configuration
+## Toast Placement & Behavior Specification
 
-### Default Placement
-- **Top-Right** is the global default toast position.
-- Chosen for maximum visibility without blocking form content.
+The NEBA application uses a unified toast notification system with responsive placement that adapts to screen size for optimal visibility and ergonomics.
 
-### Configuration Model (Layout-Level Override)
-- Toast placement is **configurable at the layout level**, not per-toast and not per-component.
-- Prevents UX inconsistency while allowing page-level control.
+### Toast Placement Rules
 
-### Enum Definition
-```csharp
-public enum ToastPosition
-{
-    TopRight,
-    TopCenter,
-    BottomRight,
-    BottomCenter
+Toast placement is **automatically responsive** and handled via CSS media queries—no configuration needed.
+
+#### Desktop Placement (≥ 768px viewport)
+All toasts—regardless of severity—are placed in the **top-right** corner.
+
+**Rationale:**
+- Matches enterprise UX conventions (AWS, Azure, Jira, GitHub, Slack)
+- Avoids covering main forms, inputs, or actions
+- Minimal intrusion, visually predictable
+- Consistent with NEBA's design system
+
+#### Mobile Placement (< 768px viewport)
+All toasts are placed at **bottom-center** of the viewport.
+
+**Rationale:**
+- Easier thumb access for dismissal
+- Avoids covering page headers and navigation
+- Stays above mobile OS chrome (home indicator, keyboard)
+- Better ergonomics for touch interaction
+
+**CSS Implementation:**
+```css
+/* Mobile: bottom-center */
+.neba-toast-container {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Desktop: top-right */
+@media (min-width: 768px) {
+  .neba-toast-container {
+    top: 1rem;
+    right: 1rem;
+    bottom: auto;
+    left: auto;
+    transform: none;
+  }
 }
 ```
 
-### Global UI Preferences Example
-```csharp
-public class UiPreferences
-{
-    public ToastPosition ToastPlacement { get; set; } = ToastPosition.TopRight;
-}
-```
+### Toast Stacking & Display
 
-### Layout Override Example
-```razor
-<AppLayout ToastPlacement="ToastPosition.BottomRight">
-    @Body
-</AppLayout>
-```
+- **Multiple toasts stack vertically** (newest on top)
+- Maximum of **5 concurrent toasts** (configurable via `ToastManager.MaxToasts`)
+- Older toasts removed via FIFO when limit exceeded
+- Each toast animates independently
 
-### ToastManager Behavior
-- `ToastManager` reads from the cascading or injected UI preference.
-- All toasts render according to the selected layout-level position.
+### Duration Rules
 
----
+- **Default duration: 4 seconds**
+- All toasts auto-dismiss unless `Persist=true` in payload
+- Timer pauses on hover (desktop)
+- Timer pauses on touch-and-hold (mobile)
+
+### Interaction Requirements
+
+- **Tap/click to dismiss** via X button
+- **Swipe gestures** supported on touch devices (via hover pause)
+- Interactions outside toast pass through to UI
+- Toasts do not block scrolling or other gestures
+
+### Accessibility
+
+- **`aria-live="polite"`** for Success/Info/Normal
+- **`aria-live="assertive"`** for Error/Warning
+- Must meet WCAG AA contrast ratios
+- Non-modal behavior (no focus trap)
+
+### Visual Behavior
+
+- **Fade-in animation:** 0.3s with scale effect
+- **Fade-out animation:** 0.2s on dismiss
+- Respects `prefers-reduced-motion` user preference
+- Box shadow for depth without modal heaviness
+- Rounded corners: `--neba-radius-lg` (0.5rem)
+- Desktop width: 300-500px
+- Mobile width: responsive (min 300px)
+
+### Mobile-Specific Adjustments
+
+- Bottom-center placement avoids keyboard obstruction
+- Safe-area padding respected
+- Toasts elevate above OS chrome automatically
 
 ## Tailwind Design Tokens (suggested)
 

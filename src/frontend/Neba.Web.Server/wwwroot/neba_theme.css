@@ -369,32 +369,34 @@ a.neba-link:focus-visible {
   flex-direction: column;
   gap: 0.75rem;
   pointer-events: none;
+  /* Mobile default: bottom-center (for info/success/normal) */
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Mobile: top-center for errors/warnings */
+@media (max-width: 767px) {
+  .neba-toast-container:has(.neba-toast-error),
+  .neba-toast-container:has(.neba-toast-warning) {
+    top: 1rem;
+    bottom: auto;
+  }
+}
+
+/* Desktop: top-right (768px is our tablet breakpoint) */
+@media (min-width: 768px) {
+  .neba-toast-container {
+    top: 1rem;
+    bottom: auto;
+    left: auto;
+    right: 1rem;
+    transform: none;
+  }
 }
 
 .neba-toast-container > * {
   pointer-events: auto;
-}
-
-.neba-toast-container-top-right {
-  top: 1rem;
-  right: 1rem;
-}
-
-.neba-toast-container-top-center {
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.neba-toast-container-bottom-right {
-  bottom: 1rem;
-  right: 1rem;
-}
-
-.neba-toast-container-bottom-center {
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .neba-toast {

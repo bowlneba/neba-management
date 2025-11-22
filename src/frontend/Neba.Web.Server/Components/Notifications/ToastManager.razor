@@ -6,7 +6,7 @@
 
 @if (_activeToasts.Count > 0)
 {
-    <div class="neba-toast-container neba-toast-container-@PositionClass">
+    <div class="neba-toast-container">
         @foreach (var toast in _activeToasts)
         {
             <NebaToast Payload="@toast.Payload"
@@ -21,12 +21,6 @@
 @code {
     private readonly List<ToastItem> _activeToasts = new();
     private IDisposable? _subscription;
-
-    /// <summary>
-    /// The position where toasts appear on the screen.
-    /// </summary>
-    [Parameter]
-    public ToastPosition Position { get; set; } = ToastPosition.TopRight;
 
     /// <summary>
     /// Maximum number of toasts to display at once (FIFO queue).
@@ -45,15 +39,6 @@
     /// </summary>
     [Parameter]
     public bool PauseOnHover { get; set; } = true;
-
-    private string PositionClass => Position switch
-    {
-        ToastPosition.TopRight => "top-right",
-        ToastPosition.TopCenter => "top-center",
-        ToastPosition.BottomRight => "bottom-right",
-        ToastPosition.BottomCenter => "bottom-center",
-        _ => "top-right"
-    };
 
     protected override void OnInitialized()
     {
