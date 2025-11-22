@@ -38,12 +38,14 @@ function initializeNavigation() {
     // Dropdown toggle
     const dropdownToggles = document.querySelectorAll('[data-action="toggle-dropdown"]');
     dropdownToggles.forEach(toggle => {
-        toggle.addEventListener('click', (event) => {
+        const dropdownLink = toggle.querySelector('[aria-haspopup]');
+
+        dropdownLink?.addEventListener('click', (event) => {
             // Prevent navigation when clicking the dropdown link in mobile/tablet view
             if (window.innerWidth <= tabletMaxBreakpoint) {
                 event.preventDefault();
             }
-            toggleDropdown(event.currentTarget);
+            toggleDropdown(toggle);
         });
     });
 
