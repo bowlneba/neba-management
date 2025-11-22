@@ -41,16 +41,20 @@ h1:focus {
     padding: 1rem 1rem 1rem 3.7rem;
     color: white;
     position: fixed;
-    bottom: 0;
+    bottom: 60px;
     left: 0;
     right: 0;
     z-index: 1000;
-    opacity: 0.95;
 }
 
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+/* Add padding to body when error boundary is visible to prevent footer overlap */
+body:has(.blazor-error-boundary) {
+    padding-bottom: 130px;
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
