@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@inject INotificationService Notifications
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
@@ -15,5 +16,44 @@
     private void IncrementCount()
     {
         currentCount++;
+        CheckAndNotify();
+    }
+
+    private void CheckAndNotify()
+    {
+        if (IsPrime(currentCount))
+        {
+            Notifications.Info($"{currentCount} is a prime number!", "Prime Number");
+        }
+        else if (currentCount % 10 == 0)
+        {
+            Notifications.Success($"{currentCount} is divisible by 10", "Divisible by 10");
+        }
+        else if (currentCount % 5 == 0)
+        {
+            Notifications.Normal($"{currentCount} is divisible by 5", "Divisible by 5");
+        }
+        else if (currentCount % 6 == 0)
+        {
+            Notifications.Warning($"{currentCount} is divisible by 6", "Divisible by 6");
+        }
+        else if (currentCount % 9 == 0)
+        {
+            Notifications.Error($"{currentCount} is divisible by 9", "Divisible by 9");
+        }
+    }
+
+    private static bool IsPrime(int number)
+    {
+        if (number <= 1) return false;
+        if (number == 2) return true;
+        if (number % 2 == 0) return false;
+
+        for (int i = 3; i * i <= number; i += 2)
+        {
+            if (number % i == 0) return false;
+        }
+
+        return true;
     }
 }

@@ -1,0 +1,107 @@
+@using Neba.Web.Server.Services
+@using System.Reactive.Linq
+@implements IDisposable
+@inject INotificationService NotificationService
+@rendermode InteractiveServer
+
+@if (_activeToasts.Count > 0)
+{
+    <div class="neba-toast-container neba-toast-container-@PositionClass">
+        @foreach (var toast in _activeToasts)
+        {
+            <NebaToast Payload="@toast.Payload"
+                      Duration="@Duration"
+                      PauseOnHover="@PauseOnHover"
+                      OnDismiss="@(() => RemoveToast(toast.Id))"
+                      @key="toast.Id" />
+        }
+    </div>
+}
+
+@code {
+    private readonly List<ToastItem> _activeToasts = new();
+    private IDisposable? _subscription;
+
+    /// <summary>
+    /// The position where toasts appear on the screen.
+    /// </summary>
+    [Parameter]
+    public ToastPosition Position { get; set; } = ToastPosition.TopRight;
+
+    /// <summary>
+    /// Maximum number of toasts to display at once (FIFO queue).
+    /// </summary>
+    [Parameter]
+    public int MaxToasts { get; set; } = 5;
+
+    /// <summary>
+    /// Default duration before toasts auto-dismiss.
+    /// </summary>
+    [Parameter]
+    public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(4);
+
+    /// <summary>
+    /// Whether to pause auto-dismiss timer when hovering over toasts.
+    /// </summary>
+    [Parameter]
+    public bool PauseOnHover { get; set; } = true;
+
+    private string PositionClass => Position switch
+    {
+        ToastPosition.TopRight => "top-right",
+        ToastPosition.TopCenter => "top-center",
+        ToastPosition.BottomRight => "bottom-right",
+        ToastPosition.BottomCenter => "bottom-center",
+        _ => "top-right"
+    };
+
+    protected override void OnInitialized()
+    {
+        _subscription = NotificationService.Notifications
+            .Subscribe(payload =>
+            {
+                InvokeAsync(() =>
+                {
+                    AddToast(payload);
+                    StateHasChanged();
+                });
+            });
+    }
+
+    private void AddToast(NotificationPayload payload)
+    {
+        // Enforce max toasts limit (FIFO)
+        while (_activeToasts.Count >= MaxToasts)
+        {
+            _activeToasts.RemoveAt(_activeToasts.Count - 1);
+        }
+
+        // Add new toast at the top (newest first)
+        _activeToasts.Insert(0, new ToastItem
+        {
+            Id = Guid.NewGuid(),
+            Payload = payload
+        });
+    }
+
+    private void RemoveToast(Guid id)
+    {
+        var toast = _activeToasts.FirstOrDefault(t => t.Id == id);
+        if (toast is not null)
+        {
+            _activeToasts.Remove(toast);
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
+
+    private sealed class ToastItem
+    {
+        public Guid Id { get; init; }
+        public NotificationPayload Payload { get; init; } = null!;
+    }
+}

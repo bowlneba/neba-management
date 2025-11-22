@@ -1,0 +1,71 @@
+@using Neba.Web.Server.Services
+
+<div class="neba-alert neba-alert-@SeverityClass flex items-start gap-3" role="@AriaRole">
+    <div class="flex-shrink-0 mt-0.5">
+        <NebaIcon Severity="@Severity" />
+    </div>
+
+    <div class="flex-1 min-w-0">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <div class="font-semibold mb-1">@Title</div>
+        }
+        <div>@Message</div>
+    </div>
+
+    @if (Dismissible)
+    {
+        <button type="button"
+                class="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity bg-transparent border-0 p-1 cursor-pointer text-current"
+                @onclick="HandleDismiss"
+                aria-label="Dismiss alert">
+            ✕
+        </button>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The severity level of the alert (affects styling).
+    /// </summary>
+    [Parameter, EditorRequired]
+    public NotifySeverity Severity { get; set; }
+
+    /// <summary>
+    /// The main message content to display.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Message { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional title for the alert.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Whether the alert can be dismissed by the user.
+    /// </summary>
+    [Parameter]
+    public bool Dismissible { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the alert is dismissed.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    private string SeverityClass => Severity.ToString().ToLowerInvariant();
+
+    private string AriaRole => Severity is NotifySeverity.Error or NotifySeverity.Warning
+        ? "alert"
+        : "status";
+
+    private async Task HandleDismiss()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+}
