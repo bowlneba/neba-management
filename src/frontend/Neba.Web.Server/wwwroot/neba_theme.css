@@ -489,8 +489,16 @@ a:focus-visible {
   padding: 0 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 2rem;
   min-height: 4rem;
+  flex-wrap: nowrap;
+}
+
+.neba-navbar-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-shrink: 0;
 }
 
 .neba-nav-menu {
@@ -617,10 +625,6 @@ a:focus-visible {
   .neba-top-banner {
     display: none;
   }
-  transition: background-color 0.3s ease;
-  .neba-menu-toggle {
-    display: flex;
-  }
 
   .neba-navbar-wrapper {
     display: flex;
@@ -629,6 +633,20 @@ a:focus-visible {
 
   .neba-navbar-content {
     flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
+  }
+
+  .neba-navbar-header {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .neba-menu-toggle {
+    display: flex;
   }
 
   .neba-nav-menu {
@@ -665,8 +683,8 @@ a:focus-visible {
   }
 }
 
-/* Tablet (768px - 1024px): Top banner + Hamburger menu */
-@media (min-width: 768px) and (max-width: 1024px) {
+/* Tablet (768px - 1200px): Top banner + Hamburger menu */
+@media (min-width: 768px) and (max-width: 1200px) {
   .neba-banner-ads {
     flex-direction: column;
   }
@@ -678,10 +696,6 @@ a:focus-visible {
     font-size: 0.875rem;
   }
 
-  .neba-menu-toggle {
-    display: flex;
-  }
-
   .neba-navbar-wrapper {
     display: flex;
     flex-direction: column;
@@ -689,6 +703,20 @@ a:focus-visible {
 
   .neba-navbar-content {
     flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
+  }
+
+  .neba-navbar-header {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .neba-menu-toggle {
+    display: flex;
   }
 
   .neba-nav-menu {
@@ -725,15 +753,7 @@ a:focus-visible {
   }
 }
 
-/* Desktop intermediate (1025px - 1200px): Tighter spacing */
-@media (min-width: 1025px) and (max-width: 1200px) {
-  .neba-nav-link {
-    padding: 1rem 0.625rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Desktop intermediate (1201px - 1400px): Medium spacing */
+/* Desktop (1201px - 1400px): Medium spacing */
 @media (min-width: 1201px) and (max-width: 1400px) {
   .neba-nav-link {
     padding: 1rem 0.875rem;

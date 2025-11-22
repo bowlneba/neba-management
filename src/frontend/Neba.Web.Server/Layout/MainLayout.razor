@@ -42,20 +42,22 @@
     <nav class="neba-navbar" role="navigation" aria-label="Main navigation">
         <div class="neba-navbar-wrapper">
             <div class="neba-navbar-content">
-                <a href="/" class="flex items-center flex-shrink-0">
-                    <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
-                </a>
+                <div class="neba-navbar-header">
+                    <a href="/" class="flex items-center flex-shrink-0">
+                        <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
+                    </a>
 
-            <button class="neba-menu-toggle"
-                    data-action="toggle-menu"
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="main-menu">
-                <span class="sr-only">Menu</span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                </button>
+                    <button class="neba-menu-toggle"
+                            data-action="toggle-menu"
+                            aria-label="Toggle navigation menu"
+                            aria-expanded="false"
+                            aria-controls="main-menu">
+                        <span class="sr-only">Menu</span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
                 <ul class="neba-nav-menu" id="main-menu">
                     <li class="neba-nav-item">
                         <a href="/tournaments" class="neba-nav-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)">Tournaments</a>
