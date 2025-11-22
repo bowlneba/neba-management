@@ -29,6 +29,7 @@
 
 @code {
     private IJSObjectReference? _module;
+    private IJSObjectReference? _timer;
     private DotNetObjectReference<NebaToast>? _dotNetRef;
     private bool _isDismissing;
     private bool _isHovered;
@@ -69,25 +70,25 @@
         {
             _dotNetRef = DotNetObjectReference.Create(this);
             _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Notifications/NebaToast.razor.js");
-            await _module.InvokeVoidAsync("startTimer", _dotNetRef, (int)Duration.TotalMilliseconds);
+            _timer = await _module.InvokeAsync<IJSObjectReference>("createTimer", _dotNetRef, (int)Duration.TotalMilliseconds);
         }
     }
 
     private async Task HandleMouseEnter()
     {
-        if (PauseOnHover && _module is not null && !Payload.Persist)
+        if (PauseOnHover && _timer is not null && !Payload.Persist)
         {
             _isHovered = true;
-            await _module.InvokeVoidAsync("pauseTimer");
+            await _timer.InvokeVoidAsync("pause");
         }
     }
 
     private async Task HandleMouseLeave()
     {
-        if (PauseOnHover && _module is not null && !Payload.Persist && _isHovered)
+        if (PauseOnHover && _timer is not null && !Payload.Persist && _isHovered)
         {
             _isHovered = false;
-            await _module.InvokeVoidAsync("resumeTimer");
+            await _timer.InvokeVoidAsync("resume");
         }
     }
 
@@ -118,9 +119,14 @@
 
     public async ValueTask DisposeAsync()
     {
+        if (_timer is not null)
+        {
+            await _timer.InvokeVoidAsync("cancel");
+            await _timer.DisposeAsync();
+        }
+
         if (_module is not null)
         {
-            await _module.InvokeVoidAsync("cancelTimer");
             await _module.DisposeAsync();
         }
 
