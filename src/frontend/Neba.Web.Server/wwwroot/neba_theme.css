@@ -39,12 +39,17 @@
   /* Responsive breakpoints */
   --neba-breakpoint-mobile: 767px;
   --neba-breakpoint-tablet-min: 768px;
-  --neba-breakpoint-tablet-max: 1024px;
-  --neba-breakpoint-desktop-tight-min: 1025px;
-  --neba-breakpoint-desktop-tight-max: 1150px;
-  --neba-breakpoint-desktop-medium-min: 1151px;
-  --neba-breakpoint-desktop-medium-max: 1300px;
-  --neba-breakpoint-desktop-wide-min: 1301px;
+  --neba-breakpoint-tablet-max: 1100px;
+  --neba-breakpoint-desktop-tight-min: 1101px;
+  --neba-breakpoint-desktop-tight-max: 1250px;
+  --neba-breakpoint-desktop-medium-min: 1251px;
+  --neba-breakpoint-desktop-medium-max: 1400px;
+  --neba-breakpoint-desktop-wide-min: 1401px;
+
+  /* Content width - matches navbar width at full size
+     Adjust this value to match the natural width of your navbar (logo + menu items)
+     at maximum spacing. Both navbar and main content will use this value. */
+  --neba-content-max-width: 1150px;
 }
 
 .dark {
@@ -59,6 +64,14 @@ html, body {
   background-color: var(--neba-bg);
   color: var(--neba-text);
   font-family: var(--neba-font-base);
+}
+
+/* Content wrapper to match navbar width */
+.neba-content-wrapper {
+  max-width: var(--neba-content-max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 /* Button base */
@@ -494,14 +507,15 @@ a:focus-visible {
 }
 
 .neba-navbar-content {
-  max-width: 1400px;
+  max-width: var(--neba-content-max-width);
   margin: 0 auto;
   padding: 0 1rem;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: clamp(0.75rem, 1.5vw, 2rem);
   min-height: 4rem;
   flex-wrap: nowrap;
+  box-sizing: border-box;
 }
 
 .neba-navbar-header {
@@ -514,7 +528,7 @@ a:focus-visible {
 .neba-nav-menu {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -526,11 +540,11 @@ a:focus-visible {
 
 .neba-nav-link {
   display: block;
-  padding: 1rem 1rem;
+  padding: 1rem clamp(0.5rem, 1vw, 1.25rem);
   color: var(--neba-text);
   font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s ease, background-color 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
   text-transform: uppercase;
   font-size: 0.875rem;
   letter-spacing: 0.025em;
@@ -693,8 +707,8 @@ a:focus-visible {
   }
 }
 
-/* Tablet (768px - 1024px): Top banner + Hamburger menu */
-@media (min-width: 768px) and (max-width: 1024px) {
+/* Tablet (768px - 1100px): Top banner + Hamburger menu */
+@media (min-width: 768px) and (max-width: 1100px) {
   .neba-banner-ads {
     flex-direction: column;
   }
@@ -763,32 +777,8 @@ a:focus-visible {
   }
 }
 
-/* Desktop Tight (1025px - 1150px): Very tight spacing */
-@media (min-width: 1025px) and (max-width: 1150px) {
-  .neba-nav-link {
-    padding: 1rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .neba-navbar-content {
-    gap: 1rem;
-  }
-}
-
-/* Desktop Medium (1151px - 1300px): Medium spacing */
-@media (min-width: 1151px) and (max-width: 1300px) {
-  .neba-nav-link {
-    padding: 1rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-
-  .neba-navbar-content {
-    gap: 1.5rem;
-  }
-}
-
-/* Desktop Wide (> 1300px): Full spacing */
-/* Default styles above already handle this */
+/* Desktop (> 1100px): Full horizontal menu with fluid spacing */
+/* Fluid spacing is handled by clamp() in the base styles above */
 
 /* Footer */
 .neba-footer {
