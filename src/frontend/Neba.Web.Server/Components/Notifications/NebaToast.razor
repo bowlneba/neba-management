@@ -97,14 +97,22 @@
         if (_isDismissing) return;
 
         _isDismissing = true;
-        StateHasChanged();
 
-        // Wait for fade-out animation (200ms)
-        await Task.Delay(200);
-
-        if (OnDismiss.HasDelegate)
+        try
         {
-            await OnDismiss.InvokeAsync();
+            StateHasChanged();
+
+            // Wait for fade-out animation
+            await Task.Delay(ToastTiming.FadeOutAnimationMs);
+
+            if (OnDismiss.HasDelegate)
+            {
+                await OnDismiss.InvokeAsync();
+            }
+        }
+        catch (ObjectDisposedException)
+        {
+            // Component was disposed during dismiss animation - safe to ignore
         }
     }
 
