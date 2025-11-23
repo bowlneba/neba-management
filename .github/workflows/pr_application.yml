@@ -82,6 +82,8 @@ jobs:
             test-name: Unit Tests
           - test-project: tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj
             test-name: Integration Tests
+          - test-project: tests/Neba.BrowserTests/Neba.BrowserTests.csproj
+            test-name: Browser Tests
       fail-fast: false
 
     name: ${{ matrix.test-name }}
@@ -103,6 +105,10 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+
+      - name: Setup Playwright
+        if: matrix.test-name == 'Browser Tests'
+        run: pwsh tests/Neba.BrowserTests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
       - name: Restore dependencies
         run: dotnet restore
