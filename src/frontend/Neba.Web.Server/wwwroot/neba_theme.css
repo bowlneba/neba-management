@@ -36,7 +36,10 @@
   --neba-text: #1f2937;
   --neba-border: var(--neba-gray-300);
 
-  /* Responsive breakpoints */
+  /* Responsive breakpoints
+     IMPORTANT: These values MUST be kept in sync with wwwroot/js/breakpoints.js
+     When updating these values, also update the JavaScript constants to match (without 'px' units).
+     See breakpoints.js for the synchronization checklist. */
   --neba-breakpoint-mobile: 767px;
   --neba-breakpoint-tablet-min: 768px;
   --neba-breakpoint-tablet-max: 1100px;

@@ -23,7 +23,7 @@
     private IDisposable? _subscription;
     private IJSObjectReference? _module;
     private bool _isMobile;
-    private TimeSpan _effectiveDuration = TimeSpan.FromSeconds(4);
+    private TimeSpan _effectiveDuration = TimeSpan.FromMilliseconds(ToastDefaults.DesktopDurationMs);
 
     /// <summary>
     /// Whether to pause auto-dismiss timer when hovering over toasts.
@@ -52,7 +52,9 @@
         {
             _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Notifications/ToastManager.razor.js");
             _isMobile = await _module.InvokeAsync<bool>("isMobile");
-            _effectiveDuration = _isMobile ? TimeSpan.FromSeconds(3) : TimeSpan.FromSeconds(4);
+            _effectiveDuration = _isMobile
+                ? TimeSpan.FromMilliseconds(ToastDefaults.MobileDurationMs)
+                : TimeSpan.FromMilliseconds(ToastDefaults.DesktopDurationMs);
             StateHasChanged();
         }
     }
@@ -72,7 +74,14 @@
         }
         else
         {
-            // Otherwise, queue it for later
+            // Enforce max queue size to prevent unbounded growth
+            if (_toastQueue.Count >= ToastDefaults.MaxQueueSize)
+            {
+                // Drop the oldest toast to make room for the new one
+                _toastQueue.Dequeue();
+            }
+
+            // Queue the new toast
             _toastQueue.Enqueue(toastItem);
         }
     }
@@ -104,11 +113,5 @@
         }
 
         _subscription?.Dispose();
-    }
-
-    private sealed class ToastItem
-    {
-        public Guid Id { get; init; }
-        public NotificationPayload Payload { get; init; } = null!;
     }
 }

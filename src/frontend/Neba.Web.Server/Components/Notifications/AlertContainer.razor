@@ -48,8 +48,11 @@
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        // Clear alerts when navigating to a new page
-        AlertService.Clear();
+        // Clear alerts when navigating to a new page, unless they persist across navigation
+        if (AlertService.CurrentAlert?.PersistAcrossNavigation != true)
+        {
+            AlertService.Clear();
+        }
     }
 
     private void OnAlertStateChanged(object? sender, EventArgs e)

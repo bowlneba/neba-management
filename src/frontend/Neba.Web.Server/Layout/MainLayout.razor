@@ -42,22 +42,20 @@
     <nav class="neba-navbar" role="navigation" aria-label="Main navigation">
         <div class="neba-navbar-wrapper">
             <div class="neba-navbar-content">
-                <div class="neba-navbar-header">
-                    <a href="/" class="flex items-center flex-shrink-0">
-                        <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
-                    </a>
+                <a href="/" class="flex items-center flex-shrink-0">
+                    <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
+                </a>
 
-                    <button class="neba-menu-toggle"
-                            data-action="toggle-menu"
-                            aria-label="Toggle navigation menu"
-                            aria-expanded="false"
-                            aria-controls="main-menu">
-                        <span class="sr-only">Menu</span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </button>
-                </div>
+            <button class="neba-menu-toggle"
+                    data-action="toggle-menu"
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="main-menu">
+                <span class="sr-only">Menu</span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                </button>
                 <ul class="neba-nav-menu" id="main-menu">
                     <li class="neba-nav-item">
                         <a href="/tournaments" class="neba-nav-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)">Tournaments</a>
@@ -116,17 +114,14 @@
 
     <!-- Main Content -->
     <main class="flex-1 animate-fade-in" role="main" id="main-content">
-        <article class="neba-content-wrapper py-6">
-            <AlertContainer DefaultVariant="AlertVariant.Filled"
-                            DefaultShowIcon="true"
-                            DefaultDismissible="true" />
+        <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             @Body
         </article>
     </main>
 
     <!-- Footer -->
     <footer class="neba-footer" role="contentinfo" aria-label="Site footer">
-        <div class="max-w-[1400px] mx-auto px-4 py-8">
+        <div class="max-w-[1400px] mx-auto px-4 py-8 md:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="text-center md:text-left">
                     <p class="text-sm text-gray-600">&copy; @DateTime.Now.Year New England Bowling Association. All rights reserved.</p>
@@ -141,14 +136,11 @@
     </footer>
 </div>
 
-<AlertManager />
-<ToastManager />
-
-<div id="blazor-error-ui" data-nosnippet class="hidden fixed left-0 right-0 z-[1000]" style="bottom: 60px;" role="alert" aria-live="assertive">
-    <div class="neba-alert neba-alert-error flex items-center justify-between shadow-lg" style="background-color: rgba(204, 8, 10, 0.95); color: white; border-color: var(--neba-accent-red);">
+<div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 right-0 z-[1000]" role="alert" aria-live="assertive">
+    <div class="neba-alert neba-alert-error flex items-center justify-between shadow-lg">
         <span>An unhandled error has occurred.</span>
         <div class="flex gap-2">
-            <button class="reload neba-btn neba-btn-sm neba-btn-primary">Reload</button>
+            <a href="." class="neba-btn neba-btn-sm neba-btn-primary">Reload</a>
             <button class="dismiss neba-btn neba-btn-sm neba-btn-secondary" aria-label="Dismiss error">✕</button>
         </div>
     </div>

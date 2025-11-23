@@ -4,8 +4,12 @@ namespace Neba.Web.Server.Services;
 
 /// <summary>
 /// Implementation of INotificationService using System.Reactive for publish-subscribe pattern.
-/// Thread-safe for Blazor Server circuits.
 /// </summary>
+/// <remarks>
+/// Thread safety: This service is scoped per Blazor Server circuit and relies on
+/// Blazor's single-threaded synchronization context. It is safe within a circuit
+/// but not designed for use in multi-threaded scenarios.
+/// </remarks>
 internal sealed class NotificationService : INotificationService, IDisposable
 {
     private readonly Subject<NotificationPayload> _notificationSubject = new();

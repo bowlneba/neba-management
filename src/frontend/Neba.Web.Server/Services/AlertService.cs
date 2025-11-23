@@ -4,8 +4,12 @@ namespace Neba.Web.Server.Services;
 
 /// <summary>
 /// Service for managing and displaying alerts in the UI.
-/// Scoped per Blazor circuit.
 /// </summary>
+/// <remarks>
+/// Thread safety: This service is scoped per Blazor Server circuit and relies on
+/// Blazor's single-threaded synchronization context. All state mutations occur
+/// on the circuit's synchronization context. Not suitable for multi-threaded use.
+/// </remarks>
 public class AlertService
 {
     private AlertItem? _currentAlert;
@@ -34,9 +38,10 @@ public class AlertService
     /// <param name="message">The alert message.</param>
     /// <param name="title">Optional title displayed above the message.</param>
     /// <param name="configure">Optional configuration action for alert options.</param>
-    public void ShowNormal(string message, string? title = null, Action<AlertOptions>? configure = null)
+    /// <param name="persistAcrossNavigation">If true, alert persists across navigation. Defaults to false.</param>
+    public void ShowNormal(string message, string? title = null, Action<AlertOptions>? configure = null, bool persistAcrossNavigation = false)
     {
-        Show(NotifySeverity.Normal, message, title, configure);
+        Show(NotifySeverity.Normal, message, title, configure, persistAcrossNavigation);
     }
 
     /// <summary>
@@ -45,9 +50,10 @@ public class AlertService
     /// <param name="message">The alert message.</param>
     /// <param name="title">Optional title displayed above the message.</param>
     /// <param name="configure">Optional configuration action for alert options.</param>
-    public void ShowInfo(string message, string? title = null, Action<AlertOptions>? configure = null)
+    /// <param name="persistAcrossNavigation">If true, alert persists across navigation. Defaults to false.</param>
+    public void ShowInfo(string message, string? title = null, Action<AlertOptions>? configure = null, bool persistAcrossNavigation = false)
     {
-        Show(NotifySeverity.Info, message, title, configure);
+        Show(NotifySeverity.Info, message, title, configure, persistAcrossNavigation);
     }
 
     /// <summary>
@@ -56,9 +62,10 @@ public class AlertService
     /// <param name="message">The alert message.</param>
     /// <param name="title">Optional title displayed above the message.</param>
     /// <param name="configure">Optional configuration action for alert options.</param>
-    public void ShowSuccess(string message, string? title = null, Action<AlertOptions>? configure = null)
+    /// <param name="persistAcrossNavigation">If true, alert persists across navigation. Defaults to false.</param>
+    public void ShowSuccess(string message, string? title = null, Action<AlertOptions>? configure = null, bool persistAcrossNavigation = false)
     {
-        Show(NotifySeverity.Success, message, title, configure);
+        Show(NotifySeverity.Success, message, title, configure, persistAcrossNavigation);
     }
 
     /// <summary>
@@ -67,9 +74,10 @@ public class AlertService
     /// <param name="message">The alert message.</param>
     /// <param name="title">Optional title displayed above the message.</param>
     /// <param name="configure">Optional configuration action for alert options.</param>
-    public void ShowWarning(string message, string? title = null, Action<AlertOptions>? configure = null)
+    /// <param name="persistAcrossNavigation">If true, alert persists across navigation. Defaults to false.</param>
+    public void ShowWarning(string message, string? title = null, Action<AlertOptions>? configure = null, bool persistAcrossNavigation = false)
     {
-        Show(NotifySeverity.Warning, message, title, configure);
+        Show(NotifySeverity.Warning, message, title, configure, persistAcrossNavigation);
     }
 
     /// <summary>
@@ -78,9 +86,10 @@ public class AlertService
     /// <param name="message">The alert message.</param>
     /// <param name="title">Optional title displayed above the message.</param>
     /// <param name="configure">Optional configuration action for alert options.</param>
-    public void ShowError(string message, string? title = null, Action<AlertOptions>? configure = null)
+    /// <param name="persistAcrossNavigation">If true, alert persists across navigation. Defaults to false.</param>
+    public void ShowError(string message, string? title = null, Action<AlertOptions>? configure = null, bool persistAcrossNavigation = false)
     {
-        Show(NotifySeverity.Error, message, title, configure);
+        Show(NotifySeverity.Error, message, title, configure, persistAcrossNavigation);
     }
 
     /// <summary>
@@ -122,7 +131,7 @@ public class AlertService
     /// <summary>
     /// Internal method to show an alert with the specified severity.
     /// </summary>
-    private void Show(NotifySeverity severity, string message, string? title, Action<AlertOptions>? configure)
+    private void Show(NotifySeverity severity, string message, string? title, Action<AlertOptions>? configure, bool persistAcrossNavigation = false)
     {
         var options = new AlertOptions();
         configure?.Invoke(options);
@@ -132,6 +141,7 @@ public class AlertService
             Severity = severity,
             Message = message,
             Title = title,
+            PersistAcrossNavigation = persistAcrossNavigation,
             Options = options
         };
     }
