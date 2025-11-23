@@ -3,7 +3,8 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(cp:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(npx markdownlint:*)"
     ],
     "deny": [],
     "ask": []

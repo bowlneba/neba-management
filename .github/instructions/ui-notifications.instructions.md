@@ -1,384 +1,321 @@
-# NEBA UI Notifications — Implementation Instructions
+# NEBA UI Notifications — Specification
 
-## Goals (explicit)
-
-1. Provide a robust, consistent notification system with five tiers: `Normal`, `Info`, `Success`, `Warning`, `Error`.
-2. Provide two delivery mechanisms: **Alert** (inline, persistent) and **Toast** (ephemeral, floating).
-3. Default behavior for UI form-submission validation failure: **show both Toast + Alert**.
-4. Provide a controlled override mechanism using a form wrapper `<NebaForm>` that passes a cascading `NotificationPolicy`.
-5. Keep domain logic free of UI concerns: notifications are part of the application/UI layer and must be triggered by application/service results or domain events (via adapters), not domain entities.
-6. Accessibility: ARIA roles, screen-reader announcements, keyboard focus where needed.
+> Authoritative, conflict-free notification guidelines for Alerts and Toasts in the NEBA UI. This replaces all prior versions.
 
 ---
 
-## High-Level Architecture
+## 1. Purpose & Goals
 
-- **Domain Layer (DDD):** No UI references. Domain services emit result objects and domain events.
-- **Application Layer:** Interprets domain results and maps them to `NotificationPayload`s when appropriate.
-- **UI Layer (Blazor):** Contains components and the `NotificationService`. Receives `NotificationPayload`s and renders Alerts/Toasts.
-- **Infrastructure Layer:** Optional: persistence or event bus for persisted notifications or cross-tab sync.
+The NEBA notification system must:
+
+1. Provide five severity tiers: **Normal**, **Info**, **Success**, **Warning**, **Error**.
+2. Provide two delivery mechanisms:
+   - **Alert** (inline, persistent, contextual)
+   - **Toast** (ephemeral, floating)
+3. Ensure **persistent, actionable issues** use Alerts.
+4. Ensure **instant, ephemeral feedback** uses Toasts.
+5. Enforce consistent rules for placement, behavior, accessibility, and severity.
+6. Keep domain/UI concerns separated (DDD): notifications originate from the application layer, never the domain.
+7. Enable `<NebaForm>` to regulate validation-driven notifications.
 
 ---
 
-## Notification Model
+## 2. System Architecture
 
-### Enumerations
+### **Domain Layer (DDD)**
 
-```csharp
-public enum NotifySeverity { Normal, Info, Success, Warning, Error }
-public enum NotifyBehavior { AlertOnly, ToastOnly, AlertAndToast, None }
+- Emits domain events and result objects.
+- Contains **no** UI notification logic.
+
+### **Application Layer**
+
+- Maps domain outcomes → `NotificationPayload` objects.
+- Determines severity and behavior based on context.
+
+### **UI Layer (Blazor)**
+
+- Renders Alerts and Toasts.
+- Hosts `NotificationService`, `ToastManager`, `NebaAlert`, `NebaToast`, `NebaForm`.
+
+### **Infrastructure Layer (Optional)**
+
+- Supports persisted notifications or cross-tab/state sync.
+
+---
+
+## 3. Notification Model
+
+### **Severity Levels**
+
+```console
+Normal < Info < Success < Warning < Error
 ```
 
-### Notification Payload
+Higher severity always overrides lower when conflicts arise.
 
-```csharp
-public record NotificationPayload(NotifySeverity Severity, string Title, string Message, bool Persist = false, string? Code = null, object? Metadata = null);
+### **Behavior Modes**
+
+```console
+AlertOnly
+ToastOnly
+AlertAndToast
+None
 ```
 
-`Code` can be used to attach a stable machine-readable identifier (e.g. `ERR_VALIDATION_001`). `Persist` for Toast means keep until dismissed (rare).
+### **Payload**
+
+```csharp
+NotificationPayload(
+    Severity,
+    Title,
+    Message,
+    Persist = false,
+    Code = null,
+    Metadata = null
+)
+```
+
+- `Code` is a machine-stable identifier.
+- `Persist` applies only to Toasts (rare).
 
 ---
 
-## NotificationService Contract
+## 4. NotificationService Contract
+
+The service publishes notifications and exposes an observable stream.
+
+### **Interface**
 
 ```csharp
-public interface INotificationService
-{
-    void Info(string message, string? title = null);
-    void Success(string message, string? title = null);
-    void Warning(string message, string? title = null);
-    void Error(string message, string? title = null);
-    void Normal(string message, string? title = null);
-
-    // Form-specific
-    void ValidationFailure(string message, NotifyBehavior? overrideBehavior = null);
-
-    // Lowest level
-    void Publish(NotificationPayload payload);
-
-    // For UI to observe
-    IObservable<NotificationPayload> Notifications { get; }
-}
+void Info(...)
+void Success(...)
+void Warning(...)
+void Error(...)
+void Normal(...)
+void ValidationFailure(...)
+void Publish(NotificationPayload payload)
+IObservable<NotificationPayload> Notifications
 ```
 
-**Implementation notes:**
-- Implementation should use a small in-memory broker with `Subject<NotificationPayload>` (or equivalent) to allow components to subscribe.
-- In Blazor Server/wasm, choose the correct concurrent primitives (e.g., `System.Reactive` or `EventHandler` + thread-safe queue).
+- Implementation uses an in-memory broker.
+- Scoped lifetime per Blazor circuit.
 
 ---
 
-## Form Wrapper: `<NebaForm>` (Cascading Parameter)
+## 5. The Notification Decision Framework
 
-**Responsibilities:**
-- Run UI field validation (if using `EditForm` / `FluentValidation` / manual validation hooks) when submit is invoked.
-- If field validation fails on submit, determine behavior via cascading `NotificationPolicy`.
-- Trigger notifications via `INotificationService.ValidationFailure(...)`.
-- If field validation passes, call provided submit handler; handle result mapping to notifications.
+### **Alerts** (inline, persistent)
 
-**API (usage)**
+Use Alerts when:
+
+- The user must **take action** to fix something.
+- The issue persists until corrected.
+- Additional context is required.
+- Form-level validation fails.
+- A business rule fails.
+- A domain/application error needs user guidance.
+
+### **Toasts** (ephemeral, floating)
+
+Use Toasts when:
+
+- Feedback is instant and does not require user action.
+- A success confirmation is needed.
+- Minor info messages.
+- Non-blocking warnings.
+- Application-level events occur.
+
+### **Combined Alert + Toast**
+
+Use both when:
+
+- Validation fails on form submission.
+- You must signal *immediate failure* AND provide *persistent guidance*.
+
+---
+
+## 6. Alert Specification
+
+Alerts are the persistent, actionable, inline messaging system.
+
+### **Alert Placement**
+
+- Alerts appear **at the top of the page section or form they relate to**.
+- Alerts are part of normal layout flow.
+- Only **one alert** may be visible at a time per region.
+
+### **Alert Severity Precedence**
+
+If multiple alert conditions exist:
+
+- **Highest severity wins**.
+- Lower severities must be grouped **inside** the alert body.
+
+### **Alert Grouping for Validation**
+
+Validation errors must be shown as:
+
+```console
+Please fix the following:
+• Field A is required
+• Field B must be numeric
+• Field C must be in the future
+```
+
+Not as multiple alerts.
+
+### **Alert Persistence Rules**
+
+- **Error/Warning:** persist until dismissed or corrected.
+- **Success:** automatically dismissed on navigation.
+- **Info/Normal:** may be manual or auto-dismiss depending on context.
+
+### **Accessibility**
+
+- Errors/Warnings: `role="alert"`
+- Info/Success: `role="status"`
+- Alerts must be dismissible when appropriate.
+- Alerts must scroll into view when triggered.
+
+---
+
+## 7. Toast Specification
+
+Toasts are ephemeral, floating notifications.
+
+### 7.1 Toast Placement Rules
+
+### **Desktop (≥ 768px)**
+
+**All toasts** appear in the **top-right** corner.
+
+### **Mobile (< 768px)**
+
+- **Error/Warning → Top-center**
+- **Success/Info/Normal → Bottom-center**
+
+### **Safe Area Compliance**
+
+- Must avoid notches, home indicator, OS chrome, keyboard.
+- Must reposition automatically.
+
+---
+
+### 7.2 Toast Behavior Rules
+
+### **Single Active Toast (Default)**
+
+- Only **one toast** may be visible at a time.
+- New toasts **replace** the current toast.
+- Exception: background jobs may opt-in to multi-toast mode.
+
+### **Duration**
+
+- Standard: **2.5–3 seconds**
+- Error/Warning: **3.5–4 seconds**
+- Persisting toasts rare and require explicit `Persist=true`.
+
+### **Interaction**
+
+- Click/tap to dismiss.
+- Swipe-to-dismiss on touch devices.
+- ESC key to dismiss.
+- Hover or touch-and-hold pauses timer.
+- Interactions behind toast must pass through.
+
+### **Accessibility**
+
+- Mild → `aria-live="polite"`
+- Errors → `aria-live="assertive"`
+- Toasts must not trap focus.
+
+### **Animation**
+
+- Fade + slide.
+- Respect `prefers-reduced-motion`.
+
+---
+
+## 8. NebaForm — Validation & Notification Policy
+
+`<NebaForm>` coordinates validation and notification delivery.
+
+### **Behavior**
+
+- Runs all validation on submit.
+- If validation fails → use cascading `NotificationBehavior`.
+- Default: **AlertAndToast**.
+- Calls `INotificationService.ValidationFailure()` to publish notifications.
+
+### **Cascading Policy**
+
+Developers may override:
 
 ```razor
-<NebaForm NotificationBehavior="NotifyBehavior.AlertAndToast" OnValidSubmit="HandleSubmit">
-  <!-- Input fields -->
-</NebaForm>
-```
-
-**Cascading value**
-- The form wrapper provides `NotificationPolicy` as `CascadingValue` to children.
-
-**Default policy:** `NotifyBehavior.AlertAndToast`.
-
----
-
-## UI Components
-
-### `NebaAlert.razor` (inline alert)
-
-**Props:**
-- `NotifySeverity Severity { get; set; }`
-- `string Message { get; set; }`
-- `string? Title { get; set; }`
-- `EventCallback OnDismiss { get; set; }` (optional)
-
-**Behavior:**
-- Render a visually distinct block within page flow.
-- Use semantic HTML: `<div role="alert">` for errors/warnings, `<div role="status">` for info/success.
-- Include an accessible dismiss button when dismissible.
-
-**Tailwind mapping (examples):**
-- Error: `bg-red-50 border-red-400 text-red-800` + icon
-- Warning: `bg-yellow-50 border-yellow-400 text-yellow-800`
-- Success: `bg-green-50 border-green-400 text-green-800`
-- Info: `bg-blue-50 border-blue-400 text-blue-800`
-- Normal: `bg-gray-50 border-gray-300 text-gray-800`
-
-### `NebaToast.razor` (toast popup)
-
-**Props:**
-- `NotifySeverity Severity`
-- `string Message` + `string? Title`
-- `TimeSpan Duration` (default 4s)
-- `bool PauseOnHover` (true)
-- `bool Dismissible` (true)
-
-**Behavior:**
-- Toasts appear stacked top-right (or top-center if preferred); newest on top.
-- Each toast auto-dismisses after `Duration` unless `Persist=true`.
-- Provide direct focus on toast when it appears for screen readers (use `aria-live="polite"` or `assertive` depending on severity).
-- Allow manual keyboard dismissal (Esc) and click dismissal.
-
-**Stack manager:** a `ToastManager` component must render the active toasts from `INotificationService.Notifications` and handle lifecycle.
-
----
-
-## Accessibility
-
-- Use `role="alert"` for errors; `role="status"` for info/success. For toasts, use `aria-live="polite"` for mild messages and `aria-live="assertive"` for Errors.
-- Ensure toasts are reachable via keyboard (focusable) and dismissable via `Esc`.
-- Screen-reader announcement: when toast appears, set focus or use an offscreen `aria-live` container to announce.
-
----
-
-## DI and Registration (Minimal)
-
-```csharp
-// Startup / Program.cs
-builder.Services.AddScoped<INotificationService, NotificationService>();
-```
-
-**Notes:** Scoped is appropriate for Blazor Server circuits, ensuring each user session has its own notification state.
-
----
-
-## Toast Placement & Behavior Specification
-
-The NEBA application uses a unified toast notification system with responsive placement that adapts to screen size for optimal visibility and ergonomics.
-
-### Toast Placement Rules
-
-Toast placement is **automatically responsive** and handled via CSS media queries—no configuration needed.
-
-#### Desktop Placement (≥ 768px viewport)
-All toasts—regardless of severity—are placed in the **top-right** corner.
-
-**Rationale:**
-- Matches enterprise UX conventions (AWS, Azure, Jira, GitHub, Slack)
-- Avoids covering main forms, inputs, or actions
-- Minimal intrusion, visually predictable
-- Consistent with NEBA's design system
-
-#### Mobile Placement (< 768px viewport)
-All toasts are placed at **bottom-center** of the viewport.
-
-**Rationale:**
-- Easier thumb access for dismissal
-- Avoids covering page headers and navigation
-- Stays above mobile OS chrome (home indicator, keyboard)
-- Better ergonomics for touch interaction
-
-**CSS Implementation:**
-```css
-/* Mobile: bottom-center */
-.neba-toast-container {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* Desktop: top-right */
-@media (min-width: 768px) {
-  .neba-toast-container {
-    top: 1rem;
-    right: 1rem;
-    bottom: auto;
-    left: auto;
-    transform: none;
-  }
-}
-```
-
-### Toast Stacking & Display
-
-- **Multiple toasts stack vertically** (newest on top)
-- Maximum of **5 concurrent toasts** (configurable via `ToastManager.MaxToasts`)
-- Older toasts removed via FIFO when limit exceeded
-- Each toast animates independently
-
-### Duration Rules
-
-- **Default duration: 4 seconds**
-- All toasts auto-dismiss unless `Persist=true` in payload
-- Timer pauses on hover (desktop)
-- Timer pauses on touch-and-hold (mobile)
-
-### Interaction Requirements
-
-- **Tap/click to dismiss** via X button
-- **Swipe gestures** supported on touch devices (via hover pause)
-- Interactions outside toast pass through to UI
-- Toasts do not block scrolling or other gestures
-
-### Accessibility
-
-- **`aria-live="polite"`** for Success/Info/Normal
-- **`aria-live="assertive"`** for Error/Warning
-- Must meet WCAG AA contrast ratios
-- Non-modal behavior (no focus trap)
-
-### Visual Behavior
-
-- **Fade-in animation:** 0.3s with scale effect
-- **Fade-out animation:** 0.2s on dismiss
-- Respects `prefers-reduced-motion` user preference
-- Box shadow for depth without modal heaviness
-- Rounded corners: `--neba-radius-lg` (0.5rem)
-- Desktop width: 300-500px
-- Mobile width: responsive (min 300px)
-
-### Mobile-Specific Adjustments
-
-- Bottom-center placement avoids keyboard obstruction
-- Safe-area padding respected
-- Toasts elevate above OS chrome automatically
-
-## Tailwind Design Tokens (suggested)
-
-Create CSS utility classes or a `neba-theme` partial to centralize color variables. Use `xl` rounded corners for alerts/cards. Keep icons consistent.
-
-Example mapping (already given above) should be implemented via Tailwind classes.
-
----
-
-## Error Handling Semantics (mapping from App -> UI)
-
-- **Client-side field validation (UI):** field indicators (red border) + on submit: `ValidationFailure` → default: Alert + Toast.
-- **Application-level domain violations (e.g., business rule):** map to `NotifySeverity.Warning` or `Error` depending on rule and deliver via Alert (if correction required) and optional Toast.
-- **Infrastructure failures (e.g., network/persistence):** `NotifySeverity.Error` → Toast + possible Alert if user can act.
-
-Always include a machine-readable `Code` in payloads for analytics and deterministic handling.
-
----
-
-## Behavior Examples (Minimal Code Snippets)
-
-### `NotifyBehavior` enum
-
-```csharp
-public enum NotifyBehavior { AlertOnly, ToastOnly, AlertAndToast, None }
-```
-
-### Validation failure helper
-
-```csharp
-public class FormNotificationHelper
-{
-    private readonly INotificationService _notificationService;
-    public FormNotificationHelper(INotificationService s) => _notificationService = s;
-
-    public void OnValidationFailure(NotifyBehavior behavior, string message = "Please fix the errors highlighted below.")
-    {
-        if (behavior == NotifyBehavior.AlertOnly || behavior == NotifyBehavior.AlertAndToast)
-            _notificationService.Publish(new NotificationPayload(NotifySeverity.Error, "Submission failed", message));
-
-        if (behavior == NotifyBehavior.ToastOnly || behavior == NotifyBehavior.AlertAndToast)
-            _notificationService.Error(message);
-    }
-}
+<NebaForm NotificationBehavior="ToastOnly"> ...
 ```
 
 ---
 
-## Unit Testing Guidance (xUnit + Moq + Shouldly)
+## 9. Component Definitions
 
-- Tests should validate `NotificationService` publishes correct payloads for each public method.
-- Tests should validate `NebaForm` respects `NotificationBehavior` cascading policy.
+### NebaAlert.razor
 
-**Example test names** (follow your naming convention):
+- Inline block.
+- Severity-mapped styling.
+- Dismiss optional.
+- Semantic roles based on severity.
 
-```
-NotificationService_Publish_ShouldEmitPayload_WhenCalled
-FormNotificationHelper_ShouldPublishAlertAndToast_WhenBehaviorIsAlertAndToast
-NebaForm_ShouldUseGlobalDefault_WhenNoOverrideProvided
-NebaForm_ShouldUseOverride_WhenNotificationBehaviorProvided
-ToastManager_ShouldAutoDismiss_ToastsAfterDuration
-NebaAlert_ShouldRenderCorrectClasses_ForEachSeverity
-```
+### NebaToast.razor
 
-**Minimal xUnit example skeleton**
+- Floating ephemeral notification.
+- Dismissible.
+- Timed lifecycle.
 
-```csharp
-public class NotificationServiceTests
-{
-    [Fact]
-    public void Publish_ShouldEmitPayload_WhenCalled()
-    {
-        // Arrange
-        var sut = new NotificationService();
-        var received = new List<NotificationPayload>();
-        using var sub = sut.Notifications.Subscribe(p => received.Add(p));
+### ToastManager
 
-        // Act
-        sut.Publish(new NotificationPayload(NotifySeverity.Info, "Title", "Message"));
-
-        // Assert
-        received.Count.ShouldBe(1);
-        received[0].Severity.ShouldBe(NotifySeverity.Info);
-    }
-}
-```
+- Renders toast container with responsive placement.
+- Manages replacement logic.
+- Enforces single-toast rule unless overridden.
 
 ---
 
-## Copilot Prompt (single, full specification)
+## 10. Error Handling Semantics
 
-Use this prompt verbatim with Copilot in the project repository to generate the implementation. It contains the info needed to build components, services, DI, and tests.
+### **UI field validation (client-side)**
 
-```
-Implement a UI notification system for a Blazor + Tailwind project following Clean Architecture and DDD.
+- Field highlights.
+- On submit → **Alert + Toast**.
 
-Requirements:
-- Provide five severity tiers: Normal, Info, Success, Warning, Error.
-- Provide two delivery mechanisms: Alert (inline persistent) and Toast (ephemeral popup).
-- Default behavior for form submit UI validation failure: show both Toast and Alert.
-- Use a form wrapper `<NebaForm NotificationBehavior="...">` that provides a cascading NotificationPolicy to children. Default policy is AlertAndToast.
-- Provide `INotificationService` with methods Info/Success/Warning/Error/Normal/Publish and an observable `Notifications` stream.
-- Implement `NebaAlert.razor`, `NebaToast.razor`, and a `ToastManager` to render active toasts.
-- Implement `NotificationService` (in-memory publish-subscribe), DI registration, and test coverage using xUnit, Moq, and Shouldly.
-- Include accessible ARIA roles and keyboard interactions for toasts (Esc to dismiss) and focus management.
-- Expose tailwind class mappings for each severity and a small theme file.
+### **Business rule violation**
 
-Produce:
-1. Component files (razor + minimal code-behind) for NebaAlert, NebaToast, NebaForm, ToastManager.
-2. Interfaces and concrete NotificationService with thread-safe publish-subscribe semantics.
-3. DI registration snippet for Program.cs.
-4. 4–6 unit tests with xUnit + Moq + Shouldly (test names must use Method_ShouldExpectedResult_WhenCondition format).
-5. A short README section describing usage and example markup.
-```
+- Alert for correction.
+- Optional Toast for immediate feedback.
+
+### **Infrastructure errors**
+
+- Error Toast + optional Alert.
 
 ---
 
-## Deliverables
+## 11. Unit Testing Requirements
 
-- `ui-notifications.instructions.md` (this file)
-- After implementation, expect files:
-  - `UI/Components/NebaAlert.razor`
-  - `UI/Components/NebaToast.razor`
-  - `UI/Components/ToastManager.razor`
-  - `UI/Forms/NebaForm.razor`
-  - `Application/Services/NotificationService.cs`
-  - `Tests/NotificationServiceTests.cs`, `Tests/NebaFormTests.cs`
-  - `wwwroot/css/neba_theme.css` or Tailwind partials
+Test naming: `Method_ShouldExpectedResult_WhenCondition`
 
----
+Required coverage:
 
-## Notes & Rationale (short)
-
-- Defaulting to both toast + alert for failed form submissions is an enterprise UX best practice: toast ensures immediate visibility; alert ensures persistent instructional guidance.
-- Cascading `NotificationPolicy` via a single `NebaForm` preserves developer ergonomics while keeping a single enforcement point.
-- Keeping notifications in the application/UI layer avoids domain pollution and preserves testability.
+- NotificationService publishes correct payloads.
+- NebaForm respects cascading policies.
+- ToastManager properly replaces toasts.
+- Alert renders correct class mappings.
+- ValidationFailure triggers expected behaviors.
 
 ---
 
-_End of specification._
+## 12. Implementation Prompt (For Copilot)
 
+> Implement NEBA's unified notification system using this specification. Include components, services, DI, tests, alert/toast rendering logic, CSS/Tailwind styling, and responsive/mobile behavior.
+
+---
+
+## End of Specification
