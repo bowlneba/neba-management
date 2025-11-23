@@ -1,8 +1,10 @@
 @using Neba.Web.Server.Services
+@using Microsoft.AspNetCore.Components.Routing
 @implements IDisposable
 @rendermode InteractiveServer
 
 @inject AlertService AlertService
+@inject NavigationManager NavigationManager
 
 @if (AlertService.CurrentAlert is not null)
 {
@@ -41,6 +43,13 @@
     protected override void OnInitialized()
     {
         AlertService.OnChange += OnAlertStateChanged;
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Clear alerts when navigating to a new page
+        AlertService.Clear();
     }
 
     private void OnAlertStateChanged(object? sender, EventArgs e)
@@ -81,5 +90,6 @@
     public void Dispose()
     {
         AlertService.OnChange -= OnAlertStateChanged;
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
