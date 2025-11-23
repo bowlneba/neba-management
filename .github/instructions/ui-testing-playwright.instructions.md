@@ -128,19 +128,39 @@ Recommended structure:
 
 # 5. General Testing Rules
 
-### 5.1 Use data-testid Selectors  
+### 5.1 Use Shouldly for All Assertions
+All browser tests use Shouldly for assertions to provide clear, readable error messages:
+
+```csharp
+// Good - Shouldly assertions
+(await element.IsVisibleAsync()).ShouldBeTrue("Element should be visible");
+count.ShouldBe(3, "Should have exactly 3 items");
+url.ShouldContain("/home");
+ariaExpanded.ShouldNotBeNull();
+
+// Bad - xUnit assertions (don't use these)
+Assert.True(await element.IsVisibleAsync());
+Assert.Equal(3, count);
+```
+
+**Key Patterns:**
+- Always await async calls before calling Shouldly: `(await task).ShouldBeTrue()`
+- Provide descriptive messages explaining what should happen
+- Use appropriate Shouldly methods: `ShouldBe`, `ShouldBeTrue`, `ShouldContain`, `ShouldNotBeNull`, etc.
+
+### 5.2 Use data-testid Selectors
 Selectors must be stable, deterministic, and explicit.
 
-### 5.2 Keep Tests Deterministic  
+### 5.3 Keep Tests Deterministic
 Avoid timing assumptions; rely on automatic waiting where possible.
 
-### 5.3 One Assertion Cluster per Scenario  
+### 5.4 One Assertion Cluster per Scenario
 A Playwright test must represent a single user story or responsive behavior.
 
-### 5.4 Always Validate for No-Overflow  
-Any layout-sensitive page should include a “no horizontal scroll” check.
+### 5.5 Always Validate for No-Overflow
+Any layout-sensitive page should include a "no horizontal scroll" check.
 
-### 5.5 Validate Mobile and Desktop Behavior  
+### 5.6 Validate Mobile and Desktop Behavior
 Responsive tests must cover:
 
 - desktop baseline

@@ -11,7 +11,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Browser tests require the Blazor app to be running at https://localhost:5001 -->
+    <!-- Exclude them from default 'dotnet test' runs -->
+    <!-- Run browser tests explicitly with: dotnet test tests/Neba.BrowserTests/ -->
+    <TestCaseFilter>FullyQualifiedName!~BrowserTests</TestCaseFilter>
+  </RunConfiguration>
+</RunSettings>
