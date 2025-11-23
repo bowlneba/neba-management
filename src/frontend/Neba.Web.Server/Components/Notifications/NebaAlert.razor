@@ -1,22 +1,38 @@
 @using Neba.Web.Server.Services
 
-<div class="neba-alert neba-alert-@SeverityClass flex items-start gap-3" role="@AriaRole">
-    <div class="flex-shrink-0 mt-0.5">
-        <NebaIcon Severity="@Severity" />
-    </div>
+<div class="neba-alert neba-alert-@SeverityClass neba-alert-@VariantClass flex items-start gap-3" role="@AriaRole">
+    @if (ShowIcon)
+    {
+        <div class="neba-alert-icon flex-shrink-0 mt-0.5">
+            <NebaIcon Severity="@Severity" />
+        </div>
+    }
 
-    <div class="flex-1 min-w-0">
+    <div class="neba-alert-content flex-1 min-w-0">
         @if (!string.IsNullOrWhiteSpace(Title))
         {
-            <div class="font-semibold mb-1">@Title</div>
+            <div class="neba-alert-title font-semibold mb-1">@Title</div>
         }
-        <div>@Message</div>
+
+        @if (ValidationMessages is { Count: > 0 })
+        {
+            <ul class="neba-alert-validation-list">
+                @foreach (var validationMessage in ValidationMessages)
+                {
+                    <li>@validationMessage</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div>@Message</div>
+        }
     </div>
 
     @if (Dismissible)
     {
         <button type="button"
-                class="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity bg-transparent border-0 p-1 cursor-pointer text-current"
+                class="neba-alert-close flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity bg-transparent border-0 p-1 cursor-pointer text-current"
                 @onclick="HandleDismiss"
                 aria-label="Dismiss alert">
             ✕
@@ -44,10 +60,28 @@
     public string? Title { get; set; }
 
     /// <summary>
+    /// Visual variant for the alert.
+    /// </summary>
+    [Parameter]
+    public AlertVariant Variant { get; set; } = AlertVariant.Filled;
+
+    /// <summary>
+    /// Whether to display the severity icon.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
     /// Whether the alert can be dismissed by the user.
     /// </summary>
     [Parameter]
     public bool Dismissible { get; set; }
+
+    /// <summary>
+    /// Optional collection of validation messages to display as a bulleted list.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<string>? ValidationMessages { get; set; }
 
     /// <summary>
     /// Callback invoked when the alert is dismissed.
@@ -55,7 +89,15 @@
     [Parameter]
     public EventCallback OnDismiss { get; set; }
 
+    /// <summary>
+    /// Callback invoked when the close icon is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCloseIconClicked { get; set; }
+
     private string SeverityClass => Severity.ToString().ToLowerInvariant();
+
+    private string VariantClass => Variant.ToString().ToLowerInvariant();
 
     private string AriaRole => Severity is NotifySeverity.Error or NotifySeverity.Warning
         ? "alert"
@@ -63,6 +105,11 @@
 
     private async Task HandleDismiss()
     {
+        if (OnCloseIconClicked.HasDelegate)
+        {
+            await OnCloseIconClicked.InvokeAsync();
+        }
+
         if (OnDismiss.HasDelegate)
         {
             await OnDismiss.InvokeAsync();

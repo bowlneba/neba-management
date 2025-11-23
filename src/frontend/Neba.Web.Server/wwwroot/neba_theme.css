@@ -361,6 +361,68 @@ a.neba-link:focus-visible {
   color: var(--neba-gray-700);
 }
 
+/* Alert Container */
+.neba-alert-container {
+  margin-bottom: 1.5rem;
+}
+
+/* Alert Variants */
+.neba-alert-filled {
+  /* Default filled variant - uses the severity background colors above */
+}
+
+.neba-alert-outlined {
+  background-color: transparent !important;
+  border-width: 2px;
+}
+
+.neba-alert-dense {
+  padding: 0.5rem;
+}
+
+/* Alert Components */
+.neba-alert-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.neba-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.neba-alert-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.neba-alert-validation-list {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.neba-alert-validation-list li {
+  margin-bottom: 0.25rem;
+}
+
+.neba-alert-close {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  background-color: transparent;
+  border: 0;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: currentColor;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.neba-alert-close:hover {
+  opacity: 1;
+}
+
 /* Toast Notifications */
 .neba-toast-container {
   position: fixed;

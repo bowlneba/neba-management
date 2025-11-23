@@ -4,7 +4,10 @@
       "Bash(tree:*)",
       "Bash(cp:*)",
       "Bash(dotnet build:*)",
-      "Bash(npx markdownlint:*)"
+      "Bash(npx markdownlint:*)",
+      "Bash(dotnet run)",
+      "Bash(dotnet run:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

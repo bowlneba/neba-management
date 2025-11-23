@@ -20,8 +20,9 @@ builder.Services.AddRefitClient<INebaApi>()
         client.BaseAddress = new Uri(config.BaseUrl);
     });
 
-// Notification service
+// Notification services
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<AlertService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
