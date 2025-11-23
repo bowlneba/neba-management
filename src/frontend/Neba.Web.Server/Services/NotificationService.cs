@@ -69,7 +69,16 @@ internal sealed class NotificationService : INotificationService, IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        _notificationSubject.OnNext(payload);
+        try
+        {
+            _notificationSubject.OnNext(payload);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Subject was disposed during publish - this is expected during shutdown.
+            // When logging is introduced, log this exception at Debug level.
+            // Swallow the exception to prevent crashes during cleanup.
+        }
     }
 
     /// <summary>
