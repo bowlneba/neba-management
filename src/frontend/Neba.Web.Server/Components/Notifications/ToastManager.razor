@@ -100,18 +100,39 @@
         StateHasChanged();
     }
 
+    private bool _disposed;
+
     public void Dispose()
     {
-        _subscription?.Dispose();
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore();
+        Dispose(disposing: false);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _subscription?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
     {
         if (_module is not null)
         {
             await _module.DisposeAsync();
         }
-
         _subscription?.Dispose();
     }
 }
