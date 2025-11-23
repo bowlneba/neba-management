@@ -106,15 +106,32 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build projects
+        run: dotnet build --configuration Release --no-restore
+
       - name: Setup Playwright
         if: matrix.test-name == 'Browser Tests'
         run: pwsh tests/Neba.BrowserTests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Start Blazor App
+        if: matrix.test-name == 'Browser Tests'
+        run: |
+          dotnet run --project src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Release --no-build &
+          echo "Waiting for app to start..."
+          timeout 60 bash -c 'until curl -k -s https://localhost:5001 > /dev/null; do sleep 2; done' || echo "Warning: App may not be fully started"
+          echo "App is running"
 
       - name: Run tests
-        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-restore
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-build
+
+      - name: Stop Blazor App
+        if: matrix.test-name == 'Browser Tests' && always()
+        run: |
+          pkill -f "Neba.Web.Server" || true
+          echo "Blazor app stopped"
 
       - name: Upload test results
         if: always()
