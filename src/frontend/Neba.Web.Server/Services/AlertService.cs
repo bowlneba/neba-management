@@ -97,7 +97,7 @@ public class AlertService
     /// </summary>
     /// <param name="messages">The validation error messages to display as a bulleted list.</param>
     /// <param name="title">Optional title displayed above the messages. Defaults to "Please fix the following:"</param>
-    public void ShowValidation(string[] messages, string? title = "Please fix the following:")
+    public void ShowValidation(IReadOnlyList<string> messages, string? title = "Please fix the following:")
     {
         var options = new AlertOptions();
         CurrentAlert = new AlertItem
@@ -115,7 +115,7 @@ public class AlertService
     /// </summary>
     /// <param name="title">Title displayed above the messages.</param>
     /// <param name="messages">The validation error messages to display as a bulleted list.</param>
-    public void ShowValidation(string title, string[] messages)
+    public void ShowValidation(string title, IReadOnlyList<string> messages)
     {
         ShowValidation(messages, title);
     }
