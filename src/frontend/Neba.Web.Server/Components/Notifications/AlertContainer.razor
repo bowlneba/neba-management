@@ -75,19 +75,15 @@
         return AlertService.CurrentAlert?.Options.Dismissible ?? DefaultDismissible;
     }
 
-    private async Task HandleDismiss()
+    private Task HandleDismiss()
     {
         AlertService.Clear();
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private async Task HandleCloseIconClicked()
     {
-        var onCloseIconClicked = AlertService.CurrentAlert?.Options.OnCloseIconClicked;
-        if (onCloseIconClicked is not null)
-        {
-            await onCloseIconClicked.Invoke();
-        }
+        await (AlertService.CurrentAlert?.Options.OnCloseIconClicked?.Invoke() ?? Task.CompletedTask);
     }
 
     public void Dispose()
