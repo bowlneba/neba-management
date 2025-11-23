@@ -81,9 +81,9 @@ else if (_forecasts is not null)
             }
             else if (random == 3)
             {
-                // ToastOnly - ephemeral success message
-                Notifications.Success("All weather data validated successfully!", behavior: NotifyBehavior.ToastOnly);
-                // Keep _forecasts to show grid
+                // AlertOnly - persistent success message
+                Notifications.Success("All weather data validated successfully!", behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null;
             }
             else if (random == 4)
             {
@@ -93,17 +93,17 @@ else if (_forecasts is not null)
             }
             else if (random == 5)
             {
-                // AlertAndToast - critical error shown in both places
+                // AlertOnly - persistent error
                 Notifications.Error("API Error: Unable to verify weather data authenticity from external service",
-                    behavior: NotifyBehavior.AlertAndToast);
+                    behavior: NotifyBehavior.AlertOnly);
                 _forecasts = null;
             }
             // If random > 5, keep _forecasts and show grid normally without notification
         }
         catch (Exception ex)
         {
-            // Critical errors should show both alert and toast
-            Notifications.Error($"Failed to load weather data: {ex.Message}", behavior: NotifyBehavior.AlertAndToast);
+            // AlertOnly - persistent error
+            Notifications.Error($"Failed to load weather data: {ex.Message}", behavior: NotifyBehavior.AlertOnly);
             _forecasts = null;
         }
         finally
