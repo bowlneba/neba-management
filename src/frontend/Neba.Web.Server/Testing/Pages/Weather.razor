@@ -4,13 +4,13 @@
 @using System.Security.Cryptography
 @using Neba.Web.Server.Services
 @inject INebaApi NebaApi
-@inject AlertService AlertService
+@inject INotificationService Notifications
 
 <PageTitle>Weather</PageTitle>
 
 <h1 class="text-3xl font-semibold mb-4 text-[var(--neba-text)]">Weather</h1>
 
-<p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data and alert notifications.</p>
+<p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data and alert notifications via the unified NotificationService.</p>
 
 @if (_isLoading)
 {
@@ -56,7 +56,6 @@ else if (_forecasts is not null)
     private async Task LoadAsync()
     {
         _isLoading = true;
-        AlertService.Clear(); // Clear any previous alerts
 
         try
         {
@@ -64,40 +63,47 @@ else if (_forecasts is not null)
             await Task.Delay(500);
             _forecasts = await NebaApi.GetWeatherAsync();
 
-            // Generate random number 1-10 for alert testing
+            // Generate random number 1-10 for notification behavior testing
             int random = RandomNumberGenerator.GetInt32(1, 11);
 
             if (random == 1)
             {
-                AlertService.ShowNormal($"{_forecasts.Length} weather records loaded");
+                // AlertOnly - persistent notification
+                Notifications.Normal($"{_forecasts.Length} weather records loaded", behavior: NotifyBehavior.AlertOnly);
                 _forecasts = null; // Don't show grid
             }
             else if (random == 2)
             {
                 var avgTemp = _forecasts.Average(f => f.TemperatureC);
-                AlertService.ShowInfo($"Weather data retrieved. Average temperature: {avgTemp:F1}°C");
+                // AlertOnly - persistent notification
+                Notifications.Info($"Weather data retrieved. Average temperature: {avgTemp:F1}°C", behavior: NotifyBehavior.AlertOnly);
                 _forecasts = null;
             }
             else if (random == 3)
             {
-                AlertService.ShowSuccess("All weather data validated successfully!");
-                _forecasts = null;
+                // ToastOnly - ephemeral success message
+                Notifications.Success("All weather data validated successfully!", behavior: NotifyBehavior.ToastOnly);
+                // Keep _forecasts to show grid
             }
             else if (random == 4)
             {
-                AlertService.ShowWarning("Warning: Some weather records may contain estimated values");
+                // AlertOnly - persistent warning
+                Notifications.Warning("Warning: Some weather records may contain estimated values", behavior: NotifyBehavior.AlertOnly);
                 _forecasts = null;
             }
             else if (random == 5)
             {
-                AlertService.ShowError("API Error: Unable to verify weather data authenticity from external service");
+                // AlertAndToast - critical error shown in both places
+                Notifications.Error("API Error: Unable to verify weather data authenticity from external service",
+                    behavior: NotifyBehavior.AlertAndToast);
                 _forecasts = null;
             }
-            // If random > 5, keep _forecasts and show grid normally
+            // If random > 5, keep _forecasts and show grid normally without notification
         }
         catch (Exception ex)
         {
-            AlertService.ShowError($"Failed to load weather data: {ex.Message}");
+            // Critical errors should show both alert and toast
+            Notifications.Error($"Failed to load weather data: {ex.Message}", behavior: NotifyBehavior.AlertAndToast);
             _forecasts = null;
         }
         finally

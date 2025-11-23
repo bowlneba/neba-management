@@ -15,42 +15,45 @@ internal sealed class NotificationService : INotificationService, IDisposable
     public IObservable<NotificationPayload> Notifications => _notificationSubject;
 
     /// <inheritdoc />
-    public void Info(string message, string? title = null)
+    public void Info(string message, string? title = null, NotifyBehavior behavior = NotifyBehavior.ToastOnly)
     {
-        Publish(new NotificationPayload(NotifySeverity.Info, message, title));
+        Publish(new NotificationPayload(NotifySeverity.Info, message, title, behavior));
     }
 
     /// <inheritdoc />
-    public void Success(string message, string? title = null)
+    public void Success(string message, string? title = null, NotifyBehavior behavior = NotifyBehavior.ToastOnly)
     {
-        Publish(new NotificationPayload(NotifySeverity.Success, message, title));
+        Publish(new NotificationPayload(NotifySeverity.Success, message, title, behavior));
     }
 
     /// <inheritdoc />
-    public void Warning(string message, string? title = null)
+    public void Warning(string message, string? title = null, NotifyBehavior behavior = NotifyBehavior.ToastOnly)
     {
-        Publish(new NotificationPayload(NotifySeverity.Warning, message, title));
+        Publish(new NotificationPayload(NotifySeverity.Warning, message, title, behavior));
     }
 
     /// <inheritdoc />
-    public void Error(string message, string? title = null)
+    public void Error(string message, string? title = null, NotifyBehavior behavior = NotifyBehavior.ToastOnly)
     {
-        Publish(new NotificationPayload(NotifySeverity.Error, message, title));
+        Publish(new NotificationPayload(NotifySeverity.Error, message, title, behavior));
     }
 
     /// <inheritdoc />
-    public void Normal(string message, string? title = null)
+    public void Normal(string message, string? title = null, NotifyBehavior behavior = NotifyBehavior.ToastOnly)
     {
-        Publish(new NotificationPayload(NotifySeverity.Normal, message, title));
+        Publish(new NotificationPayload(NotifySeverity.Normal, message, title, behavior));
     }
 
     /// <inheritdoc />
     public void ValidationFailure(string message, NotifyBehavior? overrideBehavior = null)
     {
+        var behavior = overrideBehavior ?? NotifyBehavior.AlertAndToast;
+
         var payload = new NotificationPayload(
             NotifySeverity.Error,
             message,
             "Validation Failed",
+            behavior,
             Code: "VALIDATION_FAILURE"
         );
 

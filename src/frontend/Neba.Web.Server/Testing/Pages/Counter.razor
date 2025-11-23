@@ -8,7 +8,20 @@
 
 <p role="status" class="mb-4 text-[var(--neba-text)]">Current count: @currentCount</p>
 
-<button class="neba-btn neba-btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="flex gap-2 mb-4">
+    <button class="neba-btn neba-btn-primary" @onclick="IncrementCount">Click me</button>
+    <button class="neba-btn neba-btn-secondary" @onclick="DemonstrateBehaviors">Demonstrate NotifyBehavior</button>
+</div>
+
+<div class="neba-card p-4 mb-4">
+    <h2 class="text-lg font-semibold mb-2">Notification Routing Demo</h2>
+    <p class="text-sm text-gray-600 mb-2">Click the "Demonstrate NotifyBehavior" button to see:</p>
+    <ul class="text-sm text-gray-600 list-disc list-inside space-y-1">
+        <li><strong>ToastOnly:</strong> Shows ephemeral toast notification (Success)</li>
+        <li><strong>AlertOnly:</strong> Shows persistent inline alert (Warning)</li>
+        <li><strong>AlertAndToast:</strong> Shows both alert and toast (Error)</li>
+    </ul>
+</div>
 
 @code {
     private int currentCount = 0;
@@ -21,6 +34,7 @@
 
     private void CheckAndNotify()
     {
+        // All notifications default to ToastOnly behavior
         if (IsPrime(currentCount))
         {
             Notifications.Info($"{currentCount} is a prime number!", "Prime Number");
@@ -41,6 +55,28 @@
         {
             Notifications.Error($"{currentCount} is divisible by 9", "Divisible by 9");
         }
+    }
+
+    private void DemonstrateBehaviors()
+    {
+        // Demonstrate ToastOnly - ephemeral notification
+        Notifications.Success(
+            "This is a toast-only notification that will auto-dismiss.",
+            "ToastOnly Example",
+            NotifyBehavior.ToastOnly
+        );
+
+        // Demonstrate AlertOnly - persistent inline notification
+        Notifications.Warning(
+            "This is an alert-only notification that persists until dismissed or you navigate away.",
+            "AlertOnly Example",
+            NotifyBehavior.AlertOnly
+        );
+
+        // Demonstrate AlertAndToast - both at once (typical for validation failures)
+        Notifications.ValidationFailure(
+            "This shows both a persistent alert AND a toast notification for maximum visibility."
+        );
     }
 
     private static bool IsPrime(int number)

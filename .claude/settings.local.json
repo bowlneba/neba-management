@@ -7,7 +7,9 @@
       "Bash(npx markdownlint:*)",
       "Bash(dotnet run)",
       "Bash(dotnet run:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []

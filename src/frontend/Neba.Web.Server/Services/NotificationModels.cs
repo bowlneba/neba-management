@@ -89,6 +89,7 @@ public enum ToastPosition
 /// <param name="Severity">The severity level of the notification.</param>
 /// <param name="Title">Optional title for the notification.</param>
 /// <param name="Message">The main message content.</param>
+/// <param name="Behavior">How the notification should be delivered (toast, alert, both, or none).</param>
 /// <param name="Persist">If true, toast will not auto-dismiss (rare usage).</param>
 /// <param name="Code">Optional machine-readable error/notification code (e.g., "ERR_VALIDATION_001").</param>
 /// <param name="Metadata">Optional metadata for analytics or custom handling.</param>
@@ -96,6 +97,7 @@ public record NotificationPayload(
     NotifySeverity Severity,
     string Message,
     string? Title = null,
+    NotifyBehavior Behavior = NotifyBehavior.ToastOnly,
     bool Persist = false,
     string? Code = null,
     object? Metadata = null
