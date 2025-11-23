@@ -121,7 +121,7 @@ jobs:
         run: |
           dotnet run --project src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Release --no-build &
           echo "Waiting for app to start..."
-          timeout 60 bash -c 'until curl -k -s https://localhost:5001 > /dev/null; do sleep 2; done' || echo "Warning: App may not be fully started"
+          timeout 60 bash -c 'until curl -s http://localhost:5200 > /dev/null; do sleep 2; done' || echo "Warning: App may not be fully started"
           echo "App is running"
 
       - name: Run tests

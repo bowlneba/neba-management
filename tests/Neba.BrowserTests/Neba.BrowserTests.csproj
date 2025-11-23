@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <RootNamespace>Neba.BrowserTests</RootNamespace>
         <!--
-        Browser tests require the Blazor app to be running at https://localhost:5001
+        Browser tests require the Blazor app to be running at http://localhost:5200
         They are excluded from default 'dotnet test' runs via .runsettings
         Run them explicitly with: dotnet test tests/Neba.BrowserTests/
         -->

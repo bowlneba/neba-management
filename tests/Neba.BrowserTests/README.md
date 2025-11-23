@@ -19,7 +19,7 @@ Playwright-based browser tests for the NEBA Management System.
    dotnet run --project src/frontend/Neba.Web.Server
    ```
 
-   The app must be running at `https://localhost:5001` before running tests.
+   The app must be running at `http://localhost:5200` before running tests.
 
 ## Running Tests
 
@@ -75,7 +75,7 @@ dotnet test tests/Neba.BrowserTests/ --filter "browserType=webkit"
 
 ## Why Browser Tests Are Excluded from `dotnet test`
 
-Browser tests require the Blazor app to be running, so they're excluded from solution-level test runs via [`.runsettings`](../../.runsettings).
+Browser tests require the Blazor app to be running at `http://localhost:5200`, so they're excluded from solution-level test runs via [`.runsettings`](../../.runsettings).
 
 This prevents false failures when running `dotnet test` without the app running.
 

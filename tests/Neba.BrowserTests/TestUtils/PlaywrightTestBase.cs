@@ -19,7 +19,7 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
     /// The base URL for the application under test.
     /// Override in derived classes or set via environment variable.
     /// </summary>
-    protected virtual string BaseUrl => Environment.GetEnvironmentVariable("TEST_BASE_URL") ?? "https://localhost:5001";
+    protected virtual string BaseUrl => Environment.GetEnvironmentVariable("TEST_BASE_URL") ?? "http://localhost:5200";
 
     /// <summary>
     /// The browser type to use for tests.
