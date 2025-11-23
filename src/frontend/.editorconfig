@@ -1,0 +1,12 @@
+# Frontend-specific EditorConfig settings
+# This file supplements the root .editorconfig
+
+[*.cs]
+# Disable CA1515: Consider making public types internal
+# This rule suggests making types internal, but Blazor components and services
+# often need to be public for proper interop and component inheritance
+dotnet_diagnostic.CA1515.severity = none
+
+# Disable CA1812: Avoid uninstantiated internal classes
+# DI-registered services and Razor component code-behind classes are instantiated by the framework
+dotnet_diagnostic.CA1812.severity = none

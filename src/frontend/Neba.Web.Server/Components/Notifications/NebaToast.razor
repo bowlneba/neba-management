@@ -1,0 +1,143 @@
+@using Neba.Web.Server.Services
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div class="neba-toast neba-toast-@SeverityClass @(_isDismissing ? "dismissing" : "")"
+     aria-live="@AriaLive"
+     @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave">
+
+    <div class="flex-shrink-0">
+        <NebaIcon Severity="@Payload.Severity" />
+    </div>
+
+    <div class="neba-toast-content">
+        @if (!string.IsNullOrWhiteSpace(Payload.Title))
+        {
+            <div class="neba-toast-title">@Payload.Title</div>
+        }
+        <div class="neba-toast-message">@Payload.Message</div>
+    </div>
+
+    <button type="button"
+            class="neba-toast-dismiss"
+            @onclick="Dismiss"
+            aria-label="Dismiss notification">
+        ✕
+    </button>
+</div>
+
+@code {
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _timer;
+    private DotNetObjectReference<NebaToast>? _dotNetRef;
+    private bool _isDismissing;
+    private bool _isHovered;
+
+    /// <summary>
+    /// The notification payload containing severity, message, and metadata.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public NotificationPayload Payload { get; set; } = null!;
+
+    /// <summary>
+    /// Duration before auto-dismiss. Default is 4 seconds.
+    /// </summary>
+    [Parameter]
+    public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(4);
+
+    /// <summary>
+    /// Whether to pause auto-dismiss timer when hovering over the toast.
+    /// </summary>
+    [Parameter]
+    public bool PauseOnHover { get; set; } = true;
+
+    /// <summary>
+    /// Callback invoked when the toast is dismissed.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    private string SeverityClass => Payload.Severity.ToString().ToLowerInvariant();
+
+    private string AriaLive => Payload.Severity is NotifySeverity.Error or NotifySeverity.Warning
+        ? "assertive"
+        : "polite";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !Payload.Persist)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Notifications/NebaToast.razor.js");
+            _timer = await _module.InvokeAsync<IJSObjectReference>("createTimer", _dotNetRef, (int)Duration.TotalMilliseconds);
+        }
+    }
+
+    private async Task HandleMouseEnter()
+    {
+        if (PauseOnHover && _timer is not null && !Payload.Persist)
+        {
+            _isHovered = true;
+            await _timer.InvokeVoidAsync("pause");
+        }
+    }
+
+    private async Task HandleMouseLeave()
+    {
+        if (PauseOnHover && _timer is not null && !Payload.Persist && _isHovered)
+        {
+            _isHovered = false;
+            await _timer.InvokeVoidAsync("resume");
+        }
+    }
+
+    private async Task Dismiss()
+    {
+        if (_isDismissing) return;
+
+        _isDismissing = true;
+
+        try
+        {
+            StateHasChanged();
+
+            // Wait for fade-out animation
+            await Task.Delay(ToastTiming.FadeOutAnimationMs);
+
+            if (OnDismiss.HasDelegate)
+            {
+                await OnDismiss.InvokeAsync();
+            }
+        }
+        catch (ObjectDisposedException)
+        {
+            // Component was disposed during dismiss animation - safe to ignore
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript when the auto-dismiss timer expires.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnTimerExpired()
+    {
+        await Dismiss();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_timer is not null)
+        {
+            await _timer.InvokeVoidAsync("cancel");
+            await _timer.DisposeAsync();
+        }
+
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+
+        _dotNetRef?.Dispose();
+    }
+}

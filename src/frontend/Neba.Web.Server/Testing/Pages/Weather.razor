@@ -1,29 +1,25 @@
 ﻿@page "/weather"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using System.Security.Cryptography
+@using Neba.Web.Server.Services
 @inject INebaApi NebaApi
+@inject INotificationService Notifications
 
 <PageTitle>Weather</PageTitle>
 
 <h1 class="text-3xl font-semibold mb-4 text-[var(--neba-text)]">Weather</h1>
 
-<p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data.</p>
+<p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data and alert notifications via the unified NotificationService.</p>
 
-@if (!string.IsNullOrEmpty(_error))
-{
-    <div class="p-4 border border-[var(--neba-border)] bg-[var(--neba-bg-panel)] rounded">
-        <p class="mb-3 text-[var(--neba-accent-red)] font-medium">@_error</p>
-        <button class="neba-btn neba-btn-primary" @onclick="RetryLoad">Retry</button>
-    </div>
-}
-else if (_isLoading || _forecasts is null)
+@if (_isLoading)
 {
     <div class="flex items-center gap-3">
         <div class="neba-spinner" aria-label="Loading"></div>
         <p class="text-[var(--neba-text)]"><em>Loading...</em></p>
     </div>
 }
-else
+else if (_forecasts is not null)
 {
     <table class="neba-table">
         <thead>
@@ -50,7 +46,6 @@ else
 
 @code {
     private WeatherForecast[]? _forecasts;
-    private string? _error;
     private bool _isLoading;
 
     protected override async Task OnInitializedAsync()
@@ -60,17 +55,55 @@ else
 
     private async Task LoadAsync()
     {
-        _error = null;
         _isLoading = true;
+
         try
         {
             // Simulate asynchronous loading to demonstrate streaming rendering
             await Task.Delay(500);
             _forecasts = await NebaApi.GetWeatherAsync();
+
+            // Generate random number 1-10 for notification behavior testing
+            int random = RandomNumberGenerator.GetInt32(1, 11);
+
+            if (random == 1)
+            {
+                // AlertOnly - persistent notification
+                Notifications.Normal($"{_forecasts.Length} weather records loaded", behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null; // Don't show grid
+            }
+            else if (random == 2)
+            {
+                var avgTemp = _forecasts.Average(f => f.TemperatureC);
+                // AlertOnly - persistent notification
+                Notifications.Info($"Weather data retrieved. Average temperature: {avgTemp:F1}°C", behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null;
+            }
+            else if (random == 3)
+            {
+                // AlertOnly - persistent success message
+                Notifications.Success("All weather data validated successfully!", behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null;
+            }
+            else if (random == 4)
+            {
+                // AlertOnly - persistent warning
+                Notifications.Warning("Warning: Some weather records may contain estimated values", behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null;
+            }
+            else if (random == 5)
+            {
+                // AlertOnly - persistent error
+                Notifications.Error("API Error: Unable to verify weather data authenticity from external service",
+                    behavior: NotifyBehavior.AlertOnly);
+                _forecasts = null;
+            }
+            // If random > 5, keep _forecasts and show grid normally without notification
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            _error = "Failed to load weather data. Please try again.";
+            // AlertOnly - persistent error
+            Notifications.Error($"Failed to load weather data: {ex.Message}", behavior: NotifyBehavior.AlertOnly);
             _forecasts = null;
         }
         finally
@@ -78,6 +111,4 @@ else
             _isLoading = false;
         }
     }
-
-    private Task RetryLoad() => LoadAsync();
 }

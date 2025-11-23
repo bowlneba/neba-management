@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
+using Neba.Web.Server.Services;
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,10 @@ builder.Services.AddRefitClient<INebaApi>()
         NebaApiConfiguration config = sp.GetRequiredService<NebaApiConfiguration>();
         client.BaseAddress = new Uri(config.BaseUrl);
     });
+
+// Notification services
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<AlertService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

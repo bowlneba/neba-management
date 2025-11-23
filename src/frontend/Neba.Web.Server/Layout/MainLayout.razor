@@ -13,8 +13,8 @@
     <div class="neba-top-banner">
         <div class="neba-banner-content">
             <div class="flex items-center gap-4">
-                <a href="/" class="flex-shrink-0">
-                    <img src="neba-logo.png" alt="NEBA Logo" class="h-20 w-auto" />
+                <a href="/" class="flex-shrink-0" aria-label="Go to home page">
+                    <img src="neba-logo.png" alt="NEBA Logo" class="h-20 w-auto cursor-pointer" />
                 </a>
             </div>
             <div class="flex items-center gap-2">
@@ -42,20 +42,22 @@
     <nav class="neba-navbar" role="navigation" aria-label="Main navigation">
         <div class="neba-navbar-wrapper">
             <div class="neba-navbar-content">
-                <a href="/" class="flex items-center flex-shrink-0">
-                    <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
-                </a>
+                <div class="neba-navbar-header">
+                    <a href="/" class="flex items-center flex-shrink-0">
+                        <img src="neba-1963.png" alt="NEBA | 1963" class="h-10 w-auto min-w-[120px]" />
+                    </a>
 
-            <button class="neba-menu-toggle"
-                    data-action="toggle-menu"
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="main-menu">
-                <span class="sr-only">Menu</span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                </button>
+                    <button class="neba-menu-toggle"
+                            data-action="toggle-menu"
+                            aria-label="Toggle navigation menu"
+                            aria-expanded="false"
+                            aria-controls="main-menu">
+                        <span class="sr-only">Menu</span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
                 <ul class="neba-nav-menu" id="main-menu">
                     <li class="neba-nav-item">
                         <a href="/tournaments" class="neba-nav-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)">Tournaments</a>
@@ -70,10 +72,11 @@
                         <a href="/news" class="neba-nav-link @(IsActive("news") ? "active" : null)" aria-current="@(IsActive("news") ? "page" : null)">News</a>
                     </li>
                 <li class="neba-nav-item" data-action="toggle-dropdown">
-                    <a href="/history"
-                       class="neba-nav-link"
-                       aria-haspopup="true"
-                       aria-expanded="false">History</a>
+                          <a href="#"
+                              class="neba-nav-link"
+                              aria-haspopup="true"
+                              aria-expanded="false"
+                              onclick="event.preventDefault();">History</a>
                         <div class="neba-dropdown" role="menu">
                             <a href="/history/champions" class="neba-dropdown-link @(IsActive("history/champions") ? "active" : null)" aria-current="@(IsActive("history/champions") ? "page" : null)" role="menuitem">Champions</a>
                             <a href="/history/bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/bowler-of-the-year") ? "page" : null)" role="menuitem">Bowler of the Year</a>
@@ -114,6 +117,9 @@
     <!-- Main Content -->
     <main class="flex-1 animate-fade-in" role="main" id="main-content">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
+            <AlertContainer DefaultVariant="AlertVariant.Filled"
+                            DefaultShowIcon="true"
+                            DefaultDismissible="true" />
             @Body
         </article>
     </main>
@@ -134,6 +140,9 @@
         </div>
     </footer>
 </div>
+
+<AlertManager />
+<ToastManager />
 
 <div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 right-0 z-[1000]" role="alert" aria-live="assertive">
     <div class="neba-alert neba-alert-error flex items-center justify-between shadow-lg">

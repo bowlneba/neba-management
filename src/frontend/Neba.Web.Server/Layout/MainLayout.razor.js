@@ -1,5 +1,13 @@
 // MainLayout navigation functionality
 
+// Get breakpoint values from CSS variables
+function getBreakpoint(name) {
+    const value = getComputedStyle(document.documentElement)
+        .getPropertyValue(`--neba-breakpoint-${name}`)
+        .trim();
+    return parseInt(value);
+}
+
 export function toggleMobileMenu() {
     const menu = document.querySelector('#main-menu');
     const toggle = document.querySelector('[data-action="toggle-menu"]');
@@ -20,6 +28,9 @@ export function toggleDropdown(element) {
 
 // Initialize event listeners when DOM is ready
 function initializeNavigation() {
+    // Get breakpoint from CSS variable (use tablet-max which is 1024px)
+    const tabletMaxBreakpoint = getBreakpoint('tablet-max');
+
     // Mobile menu toggle
     const menuToggle = document.querySelector('[data-action="toggle-menu"]');
     menuToggle?.addEventListener('click', toggleMobileMenu);
@@ -27,12 +38,14 @@ function initializeNavigation() {
     // Dropdown toggle
     const dropdownToggles = document.querySelectorAll('[data-action="toggle-dropdown"]');
     dropdownToggles.forEach(toggle => {
-        toggle.addEventListener('click', (event) => {
-            // Prevent navigation when clicking the History link in mobile/tablet view
-            if (window.innerWidth <= 1024) {
+        const dropdownLink = toggle.querySelector('[aria-haspopup]');
+
+        dropdownLink?.addEventListener('click', (event) => {
+            // Prevent navigation when clicking the dropdown link in mobile/tablet view
+            if (window.innerWidth <= tabletMaxBreakpoint) {
                 event.preventDefault();
             }
-            toggleDropdown(event.currentTarget);
+            toggleDropdown(toggle);
         });
     });
 
@@ -41,7 +54,7 @@ function initializeNavigation() {
         const link = item.querySelector('[aria-haspopup]');
 
         link?.addEventListener('keydown', (event) => {
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > tabletMaxBreakpoint) {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     toggleDropdown(item);

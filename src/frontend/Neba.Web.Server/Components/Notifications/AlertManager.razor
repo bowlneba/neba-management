@@ -1,0 +1,59 @@
+@using Neba.Web.Server.Services
+@using System.Reactive.Linq
+@implements IDisposable
+@inject INotificationService NotificationService
+@inject AlertService AlertService
+@rendermode InteractiveServer
+
+@code {
+    private IDisposable? _subscription;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to NotificationService and filter for alert-targeted notifications
+        _subscription = NotificationService.Notifications
+            .Where(payload => payload.Behavior is NotifyBehavior.AlertOnly or NotifyBehavior.AlertAndToast)
+            .Subscribe(payload =>
+            {
+                InvokeAsync(() =>
+                {
+                    RouteToAlertService(payload);
+                });
+            });
+    }
+
+    private void RouteToAlertService(NotificationPayload payload)
+    {
+        // Map NotifySeverity to AlertService methods
+        switch (payload.Severity)
+        {
+            case NotifySeverity.Normal:
+                AlertService.ShowNormal(payload.Message, payload.Title);
+                break;
+
+            case NotifySeverity.Info:
+                AlertService.ShowInfo(payload.Message, payload.Title);
+                break;
+
+            case NotifySeverity.Success:
+                AlertService.ShowSuccess(payload.Message, payload.Title);
+                break;
+
+            case NotifySeverity.Warning:
+                AlertService.ShowWarning(payload.Message, payload.Title);
+                break;
+
+            case NotifySeverity.Error:
+                AlertService.ShowError(payload.Message, payload.Title);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException($"Unknown severity level: {payload.Severity}");
+        }
+    }
+
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
+}

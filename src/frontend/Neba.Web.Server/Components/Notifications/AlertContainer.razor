@@ -1,0 +1,94 @@
+@using Neba.Web.Server.Services
+@using Microsoft.AspNetCore.Components.Routing
+@implements IDisposable
+@rendermode InteractiveServer
+
+@inject AlertService AlertService
+@inject NavigationManager NavigationManager
+
+@if (AlertService.CurrentAlert is not null)
+{
+    <div class="neba-alert-container">
+        <NebaAlert Severity="@AlertService.CurrentAlert.Severity"
+                   Message="@AlertService.CurrentAlert.Message"
+                   Title="@AlertService.CurrentAlert.Title"
+                   Variant="@GetEffectiveVariant()"
+                   ShowIcon="@GetEffectiveShowIcon()"
+                   Dismissible="@GetEffectiveDismissible()"
+                   ValidationMessages="@AlertService.CurrentAlert.ValidationMessages"
+                   OnDismiss="@HandleDismiss"
+                   OnCloseIconClicked="@HandleCloseIconClicked" />
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Default variant for alerts displayed in this container.
+    /// </summary>
+    [Parameter]
+    public AlertVariant DefaultVariant { get; set; } = AlertVariant.Filled;
+
+    /// <summary>
+    /// Default value for showing icons in alerts.
+    /// </summary>
+    [Parameter]
+    public bool DefaultShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Default value for whether alerts are dismissible.
+    /// </summary>
+    [Parameter]
+    public bool DefaultDismissible { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        AlertService.OnChange += OnAlertStateChanged;
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Clear alerts when navigating to a new page, unless they persist across navigation
+        if (AlertService.CurrentAlert?.PersistAcrossNavigation != true)
+        {
+            AlertService.Clear();
+        }
+    }
+
+    private void OnAlertStateChanged(object? sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private AlertVariant GetEffectiveVariant()
+    {
+        return AlertService.CurrentAlert?.Options.Variant ?? DefaultVariant;
+    }
+
+    private bool GetEffectiveShowIcon()
+    {
+        return AlertService.CurrentAlert?.Options.ShowIcon ?? DefaultShowIcon;
+    }
+
+    private bool GetEffectiveDismissible()
+    {
+        return AlertService.CurrentAlert?.Options.Dismissible ?? DefaultDismissible;
+    }
+
+    private Task HandleDismiss()
+    {
+        AlertService.Clear();
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleCloseIconClicked()
+    {
+        await (AlertService.CurrentAlert?.Options.OnCloseIconClicked?.Invoke() ?? Task.CompletedTask);
+    }
+
+    public void Dispose()
+    {
+        AlertService.OnChange -= OnAlertStateChanged;
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

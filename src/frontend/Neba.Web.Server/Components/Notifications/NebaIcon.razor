@@ -1,0 +1,49 @@
+@using Neba.Web.Server.Services
+
+@switch (Severity)
+{
+    case NotifySeverity.Success:
+        <svg class="@CssClass" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="currentColor"/>
+        </svg>
+        break;
+
+    case NotifySeverity.Error:
+        <svg class="@CssClass" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V13H11V15ZM11 11H9V5H11V11Z" fill="currentColor"/>
+        </svg>
+        break;
+
+    case NotifySeverity.Warning:
+        <svg class="@CssClass" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1 17H19L10 2L1 17ZM11 14H9V12H11V14ZM11 10H9V6H11V10Z" fill="currentColor"/>
+        </svg>
+        break;
+
+    case NotifySeverity.Info:
+        <svg class="@CssClass" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V9H11V15ZM11 7H9V5H11V7Z" fill="currentColor"/>
+        </svg>
+        break;
+
+    case NotifySeverity.Normal:
+        <svg class="@CssClass" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+            <circle cx="10" cy="10" r="2" fill="currentColor"/>
+        </svg>
+        break;
+}
+
+@code {
+    /// <summary>
+    /// The severity level that determines which icon to display.
+    /// </summary>
+    [Parameter]
+    public NotifySeverity Severity { get; set; }
+
+    /// <summary>
+    /// Optional CSS class to apply to the SVG element.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+}

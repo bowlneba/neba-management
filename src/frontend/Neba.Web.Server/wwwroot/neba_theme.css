@@ -3,6 +3,7 @@
   --neba-blue-600: #5563DD;
   --neba-blue-500: #6C77E1;
   --neba-blue-300: #A5AEEB;
+  --neba-blue-100: #D4D9F5;
   --neba-blue-brand: #052767;
 
   --neba-gray-050: #FAFAFA;
@@ -34,6 +35,24 @@
   --neba-bg-panel: #fff;
   --neba-text: #1f2937;
   --neba-border: var(--neba-gray-300);
+
+  /* Responsive breakpoints
+     IMPORTANT: These values MUST be kept in sync with wwwroot/js/breakpoints.js
+     When updating these values, also update the JavaScript constants to match (without 'px' units).
+     See breakpoints.js for the synchronization checklist. */
+  --neba-breakpoint-mobile: 767px;
+  --neba-breakpoint-tablet-min: 768px;
+  --neba-breakpoint-tablet-max: 1100px;
+  --neba-breakpoint-desktop-tight-min: 1101px;
+  --neba-breakpoint-desktop-tight-max: 1250px;
+  --neba-breakpoint-desktop-medium-min: 1251px;
+  --neba-breakpoint-desktop-medium-max: 1400px;
+  --neba-breakpoint-desktop-wide-min: 1401px;
+
+  /* Content width - matches navbar width at full size
+     Adjust this value to match the natural width of your navbar (logo + menu items)
+     at maximum spacing. Both navbar and main content will use this value. */
+  --neba-content-max-width: 1150px;
 }
 
 .dark {
@@ -48,6 +67,14 @@ html, body {
   background-color: var(--neba-bg);
   color: var(--neba-text);
   font-family: var(--neba-font-base);
+}
+
+/* Content wrapper to match navbar width */
+.neba-content-wrapper {
+  max-width: var(--neba-content-max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 /* Button base */
@@ -94,28 +121,32 @@ html, body {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
 }
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 /* Primary button */
 .neba-btn-primary {
-  background-color: var(--neba-blue-700);
+  background-color: var(--neba-blue-600);
   color: white;
 }
 
 .neba-btn-primary:hover:not(:disabled) {
-  background-color: var(--neba-blue-600);
+  background-color: var(--neba-blue-500);
+}
+
+.neba-btn-primary:active:not(:disabled) {
+  background-color: var(--neba-blue-700);
 }
 
 /* Secondary button */
 .neba-btn-secondary {
-  background-color: transparent;
-  border-color: var(--neba-blue-600);
-  color: var(--neba-blue-700);
+  background-color: var(--neba-gray-300);
+  border-color: var(--neba-gray-400);
+  color: var(--neba-gray-800);
 }
 
 .neba-btn-secondary:hover:not(:disabled) {
-  background-color: var(--neba-blue-300);
-  color: white;
+  background-color: var(--neba-gray-200);
 }
+
+
 
 /* Danger button */
 .neba-btn-danger {
@@ -123,9 +154,7 @@ html, body {
   color: white;
 }
 
-.neba-btn-danger:hover:not(:disabled) {
-  background-color: #a50608;
-}
+
 
 /* Spinner */
 .neba-spinner {
@@ -329,6 +358,233 @@ a.neba-link:focus-visible {
   color: var(--neba-blue-700);
 }
 
+.neba-alert-normal {
+  background-color: rgba(163, 163, 163, 0.1);
+  border-color: var(--neba-gray-400);
+  color: var(--neba-gray-700);
+}
+
+/* Alert Container */
+.neba-alert-container {
+  margin-bottom: 1.5rem;
+}
+
+/* Alert Variants */
+.neba-alert-filled {
+  /* Default filled variant - uses the severity background colors above */
+}
+
+.neba-alert-outlined {
+  background-color: transparent !important;
+  border-width: 2px;
+}
+
+.neba-alert-dense {
+  padding: 0.5rem;
+}
+
+/* Alert Components */
+.neba-alert-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.neba-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.neba-alert-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.neba-alert-validation-list {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.neba-alert-validation-list li {
+  margin-bottom: 0.25rem;
+}
+
+.neba-alert-close {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  background-color: transparent;
+  border: 0;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: currentColor;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.neba-alert-close:hover {
+  opacity: 1;
+}
+
+/* Toast Notifications */
+.neba-toast-container {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+  /* Mobile default: bottom-center (for info/success/normal) */
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Mobile: top-center for errors/warnings */
+@media (max-width: 767px) {
+  .neba-toast-container:has(.neba-toast-error),
+  .neba-toast-container:has(.neba-toast-warning) {
+    top: 1rem;
+    bottom: auto;
+  }
+}
+
+/* Desktop: top-right (768px is our tablet breakpoint) */
+@media (min-width: 768px) {
+  .neba-toast-container {
+    top: 1rem;
+    bottom: auto;
+    left: auto;
+    right: 1rem;
+    transform: none;
+  }
+}
+
+.neba-toast-container > * {
+  pointer-events: auto;
+}
+
+.neba-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 300px;
+  max-width: 500px;
+  padding: 1rem;
+  border-radius: var(--neba-radius-lg);
+  border: 1px solid transparent;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  animation: toast-fade-in 0.3s ease-out;
+}
+
+.neba-toast.dismissing {
+  animation: toast-fade-out 0.2s ease-in forwards;
+}
+
+.neba-toast-success {
+  background-color: rgba(15, 122, 58, 0.95);
+  border-color: #0F7A3A;
+  color: white;
+}
+
+.neba-toast-warning {
+  background-color: rgba(245, 158, 11, 0.95);
+  border-color: #F59E0B;
+  color: white;
+}
+
+.neba-toast-error {
+  background-color: rgba(153, 27, 27, 0.95);
+  border-color: #991B1B;
+  color: white;
+}
+
+.neba-toast-info {
+  background-color: rgba(5, 39, 103, 0.95);
+  border-color: var(--neba-blue-brand);
+  color: white;
+}
+
+.neba-toast-normal {
+  background-color: rgba(82, 82, 82, 0.95);
+  border-color: #525252;
+  color: white;
+}
+
+.neba-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.neba-toast-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.neba-toast-message {
+  font-size: 0.875rem;
+  opacity: 0.95;
+}
+
+.neba-toast-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+  line-height: 1;
+  font-size: 1.25rem;
+}
+
+.neba-toast-dismiss:hover {
+  opacity: 1;
+}
+
+.neba-toast-dismiss:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+  opacity: 1;
+}
+
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neba-toast {
+    animation: none;
+  }
+
+  .neba-toast.dismissing {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Badges */
 .neba-badge {
   display: inline-flex;
@@ -477,22 +733,32 @@ a:focus-visible {
 }
 
 .neba-navbar-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
+  /* No max-width here - let content control it */
 }
 
 .neba-navbar-content {
+  max-width: var(--neba-content-max-width);
+  margin: 0 auto;
   padding: 0 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: clamp(0.75rem, 1.5vw, 2rem);
   min-height: 4rem;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+}
+
+.neba-navbar-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-shrink: 0;
 }
 
 .neba-nav-menu {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -504,7 +770,7 @@ a:focus-visible {
 
 .neba-nav-link {
   display: block;
-  padding: 1rem 1.25rem;
+  padding: 1rem clamp(0.5rem, 1vw, 1.25rem);
   color: var(--neba-text);
   font-weight: 500;
   text-decoration: none;
@@ -546,7 +812,7 @@ a:focus-visible {
   border: 1px solid var(--neba-border);
   border-radius: var(--neba-radius);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 200px;
+  width: max-content;
   display: none;
   z-index: 50;
   opacity: 0;
@@ -568,10 +834,10 @@ a:focus-visible {
 
 .neba-dropdown-link {
   display: block;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.5rem 0.75rem 1rem;
   color: var(--neba-text);
   text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   border-left: 3px solid transparent;
 }
@@ -613,10 +879,6 @@ a:focus-visible {
   .neba-top-banner {
     display: none;
   }
-  transition: background-color 0.3s ease;
-  .neba-menu-toggle {
-    display: flex;
-  }
 
   .neba-navbar-wrapper {
     display: flex;
@@ -625,6 +887,20 @@ a:focus-visible {
 
   .neba-navbar-content {
     flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
+  }
+
+  .neba-navbar-header {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .neba-menu-toggle {
+    display: flex;
   }
 
   .neba-nav-menu {
@@ -661,8 +937,8 @@ a:focus-visible {
   }
 }
 
-/* Tablet (768px - 1024px): Top banner + Hamburger menu */
-@media (min-width: 768px) and (max-width: 1024px) {
+/* Tablet (768px - 1100px): Top banner + Hamburger menu */
+@media (min-width: 768px) and (max-width: 1100px) {
   .neba-banner-ads {
     flex-direction: column;
   }
@@ -674,10 +950,6 @@ a:focus-visible {
     font-size: 0.875rem;
   }
 
-  .neba-menu-toggle {
-    display: flex;
-  }
-
   .neba-navbar-wrapper {
     display: flex;
     flex-direction: column;
@@ -685,6 +957,20 @@ a:focus-visible {
 
   .neba-navbar-content {
     flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
+  }
+
+  .neba-navbar-header {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .neba-menu-toggle {
+    display: flex;
   }
 
   .neba-nav-menu {
@@ -721,24 +1007,8 @@ a:focus-visible {
   }
 }
 
-/* Desktop intermediate (1025px - 1200px): Tighter spacing */
-@media (min-width: 1025px) and (max-width: 1200px) {
-  .neba-nav-link {
-    padding: 1rem 0.625rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Desktop intermediate (1201px - 1400px): Medium spacing */
-@media (min-width: 1201px) and (max-width: 1400px) {
-  .neba-nav-link {
-    padding: 1rem 0.875rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Desktop (> 1024px): Full horizontal menu, no hamburger */
-/* Default styles above already handle this - just ensure hamburger is hidden */
+/* Desktop (> 1100px): Full horizontal menu with fluid spacing */
+/* Fluid spacing is handled by clamp() in the base styles above */
 
 /* Footer */
 .neba-footer {
