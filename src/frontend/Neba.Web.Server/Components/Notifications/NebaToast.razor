@@ -68,9 +68,15 @@
     {
         if (firstRender && !Payload.Persist)
         {
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] Starting timer for {Payload.Severity} toast, duration: {Duration.TotalMilliseconds}ms");
             _dotNetRef = DotNetObjectReference.Create(this);
             _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Notifications/NebaToast.razor.js");
             _timer = await _module.InvokeAsync<IJSObjectReference>("createTimer", _dotNetRef, (int)Duration.TotalMilliseconds);
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] Timer created for {Payload.Severity} toast");
+        }
+        else if (firstRender)
+        {
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] Skipping timer for {Payload.Severity} toast (Persist={Payload.Persist})");
         }
     }
 
@@ -94,6 +100,7 @@
 
     private async Task Dismiss()
     {
+        await JS.InvokeVoidAsync("console.log", $"[NebaToast] Dismiss called for {Payload.Severity} toast, _isDismissing={_isDismissing}");
         if (_isDismissing) return;
 
         _isDismissing = true;
@@ -101,18 +108,22 @@
         try
         {
             StateHasChanged();
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] Starting fade-out animation for {Payload.Severity} toast");
 
             // Wait for fade-out animation
             await Task.Delay(ToastTiming.FadeOutAnimationMs);
 
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] Fade-out complete for {Payload.Severity} toast, invoking OnDismiss");
             if (OnDismiss.HasDelegate)
             {
                 await OnDismiss.InvokeAsync();
+                await JS.InvokeVoidAsync("console.log", $"[NebaToast] OnDismiss completed for {Payload.Severity} toast");
             }
         }
-        catch (ObjectDisposedException)
+        catch (ObjectDisposedException ex)
         {
             // Component was disposed during dismiss animation - safe to ignore
+            await JS.InvokeVoidAsync("console.log", $"[NebaToast] ObjectDisposedException during dismiss: {ex.Message}");
         }
     }
 
@@ -122,6 +133,7 @@
     [JSInvokable]
     public async Task OnTimerExpired()
     {
+        await JS.InvokeVoidAsync("console.log", $"[NebaToast] OnTimerExpired called for {Payload.Severity} toast");
         await Dismiss();
     }
 

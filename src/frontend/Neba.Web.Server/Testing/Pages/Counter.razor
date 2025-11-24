@@ -15,16 +15,17 @@
 
 <div class="neba-card p-4 mb-4">
     <h2 class="text-lg font-semibold mb-2">Notification Routing Demo</h2>
-    <p class="text-sm text-gray-600 mb-2">Click the "Demonstrate NotifyBehavior" button to see each behavior in sequence (changes every 5 seconds):</p>
+    <p class="text-sm text-gray-600 mb-2">Click the "Demonstrate NotifyBehavior" button to cycle through each behavior:</p>
     <ul class="text-sm text-gray-600 list-disc list-inside space-y-1">
-        <li><strong>ToastOnly:</strong> Shows ephemeral toast notification (Success)</li>
-        <li><strong>AlertOnly:</strong> Shows persistent inline alert (Warning)</li>
-        <li><strong>AlertAndToast:</strong> Shows both alert and toast (Error)</li>
+        <li><strong>Click 1 - ToastOnly:</strong> Shows ephemeral toast notification (Success)</li>
+        <li><strong>Click 2 - AlertOnly:</strong> Shows persistent inline alert (Warning)</li>
+        <li><strong>Click 3 - AlertAndToast:</strong> Shows both alert and toast (Error)</li>
     </ul>
 </div>
 
 @code {
     private int currentCount = 0;
+    private int _demonstrationStep = 0;
 
     private void IncrementCount()
     {
@@ -57,30 +58,38 @@
         }
     }
 
-    private async Task DemonstrateBehaviors()
+    private void DemonstrateBehaviors()
     {
-        // Demonstrate ToastOnly - ephemeral notification
-        Notifications.Success(
-            "This is a toast-only notification that will auto-dismiss. The alert will appear in 5 seconds.",
-            "ToastOnly Example",
-            NotifyBehavior.ToastOnly
-        );
+        // Cycle through the three behaviors on each click
+        switch (_demonstrationStep)
+        {
+            case 0:
+                // Demonstrate ToastOnly - ephemeral notification
+                Notifications.Success(
+                    "This is a toast-only notification that will auto-dismiss.",
+                    "ToastOnly Example",
+                    NotifyBehavior.ToastOnly
+                );
+                break;
 
-        await Task.Delay(5000);
+            case 1:
+                // Demonstrate AlertOnly - persistent inline notification
+                Notifications.Warning(
+                    "This is an alert-only notification that persists until dismissed or you navigate away.",
+                    "AlertOnly Example",
+                    NotifyBehavior.AlertOnly
+                );
+                break;
 
-        // Demonstrate AlertOnly - persistent inline notification
-        Notifications.Warning(
-            "This is an alert-only notification that persists until dismissed or you navigate away. Error alert will appear in 5 seconds.",
-            "AlertOnly Example",
-            NotifyBehavior.AlertOnly
-        );
+            case 2:
+                // Demonstrate AlertAndToast - both at once (typical for validation failures)
+                Notifications.ValidationFailure(
+                    "This shows both a persistent alert AND a toast notification for maximum visibility."
+                );
+                break;
+        }
 
-        await Task.Delay(5000);
-
-        // Demonstrate AlertAndToast - both at once (typical for validation failures)
-        Notifications.ValidationFailure(
-            "This shows both a persistent alert AND a toast notification for maximum visibility."
-        );
+        _demonstrationStep = (_demonstrationStep + 1) % 3;
     }
 
     private static bool IsPrime(int number)
