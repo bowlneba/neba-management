@@ -13,7 +13,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static async Task<ILocator> WaitForToastAsync(IPage page, int timeoutMs = 5000)
     {
-        var toast = page.Locator(".toast-item").First;
+        var toast = page.Locator(".neba-toast").First;
         await toast.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = timeoutMs });
         return toast;
     }
@@ -23,7 +23,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static async Task<ILocator> WaitForAlertAsync(IPage page, int timeoutMs = 5000)
     {
-        var alert = page.Locator(".alert-item").First;
+        var alert = page.Locator(".neba-alert").First;
         await alert.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = timeoutMs });
         return alert;
     }
@@ -33,7 +33,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static ILocator GetAllToasts(IPage page)
     {
-        return page.Locator(".toast-item");
+        return page.Locator(".neba-toast");
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static ILocator GetAllAlerts(IPage page)
     {
-        return page.Locator(".alert-item");
+        return page.Locator(".neba-alert");
     }
 
     /// <summary>
@@ -53,11 +53,12 @@ public static class NotificationTestHelpers
     }
 
     /// <summary>
-    /// Dismisses a toast by clicking it.
+    /// Dismisses a toast by clicking its dismiss button.
     /// </summary>
     public static async Task DismissToastAsync(ILocator toast)
     {
-        await toast.ClickAsync();
+        var dismissButton = toast.Locator("button.neba-toast-dismiss, button[aria-label*='Dismiss']");
+        await dismissButton.ClickAsync();
         await toast.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
     }
 
@@ -66,7 +67,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static async Task DismissAlertAsync(ILocator alert)
     {
-        var closeButton = alert.Locator("button[aria-label='Close']").Or(alert.Locator(".alert-close"));
+        var closeButton = alert.Locator("button.neba-alert-close, button[aria-label*='Dismiss']");
         await closeButton.ClickAsync();
         await alert.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
     }
@@ -171,7 +172,7 @@ public static class NotificationTestHelpers
     /// </summary>
     public static async Task<string?> GetNotificationMessageAsync(ILocator notification)
     {
-        var messageElement = notification.Locator(".notification-message, .toast-message, .alert-message").First;
+        var messageElement = notification.Locator(".neba-toast-message, .neba-alert-message").First;
         return await messageElement.TextContentAsync();
     }
 
@@ -182,7 +183,7 @@ public static class NotificationTestHelpers
     {
         try
         {
-            var titleElement = notification.Locator(".notification-title, .toast-title, .alert-title").First;
+            var titleElement = notification.Locator(".neba-toast-title, .neba-alert-title").First;
             return await titleElement.TextContentAsync();
         }
         catch

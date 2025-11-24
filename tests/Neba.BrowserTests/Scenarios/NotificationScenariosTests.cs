@@ -201,23 +201,15 @@ public class NotificationScenariosTests : PlaywrightTestBase
         await clickButton.ClickAsync();
         await clickButton.ClickAsync();
 
-        // Assert - Multiple toasts should be visible and stacked
+        // Assert - ToastManager shows one toast at a time (queues the rest)
+        // So we should see exactly 1 toast visible at any given time
         await Task.Delay(500); // Allow toasts to render
         var toastCount = await NotificationTestHelpers.CountToastsAsync(page);
-        (toastCount >= 2).ShouldBeTrue($"Multiple toasts should be visible, found {toastCount}");
+        toastCount.ShouldBe(1, $"ToastManager should show one toast at a time (others are queued), found {toastCount}");
 
-        // Assert - Toasts should be vertically stacked (different Y positions)
-        var toasts = NotificationTestHelpers.GetAllToasts(page);
-        if (toastCount >= 2)
-        {
-            var firstToast = toasts.Nth(0);
-            var secondToast = toasts.Nth(1);
-
-            var firstPos = await NotificationTestHelpers.GetToastPositionAsync(firstToast);
-            var secondPos = await NotificationTestHelpers.GetToastPositionAsync(secondToast);
-
-            secondPos.y.ShouldNotBe(firstPos.y);
-        }
+        // Assert - Toast should be visible
+        var toast = await NotificationTestHelpers.WaitForToastAsync(page, 2000);
+        (await toast.IsVisibleAsync()).ShouldBeTrue("Toast should be visible");
     }
 
     [Theory]

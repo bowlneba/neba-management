@@ -53,40 +53,37 @@ public class NavigationTests : PlaywrightTestBase
         await page.GotoAsync(BaseUrl);
         await WaitForBlazorAsync(page);
 
-        // Find dropdown buttons (History, Testing menus)
-        var dropdownButtons = page.Locator("[data-action='toggle-dropdown']");
-        var count = await dropdownButtons.CountAsync();
+        // Find dropdown buttons (History, Testing menus) - look for links with aria-haspopup
+        var dropdownLinks = page.Locator("[aria-haspopup='true']");
+        var count = await dropdownLinks.CountAsync();
 
         // Assert - At least one dropdown should exist
         (count > 0).ShouldBeTrue("At least one dropdown menu should exist");
 
         for (int i = 0; i < count; i++)
         {
-            var dropdownButton = dropdownButtons.Nth(i);
+            var dropdownLink = dropdownLinks.Nth(i);
 
             // Act - Click to expand dropdown
-            await dropdownButton.ClickAsync();
-            await Task.Delay(200); // Allow animation
+            await dropdownLink.ClickAsync();
+            await Task.Delay(300); // Allow animation and JS to execute
 
             // Assert - aria-expanded should be true
-            var ariaExpanded = await dropdownButton.GetAttributeAsync("aria-expanded");
+            var ariaExpanded = await dropdownLink.GetAttributeAsync("aria-expanded");
             ariaExpanded.ShouldBe("true", $"Dropdown {i} should be expanded after click");
 
-            // Assert - Dropdown content should be visible
-            var dropdownId = await dropdownButton.GetAttributeAsync("aria-controls");
-            if (!string.IsNullOrEmpty(dropdownId))
-            {
-                var dropdownContent = page.Locator($"#{dropdownId}");
-                var isVisible = await dropdownContent.IsVisibleAsync();
-                isVisible.ShouldBeTrue($"Dropdown {i} content should be visible");
-            }
+            // Assert - Dropdown should be visible (check parent li has active class)
+            // Get the parent li element directly from the dropdown link
+            var parentLi = dropdownLink.Locator("xpath=ancestor::li[@data-action='toggle-dropdown']");
+            var hasActiveClass = await parentLi.EvaluateAsync<bool>("el => el.classList.contains('active')");
+            hasActiveClass.ShouldBeTrue($"Dropdown {i} parent should have active class");
 
             // Act - Click again to collapse
-            await dropdownButton.ClickAsync();
-            await Task.Delay(200); // Allow animation
+            await dropdownLink.ClickAsync();
+            await Task.Delay(300); // Allow animation
 
             // Assert - aria-expanded should be false
-            var ariaExpandedClosed = await dropdownButton.GetAttributeAsync("aria-expanded");
+            var ariaExpandedClosed = await dropdownLink.GetAttributeAsync("aria-expanded");
             ariaExpandedClosed.ShouldBe("false", $"Dropdown {i} should be collapsed after second click");
         }
     }
@@ -160,16 +157,16 @@ public class NavigationTests : PlaywrightTestBase
         currentFocusedElement.ShouldNotBeNull();
 
         // Act - Test Escape key (should close any open dropdowns)
-        var dropdownButton = page.Locator("[data-action='toggle-dropdown']").First;
-        if (await dropdownButton.IsVisibleAsync())
+        var dropdownLink = page.Locator("[aria-haspopup='true']").First;
+        if (await dropdownLink.IsVisibleAsync())
         {
-            await dropdownButton.ClickAsync();
+            await dropdownLink.ClickAsync();
             await Task.Delay(200);
 
             await page.Keyboard.PressAsync("Escape");
             await Task.Delay(200);
 
-            var ariaExpanded = await dropdownButton.GetAttributeAsync("aria-expanded");
+            var ariaExpanded = await dropdownLink.GetAttributeAsync("aria-expanded");
             ariaExpanded.ShouldBe("false", "Escape key should close dropdown");
         }
     }
@@ -187,16 +184,16 @@ public class NavigationTests : PlaywrightTestBase
         await page.GotoAsync(BaseUrl);
         await WaitForBlazorAsync(page);
 
-        var dropdownButton = page.Locator("[data-action='toggle-dropdown']").First;
+        var dropdownLink = page.Locator("[aria-haspopup='true']").First;
 
-        if (await dropdownButton.IsVisibleAsync())
+        if (await dropdownLink.IsVisibleAsync())
         {
             // Act - Open dropdown
-            await dropdownButton.ClickAsync();
+            await dropdownLink.ClickAsync();
             await Task.Delay(200);
 
             // Assert - Dropdown is open
-            var ariaExpanded = await dropdownButton.GetAttributeAsync("aria-expanded");
+            var ariaExpanded = await dropdownLink.GetAttributeAsync("aria-expanded");
             ariaExpanded.ShouldBe("true", "Dropdown should be open");
 
             // Act - Click outside (on logo or top of page)
@@ -204,7 +201,7 @@ public class NavigationTests : PlaywrightTestBase
             await Task.Delay(300);
 
             // Assert - Dropdown should be closed
-            var ariaExpandedAfter = await dropdownButton.GetAttributeAsync("aria-expanded");
+            var ariaExpandedAfter = await dropdownLink.GetAttributeAsync("aria-expanded");
             ariaExpandedAfter.ShouldBe("false", "Dropdown should close when clicking outside");
         }
     }

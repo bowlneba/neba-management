@@ -58,6 +58,7 @@ internal sealed class NotificationService : INotificationService, IDisposable
             message,
             "Validation Failed",
             behavior,
+            Persist: false,
             Code: "VALIDATION_FAILURE"
         );
 

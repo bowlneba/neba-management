@@ -192,7 +192,7 @@ public class ResponsiveLayoutTests : PlaywrightTestBase
         // Assert - Footer should contain expected content
         var footerText = await desktopFooter.TextContentAsync();
         footerText.ShouldNotBeNull();
-        footerText.ShouldContain("NEBA", Case.Insensitive);
+        footerText.ShouldContain("New England Bowling Association", Case.Insensitive);
     }
 
     // Helper method to create browser for cross-browser testing
