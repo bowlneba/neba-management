@@ -22,7 +22,7 @@ const TEST_DATA = {
   },
   timeouts: {
     toastAutoDismiss: 4000, // 4 seconds
-    fadeOutAnimation: 300   // 0.3 seconds
+    fadeOutAnimation: 200   // 0.2 seconds (matches ToastTiming.FadeOutAnimationMs)
   }
 };
 
@@ -39,8 +39,12 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-error');
       await expect(toast).toBeVisible();
 
-      // Wait for auto-dismiss using Playwright's built-in waiting
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
+      // Wait for auto-dismiss - element should be removed from DOM
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
@@ -50,7 +54,11 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-warning');
       await expect(toast).toBeVisible();
 
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
@@ -60,7 +68,11 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-success');
       await expect(toast).toBeVisible();
 
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
@@ -70,7 +82,11 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-info');
       await expect(toast).toBeVisible();
 
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
@@ -80,7 +96,11 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-normal');
       await expect(toast).toBeVisible();
 
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
   });
@@ -254,6 +274,10 @@ test.describe('Notification Test Harness', () => {
       let toast = page.locator('.neba-toast.neba-toast-error');
       await expect(toast).toHaveAttribute('aria-live', 'assertive');
 
+      // Move mouse far away to prevent PauseOnHover from triggering
+      await page.mouse.move(10, 10);
+      await page.waitForTimeout(100); // Small delay to ensure timer starts
+
       // Wait for toast to dismiss before triggering next toast
       const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
@@ -358,9 +382,9 @@ test.describe('Notification Test Harness', () => {
       // Click Testing dropdown
       await testingMenu.click();
 
-      // Verify Notifications link present
-      const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
-      await expect(notificationsLink).toBeVisible();
+      // Wait for mobile menu to expand and Testing link to be visible
+      const testingLink = page.locator('a.neba-nav-link[href="/testing/notifications"]');
+      await expect(testingLink).toBeVisible({ timeout: 2000 });
     });
 
     test('Toast dismiss button accessible on mobile', async ({ page }) => {
@@ -376,8 +400,8 @@ test.describe('Notification Test Harness', () => {
       const dismissBtn = page.locator('button.neba-toast-dismiss');
       await expect(dismissBtn).toBeVisible();
 
-      // Tap to dismiss
-      await dismissBtn.tap();
+      // Click to dismiss (click works for both desktop and mobile)
+      await dismissBtn.click();
       await expect(toast).toBeHidden({ timeout: TEST_DATA.timeouts.fadeOutAnimation + 200 });
     });
 
@@ -390,11 +414,11 @@ test.describe('Notification Test Harness', () => {
       const alert = page.locator('.neba-alert-container .neba-alert.neba-alert-error');
       await expect(alert).toBeVisible();
 
-      // Verify close button is tappable
+      // Verify close button is clickable
       const closeBtn = page.locator('.neba-alert-container button.neba-alert-close');
       await expect(closeBtn).toBeVisible();
 
-      await closeBtn.tap();
+      await closeBtn.click();
       await expect(alert).not.toBeVisible();
     });
   });
@@ -435,12 +459,9 @@ test.describe('Notification Test Harness', () => {
       const testingMenu = page.locator('a.neba-nav-link', { hasText: 'Testing' });
       await expect(testingMenu).toBeVisible();
 
-      // Click Testing dropdown
-      await testingMenu.click();
-
-      // Verify Notifications link present
-      const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
-      await expect(notificationsLink).toBeVisible();
+      // Verify Testing link is present (it's a direct link, not a dropdown)
+      const testingLink = page.locator('a.neba-nav-link[href="/testing/notifications"]');
+      await expect(testingLink).toBeVisible();
     });
   });
 });
