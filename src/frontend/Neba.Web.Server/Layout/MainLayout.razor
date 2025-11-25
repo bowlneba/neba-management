@@ -101,8 +101,15 @@
                     </li>
                     @if (IsTestEnvironment)
                     {
-                        <li class="neba-nav-item">
-                            <a href="/testing/notifications" class="neba-nav-link @(IsActive("testing/notifications") ? "active" : null)" aria-current="@(IsActive("testing/notifications") ? "page" : null)">Testing</a>
+                        <li class="neba-nav-item" data-action="toggle-dropdown">
+                            <a href="#"
+                               class="neba-nav-link"
+                               aria-haspopup="true"
+                               aria-expanded="false"
+                               onclick="event.preventDefault();">Testing</a>
+                            <div class="neba-dropdown" role="menu">
+                                <a href="/testing/notifications" class="neba-dropdown-link @(IsActive("testing/notifications") ? "active" : null)" aria-current="@(IsActive("testing/notifications") ? "page" : null)" role="menuitem">Notifications</a>
+                            </div>
                         </li>
                     }
                 </ul>
