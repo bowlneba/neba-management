@@ -43,3 +43,6 @@ dotnet_diagnostic.CA1866.severity = none
 
 # S6610: Prefer char overload for string methods (performance not critical in tests)
 dotnet_diagnostic.S6610.severity = none
+
+# VSTHRD200: Use "Async" suffix for async methods (test method naming flexibility)
+dotnet_diagnostic.VSTHRD200.severity = none
