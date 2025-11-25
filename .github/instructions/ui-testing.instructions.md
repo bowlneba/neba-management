@@ -33,11 +33,14 @@ We avoid:
 
 Purpose: Browser-driven end-to-end testing with real rendering engines (Chromium, Firefox, WebKit).
 
+Technology: TypeScript + npm, located in `/tests/browser`
+
 Strengths:
 - Validates responsive behavior, breakpoints, CSS-driven layout changes
 - Tests workflows across navigation, modals, forms, and multi-step interactions
 - Captures real scroll, hover, click, keyboard, and mobile-specific mechanics
 - Tracing and video capture simplify debugging flakiness
+- Auto-waiting for elements reduces flaky tests
 
 Limitations:
 - Slower than component tests
@@ -166,13 +169,14 @@ Avoid:
 ## 7. Test Folder Structure & Organization
 
 /tests
-  /NEBA.UI.BrowserTests
-    /Scenarios
-    /Responsive
-    /Navigation
-    /Workflows
+  /browser                    # Playwright E2E tests (TypeScript)
+    /scenarios
+    /responsive
+    /navigation
+    /workflows
+    /utils
 
-  /NEBA.UI.ComponentTests
+  /Neba.ComponentTests        # bUnit component tests (C#)
     /Components
       /Shared
       /Navigation
@@ -189,8 +193,9 @@ Avoid:
 
 ## 9. CI Integration Strategy (High Level)
 
-- Playwright tests run in a dedicated job with browser dependencies
-- bUnit tests run in the main test pipeline
+- Playwright tests run in a dedicated job with Node.js and browser dependencies
+- Tests are executed via `npx playwright test` in the `/tests/browser` directory
+- bUnit tests run in the main .NET test pipeline
 - Playwright produces trace/video artifacts on failure
 - Tests parallelize per scenario
 - Mobile and cross-browser runs are nightly, not per PR

@@ -110,12 +110,12 @@ Playwright is slower and should not be used for logic tests.
 Recommended structure:
 
 ```
-/tests/NEBA.UI.BrowserTests
-  /Responsive
-  /Navigation
-  /Scenarios
-  /Workflows
-  /TestUtils
+/tests/browser
+  /responsive
+  /navigation
+  /scenarios
+  /workflows
+  /utils
 ```
 
 ### Guidelines:
@@ -123,30 +123,32 @@ Recommended structure:
 - Organize by **scenario** or **behavior**, not by component.
 - Tests must remain scenario-focused and human-readable.
 - Each test should validate one cohesive workflow or layout behavior.
+- Use lowercase folder names following TypeScript/JavaScript conventions.
 
 ---
 
 # 5. General Testing Rules
 
-### 5.1 Use Shouldly for All Assertions
-All browser tests use Shouldly for assertions to provide clear, readable error messages:
+### 5.1 Use Playwright's Built-in Assertions
+All browser tests use Playwright's built-in `expect` assertions for readable, auto-waiting behavior:
 
-```csharp
-// Good - Shouldly assertions
-(await element.IsVisibleAsync()).ShouldBeTrue("Element should be visible");
-count.ShouldBe(3, "Should have exactly 3 items");
-url.ShouldContain("/home");
-ariaExpanded.ShouldNotBeNull();
+```typescript
+// Good - Playwright expect assertions
+await expect(element).toBeVisible();
+await expect(page.locator('[data-testid="items"]')).toHaveCount(3);
+await expect(page).toHaveURL(/.*home/);
+await expect(element).toHaveAttribute('aria-expanded', 'true');
 
-// Bad - xUnit assertions (don't use these)
-Assert.True(await element.IsVisibleAsync());
-Assert.Equal(3, count);
+// Also good - for simple checks
+expect(count).toBe(3);
+expect(url).toContain('/home');
 ```
 
 **Key Patterns:**
-- Always await async calls before calling Shouldly: `(await task).ShouldBeTrue()`
-- Provide descriptive messages explaining what should happen
-- Use appropriate Shouldly methods: `ShouldBe`, `ShouldBeTrue`, `ShouldContain`, `ShouldNotBeNull`, etc.
+- Use `await expect()` for element and page assertions (auto-waits for conditions)
+- Use regular `expect()` for simple value comparisons
+- Provide descriptive test names and organize with `test.describe()` blocks
+- Use `toBeVisible()`, `toHaveText()`, `toHaveCount()`, etc. for element assertions
 
 ### 5.2 Use data-testid Selectors
 Selectors must be stable, deterministic, and explicit.
@@ -169,14 +171,77 @@ Responsive tests must cover:
 
 ---
 
-# 6. CI and Execution Strategy
+# 6. Running Playwright Tests
 
-### 6.1 Per-PR Coverage
+Playwright tests are written in TypeScript and run via npm/npx commands.
+
+### 6.1 Setup
+
+From the repository root:
+
+```bash
+cd tests/browser
+npm install
+npx playwright install  # Install browser binaries
+```
+
+### 6.2 Running Tests Locally
+
+```bash
+# Run all tests
+npx playwright test
+
+# Run tests in headed mode (see browser)
+npx playwright test --headed
+
+# Run specific test file
+npx playwright test responsive/layout.spec.ts
+
+# Run tests in specific browser
+npx playwright test --project=chromium
+
+# Run tests in debug mode
+npx playwright test --debug
+
+# Run tests with UI mode (interactive)
+npx playwright test --ui
+```
+
+### 6.3 Viewing Test Results
+
+```bash
+# Open HTML report
+npx playwright show-report
+
+# Open trace viewer for failed tests
+npx playwright show-trace
+```
+
+### 6.4 Test File Structure
+
+All test files should follow the pattern `*.spec.ts`:
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Feature Name', () => {
+  test('should do something specific', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-testid="element"]')).toBeVisible();
+  });
+});
+```
+
+---
+
+# 7. CI and Execution Strategy
+
+### 7.1 Per-PR Coverage
 PRs run:
 - Chromium tests
 - Desktop viewport
 
-### 6.2 Nightly Coverage
+### 7.2 Nightly Coverage
 Nightly runs include:
 
 - Firefox
@@ -184,7 +249,7 @@ Nightly runs include:
 - Mobile emulation
 - Full workflow scenarios
 
-### 6.3 Artifact Retention
+### 7.3 Artifact Retention
 Failures include:
 
 - video
@@ -196,7 +261,7 @@ Artifacts should be reviewed before merging fixes.
 
 ---
 
-# 7. Future Enhancements
+# 8. Future Enhancements
 
 - visual regression snapshots
 - broader device matrix (iPhone, Android)

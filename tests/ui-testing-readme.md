@@ -24,16 +24,17 @@ All test projects live under the `tests` directory:
 
 ```
 /tests
-  /Neba.UnitTests              # Domain logic tests
-  /Neba.ComponentTests         # bUnit component tests
-  /Neba.UI.BrowserTests        # Playwright browser tests
+  /Neba.UnitTests              # Domain logic tests (C# + xUnit)
+  /Neba.ComponentTests         # bUnit component tests (C# + bUnit)
+  /browser                     # Playwright browser tests (TypeScript + npm)
 ```
 
 ### Rationale
 
-- Domain should not reference UI assemblies  
-- UI tests should not pollute domain tests  
-- Playwright and bUnit serve different roles and must not be mixed  
+- Domain should not reference UI assemblies
+- UI tests should not pollute domain tests
+- Playwright and bUnit serve different roles and must not be mixed
+- Playwright uses TypeScript for better type safety and modern test patterns
 
 This structure preserves boundaries and ensures long-term maintainability.
 
@@ -45,22 +46,37 @@ This structure preserves boundaries and ensures long-term maintainability.
 
 Playwright validates all behaviors requiring:
 
-- actual layout and CSS rendering  
-- responsive behavior and breakpoints  
-- real browser events (hover, focus, scroll, touch)  
-- multi-step workflows  
-- cross-browser correctness  
+- actual layout and CSS rendering
+- responsive behavior and breakpoints
+- real browser events (hover, focus, scroll, touch)
+- multi-step workflows
+- cross-browser correctness
 
 Examples include:
 
-- navbar collapse and overflow prevention  
-- toast placement (desktop vs mobile)  
-- score entry workflows  
-- modal, drawer, and navigation interactions  
+- navbar collapse and overflow prevention
+- toast placement (desktop vs mobile)
+- score entry workflows
+- modal, drawer, and navigation interactions
 
 Playwright is the only tool that can test how the UI behaves **in a real browser**.
 
-Full details:  
+### Setup and Running
+
+```bash
+# Initial setup
+cd tests/browser
+npm install
+npx playwright install
+
+# Run tests
+npx playwright test                    # Run all tests
+npx playwright test --headed           # See the browser
+npx playwright test --ui              # Interactive UI mode
+npx playwright show-report            # View HTML report
+```
+
+Full details:
 See `ui-testing-playwright.instructions.md`.
 
 ---
