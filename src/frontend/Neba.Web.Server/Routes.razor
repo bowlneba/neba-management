@@ -1,10 +1,18 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IWebHostEnvironment HostEnv
 
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <ErrorBoundary>
             <ChildContent>
-                <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                @if (IsTestingRoute(routeData) && !IsTestEnvironment)
+                {
+                    <RouteView RouteData="@CreateNotFoundRouteData()" DefaultLayout="typeof(Layout.MainLayout)" />
+                }
+                else
+                {
+                    <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                }
                 <FocusOnNavigate RouteData="routeData" Selector="h1" />
             </ChildContent>
             <ErrorContent Context="ex">
@@ -24,3 +32,21 @@
         </ErrorBoundary>
     </Found>
 </Router>
+
+@code {
+    private bool IsTestEnvironment =>
+        HostEnv.EnvironmentName == "Development" ||
+        HostEnv.EnvironmentName == "Test";
+
+    private static bool IsTestingRoute(RouteData routeData)
+    {
+        var pageType = routeData.PageType;
+        return pageType.FullName?.Contains("TestHarness") == true ||
+               pageType.FullName?.Contains("Testing.Pages") == true;
+    }
+
+    private static RouteData CreateNotFoundRouteData()
+    {
+        return new RouteData(typeof(Pages.NotFound), new Dictionary<string, object?>());
+    }
+}
