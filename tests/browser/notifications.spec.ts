@@ -1,5 +1,31 @@
 import { test, expect } from '@playwright/test';
 
+// Test data constants
+const TEST_DATA = {
+  toast: {
+    error: { message: 'This is a test error toast message' },
+    warning: { message: 'This is a test warning toast message' },
+    success: { message: 'This is a test success toast message' },
+    info: { message: 'This is a test info toast message' },
+    normal: { message: 'This is a test normal toast message' }
+  },
+  alert: {
+    error: { title: 'Error', message: 'This is a test error alert' },
+    warning: { title: 'Warning', message: 'This is a test warning alert' },
+    success: { title: 'Success', message: 'This is a test success alert' },
+    info: { title: 'Information', message: 'This is a test info alert' },
+    normal: { title: 'Notice', message: 'This is a test normal alert' },
+    validation: {
+      title: 'Validation Failed',
+      message: 'Email is required. Password must be at least 8 characters.'
+    }
+  },
+  timeouts: {
+    toastAutoDismiss: 4000, // 4 seconds
+    fadeOutAnimation: 300   // 0.3 seconds
+  }
+};
+
 test.describe('Notification Test Harness', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/testing/notifications');
@@ -13,9 +39,9 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-error');
       await expect(toast).toBeVisible();
 
-      // Wait for auto-dismiss (4s) + fade-out animation (0.2s)
-      await page.waitForTimeout(4200);
-      await expect(toast).not.toBeVisible();
+      // Wait for auto-dismiss using Playwright's built-in waiting
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
     test('Warning Toast appears and auto-dismisses', async ({ page }) => {
@@ -24,8 +50,8 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-warning');
       await expect(toast).toBeVisible();
 
-      await page.waitForTimeout(4200);
-      await expect(toast).not.toBeVisible();
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
     test('Success Toast appears and auto-dismisses', async ({ page }) => {
@@ -34,8 +60,8 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-success');
       await expect(toast).toBeVisible();
 
-      await page.waitForTimeout(4200);
-      await expect(toast).not.toBeVisible();
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
     test('Info Toast appears and auto-dismisses', async ({ page }) => {
@@ -44,8 +70,8 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-info');
       await expect(toast).toBeVisible();
 
-      await page.waitForTimeout(4200);
-      await expect(toast).not.toBeVisible();
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
 
     test('Normal Toast appears and auto-dismisses', async ({ page }) => {
@@ -54,8 +80,8 @@ test.describe('Notification Test Harness', () => {
       const toast = page.locator('.neba-toast.neba-toast-normal');
       await expect(toast).toBeVisible();
 
-      await page.waitForTimeout(4200);
-      await expect(toast).not.toBeVisible();
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
     });
   });
 
@@ -72,9 +98,8 @@ test.describe('Notification Test Harness', () => {
       // Verify dismissing class is added
       await expect(toast).toHaveClass(/dismissing/);
 
-      // Wait for fade-out animation
-      await page.waitForTimeout(200);
-      await expect(toast).not.toBeVisible();
+      // Wait for fade-out animation using Playwright's built-in waiting
+      await expect(toast).toBeHidden({ timeout: TEST_DATA.timeouts.fadeOutAnimation + 200 });
     });
 
     test('Warning Toast can be manually dismissed', async ({ page }) => {
@@ -85,8 +110,7 @@ test.describe('Notification Test Harness', () => {
 
       await page.locator('button.neba-toast-dismiss').click();
 
-      await page.waitForTimeout(200);
-      await expect(toast).not.toBeVisible();
+      await expect(toast).toBeHidden({ timeout: TEST_DATA.timeouts.fadeOutAnimation + 200 });
     });
   });
 
@@ -95,7 +119,7 @@ test.describe('Notification Test Harness', () => {
       await page.getByTestId('error-toast-btn').click();
 
       const message = page.locator('.neba-toast-message');
-      await expect(message).toContainText('This is a test error toast message');
+      await expect(message).toContainText(TEST_DATA.toast.error.message);
     });
 
     test('Toast dismiss button has correct aria-label', async ({ page }) => {
@@ -171,20 +195,20 @@ test.describe('Notification Test Harness', () => {
       await page.getByTestId('error-alert-btn').click();
 
       const title = page.locator('.neba-alert-container .neba-alert-title');
-      await expect(title).toContainText('Error');
+      await expect(title).toContainText(TEST_DATA.alert.error.title);
 
       const content = page.locator('.neba-alert-container .neba-alert-content');
-      await expect(content).toContainText('This is a test error alert');
+      await expect(content).toContainText(TEST_DATA.alert.error.message);
     });
 
     test('Info Alert displays correct title and message', async ({ page }) => {
       await page.getByTestId('info-alert-btn').click();
 
       const title = page.locator('.neba-alert-container .neba-alert-title');
-      await expect(title).toContainText('Information');
+      await expect(title).toContainText(TEST_DATA.alert.info.title);
 
       const content = page.locator('.neba-alert-container .neba-alert-content');
-      await expect(content).toContainText('This is a test info alert');
+      await expect(content).toContainText(TEST_DATA.alert.info.message);
     });
   });
 
@@ -203,14 +227,14 @@ test.describe('Notification Test Harness', () => {
       await page.getByTestId('validation-failure-btn').click();
 
       const title = page.locator('.neba-alert-container .neba-alert-title');
-      await expect(title).toContainText('Validation Failed');
+      await expect(title).toContainText(TEST_DATA.alert.validation.title);
     });
 
     test('Validation Failure displays correct message', async ({ page }) => {
       await page.getByTestId('validation-failure-btn').click();
 
       const content = page.locator('.neba-alert-container .neba-alert-content');
-      await expect(content).toContainText('Email is required. Password must be at least 8 characters.');
+      await expect(content).toContainText(TEST_DATA.alert.validation.message);
     });
 
     test('Custom Alert + Toast triggers both simultaneously', async ({ page }) => {
@@ -230,8 +254,9 @@ test.describe('Notification Test Harness', () => {
       let toast = page.locator('.neba-toast.neba-toast-error');
       await expect(toast).toHaveAttribute('aria-live', 'assertive');
 
-      // Wait for toast to dismiss
-      await page.waitForTimeout(4200);
+      // Wait for toast to dismiss before triggering next toast
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      await expect(toast).toBeHidden({ timeout: timeoutMs });
 
       await page.getByTestId('warning-toast-btn').click();
       toast = page.locator('.neba-toast.neba-toast-warning');
