@@ -17,7 +17,8 @@
       "Bash(curl:*)",
       "Bash(tee:*)",
       "Bash(npx playwright test:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

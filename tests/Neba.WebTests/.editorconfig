@@ -1,0 +1,6 @@
+# bUnit component tests specific configuration
+[*.cs]
+
+# CS0618/CS0619: Obsolete member usage (bUnit API will be updated when library is upgraded)
+dotnet_diagnostic.CS0618.severity = warning
+dotnet_diagnostic.CS0619.severity = warning
