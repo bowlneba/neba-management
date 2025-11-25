@@ -11,6 +11,29 @@
 
 <div class="space-y-8">
     <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Loading Indicator</h2>
+        <div class="flex gap-4 mb-4">
+            <button class="neba-btn neba-btn-primary" @onclick="ShowLoadingFullScreen" data-testid="show-loading-fullscreen-btn">
+                Show Full Screen Loading
+            </button>
+            <button class="neba-btn neba-btn-secondary" @onclick="ShowLoadingPage" data-testid="show-loading-page-btn">
+                Show Page Loading
+            </button>
+        </div>
+        <NebaLoadingIndicator IsVisible="@_showLoadingFullScreen" Text="Loading, please wait..." Scope="LoadingIndicatorScope.FullScreen" OnOverlayClick="HideLoadingFullScreen" />
+        <NebaLoadingIndicator IsVisible="@_showLoadingPage" Text="Loading, please wait..." Scope="LoadingIndicatorScope.Page" OnOverlayClick="HideLoadingPage" />
+    </section>
+    @code {
+        private bool _showLoadingFullScreen;
+        private bool _showLoadingPage;
+
+        private void ShowLoadingFullScreen() => _showLoadingFullScreen = true;
+        private void HideLoadingFullScreen() => _showLoadingFullScreen = false;
+
+        private void ShowLoadingPage() => _showLoadingPage = true;
+        private void HideLoadingPage() => _showLoadingPage = false;
+    }
+    <section>
         <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Toast Notifications</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <button class="neba-btn neba-btn-primary" @onclick="TriggerErrorToast" data-testid="error-toast-btn">

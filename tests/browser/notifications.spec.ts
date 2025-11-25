@@ -1,3 +1,52 @@
+  test.describe('Loading Indicator', () => {
+    test('Full screen loading indicator appears and can be closed by clicking overlay', async ({ page }) => {
+      await page.goto('/testing/notifications');
+
+      // Show full screen loading indicator
+      await page.getByTestId('show-loading-fullscreen-btn').click();
+      const overlay = page.locator('.neba-loading-overlay-fullscreen');
+      await expect(overlay).toBeVisible();
+
+      // Click overlay to close
+      await overlay.click();
+      await expect(overlay).not.toBeVisible();
+    });
+
+    test('Page loading indicator appears and can be closed by clicking overlay', async ({ page }) => {
+      await page.goto('/testing/notifications');
+
+      // Show page loading indicator
+      await page.getByTestId('show-loading-page-btn').click();
+      const overlay = page.locator('.neba-loading-overlay-page');
+      await expect(overlay).toBeVisible();
+
+      // Click overlay to close
+      await overlay.click();
+      await expect(overlay).not.toBeVisible();
+    });
+
+    test('Loading indicators display text and are accessible', async ({ page }) => {
+      await page.goto('/testing/notifications');
+
+      // Full screen
+      await page.getByTestId('show-loading-fullscreen-btn').click();
+      await expect(page.locator('.neba-loading-overlay-fullscreen')).toBeVisible();
+      await expect(page.locator('.neba-loading-overlay-fullscreen .neba-loading-text')).toContainText('Loading, please wait...');
+
+      // Close
+      await page.locator('.neba-loading-overlay-fullscreen').click();
+      await expect(page.locator('.neba-loading-overlay-fullscreen')).not.toBeVisible();
+
+      // Page
+      await page.getByTestId('show-loading-page-btn').click();
+      await expect(page.locator('.neba-loading-overlay-page')).toBeVisible();
+      await expect(page.locator('.neba-loading-overlay-page .neba-loading-text')).toContainText('Loading, please wait...');
+
+      // Close
+      await page.locator('.neba-loading-overlay-page').click();
+      await expect(page.locator('.neba-loading-overlay-page')).not.toBeVisible();
+    });
+  });
 import { test, expect } from '@playwright/test';
 
 // Test data constants
