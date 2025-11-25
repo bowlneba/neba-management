@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RootNamespace>Neba.UnitTests</RootNamespace>
     <!--
     This template uses native xUnit.net command line options when using 'dotnet run' and
     VSTest by default when using 'dotnet test'. For more information on how to enable support
@@ -16,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Neba.Tests\Neba.Tests.csproj" />
+    <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
   </ItemGroup>
 
 </Project>
