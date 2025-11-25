@@ -174,18 +174,31 @@ html, body {
 
 /* Loading Indicator */
 .neba-loading-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  animation: neba-loading-fade-in 0.15s ease-out;
+  will-change: opacity;
+}
+
+.neba-loading-overlay-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.neba-loading-overlay-fullscreen {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(2px);
-  animation: neba-loading-fade-in 0.2s ease-out;
+  z-index: 999999;
 }
 
 @keyframes neba-loading-fade-in {

@@ -1,6 +1,6 @@
 @if (IsVisible)
 {
-    <div class="neba-loading-overlay" @onclick="HandleOverlayClick">
+    <div class="@OverlayCssClass" @onclick="HandleOverlayClick">
         <div class="neba-loading-content">
             <div class="neba-loading-wave">
                 <div></div>
@@ -31,11 +31,22 @@
     public string? Text { get; set; }
 
     /// <summary>
+    /// Determines the overlay scope: Page (overlays content only) or FullScreen (overlays entire viewport).
+    /// Default is Page.
+    /// </summary>
+    [Parameter]
+    public LoadingIndicatorScope Scope { get; set; } = LoadingIndicatorScope.Page;
+
+    /// <summary>
     /// Callback invoked when the overlay is clicked.
     /// By default, clicking the overlay does nothing (prevents interaction with underlying content).
     /// </summary>
     [Parameter]
     public EventCallback OnOverlayClick { get; set; }
+
+    private string OverlayCssClass => Scope == LoadingIndicatorScope.FullScreen
+        ? "neba-loading-overlay neba-loading-overlay-fullscreen"
+        : "neba-loading-overlay neba-loading-overlay-page";
 
     private async Task HandleOverlayClick()
     {

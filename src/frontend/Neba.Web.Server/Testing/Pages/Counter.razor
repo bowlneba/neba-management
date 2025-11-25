@@ -14,7 +14,7 @@
     <button class="neba-btn neba-btn-primary" @onclick="ToggleLoading">Toggle Loading Indicator</button>
 </div>
 
-<NebaLoadingIndicator IsVisible="@_showLoading" Text="@_loadingText" />
+<NebaLoadingIndicator IsVisible="@_showLoading" Text="@_loadingText" OnOverlayClick="DismissLoading" />
 
 <div class="neba-card p-4 mb-4">
     <h2 class="text-lg font-semibold mb-2">Notification Routing Demo</h2>
@@ -32,6 +32,7 @@
     private bool _showLoading = false;
     private string _loadingText = "Loading...";
     private int _loadingTextIndex = 0;
+    private CancellationTokenSource? _loadingTimerCts;
     private readonly string[] _loadingTexts = new[]
     {
         "Loading...",
@@ -41,7 +42,7 @@
         "" // Empty text to show it's optional
     };
 
-    private void ToggleLoading()
+    private async Task ToggleLoading()
     {
         _showLoading = !_showLoading;
 
@@ -50,6 +51,45 @@
             // Cycle through different loading text examples
             _loadingText = _loadingTexts[_loadingTextIndex];
             _loadingTextIndex = (_loadingTextIndex + 1) % _loadingTexts.Length;
+
+            // Auto-dismiss after 3 seconds
+            await CancelAndDisposeTimerAsync();
+            _loadingTimerCts = new CancellationTokenSource();
+            _ = AutoDismissLoading(_loadingTimerCts.Token);
+        }
+        else
+        {
+            await CancelAndDisposeTimerAsync();
+        }
+    }
+
+    private async Task AutoDismissLoading(CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(3000, ct);
+            _showLoading = false;
+            StateHasChanged();
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected when manually dismissed
+        }
+    }
+
+    private async Task DismissLoading()
+    {
+        _showLoading = false;
+        await CancelAndDisposeTimerAsync();
+    }
+
+    private async Task CancelAndDisposeTimerAsync()
+    {
+        if (_loadingTimerCts != null)
+        {
+            await _loadingTimerCts.CancelAsync();
+            _loadingTimerCts.Dispose();
+            _loadingTimerCts = null;
         }
     }
 
