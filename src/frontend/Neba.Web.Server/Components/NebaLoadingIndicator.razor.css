@@ -1,0 +1,18 @@
+.neba-loading-wave-animated > div {
+    background: var(--neba-blue-700);
+    animation: neba-wave-pulse 1.2s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+.neba-loading-wave-animated > div:nth-child(1) { animation-delay: 0s; }
+.neba-loading-wave-animated > div:nth-child(2) { animation-delay: 0.15s; }
+.neba-loading-wave-animated > div:nth-child(3) { animation-delay: 0.3s; }
+.neba-loading-wave-animated > div:nth-child(4) { animation-delay: 0.45s; }
+.neba-loading-wave-animated > div:nth-child(5) { animation-delay: 0.6s; }
+
+@keyframes neba-wave-pulse {
+    0%, 100% {
+        background: var(--neba-blue-700);
+    }
+    50% {
+        background: var(--neba-gray-400);
+    }
+}
