@@ -1,0 +1,47 @@
+@if (IsVisible)
+{
+    <div class="neba-loading-overlay" @onclick="HandleOverlayClick">
+        <div class="neba-loading-content">
+            <div class="neba-loading-wave">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Text))
+            {
+                <div class="neba-loading-text">@Text</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Controls whether the loading indicator is visible.
+    /// </summary>
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    /// <summary>
+    /// Optional text to display below the loading animation.
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the overlay is clicked.
+    /// By default, clicking the overlay does nothing (prevents interaction with underlying content).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnOverlayClick { get; set; }
+
+    private async Task HandleOverlayClick()
+    {
+        if (OnOverlayClick.HasDelegate)
+        {
+            await OnOverlayClick.InvokeAsync();
+        }
+    }
+}

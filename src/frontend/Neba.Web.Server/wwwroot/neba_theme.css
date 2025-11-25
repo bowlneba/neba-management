@@ -172,6 +172,93 @@ html, body {
   }
 }
 
+/* Loading Indicator */
+.neba-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+  animation: neba-loading-fade-in 0.2s ease-out;
+}
+
+@keyframes neba-loading-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.neba-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.neba-loading-wave {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: 3rem;
+}
+
+.neba-loading-wave div {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--neba-blue-600);
+  box-shadow: 0 0 12px var(--neba-blue-600);
+  animation: neba-loading-wave-anim 1.2s ease-in-out infinite;
+}
+
+.neba-loading-wave div:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.neba-loading-wave div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.neba-loading-wave div:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.neba-loading-wave div:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.neba-loading-wave div:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes neba-loading-wave-anim {
+  0%, 60%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(2);
+    opacity: 0.8;
+  }
+}
+
+.neba-loading-text {
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 /* Table */
 .neba-table {
   width: 100%;

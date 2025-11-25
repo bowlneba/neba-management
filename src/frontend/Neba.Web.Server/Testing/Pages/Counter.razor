@@ -11,7 +11,10 @@
 <div class="flex gap-2 mb-4">
     <button class="neba-btn neba-btn-primary" @onclick="IncrementCount">Click me</button>
     <button class="neba-btn neba-btn-secondary" @onclick="DemonstrateBehaviors">Demonstrate NotifyBehavior</button>
+    <button class="neba-btn neba-btn-primary" @onclick="ToggleLoading">Toggle Loading Indicator</button>
 </div>
+
+<NebaLoadingIndicator IsVisible="@_showLoading" Text="@_loadingText" />
 
 <div class="neba-card p-4 mb-4">
     <h2 class="text-lg font-semibold mb-2">Notification Routing Demo</h2>
@@ -26,6 +29,29 @@
 @code {
     private int currentCount = 0;
     private int _demonstrationStep = 0;
+    private bool _showLoading = false;
+    private string _loadingText = "Loading...";
+    private int _loadingTextIndex = 0;
+    private readonly string[] _loadingTexts = new[]
+    {
+        "Loading...",
+        "Processing your request...",
+        "Please wait...",
+        "Fetching data...",
+        "" // Empty text to show it's optional
+    };
+
+    private void ToggleLoading()
+    {
+        _showLoading = !_showLoading;
+
+        if (_showLoading)
+        {
+            // Cycle through different loading text examples
+            _loadingText = _loadingTexts[_loadingTextIndex];
+            _loadingTextIndex = (_loadingTextIndex + 1) % _loadingTexts.Length;
+        }
+    }
 
     private void IncrementCount()
     {

@@ -12,14 +12,9 @@
 
 <p class="mb-4 text-[var(--neba-text)]">This component demonstrates showing data and alert notifications via the unified NotificationService.</p>
 
-@if (_isLoading)
-{
-    <div class="flex items-center gap-3">
-        <div class="neba-spinner" aria-label="Loading"></div>
-        <p class="text-[var(--neba-text)]"><em>Loading...</em></p>
-    </div>
-}
-else if (_forecasts is not null)
+<NebaLoadingIndicator IsVisible="@_isLoading" Text="Loading weather data..." />
+
+@if (_forecasts is not null)
 {
     <table class="neba-table">
         <thead>
@@ -60,7 +55,7 @@ else if (_forecasts is not null)
         try
         {
             // Simulate asynchronous loading to demonstrate streaming rendering
-            await Task.Delay(500);
+            await Task.Delay(1000);
             _forecasts = await NebaApi.GetWeatherAsync();
 
             // Generate random number 1-10 for notification behavior testing
