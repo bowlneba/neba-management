@@ -128,7 +128,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     name: Playwright E2E Tests
-    # once checked out, the root directory should be tests/browser
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium]
+        # For cross-browser testing, add: firefox, webkit
+        # Full matrix runs in nightly builds to save CI time on PRs
 
     steps:
       - uses: actions/checkout@v5
@@ -145,7 +151,7 @@ jobs:
         working-directory: tests/browser
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps ${{ matrix.browser }}
         working-directory: tests/browser
 
       - name: Setup .NET
@@ -168,13 +174,21 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --project=${{ matrix.browser }}
         working-directory: tests/browser
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: tests/browser/playwright-report/
           retention-days: 30
+
+      - name: Upload test traces
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-traces-${{ matrix.browser }}
+          path: tests/browser/test-results/
+          retention-days: 7

@@ -309,6 +309,96 @@ test.describe('Notification Test Harness', () => {
   });
 
 
+  test.describe('Mobile Viewport Behavior', () => {
+    test('Toast notifications display correctly on mobile', async ({ page }) => {
+      // Set mobile viewport
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/testing/notifications');
+
+      await page.getByTestId('error-toast-btn').click();
+
+      const toast = page.locator('.neba-toast.neba-toast-error');
+      await expect(toast).toBeVisible();
+
+      // Verify toast is positioned correctly (not clipped or off-screen)
+      const boundingBox = await toast.boundingBox();
+      expect(boundingBox).not.toBeNull();
+      expect(boundingBox!.x).toBeGreaterThanOrEqual(0);
+      expect(boundingBox!.y).toBeGreaterThanOrEqual(0);
+    });
+
+    test('Alert notifications display correctly on mobile', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/testing/notifications');
+
+      await page.getByTestId('error-alert-btn').click();
+
+      const alert = page.locator('.neba-alert-container .neba-alert.neba-alert-error');
+      await expect(alert).toBeVisible();
+
+      // Verify alert is positioned correctly
+      const boundingBox = await alert.boundingBox();
+      expect(boundingBox).not.toBeNull();
+      expect(boundingBox!.x).toBeGreaterThanOrEqual(0);
+    });
+
+    test('Testing menu accessible on mobile viewport', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/');
+
+      // Open mobile menu
+      const menuToggle = page.locator('button.neba-menu-toggle');
+      await expect(menuToggle).toBeVisible();
+      await menuToggle.click();
+
+      // Verify Testing menu dropdown exists
+      const testingMenu = page.locator('a.neba-nav-link', { hasText: 'Testing' });
+      await expect(testingMenu).toBeVisible();
+
+      // Click Testing dropdown
+      await testingMenu.click();
+
+      // Verify Notifications link present
+      const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
+      await expect(notificationsLink).toBeVisible();
+    });
+
+    test('Toast dismiss button accessible on mobile', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/testing/notifications');
+
+      await page.getByTestId('error-toast-btn').click();
+
+      const toast = page.locator('.neba-toast.neba-toast-error');
+      await expect(toast).toBeVisible();
+
+      // Verify dismiss button is tappable
+      const dismissBtn = page.locator('button.neba-toast-dismiss');
+      await expect(dismissBtn).toBeVisible();
+
+      // Tap to dismiss
+      await dismissBtn.tap();
+      await expect(toast).toBeHidden({ timeout: TEST_DATA.timeouts.fadeOutAnimation + 200 });
+    });
+
+    test('Alert close button accessible on mobile', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/testing/notifications');
+
+      await page.getByTestId('error-alert-btn').click();
+
+      const alert = page.locator('.neba-alert-container .neba-alert.neba-alert-error');
+      await expect(alert).toBeVisible();
+
+      // Verify close button is tappable
+      const closeBtn = page.locator('.neba-alert-container button.neba-alert-close');
+      await expect(closeBtn).toBeVisible();
+
+      await closeBtn.tap();
+      await expect(alert).not.toBeVisible();
+    });
+  });
+
   test.describe('Environment Protection', () => {
     test('Test harness page accessible in Test environment', async ({ page }) => {
       await page.goto('/testing/notifications');

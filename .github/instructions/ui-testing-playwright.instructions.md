@@ -236,37 +236,95 @@ test.describe('Feature Name', () => {
 
 # 7. CI and Execution Strategy
 
-### 7.1 Per-PR Coverage
-PRs run:
-- Chromium tests
-- Desktop viewport
+### 7.1 Per-PR Coverage (Fast Feedback)
 
-### 7.2 Nightly Coverage
-Nightly runs include:
+PRs run Playwright tests with:
+- **Browser**: Chromium only
+- **Viewport**: Desktop (1280x720)
+- **Purpose**: Fast feedback for common scenarios
+- **Execution Time**: ~5-10 minutes
 
-- Firefox
-- WebKit
-- Mobile emulation
-- Full workflow scenarios
+This configuration balances speed and coverage for rapid iteration.
 
-### 7.3 Artifact Retention
-Failures include:
+### 7.2 Expanding to Multi-Browser Testing
 
-- video
-- trace viewer
-- console logs
-- network logs
+To enable full cross-browser testing, update `.github/workflows/pr_application.yml`:
 
-Artifacts should be reviewed before merging fixes.
+```yaml
+strategy:
+  fail-fast: false
+  matrix:
+    browser: [chromium, firefox, webkit]
+```
+
+**Recommendation**: Use multi-browser testing for:
+- Nightly builds
+- Release branches
+- Pre-production validation
+
+Reserve single-browser (chromium) testing for PRs to keep CI fast.
+
+### 7.3 Mobile Testing
+
+Mobile viewport tests run in all CI environments using explicit viewport sizing in tests:
+
+```typescript
+await page.setViewportSize({ width: 375, height: 667 });
+```
+
+For comprehensive mobile device emulation, configure Playwright projects in `playwright.config.ts`.
+
+### 7.4 Artifact Retention
+
+On test failure, CI uploads:
+- **HTML Report**: Full test results with screenshots (30 days retention)
+- **Trace Files**: Step-by-step execution trace with network logs (7 days retention)
+- **Videos**: Recording of test execution (if configured)
+
+Download artifacts from GitHub Actions to debug failures locally:
+
+```bash
+# Extract traces and view them
+npx playwright show-trace path/to/trace.zip
+```
+
+### 7.5 Running Tests Locally to Match CI
+
+To replicate PR CI environment:
+
+```bash
+cd tests/browser
+npm ci
+npx playwright install chromium
+npx playwright test --project=chromium
+```
+
+To replicate nightly/full testing:
+
+```bash
+npx playwright install
+npx playwright test --project=chromium --project=firefox --project=webkit
+```
+
+For detailed local testing instructions, see [tests/browser/README.md](../../tests/browser/README.md).
 
 ---
 
 # 8. Future Enhancements
 
-- visual regression snapshots
-- broader device matrix (iPhone, Android)
-- performance profiling via trace analysis
-- automated accessibility audit integration
+- Visual regression snapshots using Playwright's built-in screenshot comparison
+- Broader device matrix (iPhone, Android devices) via Playwright device emulation
+- Performance profiling via trace analysis and Lighthouse integration
+- Automated accessibility audit integration (axe-core)
+- Parallel test execution across multiple CI runners for faster feedback
+
+---
+
+# 9. Documentation and Resources
+
+- **Local Testing Guide**: [tests/browser/README.md](../../tests/browser/README.md)
+- **CI Configuration**: [.github/workflows/pr_application.yml](../../.github/workflows/pr_application.yml)
+- **General UI Testing Strategy**: [.github/instructions/ui-testing.instructions.md](ui-testing.instructions.md)
 
 ---
 
