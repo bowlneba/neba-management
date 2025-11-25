@@ -16,7 +16,8 @@
       "Bash(dotnet test:*)",
       "Bash(curl:*)",
       "Bash(tee:*)",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

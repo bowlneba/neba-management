@@ -1,6 +1,3 @@
-@Neba.Api_HostAddress = http://localhost:5058
-
-GET {{Neba.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+@Neba.Api_HostAddress = http://localhost:5100
 
 ###
