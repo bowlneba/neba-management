@@ -78,9 +78,11 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Release',
+    command: 'dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Release --no-build',
     url: 'http://localhost:5200',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 });
