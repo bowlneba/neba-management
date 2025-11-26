@@ -27,10 +27,11 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddDatabase(IConfiguration config)
         {
-            string? connectionString = config.GetConnectionString("bowlneba");
+            string bowlnebaConnectionString = config.GetConnectionString("bowlneba")
+                ?? throw new InvalidOperationException("Database connection string 'bowlneba' is not configured.");
 
             services.AddDbContext<WebsiteDbContext>(options => options
-                .UseNpgsql(connectionString, npgsqlOptions =>
+                .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
             return services;
