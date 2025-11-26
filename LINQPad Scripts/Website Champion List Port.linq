@@ -25,6 +25,9 @@
 
 void Main()
 {
+	Bowlers.RemoveRange(Bowlers);
+	SaveChanges();
+	
 	var rawJson = File.ReadAllText("/Users/kippermand/Desktop/champions-export.json");
 
 	var websiteBowlers = JsonSerializer.Deserialize<List<WebsiteBowler>>(rawJson);
@@ -57,7 +60,7 @@ void Main()
 
 // You can define other methods, fields, classes and namespaces here
 public record WebsiteBowler(
-	[property: JsonPropertyName("id")]int Id, 
+	[property: JsonPropertyName("bowlerId")]int Id, 
 	[property: JsonPropertyName("firstName")]string FirstName, 
 	[property: JsonPropertyName("middleInitial")]string MiddleInitial, 
 	[property: JsonPropertyName("lastName")]string LastName, 
