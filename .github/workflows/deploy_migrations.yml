@@ -17,7 +17,7 @@ env:
 
 jobs:
   deploy-website-migrations:
-    name: Deploy API Database Migrations
+    name: Deploy Website Database Migrations
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -45,7 +45,7 @@ jobs:
 
       - name: Apply Website database migrations
         env:
-          CONNECTIONSTRINGS__WEBSITE: ${{ vars.CONNECTIONSTRINGS__BOWLNEBA }}
+          ConnectionStrings__bowlneba: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
         run: |
           echo "🔄 Applying Website database migrations..."
           dotnet ef database update \
@@ -59,7 +59,7 @@ jobs:
         run: |
           echo "### 🎉 Migration Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Database:** Website" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Status:** ✅ Migrations applied successfully" >> $GITHUB_STEP_SUMMARY
 
@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "### ❌ Migration Deployment Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Database:** Website" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Status:** ❌ Failed to apply migrations" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
