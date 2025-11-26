@@ -18,7 +18,9 @@
       "Bash(tee:*)",
       "Bash(npx playwright test:*)",
       "Bash(rm:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(dotnet sln NebaManagement.sln add src/backend/**/*.csproj src/frontend/**/*.csproj tests/**/*.csproj)",
+      "Bash(dotnet restore:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
     <RootNamespace>Neba.UnitTests</RootNamespace>
     <!--
     This template uses native xUnit.net command line options when using 'dotnet run' and

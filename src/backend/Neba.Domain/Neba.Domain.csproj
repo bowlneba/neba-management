@@ -3,4 +3,13 @@
   <PropertyGroup>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ErrorOr" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.Tests" />
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
 </Project>
