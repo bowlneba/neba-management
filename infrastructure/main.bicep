@@ -54,6 +54,9 @@ param azurePostgresBackupRetentionDays int = 7
 @description('Key Vault name')
 param azureKeyVaultName string
 
+@description('GitHub Actions service principal object ID for Key Vault access')
+param githubServicePrincipalObjectId string
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
@@ -159,6 +162,18 @@ module apiKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
     keyVaultName: keyVault.outputs.name
     principalId: apiAppService.outputs.principalId
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+  }
+}
+
+// RBAC Role Assignment: GitHub Actions Service Principal -> Key Vault Secrets Officer
+// Key Vault Secrets Officer role ID: b86a8fe4-44ce-4948-aee5-eccb2c155cd7
+module githubKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
+  scope: rg
+  name: 'githubKeyVaultAccess-deployment'
+  params: {
+    keyVaultName: keyVault.outputs.name
+    principalId: githubServicePrincipalObjectId
+    roleDefinitionId: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
   }
 }
 

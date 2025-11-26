@@ -55,7 +55,8 @@ jobs:
               azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
-              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}'
+              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
+              githubServicePrincipalObjectId='${{ vars.GITHUB_SERVICE_PRINCIPAL_OBJECT_ID }}'
 
   deploy:
     name: Deploy to Production
@@ -99,6 +100,7 @@ jobs:
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
+              githubServicePrincipalObjectId='${{ vars.GITHUB_SERVICE_PRINCIPAL_OBJECT_ID }}' \
             --output json > deployment-output.json
 
           echo "✅ Infrastructure deployment completed"
