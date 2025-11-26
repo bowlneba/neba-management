@@ -14,6 +14,18 @@ public sealed class Bowler
     public required Name Name { get; init; }
 
     /// <summary>
+    /// Gets or sets the identifier for the bowler in the legacy website database.
+    /// </summary>
+    /// <value></value>
+    public int? WebsiteId { get; init;}
+
+    /// <summary>
+    /// Gets or sets the identifier for the bowler in the legacy application database.
+    /// </summary>
+    /// <value></value>
+    public int? ApplicationId { get; init; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Bowler"/> class with a new unique identifier.
     /// </summary>
     internal Bowler()
