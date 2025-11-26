@@ -1,4 +1,4 @@
-namespace Neba.Tests;
+namespace Neba.IntegrationTests;
 
 public sealed class PlaceholderIntegrationTest
 {
