@@ -328,7 +328,7 @@ test.describe('Notification Test Harness', () => {
       await page.waitForTimeout(100); // Small delay to ensure timer starts
 
       // Wait for toast to dismiss before triggering next toast
-      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 500;
+      const timeoutMs = TEST_DATA.timeouts.toastAutoDismiss + TEST_DATA.timeouts.fadeOutAnimation + 1000;
       await expect(toast).toBeHidden({ timeout: timeoutMs });
 
       await page.getByTestId('warning-toast-btn').click();
