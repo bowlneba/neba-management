@@ -33,11 +33,11 @@ public static class NameFactory
     public static IReadOnlyCollection<Name> Bogus(int count, int? seed = null)
     {
         Bogus.Faker<Name> faker = new Bogus.Faker<Name>()
-            .RuleFor(n => n.FirstName, f => f.Person.FirstName)
-            .RuleFor(n => n.LastName, f => f.Person.LastName)
-            .RuleFor(n => n.MiddleInitial, f => f.Random.Bool(0.3f) ? f.Random.Char('A', 'Z').ToString() : null)
-            .RuleFor(n => n.Suffix, f => f.Random.Bool(0.2f) ? f.PickRandom(s_suffixes) : null)
-            .RuleFor(n => n.Nickname, f => f.Random.Bool(0.4f) ? f.Name.FirstName() : null);
+            .RuleFor(name => name.FirstName, f => f.Person.FirstName)
+            .RuleFor(name => name.LastName, f => f.Person.LastName)
+            .RuleFor(name => name.MiddleInitial, f => f.Random.Bool(0.3f) ? f.Random.Char('A', 'Z').ToString() : null)
+            .RuleFor(name => name.Suffix, f => f.Random.Bool(0.2f) ? f.PickRandom(s_suffixes) : null)
+            .RuleFor(name => name.Nickname, f => f.Random.Bool(0.4f) ? f.Name.FirstName() : null);
 
         if (seed.HasValue)
         {
