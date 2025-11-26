@@ -3,14 +3,19 @@
   <PropertyGroup>
   </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="EFCore.NamingConventions" />
-      <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
 
 </Project>
