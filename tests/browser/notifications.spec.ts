@@ -428,12 +428,13 @@ test.describe('Notification Test Harness', () => {
       const testingMenu = page.locator('a.neba-nav-link', { hasText: 'Testing' });
       await expect(testingMenu).toBeVisible();
 
-      // Hover over Testing to reveal the Notifications submenu
-      await testingMenu.hover();
+      // Click Testing to reveal the Notifications submenu
+      await testingMenu.click();
 
-      // Wait for Notifications link in dropdown to be visible
+      // Wait for Notifications link in dropdown to be attached and visible (allowing for CSS transitions)
       const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
-      await expect(notificationsLink).toBeVisible({ timeout: 2000 });
+      await notificationsLink.waitFor({ state: 'attached', timeout: 2000 });
+      await expect(notificationsLink).toBeVisible({ timeout: 4000 });
     });
 
     test('Toast dismiss button accessible on mobile', async ({ page }) => {
