@@ -8,8 +8,8 @@ public sealed class EntityTests
     public void EntitiesWithSameId_ShouldBeEqual()
     {
         // Arrange
-        var entity1 = new TestEntity(1);
-        var entity2 = new TestEntity(1);
+        var entity1 = new TestEntity(1, "A");
+        var entity2 = new TestEntity(1, "B");
 
         // Act
         bool areEqual = entity1.Equals(entity2);
@@ -23,8 +23,8 @@ public sealed class EntityTests
     public void EntitiesWithDifferentIds_ShouldNotBeEqual()
     {
         // Arrange
-        var entity1 = new TestEntity(1);
-        var entity2 = new TestEntity(2);
+        var entity1 = new TestEntity(1, "A");
+        var entity2 = new TestEntity(2, "A");
 
         // Act
         bool areEqual = entity1.Equals(entity2);
@@ -35,5 +35,9 @@ public sealed class EntityTests
     }
 }
 
-internal sealed class TestEntity(int id)
-        : Entity<int>(id);
+internal sealed class TestEntity(int id, string otherProperty)
+                : Entity<int>(id)
+{
+    public string OtherProperty { get; }
+        = otherProperty;
+}
