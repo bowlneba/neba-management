@@ -12,3 +12,17 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Docker
 
+  neba.db:
+    container_name: neba-db
+    image: postgres:17.6
+    environment:
+      - POSTGRES_DB=bowlneba
+      - POSTGRES_USER=neba
+      - POSTGRES_PASSWORD=neba
+    volumes:
+      - neba-db-data:/var/lib/postgresql/data
+    ports:
+      - 19630:5432
+
+volumes:
+  neba-db-data:
