@@ -7,4 +7,10 @@
       <ProjectReference Include="..\Neba.Application\Neba.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="EFCore.NamingConventions" />
+      <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    </ItemGroup>
+
 </Project>
