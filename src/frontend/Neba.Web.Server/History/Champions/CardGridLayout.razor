@@ -3,11 +3,32 @@
 <div class="space-y-8">
     @foreach (var group in Champions.GroupBy(c => c.Titles).OrderByDescending(g => g.Key))
     {
-        <div class="space-y-4">
+        var isEliteTier = group.Key >= 20;
+        var isMidTier = group.Key >= 10 && group.Key < 20;
+
+        string tierPrefix;
+        if (isEliteTier)
+        {
+            tierPrefix = "tier-elite";
+        }
+        else if (isMidTier)
+        {
+            tierPrefix = "tier-mid";
+        }
+        else
+        {
+            tierPrefix = "tier-standard";
+        }
+
+        <div class="@tierPrefix-section space-y-4">
             <!-- Title Count Header -->
-            <div>
-                <h2 class="text-xl font-semibold text-gray-900">@group.Key @(group.Key == 1 ? "Title" : "Titles")</h2>
-                <p class="text-sm text-gray-500">@group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")</p>
+            <div class="@tierPrefix-header">
+                <h2 class="text-xl font-semibold @tierPrefix-header-text">
+                    @group.Key @(group.Key == 1 ? "Title" : "Titles")
+                </h2>
+                <p class="text-sm @tierPrefix-header-subtext">
+                    @group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")
+                </p>
             </div>
 
             <!-- Cards Grid -->
@@ -15,7 +36,7 @@
                 @foreach (var champion in group.OrderBy(c => c.BowlerName))
                 {
                     <button type="button"
-                            class="group block w-full bg-white rounded-lg border border-gray-200 p-5 hover:shadow-lg hover:border-[var(--neba-blue-700)] transition-all duration-200 text-left cursor-pointer">
+                            class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-semibold text-gray-900 group-hover:text-[var(--neba-blue-700)] transition-colors truncate">
