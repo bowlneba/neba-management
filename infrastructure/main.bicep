@@ -26,6 +26,31 @@ param azureWebAppServiceName string
 @description('App Service Plan SKU. Common values: B1, B2, B3 (Basic), S1, S2, S3 (Standard), P1v3, P2v3, P3v3 (Premium v3)')
 param azureAppServicePlanSku string = 'B1'
 
+@description('PostgreSQL server name')
+param databaseServerName string
+
+@description('PostgreSQL database name')
+param databaseName string
+
+@description('PostgreSQL administrator username')
+param databaseAdminUsername string
+
+@description('PostgreSQL administrator password')
+@secure()
+param databaseAdminPassword string
+
+@description('PostgreSQL SKU')
+param azurePostgresSku string = 'Standard_B1ms'
+
+@description('PostgreSQL storage size in GB')
+param azurePostgresStorageSizeGB int = 32
+
+@description('PostgreSQL version')
+param postgresVersion string = '17'
+
+@description('PostgreSQL backup retention days')
+param azurePostgresBackupRetentionDays int = 7
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
@@ -52,6 +77,25 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
   }
 }
 
+// PostgreSQL Flexible Server Module
+module postgreSqlServer 'modules/postgreSqlFlexibleServer.bicep' = {
+  scope: rg
+  name: 'postgreSqlServer-deployment'
+  params: {
+    name: '${databaseServerName}-${azureLocation}'
+    location: azureLocation
+    administratorLogin: databaseAdminUsername
+    administratorLoginPassword: databaseAdminPassword
+    version: postgresVersion
+    skuName: azurePostgresSku
+    storageSizeGB: azurePostgresStorageSizeGB
+    backupRetentionDays: azurePostgresBackupRetentionDays
+    highAvailability: false
+    databaseName: databaseName
+    tags: union(tags, { Component: 'Database' })
+  }
+}
+
 // API App Service Module
 module apiAppService 'modules/appService.bicep' = {
   scope: rg
@@ -60,6 +104,7 @@ module apiAppService 'modules/appService.bicep' = {
     name: '${azureApiAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
+    enableManagedIdentity: true
     tags: union(tags, { Component: 'API' })
     corsAllowedOrigins: [
       'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
@@ -77,6 +122,10 @@ module apiAppService 'modules/appService.bicep' = {
       {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: '1'
+      }
+      {
+        name: 'ConnectionStrings__bowlneba'
+        value: 'Host=${postgreSqlServer.outputs.fqdn};Database=${databaseName};Username=${azureApiAppServiceName}-${azureLocation};'
       }
     ]
   }
@@ -118,5 +167,9 @@ output resourceGroupName string = rg.name
 output appServicePlanId string = appServicePlan.outputs.id
 output apiAppServiceName string = apiAppService.outputs.name
 output apiAppServiceUrl string = 'https://${apiAppService.outputs.defaultHostName}'
+output apiAppServicePrincipalId string = apiAppService.outputs.principalId
 output webAppServiceName string = webAppService.outputs.name
 output webAppServiceUrl string = 'https://${webAppService.outputs.defaultHostName}'
+output postgreSqlServerName string = postgreSqlServer.outputs.name
+output postgreSqlServerFqdn string = postgreSqlServer.outputs.fqdn
+output postgreSqlDatabaseName string = postgreSqlServer.outputs.databaseName

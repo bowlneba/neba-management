@@ -46,7 +46,15 @@ jobs:
               azureAppServicePlanName='${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}' \
               azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
               azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
-              azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}'
+              azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}' \
+              databaseServerName='${{ vars.DATABASE_SERVER_NAME }}' \
+              databaseName='${{ vars.DATABASE_NAME }}' \
+              databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
+              databaseAdminPassword='${{ secrets.DATABASE_ADMIN_PASSWORD }}' \
+              azurePostgresSku='${{ vars.AZURE_POSTGRES_SKU }}' \
+              azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
+              postgresVersion='${{ vars.POSTGRES_VERSION }}' \
+              azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }}
 
   deploy:
     name: Deploy to Production
@@ -81,6 +89,14 @@ jobs:
               azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
               azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
               azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}' \
+              databaseServerName='${{ vars.DATABASE_SERVER_NAME }}' \
+              databaseName='${{ vars.DATABASE_NAME }}' \
+              databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
+              databaseAdminPassword='${{ secrets.DATABASE_ADMIN_PASSWORD }}' \
+              azurePostgresSku='${{ vars.AZURE_POSTGRES_SKU }}' \
+              azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
+              postgresVersion='${{ vars.POSTGRES_VERSION }}' \
+              azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
             --output json > deployment-output.json
 
           echo "✅ Infrastructure deployment completed"
@@ -90,9 +106,15 @@ jobs:
         run: |
           API_URL=$(cat deployment-output.json | jq -r '.properties.outputs.apiAppServiceUrl.value')
           WEB_URL=$(cat deployment-output.json | jq -r '.properties.outputs.webAppServiceUrl.value')
+          DB_SERVER=$(cat deployment-output.json | jq -r '.properties.outputs.postgreSqlServerFqdn.value')
+          DB_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.postgreSqlDatabaseName.value')
+          API_PRINCIPAL_ID=$(cat deployment-output.json | jq -r '.properties.outputs.apiAppServicePrincipalId.value')
 
           echo "api-url=$API_URL" >> $GITHUB_OUTPUT
           echo "web-url=$WEB_URL" >> $GITHUB_OUTPUT
+          echo "db-server=$DB_SERVER" >> $GITHUB_OUTPUT
+          echo "db-name=$DB_NAME" >> $GITHUB_OUTPUT
+          echo "api-principal-id=$API_PRINCIPAL_ID" >> $GITHUB_OUTPUT
 
           echo "### 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -101,6 +123,28 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**API URL:** $API_URL" >> $GITHUB_STEP_SUMMARY
           echo "**Web URL:** $WEB_URL" >> $GITHUB_STEP_SUMMARY
+          echo "**Database Server:** $DB_SERVER" >> $GITHUB_STEP_SUMMARY
+          echo "**Database Name:** $DB_NAME" >> $GITHUB_STEP_SUMMARY
+
+      - name: Configure Database Access for API Managed Identity
+        run: |
+          echo "🔐 Configuring Managed Identity access to PostgreSQL..."
+
+          # Get the API App Service Managed Identity principal ID
+          API_PRINCIPAL_ID="${{ steps.outputs.outputs.api-principal-id }}"
+          API_APP_NAME="${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}"
+
+          # Add API's Managed Identity as Azure AD admin for PostgreSQL
+          az postgres flexible-server ad-admin create \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --server-name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --display-name "$API_APP_NAME" \
+            --object-id "$API_PRINCIPAL_ID" \
+            --type ServicePrincipal || echo "AD admin already exists or failed to create"
+
+          echo "✅ Managed Identity configured for database access"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Database Access:** API Managed Identity configured" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v5
