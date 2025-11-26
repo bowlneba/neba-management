@@ -508,9 +508,12 @@ test.describe('Notification Test Harness', () => {
       const testingMenu = page.locator('a.neba-nav-link', { hasText: 'Testing' });
       await expect(testingMenu).toBeVisible();
 
-      // Verify Testing link is present (it's a direct link, not a dropdown)
-      const testingLink = page.locator('a.neba-nav-link[href="/testing/notifications"]');
-      await expect(testingLink).toBeVisible();
+      // Hover over Testing to reveal the Notifications submenu
+      await testingMenu.hover();
+
+      // Verify Notifications link is present in the dropdown
+      const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
+      await expect(notificationsLink).toBeVisible();
     });
   });
 });
