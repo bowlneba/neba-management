@@ -51,6 +51,9 @@ param postgresVersion string = '17'
 @description('PostgreSQL backup retention days')
 param azurePostgresBackupRetentionDays int = 7
 
+@description('Key Vault name')
+param azureKeyVaultName string
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
@@ -74,6 +77,22 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
     location: azureLocation
     sku: azureAppServicePlanSku
     tags: tags
+  }
+}
+
+// Key Vault Module
+module keyVault 'modules/keyVault.bicep' = {
+  scope: rg
+  name: 'keyVault-deployment'
+  params: {
+    name: '${azureKeyVaultName}-${azureLocation}'
+    location: azureLocation
+    skuName: 'standard'
+    enableSoftDelete: true
+    enablePurgeProtection: true
+    enableRbacAuthorization: true
+    enableAzureServicesAccess: true
+    tags: union(tags, { Component: 'KeyVault' })
   }
 }
 
@@ -124,10 +143,22 @@ module apiAppService 'modules/appService.bicep' = {
         value: '1'
       }
       {
-        name: 'ConnectionStrings__bowlneba'
-        value: 'Host=${postgreSqlServer.outputs.fqdn};Database=${databaseName};Username=${azureApiAppServiceName}-${azureLocation};'
+        name: 'KeyVaultUri'
+        value: keyVault.outputs.uri
       }
     ]
+  }
+}
+
+// RBAC Role Assignment: API Managed Identity -> Key Vault Secrets User
+// Key Vault Secrets User role ID: 4633458b-17de-408a-b874-0445c86b69e6
+module apiKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
+  scope: rg
+  name: 'apiKeyVaultAccess-deployment'
+  params: {
+    keyVaultName: keyVault.outputs.name
+    principalId: apiAppService.outputs.principalId
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
   }
 }
 
@@ -173,3 +204,5 @@ output webAppServiceUrl string = 'https://${webAppService.outputs.defaultHostNam
 output postgreSqlServerName string = postgreSqlServer.outputs.name
 output postgreSqlServerFqdn string = postgreSqlServer.outputs.fqdn
 output postgreSqlDatabaseName string = postgreSqlServer.outputs.databaseName
+output keyVaultName string = keyVault.outputs.name
+output keyVaultUri string = keyVault.outputs.uri
