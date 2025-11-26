@@ -21,12 +21,12 @@ public static class InfrastructureDependencyInjection
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public IServiceCollection AddInfrastructure(IConfiguration config)
+        public IServiceCollection AddInfrastructure(IConfigurationManager config)
             => services
                 .AddKeyVault(config)
                 .AddDatabase(config);
 
-        internal IServiceCollection AddDatabase(IConfiguration config)
+        internal IServiceCollection AddDatabase(IConfigurationManager config)
         {
             string bowlnebaConnectionString = config.GetConnectionString("bowlneba")
                 ?? throw new InvalidOperationException("Database connection string 'bowlneba' is not configured.");
@@ -38,7 +38,7 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        internal IServiceCollection AddKeyVault(IConfiguration config)
+        internal IServiceCollection AddKeyVault(IConfigurationManager config)
         {
 #if DEBUG
             // In debug builds, we do not want to connect to Key Vault.
