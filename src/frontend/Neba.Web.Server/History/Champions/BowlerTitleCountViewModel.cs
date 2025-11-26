@@ -19,4 +19,10 @@ public sealed record BowlerTitleCountViewModel
     /// Gets the total number of tournament titles won by the bowler.
     /// </summary>
     public required int Titles { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the bowler is inducted into the Hall of Fame.
+    /// </summary>
+    /// <value></value>
+    public bool HallOfFame { get; init; }
 }
