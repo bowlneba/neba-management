@@ -6,3 +6,43 @@ dotnet_diagnostic.CS1591.severity = none
 
 # Allow public types without declaring accessibility (test classes need to be public)
 dotnet_diagnostic.CA1515.severity = none
+
+# Browser test specific suppressions
+# CA1062: Validate parameter is non-null (not needed for test methods)
+dotnet_diagnostic.CA1062.severity = none
+
+# CA1056: URI properties should not be strings (test helper methods can use strings)
+dotnet_diagnostic.CA1056.severity = none
+
+# S1481: Unused local variables (acceptable in exploratory test code)
+dotnet_diagnostic.S1481.severity = none
+
+# xUnit1051: xUnit analyzer rules specific to v3 (handled by framework)
+dotnet_diagnostic.xUnit1051.severity = none
+
+# CA1031: Do not catch general exception types (acceptable in test helpers)
+dotnet_diagnostic.CA1031.severity = none
+
+# CA1307: String.Contains should specify StringComparison (not critical for tests)
+dotnet_diagnostic.CA1307.severity = none
+
+# CA1308: Use ToUpperInvariant instead of ToLowerInvariant (preference, not critical)
+dotnet_diagnostic.CA1308.severity = none
+
+# CA1707: Remove underscores from member names (test method naming convention)
+dotnet_diagnostic.CA1707.severity = none
+
+# CA1816: Dispose methods should call SuppressFinalize (test base class pattern)
+dotnet_diagnostic.CA1816.severity = none
+
+# CA1310: StringComparison parameter not specified (not critical for tests)
+dotnet_diagnostic.CA1310.severity = none
+
+# CA1866: Use char overload instead of string (performance not critical in tests)
+dotnet_diagnostic.CA1866.severity = none
+
+# S6610: Prefer char overload for string methods (performance not critical in tests)
+dotnet_diagnostic.S6610.severity = none
+
+# VSTHRD200: Use "Async" suffix for async methods (test method naming flexibility)
+dotnet_diagnostic.VSTHRD200.severity = none

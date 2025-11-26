@@ -41,10 +41,7 @@ function initializeNavigation() {
         const dropdownLink = toggle.querySelector('[aria-haspopup]');
 
         dropdownLink?.addEventListener('click', (event) => {
-            // Prevent navigation when clicking the dropdown link in mobile/tablet view
-            if (window.innerWidth <= tabletMaxBreakpoint) {
-                event.preventDefault();
-            }
+            event.preventDefault(); // Always prevent navigation for dropdown links
             toggleDropdown(toggle);
         });
     });
@@ -67,9 +64,10 @@ function initializeNavigation() {
         });
     });
 
-    // Escape key to close mobile menu
+    // Escape key to close mobile menu and dropdowns
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
+            // Close mobile menu
             const menu = document.querySelector('#main-menu');
             const toggle = document.querySelector('[data-action="toggle-menu"]');
 
@@ -78,6 +76,13 @@ function initializeNavigation() {
                 toggle?.setAttribute('aria-expanded', 'false');
                 toggle?.focus();
             }
+
+            // Close any open dropdowns
+            document.querySelectorAll('.neba-nav-item.active').forEach(item => {
+                const link = item.querySelector('[aria-haspopup]');
+                item.classList.remove('active');
+                link?.setAttribute('aria-expanded', 'false');
+            });
         }
     });
 

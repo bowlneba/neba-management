@@ -1,5 +1,6 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @inject NavigationManager Nav
+@inject IWebHostEnvironment HostEnv
 
 <script src="./Layout/MainLayout.razor.js" type="module"></script>
 
@@ -98,24 +99,26 @@
                     <li class="neba-nav-item">
                         <a href="/centers" class="neba-nav-link @(IsActive("centers") ? "active" : null)" aria-current="@(IsActive("centers") ? "page" : null)">Centers</a>
                     </li>
-                    <li class="neba-nav-item" data-action="toggle-dropdown">
-                        <a href="/testing"
-                           class="neba-nav-link @(IsActive("testing") ? "active" : null)"
-                           aria-haspopup="true"
-                           aria-expanded="false"
-                           aria-current="@(IsActive("testing") ? "page" : null)">Testing</a>
-                        <div class="neba-dropdown" role="menu">
-                            <a href="/weather" class="neba-dropdown-link @(IsActive("weather") ? "active" : null)" aria-current="@(IsActive("weather") ? "page" : null)" role="menuitem">Weather</a>
-                            <a href="/counter" class="neba-dropdown-link @(IsActive("counter") ? "active" : null)" aria-current="@(IsActive("counter") ? "page" : null)" role="menuitem">Counter</a>
-                        </div>
-                    </li>
+                    @if (!IsProduction)
+                    {
+                        <li class="neba-nav-item" data-action="toggle-dropdown">
+                            <a href="#"
+                               class="neba-nav-link"
+                               aria-haspopup="true"
+                               aria-expanded="false"
+                               onclick="event.preventDefault();">Testing</a>
+                            <div class="neba-dropdown" role="menu">
+                                <a href="/testing/notifications" class="neba-dropdown-link @(IsActive("testing/notifications") ? "active" : null)" aria-current="@(IsActive("testing/notifications") ? "page" : null)" role="menuitem">Notifications</a>
+                            </div>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 animate-fade-in" role="main" id="main-content">
+    <main class="flex-1 animate-fade-in relative" role="main" id="main-content">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             <AlertContainer DefaultVariant="AlertVariant.Filled"
                             DefaultShowIcon="true"
@@ -155,6 +158,9 @@
 </div>
 
 @code {
+    private bool IsProduction =>
+        string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase);
+
     bool IsActive(string path)
     {
         string current = Nav.ToBaseRelativePath(Nav.Uri);

@@ -2,30 +2,33 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JS
 
-<div class="neba-toast neba-toast-@SeverityClass @(_isDismissing ? "dismissing" : "")"
-     aria-live="@AriaLive"
-     @onmouseenter="HandleMouseEnter"
-     @onmouseleave="HandleMouseLeave">
+@if (!ShouldHide)
+{
+    <div class="neba-toast neba-toast-@SeverityClass @(_isDismissing ? "dismissing" : "")"
+         aria-live="@AriaLive"
+         @onmouseenter="HandleMouseEnter"
+         @onmouseleave="HandleMouseLeave">
 
-    <div class="flex-shrink-0">
-        <NebaIcon Severity="@Payload.Severity" />
+        <div class="flex-shrink-0">
+            <NebaIcon Severity="@Payload.Severity" />
+        </div>
+
+        <div class="neba-toast-content">
+            @if (!string.IsNullOrWhiteSpace(Payload.Title))
+            {
+                <div class="neba-toast-title">@Payload.Title</div>
+            }
+            <div class="neba-toast-message">@Payload.Message</div>
+        </div>
+
+        <button type="button"
+                class="neba-toast-dismiss"
+                @onclick="Dismiss"
+                aria-label="Dismiss notification">
+            ✕
+        </button>
     </div>
-
-    <div class="neba-toast-content">
-        @if (!string.IsNullOrWhiteSpace(Payload.Title))
-        {
-            <div class="neba-toast-title">@Payload.Title</div>
-        }
-        <div class="neba-toast-message">@Payload.Message</div>
-    </div>
-
-    <button type="button"
-            class="neba-toast-dismiss"
-            @onclick="Dismiss"
-            aria-label="Dismiss notification">
-        ✕
-    </button>
-</div>
+}
 
 @code {
     private IJSObjectReference? _module;
@@ -33,6 +36,8 @@
     private DotNetObjectReference<NebaToast>? _dotNetRef;
     private bool _isDismissing;
     private bool _isHovered;
+    private bool _hideAfterFade;
+    private bool ShouldHide => _isDismissing && _hideAfterFade;
 
     /// <summary>
     /// The notification payload containing severity, message, and metadata.
@@ -104,6 +109,9 @@
 
             // Wait for fade-out animation
             await Task.Delay(ToastTiming.FadeOutAnimationMs);
+
+            _hideAfterFade = true;
+            StateHasChanged();
 
             if (OnDismiss.HasDelegate)
             {
