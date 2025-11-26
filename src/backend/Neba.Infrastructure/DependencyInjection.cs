@@ -23,6 +23,7 @@ public static class InfrastructureDependencyInjection
         /// <returns></returns>
         public IServiceCollection AddInfrastructure(IConfiguration config)
             => services
+                .AddKeyVault(config)
                 .AddDatabase(config);
 
         internal IServiceCollection AddDatabase(IConfiguration config)
@@ -35,6 +36,21 @@ public static class InfrastructureDependencyInjection
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
             return services;
+        }
+
+        internal IServiceCollection AddKeyVault(IConfiguration config)
+        {
+#if DEBUG
+            // In debug builds, we do not want to connect to Key Vault.
+            return services;
+#else
+            KeyVaultOptions keyVaultOptions = new();
+            config.GetSection("KeyVault").Bind(keyVaultOptions);
+
+            config.AddAzureKeyVault(keyVaultOptions.VaultUrl, new DefaultAzureCredential());
+
+            return services;
+#endif
         }
     }
 }
