@@ -99,7 +99,7 @@
                     <li class="neba-nav-item">
                         <a href="/centers" class="neba-nav-link @(IsActive("centers") ? "active" : null)" aria-current="@(IsActive("centers") ? "page" : null)">Centers</a>
                     </li>
-                    @if (IsTestEnvironment)
+                    @if (!IsProduction)
                     {
                         <li class="neba-nav-item" data-action="toggle-dropdown">
                             <a href="#"
@@ -158,9 +158,8 @@
 </div>
 
 @code {
-    private bool IsTestEnvironment =>
-        HostEnv.EnvironmentName == "Development" ||
-        HostEnv.EnvironmentName == "Test";
+    private bool IsProduction =>
+        string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase);
 
     bool IsActive(string path)
     {
