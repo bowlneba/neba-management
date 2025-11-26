@@ -7,11 +7,15 @@ namespace Neba.Infrastructure.Database.Website;
 internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> options)
     : NebaDbContext(options)
 {
+    internal const string DefaultSchema = "website";
+
     public DbSet<Bowler> Bowlers
         => Set<Bowler>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(DefaultSchema);
+
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
     }
 }
