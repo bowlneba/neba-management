@@ -5,8 +5,10 @@ the NEBA Management System.\
 All errors must follow these rules to ensure consistency,
 maintainability, and machine readability.
 
-The system uses the **ErrorOr** library for all domain and application
-errors.
+
+## ErrorOr Library Usage
+
+The system uses the **ErrorOr** library for all domain and application errors
 
 ------------------------------------------------------------------------
 
@@ -142,12 +144,12 @@ Metadata MUST:
 
 ------------------------------------------------------------------------
 
-## Examples
+## Example Error Codes (Summary)
 
-- `Name.FirstName.Required`\
-- `Name.FirstName.TooLong`\
-- `Tournament.Entry.InvalidState`\
-- `Membership.Id.NotFound`\
+- `Name.FirstName.Required`
+- `Name.FirstName.TooLong`
+- `Tournament.Entry.InvalidState`
+- `Membership.Id.NotFound`
 - `System.UnexpectedFailure`
 
 ------------------------------------------------------------------------
