@@ -10,7 +10,7 @@ public sealed record BowlerTitleCountDto
     /// <summary>
     /// Gets the unique identifier of the bowler.
     /// </summary>
-    public required BowlerId Id { get; init; }
+    public required BowlerId BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full name of the bowler.

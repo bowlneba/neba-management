@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.Bowlers;
 using Neba.Infrastructure.Database.Website;
+using Neba.Infrastructure.Database.Website.Repositories;
 
 namespace Neba.Infrastructure;
 
@@ -34,6 +36,15 @@ public static class InfrastructureDependencyInjection
             services.AddDbContext<WebsiteDbContext>(options => options
                 .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
+
+            services.AddRepositories();
+
+            return services;
+        }
+
+        internal IServiceCollection AddRepositories()
+        {
+            services.AddScoped<IWebsiteBowlerQueryRepository, WebsiteBowlerQueryRepository>();
 
             return services;
         }
