@@ -30,7 +30,9 @@ public static class NameFactory
     public static Name Bogus(int? seed = null)
         => Bogus(1, seed).Single();
 
-    public static IReadOnlyCollection<Name> Bogus(int count, int? seed = null)
+    public static IReadOnlyCollection<Name> Bogus(
+        int count,
+        int? seed = null)
     {
         Bogus.Faker<Name> faker = new Bogus.Faker<Name>()
             .RuleFor(name => name.FirstName, f => f.Person.FirstName)

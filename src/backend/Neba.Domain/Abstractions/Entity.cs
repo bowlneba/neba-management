@@ -15,7 +15,7 @@ public abstract class Entity<TId>(TId id)
     /// <summary>
     /// Gets the unique identifier for this entity.
     /// </summary>
-    public TId Id { get; } = id;
+    public TId Id { get; internal init; } = id;
 
     /// <summary>
     /// Determines whether the specified object is equal to the current entity, based on identity.
