@@ -78,6 +78,13 @@ public sealed class Month : SmartEnum<Month>
     }
 
     /// <summary>
+    /// Here for EF Core materialization purposes only.
+    /// </summary>
+    private Month()
+        : base("", 0)
+    { }
+
+    /// <summary>
     /// Returns the three-letter abbreviation for the month (e.g., "Jan" for January).
     /// </summary>
     /// <returns>The three-letter abbreviated month name.</returns>

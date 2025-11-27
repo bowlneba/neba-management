@@ -1,5 +1,7 @@
+using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Neba.Domain;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Tournaments;
 
@@ -13,6 +15,8 @@ internal sealed class TitleConfiguration
         builder.ToTable("titles", "website");
         builder.HasKey(title => title.Id);
 
+        builder.HasIndex(title => new {title.Year, title.Month});
+
         builder
             .Property(title => title.Id)
             .ValueGeneratedNever()
@@ -25,17 +29,16 @@ internal sealed class TitleConfiguration
 
         builder
             .Property(title => title.TournamentType)
-            .HasColumnName("tournament_type")
+            .HasConversion<SmartEnumConverter<TournamentType, int>>()
             .IsRequired();
 
         builder
             .Property(title => title.Month)
-            .HasColumnName("month")
+            .HasConversion<SmartEnumConverter<Month, int>>()
             .IsRequired();
 
         builder
             .Property(title => title.Year)
-            .HasColumnName("year")
             .IsRequired();
     }
 }
