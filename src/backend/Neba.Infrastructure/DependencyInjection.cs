@@ -1,3 +1,5 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
@@ -21,12 +23,16 @@ public static class InfrastructureDependencyInjection
         /// <summary>
         /// Adds the infrastructure services to the dependency injection container.
         /// </summary>
-        /// <param name="config"></param>
-        /// <returns></returns>
+        /// <param name="config">The configuration manager containing application settings.</param>
+        /// <returns>The service collection for method chaining.</returns>
         public IServiceCollection AddInfrastructure(IConfigurationManager config)
-            => services
+        {
+            ArgumentNullException.ThrowIfNull(config);
+
+            return services
                 .AddKeyVault(config)
                 .AddDatabase(config);
+        }
 
         internal IServiceCollection AddDatabase(IConfigurationManager config)
         {
@@ -51,17 +57,25 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddKeyVault(IConfigurationManager config)
         {
-#if DEBUG
-            // In debug builds, we do not want to connect to Key Vault.
-            return services;
-#else
-            KeyVaultOptions keyVaultOptions = new();
-            config.GetSection("KeyVault").Bind(keyVaultOptions);
+            // Only connect to Key Vault if explicitly enabled via configuration
+            // This allows Release builds without Key Vault (e.g., Docker local development)
+            // while still supporting Key Vault in actual production/staging deployments
+            bool useKeyVault = config.GetValue("KeyVault:Enabled", false);
 
-            config.AddAzureKeyVault(keyVaultOptions.VaultUrl, new DefaultAzureCredential());
+            if (!useKeyVault)
+            {
+                return services;
+            }
+
+            string? vaultUrl = config["KeyVault:VaultUrl"];
+            if (string.IsNullOrEmpty(vaultUrl))
+            {
+                throw new InvalidOperationException("KeyVault:VaultUrl is not configured but KeyVault is enabled.");
+            }
+
+            config.AddAzureKeyVault(new Uri(vaultUrl), new DefaultAzureCredential());
 
             return services;
-#endif
         }
     }
 }
