@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Bowlers.BowlerTitleCounts;
 
 namespace Neba.Application;
@@ -25,7 +26,7 @@ public static class ApplicationDependencyInjection
 
         private IServiceCollection AddBowlersUseCases()
         {
-            services.AddScoped<GetBowlerTitleCountsQueryHandler>();
+            services.AddScoped<IQueryHandler<GetBowlerTitleCountsQuery, IReadOnlyCollection<BowlerTitleCountDto>>, GetBowlerTitleCountsQueryHandler>();
 
             return services;
         }

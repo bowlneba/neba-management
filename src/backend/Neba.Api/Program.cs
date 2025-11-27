@@ -1,3 +1,4 @@
+using Neba.Api.Endpoints.Website;
 using Neba.Application;
 using Neba.Infrastructure;
 
@@ -40,5 +41,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 // Future API endpoints will be added here
+app.MapWebsiteEndpoints();
 
 await app.RunAsync();
