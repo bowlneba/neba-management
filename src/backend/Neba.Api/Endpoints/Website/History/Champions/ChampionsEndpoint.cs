@@ -36,7 +36,7 @@ internal static class ChampionsEndpoint
 
                 IReadOnlyCollection<GetBowlerTitleCountsResponseModel> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
 
-                return TypedResults.Ok(ApiResponse.Create(response));
+                return TypedResults.Ok(CollectionResponse.Create(response));
             });
 
             return app;
