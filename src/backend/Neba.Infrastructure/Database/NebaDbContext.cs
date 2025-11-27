@@ -1,5 +1,6 @@
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
+using SmartEnum.EFCore;
 
 namespace Neba.Infrastructure.Database;
 
@@ -17,5 +18,10 @@ internal abstract class NebaDbContext(DbContextOptions options)
     #if DEBUG
         optionsBuilder.EnableSensitiveDataLogging();
     #endif
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.ConfigureSmartEnum();
     }
 }

@@ -57,5 +57,10 @@ internal sealed class BowlerConfiguration
 
         builder.Property(bowler => bowler.ApplicationId)
             .ValueGeneratedNever();
+
+        builder.HasMany(bowler => bowler.Titles)
+            .WithOne(title => title.Bowler)
+            .HasForeignKey(title => title.BowlerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
