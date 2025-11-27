@@ -13,7 +13,14 @@ builder.Services.AddOptions<NebaApiConfiguration>()
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<NebaApiConfiguration>>().Value);
 
-builder.Services.AddRefitClient<INebaApi>()
+builder.Services.AddRefitClient<INebaApi>(new RefitSettings
+    {
+        ContentSerializer = new SystemTextJsonContentSerializer(
+            new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            })
+    })
     .ConfigureHttpClient((sp, client) =>
     {
         NebaApiConfiguration config = sp.GetRequiredService<NebaApiConfiguration>();
