@@ -11,7 +11,7 @@ public sealed class TournamentTypeTests
         IReadOnlyCollection<TournamentType> tournamentTypes = Neba.Domain.Tournaments.TournamentType.List;
 
         // Assert
-        Assert.Equal(14, tournamentTypes.Count);
+        tournamentTypes.Count.ShouldBe(14);
     }
 
     [Theory]
@@ -36,8 +36,8 @@ public sealed class TournamentTypeTests
             .Single(tt => tt.Name == expectedName);
 
         // Act & Assert
-        Assert.NotNull(tournamentType);
-        Assert.Equal(expectedValue, tournamentType.Value);
-        Assert.Equal(expectedPlayersPerTeam, tournamentType.TeamSize);
+        tournamentType.ShouldNotBeNull();
+        tournamentType.Value.ShouldBe(expectedValue);
+        tournamentType.TeamSize.ShouldBe(expectedPlayersPerTeam);
     }
 }
