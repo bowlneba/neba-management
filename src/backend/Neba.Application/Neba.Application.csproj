@@ -7,4 +7,9 @@
     <ProjectReference Include="..\Neba.Domain\Neba.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.Tests" />
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
 </Project>

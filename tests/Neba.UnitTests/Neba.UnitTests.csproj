@@ -21,4 +21,8 @@
     <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Moq" />
+  </ItemGroup>
+
 </Project>

@@ -1,3 +1,4 @@
+using Neba.Application;
 using Neba.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services
+    .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
 // Add CORS policy
