@@ -55,8 +55,7 @@ jobs:
               azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
-              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
-              githubServicePrincipalObjectId='${{ vars.GITHUB_SERVICE_PRINCIPAL_OBJECT_ID }}'
+              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}'
 
   deploy:
     name: Deploy to Production
@@ -100,7 +99,6 @@ jobs:
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
-              githubServicePrincipalObjectId='${{ vars.GITHUB_SERVICE_PRINCIPAL_OBJECT_ID }}' \
             --output json > deployment-output.json
 
           echo "✅ Infrastructure deployment completed"
@@ -162,6 +160,20 @@ jobs:
           KV_NAME="${{ steps.outputs.outputs.kv-name }}"
           DB_SERVER="${{ steps.outputs.outputs.db-server }}"
           DB_NAME="${{ steps.outputs.outputs.db-name }}"
+
+          # Get the currently authenticated service principal's object ID
+          SP_OBJECT_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || az account show --query user.name -o tsv | xargs az ad sp show --id --query id -o tsv)
+
+          # Grant temporary Key Vault Secrets Officer access to current service principal
+          az role assignment create \
+            --role "Key Vault Secrets Officer" \
+            --assignee-object-id "$SP_OBJECT_ID" \
+            --assignee-principal-type ServicePrincipal \
+            --scope "/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RESOURCE_GROUP_NAME }}/providers/Microsoft.KeyVault/vaults/$KV_NAME" \
+            --output none || echo "Role assignment already exists or using access policy"
+
+          # Wait a moment for RBAC to propagate
+          sleep 10
 
           # Create connection string for API (Managed Identity - passwordless)
           CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }};"
