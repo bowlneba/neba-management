@@ -1,0 +1,6 @@
+[*.cs]
+# Suppress CA1040: Avoid empty interfaces
+dotnet_diagnostic.CA1040.severity = none
+
+# Suppress S2326: Unused type parameters (needed for CQRS query constraints)
+dotnet_diagnostic.S2326.severity = none
