@@ -36,7 +36,7 @@ public sealed class Title : Entity<TitleId>
     /// <summary>
     /// Initializes a new instance of the <see cref="Title"/> class with a new unique identifier.
     /// </summary>
-    internal Title()
+    public Title()
         : base(TitleId.New())
     {}
 }

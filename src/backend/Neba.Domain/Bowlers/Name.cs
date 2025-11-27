@@ -40,7 +40,10 @@ public sealed record Name
     /// <value>Nickname of the bowler</value>
     public string? Nickname { get; init; }
 
-    internal Name()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Name"/> class.
+    /// </summary>
+    public Name()
     {}
 
     /// <summary>

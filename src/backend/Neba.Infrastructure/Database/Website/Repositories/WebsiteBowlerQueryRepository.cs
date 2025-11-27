@@ -11,6 +11,7 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 
     public async Task<IReadOnlyCollection<BowlerTitleCountDto>> GetBowlerTitleCountsAsync(CancellationToken cancellationToken)
         => await _dbContext.Bowlers
+            .AsNoTracking()
             .Where(bowler => bowler.Titles.Any())
             .Select(bowler => new BowlerTitleCountDto
             {

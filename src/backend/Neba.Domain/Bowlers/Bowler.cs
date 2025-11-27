@@ -29,7 +29,7 @@ public sealed class Bowler
     /// <summary>
     /// Initializes a new instance of the <see cref="Bowler"/> class with a new unique identifier.
     /// </summary>
-    internal Bowler()
+    public Bowler()
         : base(BowlerId.New())
     {
         Titles = [];

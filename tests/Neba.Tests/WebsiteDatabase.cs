@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Neba.Infrastructure.Database.Website;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -31,6 +33,13 @@ public sealed class WebsiteDatabase : IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
+
+        // Apply migrations to create database schema
+        await using var context = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(ConnectionString)
+                .Options);
+        await context.Database.MigrateAsync();
 
         // Initialize Respawner
         await using var connection = new NpgsqlConnection(ConnectionString);
