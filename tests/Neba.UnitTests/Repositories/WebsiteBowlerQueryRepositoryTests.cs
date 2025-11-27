@@ -41,6 +41,8 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
+        int bowlersWithNoTitles = seedBowlers.Count(bowler => bowler.Titles.Count == 0);
+
         var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
 
         // Act
@@ -49,5 +51,34 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
 
         // Assert
         result.ShouldAllBe(dto => dto.TitleCount > 0);
+        result.Count.ShouldBe(seedBowlers.Count - bowlersWithNoTitles);
+    }
+
+    [Fact]
+    public async Task GetBowlerTitleCountsAsync_ShouldMapFieldsCorrectly()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+        await websiteDbContext.SaveChangesAsync();
+
+        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 0);
+
+        var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<BowlerTitleCountDto> result
+            = await repository.GetBowlerTitleCountsAsync(CancellationToken.None);
+
+        // Assert
+        BowlerTitleCountDto dto = result.Single(dto => dto.BowlerId == seedBowler.Id);
+        dto.ShouldNotBeNull();
+        dto!.BowlerName.ShouldBe(seedBowler.Name.ToDisplayName());
+        dto.TitleCount.ShouldBe(seedBowler.Titles.Count);
     }
 }

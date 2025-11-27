@@ -26,10 +26,7 @@ public sealed class Bowler
     /// <value></value>
     public int? ApplicationId { get; init; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Bowler"/> class with a new unique identifier.
-    /// </summary>
-    public Bowler()
+    internal Bowler()
         : base(BowlerId.New())
     {
         Titles = [];

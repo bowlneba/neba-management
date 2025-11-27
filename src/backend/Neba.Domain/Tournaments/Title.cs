@@ -33,10 +33,7 @@ public sealed class Title : Entity<TitleId>
     /// </summary>
     public int Year { get; init; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Title"/> class with a new unique identifier.
-    /// </summary>
-    public Title()
+    internal Title()
         : base(TitleId.New())
     {}
 }

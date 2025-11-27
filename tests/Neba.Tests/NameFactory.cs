@@ -35,11 +35,14 @@ public static class NameFactory
         int? seed = null)
     {
         Bogus.Faker<Name> faker = new Bogus.Faker<Name>()
-            .RuleFor(name => name.FirstName, f => f.Person.FirstName)
-            .RuleFor(name => name.LastName, f => f.Person.LastName)
-            .RuleFor(name => name.MiddleInitial, f => f.Random.Bool(0.3f) ? f.Random.Char('A', 'Z').ToString() : null)
-            .RuleFor(name => name.Suffix, f => f.Random.Bool(0.2f) ? f.PickRandom(s_suffixes) : null)
-            .RuleFor(name => name.Nickname, f => f.Random.Bool(0.4f) ? f.Name.FirstName() : null);
+            .CustomInstantiator(f => new Name
+            {
+                FirstName = f.Person.FirstName,
+                LastName = f.Person.LastName,
+                MiddleInitial = f.Random.Bool(0.3f) ? f.Random.Char('A', 'Z').ToString() : null,
+                Suffix = f.Random.Bool(0.2f) ? f.PickRandom(s_suffixes) : null,
+                Nickname = f.Random.Bool(0.4f) ? f.Name.FirstName() : null
+            });
 
         if (seed.HasValue)
         {

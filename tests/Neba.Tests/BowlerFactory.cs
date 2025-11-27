@@ -27,11 +27,18 @@ public static class BowlerFactory
         int? seed = null)
     {
         Bogus.Faker<Bowler> faker = new Bogus.Faker<Bowler>()
-            .RuleFor(bowler => bowler.Id, _ => BowlerId.New())
-            .RuleFor(bowler => bowler.Name, _ => NameFactory.Bogus())
-            .RuleFor(bowler => bowler.WebsiteId, f => f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null)
-            .RuleFor(bowler => bowler.ApplicationId, f => f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null)
-            .RuleFor(bowler => bowler.Titles, (f, b) => TitleFactory.Bogus(b.Id, f.Random.Int(0, 10), seed));
+            .CustomInstantiator(f =>
+            {
+                var bowlerId = BowlerId.New();
+                return new Bowler
+                {
+                    Id = bowlerId,
+                    Name = NameFactory.Bogus(),
+                    WebsiteId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
+                    ApplicationId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
+                    Titles = TitleFactory.Bogus(bowlerId, f.Random.Int(0, 10), seed)
+                };
+            });
 
         if (seed.HasValue)
         {
