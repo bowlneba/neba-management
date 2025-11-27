@@ -18,6 +18,9 @@
     <Project Path="src/frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
     <Project Path="src/frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
+  <Folder Name="/Shared Kernel/">
+    <Project Path="src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <File Path="tests/Directory.Build.props" />
     <Project Path="tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj" />
@@ -25,5 +28,4 @@
     <Project Path="tests/Neba.UnitTests/Neba.UnitTests.csproj" Id="acc9f264-c527-4bb7-9844-4cdc2edb1db5" />
     <Project Path="tests/Neba.WebTests/Neba.WebTests.csproj" />
   </Folder>
-  <Project Path="src/Neba.Contracts/Neba.Contracts.csproj" />
 </Solution>
