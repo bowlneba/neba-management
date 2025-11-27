@@ -1,6 +1,8 @@
 using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Contracts;
+using Neba.Contracts.History.Champions;
 
 namespace Neba.Api.Endpoints.Website.History.Champions;
 
@@ -32,7 +34,9 @@ internal static class ChampionsEndpoint
                     return result.Problem();
                 }
 
-                return Results.Ok(result.Value.Select(dto => dto.ToResponseModel()));
+                IReadOnlyCollection<GetBowlerTitleCountsResponseModel> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+
+                return Results.Ok(ApiResponse.Create(response));
             });
 
             return app;
