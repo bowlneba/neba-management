@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\Neba.Domain\Neba.Domain.csproj" />
     <ProjectReference Include="..\..\src\backend\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Neba.Contracts\Neba.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

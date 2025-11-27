@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Neba.Contracts\Neba.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
   </ItemGroup>
 
