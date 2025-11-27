@@ -10,7 +10,10 @@ internal static class HistoryEndpoints
     {
         public IEndpointRouteBuilder MapHistoryEndpoints()
         {
-            app.MapChampionsEndpoints();
+            RouteGroupBuilder historyApp = app.MapGroup("/history");
+
+            historyApp.MapChampionsEndpoints();
+
             return app;
         }
     }

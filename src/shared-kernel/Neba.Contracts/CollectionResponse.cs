@@ -6,6 +6,10 @@ public sealed record CollectionResponse<T>
 {
     /// <inheritdoc />
     public required IReadOnlyCollection<T> Items { get; init; }
+
+    /// <inheritdoc />
+    public int TotalItems
+        => Items.Count;
 }
 
 /// <summary>

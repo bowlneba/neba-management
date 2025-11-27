@@ -7,9 +7,9 @@ internal static class ChampionsMappingExtensions
 {
     extension(BowlerTitleCountDto dto)
     {
-        public GetBowlerTitleCountsResponseModel ToResponseModel()
+        public GetBowlerTitleCountsResponse ToResponseModel()
         {
-            return new GetBowlerTitleCountsResponseModel
+            return new GetBowlerTitleCountsResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,

@@ -4,7 +4,7 @@ namespace Neba.Contracts.History.Champions;
 /// <summary>
 /// Response model representing a bowler and their total number of titles for the champions endpoint.
 /// </summary>
-public sealed record GetBowlerTitleCountsResponseModel
+public sealed record GetBowlerTitleCountsResponse
 {
     /// <summary>
     /// Gets the unique identifier of the bowler.

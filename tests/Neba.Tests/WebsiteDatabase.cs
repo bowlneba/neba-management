@@ -10,7 +10,8 @@ namespace Neba.Tests;
 /// Provides a PostgreSQL test database using Testcontainers for repository and integration tests.
 /// Implements IAsyncLifetime to ensure the container is started before tests run.
 /// </summary>
-public sealed class WebsiteDatabase : IAsyncLifetime
+public sealed class WebsiteDatabase
+    : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
         .WithImage("postgres:17.6")

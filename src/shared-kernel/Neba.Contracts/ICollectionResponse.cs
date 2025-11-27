@@ -10,4 +10,9 @@ public interface ICollectionResponse<T>
     /// Gets the collection of items included in the response.
     /// </summary>
     IReadOnlyCollection<T> Items { get; init; }
+
+    /// <summary>
+    /// Gets the total number of items in the collection.
+    /// </summary>
+    int TotalItems { get; }
 }

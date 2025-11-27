@@ -24,6 +24,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.Tests" />
     <InternalsVisibleTo Include="Neba.UnitTests" />
+    <InternalsVisibleTo Include="Neba.IntegrationTests" />
   </ItemGroup>
 
 </Project>

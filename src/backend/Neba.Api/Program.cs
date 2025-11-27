@@ -48,3 +48,19 @@ app.UseCors();
 app.MapWebsiteEndpoints();
 
 await app.RunAsync();
+
+/// <summary>
+/// Entry point for the Neba API application.
+/// This partial class makes the implicit Program class accessible for integration tests.
+/// </summary>
+#pragma warning disable CA1050 // Declare types in namespaces
+public partial class Program
+#pragma warning restore CA1050
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Program"/> class.
+    /// </summary>
+    protected Program()
+    {
+    }
+}

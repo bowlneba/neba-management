@@ -21,7 +21,7 @@ internal static class ChampionsEndpoint
         private IEndpointRouteBuilder MapGetBowlerTitleCountsEndpoint()
         {
             app.MapGet(
-                "/history/champions", async (
+                "/champions", async (
                     IQueryHandler<GetBowlerTitleCountsQuery, IReadOnlyCollection<BowlerTitleCountDto>> queryHandler,
                     CancellationToken cancellationToken) =>
             {
@@ -34,7 +34,7 @@ internal static class ChampionsEndpoint
                     return result.Problem();
                 }
 
-                IReadOnlyCollection<GetBowlerTitleCountsResponseModel> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                IReadOnlyCollection<GetBowlerTitleCountsResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
 
                 return TypedResults.Ok(CollectionResponse.Create(response));
             })
