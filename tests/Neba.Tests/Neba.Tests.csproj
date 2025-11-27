@@ -2,10 +2,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\Neba.Domain\Neba.Domain.csproj" />
+    <ProjectReference Include="..\..\src\backend\Neba.Infrastructure\Neba.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
 
   <PropertyGroup>

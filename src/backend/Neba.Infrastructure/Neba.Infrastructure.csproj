@@ -21,4 +21,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.Tests" />
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
 </Project>
