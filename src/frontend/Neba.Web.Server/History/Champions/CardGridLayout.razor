@@ -25,10 +25,10 @@
             <div class="@tierPrefix-header">
                 <h2 class="text-xl font-semibold @tierPrefix-header-text">
                     @group.Key @(group.Key == 1 ? "Title" : "Titles")
+                    <span class="text-sm @tierPrefix-header-subtext italic ml-2">
+                        @group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")
+                    </span>
                 </h2>
-                <p class="text-sm @tierPrefix-header-subtext">
-                    @group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")
-                </p>
             </div>
 
             <!-- Cards Grid -->
