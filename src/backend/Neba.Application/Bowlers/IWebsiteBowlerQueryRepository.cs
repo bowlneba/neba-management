@@ -1,4 +1,5 @@
 using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Domain.Bowlers;
 
 namespace Neba.Application.Bowlers;
 
@@ -13,4 +14,12 @@ public interface IWebsiteBowlerQueryRepository
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleCountDto"/>.</returns>
     Task<IReadOnlyCollection<BowlerTitleCountDto>> GetBowlerTitleCountsAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Asynchronously retrieves the detailed titles for a specific bowler.
+    /// </summary>
+    /// <param name="bowlerId">The unique identifier of the bowler.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="BowlerTitlesDto"/> if found; otherwise, null.</returns>
+    Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken);
 }

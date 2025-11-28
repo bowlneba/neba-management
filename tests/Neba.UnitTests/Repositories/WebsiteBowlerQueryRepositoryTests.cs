@@ -81,4 +81,70 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         dto!.BowlerName.ShouldBe(seedBowler.Name.ToDisplayName());
         dto.TitleCount.ShouldBe(seedBowler.Titles.Count);
     }
+
+    [Fact]
+    public async Task GetBowlerTitlesAsync_ShouldReturnNull_WhenBowlerDoesNotExist()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+        await websiteDbContext.SaveChangesAsync();
+
+        var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
+        BowlerId nonExistentBowlerId = BowlerId.New();
+
+        // Act
+        BowlerTitlesDto? result
+            = await repository.GetBowlerTitlesAsync(nonExistentBowlerId, CancellationToken.None);
+
+        // Assert
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetBowlerTitlesAsync_ShouldReturnCorrectTitles_ForExistingBowler()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+        await websiteDbContext.SaveChangesAsync();
+
+        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 3);
+
+        var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
+
+        // Act
+        BowlerTitlesDto? result
+            = await repository.GetBowlerTitlesAsync(seedBowler.Id, CancellationToken.None);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result!.BowlerId.ShouldBe(seedBowler.Id);
+        result.BowlerName.ShouldBe(seedBowler.Name.ToDisplayName());
+        result.Titles.Count.ShouldBe(seedBowler.Titles.Count);
+
+        for (int i = 0; i < result.Titles.Count; i++)
+        {
+            TitleDto dto = result.Titles.ElementAt(i);
+            var expectedTitle = seedBowler.Titles
+                .OrderBy(title => title.Year)
+                .ThenBy(title => title.Month)
+                .ThenBy(title => title.TournamentType)
+                .ElementAt(i);
+
+            dto.Month.ShouldBe(expectedTitle.Month);
+            dto.Year.ShouldBe(expectedTitle.Year);
+            dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
+        }
+    }
 }
