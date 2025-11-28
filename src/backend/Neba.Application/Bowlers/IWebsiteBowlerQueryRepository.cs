@@ -22,4 +22,11 @@ public interface IWebsiteBowlerQueryRepository
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="BowlerTitlesDto"/> if found; otherwise, null.</returns>
     Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Asynchronously retrieves a collection of all bowler titles, including bowler and tournament details for each title.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleDto"/>.</returns>
+    Task<IReadOnlyCollection<BowlerTitleDto>> GetTitlesAsync(CancellationToken cancellationToken);
 }
