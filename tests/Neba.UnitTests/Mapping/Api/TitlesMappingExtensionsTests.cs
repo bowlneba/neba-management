@@ -10,7 +10,7 @@ namespace Neba.UnitTests.Mapping.Api;
 public sealed class TitlesMappingExtensionsTests
 {
     [Fact]
-    public void ToResponseModel_ShouldMapBowlerId()
+    public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerId()
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
@@ -24,10 +24,10 @@ public sealed class TitlesMappingExtensionsTests
     }
 
     [Fact]
-    public void ToResponseModel_ShouldMapBowlerName()
+    public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerName()
     {
         // Arrange
-        string bowlerName = "John Doe";
+        const string bowlerName = "John Doe";
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
@@ -38,7 +38,7 @@ public sealed class TitlesMappingExtensionsTests
     }
 
     [Fact]
-    public void ToResponseModel_ShouldMapTournamentMonth()
+    public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentMonth()
     {
         // Arrange
         Month tournamentMonth = Month.May;
@@ -52,7 +52,7 @@ public sealed class TitlesMappingExtensionsTests
     }
 
     [Fact]
-    public void ToResponseModel_ShouldMapTournamentYear()
+    public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentYear()
     {
         // Arrange
         const int tournamentYear = 2022;
@@ -66,7 +66,7 @@ public sealed class TitlesMappingExtensionsTests
     }
 
     [Fact]
-    public void ToResponseModel_ShouldMapTournamentType()
+    public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentType()
     {
         // Arrange
         TournamentType tournamentType = TournamentType.Doubles;
