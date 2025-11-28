@@ -7,6 +7,11 @@ namespace Neba.WebTests.Components;
 
 public sealed class NebaLoadingIndicatorTests : TestContextWrapper
 {
+    private static void WaitForLoadingIndicator(IRenderedComponent<NebaLoadingIndicator> cut)
+    {
+        cut.WaitForState(() => cut.FindAll(".neba-loading-overlay").Count > 0, timeout: TimeSpan.FromSeconds(1));
+    }
+
     [Fact]
     public void ShouldNotRenderWhenIsVisibleIsFalse()
     {
@@ -23,9 +28,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     {
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
-            .Add(p => p.IsVisible, true));
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
 
-        // Assert
+        // Assert - Wait for the component to render asynchronously
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         overlay.ShouldNotBeNull();
     }
@@ -35,9 +42,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     {
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
-            .Add(p => p.IsVisible, true));
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var waveElement = cut.Find(".neba-loading-wave");
         waveElement.ShouldNotBeNull();
 
@@ -63,9 +72,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.Text, "Loading data..."));
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var textElement = cut.Find(".neba-loading-text");
         textElement.TextContent.ShouldBe("Loading data...");
     }
@@ -99,9 +110,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     {
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
-            .Add(p => p.IsVisible, true));
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         overlay.ClassList.ShouldContain("neba-loading-overlay-page");
         overlay.ClassList.ShouldNotContain("neba-loading-overlay-fullscreen");
@@ -113,9 +126,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.Scope, LoadingIndicatorScope.Page));
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         overlay.ClassList.ShouldContain("neba-loading-overlay-page");
         overlay.ClassList.ShouldNotContain("neba-loading-overlay-fullscreen");
@@ -127,9 +142,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.Scope, LoadingIndicatorScope.FullScreen));
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         overlay.ClassList.ShouldContain("neba-loading-overlay-fullscreen");
         overlay.ClassList.ShouldNotContain("neba-loading-overlay-page");
@@ -142,9 +159,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         var clickedCount = 0;
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.OnOverlayClick, EventCallback.Factory.Create(this, () => clickedCount++)));
 
         // Act
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         overlay.Click();
 
@@ -157,9 +176,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     {
         // Arrange
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
-            .Add(p => p.IsVisible, true));
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
 
         // Act
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
         var act = () => overlay.Click();
 
@@ -172,9 +193,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     {
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
-            .Add(p => p.IsVisible, true));
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var contentWrapper = cut.Find(".neba-loading-content");
         contentWrapper.ShouldNotBeNull();
     }
@@ -188,9 +211,11 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         // Arrange & Act
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.Text, text));
 
         // Assert
+        WaitForLoadingIndicator(cut);
         var textElement = cut.Find(".neba-loading-text");
         textElement.TextContent.ShouldBe(text);
     }
@@ -202,8 +227,10 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         var clickedCount = 0;
         var cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay for testing
             .Add(p => p.OnOverlayClick, EventCallback.Factory.Create(this, () => clickedCount++)));
 
+        WaitForLoadingIndicator(cut);
         var overlay = cut.Find(".neba-loading-overlay");
 
         // Act
