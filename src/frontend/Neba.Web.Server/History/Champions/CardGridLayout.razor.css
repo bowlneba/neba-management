@@ -1,5 +1,24 @@
 /* Champions Card Grid - Tier Styling */
 
+/* Collapse/Expand Animation */
+.tier-collapse-container {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+.tier-collapse-container.tier-collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.tier-collapse-container > * {
+    overflow: hidden;
+}
+
 /* Elite Tier (20+ titles) - Gold/Amber */
 .tier-elite-section {
     background: transparent;
