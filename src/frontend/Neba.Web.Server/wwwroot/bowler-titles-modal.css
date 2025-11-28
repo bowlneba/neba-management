@@ -17,12 +17,18 @@
 .bowler-titles-modal .neba-modal-content {
     overflow: hidden !important;
     max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 /* Modal body should not scroll or have padding */
 .bowler-titles-modal .neba-modal-body {
     overflow: hidden !important;
     padding: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
 }
 
 /* Ensure modal container doesn't exceed viewport and is properly centered */
@@ -37,5 +43,12 @@
         width: min(800px, 90vw) !important; /* Use smaller of 800px or 90vw */
         margin-left: auto !important;
         margin-right: auto !important;
+    }
+}
+
+/* Mobile landscape: Reduce header padding */
+@media (max-width: 640px) and (max-height: 500px) {
+    .bowler-titles-modal .neba-modal-header {
+        padding: 0.75rem !important;
     }
 }

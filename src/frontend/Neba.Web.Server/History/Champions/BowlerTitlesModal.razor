@@ -65,66 +65,68 @@
     }
     else
     {
-        <!-- Summary Card Section - FIXED (Portrait only) -->
-        <div class="bowler-titles-summary-section">
-            <div class="bowler-titles-summary-card bg-[var(--neba-blue-50)] border border-[var(--neba-blue-200)] rounded-lg p-3 sm:p-4">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-xs sm:text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
-                        <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@titles.Count</p>
-                    </div>
-                    @if (HallOfFame)
-                    {
-                        <div class="flex items-center gap-2">
-                            <img src="/neba-hof.jpg"
-                                 alt="Hall of Fame"
-                                 class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-                                 title="NEBA Hall of Fame" />
-                            <span class="text-xs sm:text-sm font-medium text-[var(--neba-blue-700)] hidden xs:inline">Hall of Fame</span>
+        <div class="neba-modal-body">
+            <!-- Summary Card Section - FIXED (Portrait only) -->
+            <div class="bowler-titles-summary-section">
+                <div class="bowler-titles-summary-card bg-[var(--neba-blue-50)] border border-[var(--neba-blue-200)] rounded-lg p-3 sm:p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs sm:text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
+                            <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@titles.Count</p>
                         </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Table Section - Contains header (fixed) and body (scrollable) -->
-        <div class="bowler-titles-table-section">
-            <!-- Table Headers - FIXED -->
-            <div class="bowler-titles-table-header">
-                <div class="flex border border-gray-200 rounded-t-lg bg-gray-50">
-                    <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        &nbsp;
-                    </div>
-                    <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                    </div>
-                    <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Type
+                        @if (HallOfFame)
+                        {
+                            <div class="flex items-center gap-2">
+                                <img src="/neba-hof.jpg"
+                                     alt="Hall of Fame"
+                                     class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                                     title="NEBA Hall of Fame" />
+                                <span class="text-xs sm:text-sm font-medium text-[var(--neba-blue-700)] hidden xs:inline">Hall of Fame</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
 
-            <!-- Titles List - SCROLLABLE -->
-            <div class="bowler-titles-scrollable-list">
-                <div class="border-x border-b border-gray-200 rounded-b-lg bg-white">
-                    @for (int i = 0; i < titles.Count; i++)
-                    {
-                        var title = titles[i];
-                        var number = i + 1;
-                        <div class="flex border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
-                            <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500">
-                                #@number
-                            </div>
-                            <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
-                                @title.TournamentDate
-                            </div>
-                            <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3">
-                                <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--neba-blue-100)] text-[var(--neba-blue-800)] whitespace-nowrap">
-                                    @title.TournamentType
-                                </span>
-                            </div>
+            <!-- Table Section - Contains header (fixed) and body (scrollable) -->
+            <div class="bowler-titles-table-section">
+                <!-- Table Headers - FIXED -->
+                <div class="bowler-titles-table-header">
+                    <div class="flex border border-gray-200 rounded-t-lg bg-gray-50">
+                        <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            &nbsp;
                         </div>
-                    }
+                        <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                        </div>
+                        <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Titles List - SCROLLABLE -->
+                <div class="bowler-titles-scrollable-list">
+                    <div class="border-x border-b border-gray-200 rounded-b-lg bg-white">
+                        @for (int i = 0; i < titles.Count; i++)
+                        {
+                            var title = titles[i];
+                            var number = i + 1;
+                            <div class="flex border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+                                <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500">
+                                    #@number
+                                </div>
+                                <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                                    @title.TournamentDate
+                                </div>
+                                <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3">
+                                    <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--neba-blue-100)] text-[var(--neba-blue-800)] whitespace-nowrap">
+                                        @title.TournamentType
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>

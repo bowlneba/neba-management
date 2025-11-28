@@ -86,9 +86,10 @@
     }
 
     .bowler-titles-table-section {
-        /* Recalculate without summary card */
-        max-height: calc(90vh - 100px); /* Just header in landscape */
-        padding: 0.5rem 0.75rem 0.5rem 0.75rem; /* Reduce all padding in landscape */
+        /* Use flex to fill all available space */
+        flex: 1;
+        min-height: 0;
+        padding: 0.25rem 0.75rem 0.25rem 0.75rem; /* Minimal padding all around */
     }
 }
 
@@ -99,8 +100,8 @@
     }
 
     .bowler-titles-table-section {
-        max-height: calc(90vh - 250px); /* Modal header + summary card + margins */
-        padding: 0 1rem 0.75rem 1rem;
+        max-height: calc(90vh - 210px); /* Optimize for available space */
+        padding: 0 1rem 0.35rem 1rem; /* Minimal bottom padding */
     }
 }
 
