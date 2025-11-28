@@ -14,4 +14,21 @@ internal static class ChampionsMappingExtensions
                 Titles = getBowlerTitleCountsResponse.TitleCount
             };
     }
+
+    extension(GetBowlerTitlesResponse getBowlerTitlesResponse)
+    {
+        public BowlerTitlesViewModel ToViewModel()
+            => new()
+            {
+                BowlerName = getBowlerTitlesResponse.BowlerName,
+                Titles = getBowlerTitlesResponse.Titles
+                    .OrderBy(title => title.Year)
+                    .ThenBy(title => title.Month.Value)
+                    .Select(title => new TitlesViewModel
+                    {
+                        TournamentDate = $"{title.Month.Name} {title.Year}",
+                        TournamentType = title.TournamentType
+                    }).ToList()
+            };
+    }
 }

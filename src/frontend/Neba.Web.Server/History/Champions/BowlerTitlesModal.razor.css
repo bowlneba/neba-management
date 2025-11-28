@@ -1,0 +1,19 @@
+/* Portrait mode: Show summary card, hide header stats */
+.bowler-titles-summary-card {
+    display: block;
+}
+
+.bowler-titles-header-stats {
+    display: none;
+}
+
+/* Landscape mode on mobile: Hide summary card, show header stats */
+@media (max-width: 900px) and (max-height: 500px) {
+    .bowler-titles-summary-card {
+        display: none;
+    }
+
+    .bowler-titles-header-stats {
+        display: flex;
+    }
+}

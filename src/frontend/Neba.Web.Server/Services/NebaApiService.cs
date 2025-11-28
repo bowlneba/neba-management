@@ -14,9 +14,16 @@ internal class NebaApiService(INebaApi nebaApi)
         return ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsAsync());
     }
 
-    public Task<ErrorOr<GetBowlerTitleCountsResponse>> GetBowlerTitleCountsByBowlerIdAsync(Guid bowlerId)
+    public async Task<ErrorOr<GetBowlerTitlesResponse>> GetBowlerTitlesAsync(Guid bowlerId)
     {
-        return ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsByBowlerIdAsync(bowlerId));
+        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Data;
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<Refit.ApiResponse<T>>> apiCall)

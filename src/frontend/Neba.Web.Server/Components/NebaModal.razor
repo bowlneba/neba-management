@@ -3,7 +3,9 @@
 
 @if (IsOpen)
 {
-    <div class="neba-modal-backdrop" @onclick="HandleBackdropClick">
+    <div class="neba-modal-backdrop"
+         @onclick="HandleBackdropClick"
+         style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 1000 !important;">
         <div class="neba-modal-container" @onclick:stopPropagation="true">
             <div class="neba-modal-content">
                 @if (!string.IsNullOrWhiteSpace(Title))
