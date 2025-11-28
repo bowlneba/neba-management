@@ -17,10 +17,12 @@
 
     <ItemGroup>
       <PackageReference Include="bunit" />
+      <PackageReference Include="Moq" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
+      <ProjectReference Include="..\..\src\shared-kernel\neba.contracts\neba.contracts.csproj" />
     </ItemGroup>
 
 </Project>

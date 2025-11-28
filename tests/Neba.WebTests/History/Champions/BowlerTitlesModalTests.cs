@@ -2,7 +2,7 @@ using Bunit;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Moq;
-using Neba.Application.Website.History.Champions.GetBowlerTitles;
+using Neba.Contracts.History.Champions;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Shouldly;
