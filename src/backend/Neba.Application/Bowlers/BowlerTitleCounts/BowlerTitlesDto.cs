@@ -1,7 +1,4 @@
-using Neba.Domain;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Tournaments;
-using System.Collections.Generic;
 
 namespace Neba.Application.Bowlers.BowlerTitleCounts;
 
