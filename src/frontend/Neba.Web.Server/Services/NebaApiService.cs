@@ -9,11 +9,21 @@ namespace Neba.Web.Server.Services;
 
 internal class NebaApiService(INebaApi nebaApi)
 {
-    public async Task<ErrorOr<CollectionResponse<GetBowlerTitleCountsResponse>>> GetBowlerTitleCountsAsync()
+    public Task<ErrorOr<CollectionResponse<GetBowlerTitleCountsResponse>>> GetBowlerTitleCountsAsync()
+    {
+        return ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsAsync());
+    }
+
+    public Task<ErrorOr<GetBowlerTitleCountsResponse>> GetBowlerTitleCountsByBowlerIdAsync(Guid bowlerId)
+    {
+        return ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsByBowlerIdAsync(bowlerId));
+    }
+
+    private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<Refit.ApiResponse<T>>> apiCall)
     {
         try
         {
-            var response = await nebaApi.GetBowlerTitleCountsAsync();
+            Refit.ApiResponse<T> response = await apiCall();
 
             if (!response.IsSuccessStatusCode)
             {

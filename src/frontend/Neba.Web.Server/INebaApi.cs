@@ -8,4 +8,7 @@ internal interface INebaApi
 {
     [Get("/history/champions")]
     Task<Refit.ApiResponse<CollectionResponse<GetBowlerTitleCountsResponse>>> GetBowlerTitleCountsAsync();
+
+    [Get("/history/champions/{bowlerId}")]
+    Task<Refit.ApiResponse<GetBowlerTitleCountsResponse>> GetBowlerTitleCountsByBowlerIdAsync(Guid bowlerId);
 }
