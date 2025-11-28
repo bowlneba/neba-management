@@ -1,0 +1,36 @@
+{
+  "dotnet.defaultSolution": "NebaManagement.slnx",
+  "testExplorer.useNativeTesting": true,
+  "dotnet-test-explorer.testProjectPath": "tests/**/*.csproj",
+  "dotnet.testWindow.useTestingPlatformProtocol": true,
+  "dotnet.codeLens.enableTestCodeLens": true,
+  "csharp.experimental.testCodeLens.enabled": true,
+  "dotnet.debug.sourceFileMap": {
+    ".": "${workspaceFolder}"
+  },
+  "cSpell.words": [
+    "Antiforgery",
+    "Ardalis",
+    "bowlneba",
+    "efcore",
+    "Instantiator",
+    "Neba",
+    "npgsql",
+    "Respawn",
+    "Testcontainers",
+    "uninstantiated"
+  ],
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 19630,
+      "driver": "PostgreSQL",
+      "name": "bowlneba",
+      "group": "localhost",
+      "database": "bowlneba",
+      "username": "neba"
+    }
+  ]
+}
