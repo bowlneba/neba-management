@@ -1,0 +1,14 @@
+@* Placeholder view for champions by year *@
+
+<div class="year-view-placeholder">
+    <h1>Coming Soon</h1>
+    <p class="text-gray-600 mt-2">The "By Year" view is currently under development.</p>
+</div>
+
+@code {
+    /// <summary>
+    /// List of champions (for future implementation).
+    /// </summary>
+    [Parameter, EditorRequired]
+    public List<BowlerTitleCountViewModel> Champions { get; set; } = new();
+}

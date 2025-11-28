@@ -27,10 +27,27 @@
                           Text="Loading champions..."
                           Scope="LoadingIndicatorScope.Page" />
 
-    <!-- Cards Layout -->
+    <!-- View Toggle Segmented Control -->
+    @if (!isLoading && champions.Count > 0)
+    {
+        <div class="flex justify-start">
+            <NebaSegmentedControl Options="viewOptions"
+                                  SelectedValue="@selectedView.ToString()"
+                                  OnValueChanged="HandleViewChanged" />
+        </div>
+    }
+
+    <!-- View Content -->
     @if (champions.Count > 0)
     {
-        <CardGridLayout Champions="champions" OnChampionClick="HandleChampionClick" />
+        @if (selectedView == ChampionsView.TitleCount)
+        {
+            <TitleCountView Champions="champions" OnChampionClick="HandleChampionClick" />
+        }
+        else
+        {
+            <YearView Champions="champions" />
+        }
     }
 </div>
 
@@ -45,12 +62,20 @@
     private List<BowlerTitleCountViewModel> champions = new();
     private string? errorMessage;
     private bool isLoading = true;
+    private ChampionsView selectedView = ChampionsView.TitleCount;
 
     // Modal state
     private bool isModalOpen = false;
     private Guid? selectedBowlerId;
     private string? selectedBowlerName;
     private bool selectedBowlerHallOfFame;
+
+    // Segmented control options
+    private readonly List<SegmentedControlOption> viewOptions = new()
+    {
+        new() { Label = "By Titles", Value = nameof(ChampionsView.TitleCount) },
+        new() { Label = "By Year", Value = nameof(ChampionsView.Year) }
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,6 +96,11 @@
         {
             isLoading = false;
         }
+    }
+
+    private void HandleViewChanged(string viewValue)
+    {
+        selectedView = Enum.Parse<ChampionsView>(viewValue);
     }
 
     private void HandleChampionClick(BowlerTitleCountViewModel champion)
