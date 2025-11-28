@@ -5,13 +5,13 @@ using Shouldly;
 
 namespace Neba.WebTests.History.Champions;
 
-public sealed class CardGridLayoutTests : TestContextWrapper
+public sealed class TitleCountViewTests : TestContextWrapper
 {
     [Fact]
     public void ShouldRenderEmptyWhenNoChampions()
     {
         // Arrange & Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, new List<BowlerTitleCountViewModel>()));
 
         // Assert
@@ -31,7 +31,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert - Should have 2 groups (5 titles and 3 titles)
@@ -49,7 +49,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -67,7 +67,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -85,7 +85,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -104,7 +104,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -123,7 +123,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -143,7 +143,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -160,7 +160,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
             new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false }
         };
 
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Act - Click the toggle button
@@ -190,7 +190,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -209,7 +209,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -227,7 +227,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -245,7 +245,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -263,7 +263,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
             new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false }
         };
 
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions)
             .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleCountViewModel>(
                 this, champion => clickedChampion = champion)));
@@ -289,7 +289,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -311,7 +311,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -331,7 +331,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -356,7 +356,7 @@ public sealed class CardGridLayoutTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<CardGridLayout>(parameters => parameters
+        var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
