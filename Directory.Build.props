@@ -12,7 +12,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    <!-- PathMap breaks debugger source file resolution, only use it for Release builds -->
+    <PathMap Condition="'$(Configuration)' == 'Release'">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
 
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>All</AnalysisMode>

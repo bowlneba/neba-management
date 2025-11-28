@@ -21,7 +21,9 @@
       "Bash(cat:*)",
       "Bash(dotnet sln NebaManagement.sln add src/backend/**/*.csproj src/frontend/**/*.csproj tests/**/*.csproj)",
       "Bash(dotnet restore:*)",
-      "Bash(dotnet list:*)"
+      "Bash(dotnet list:*)",
+      "Bash(code --list-extensions)",
+      "Bash(dotnet clean:*)"
     ],
     "deny": [],
     "ask": []

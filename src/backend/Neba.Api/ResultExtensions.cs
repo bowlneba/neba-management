@@ -74,7 +74,14 @@ internal static class ResultExtensions
 
                 if (error.Type == ErrorType.Validation)
                 {
-                    extensions["errors"] = error;
+                    extensions["errors"] = new[] { error };
+                }
+                else
+                {
+                    foreach (KeyValuePair<string, object> kvp in error.Metadata ?? [])
+                    {
+                        extensions[kvp.Key] = kvp.Value;
+                    }
                 }
 
                 return extensions;
