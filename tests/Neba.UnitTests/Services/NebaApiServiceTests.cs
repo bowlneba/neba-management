@@ -4,6 +4,7 @@ using Moq;
 using Neba.Contracts;
 using Neba.Contracts.History.Champions;
 using Neba.Web.Server;
+using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Refit;
 using System.Net;
@@ -25,9 +26,10 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlerTitleCountsAsync_WhenSuccessful_ReturnsSuccessResult()
     {
         // Arrange
+        var bowlerId = Guid.NewGuid();
         var bowlers = new List<GetBowlerTitleCountsResponse>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "John Doe", TitleCount = 5 }
+            new() { BowlerId = bowlerId, BowlerName = "John Doe", TitleCount = 5 }
         };
 
         var expectedResponse = new Refit.ApiResponse<CollectionResponse<GetBowlerTitleCountsResponse>>(
@@ -48,8 +50,11 @@ public sealed class NebaApiServiceTests
         // Assert
         result.IsError.ShouldBe(false);
         result.Value.ShouldNotBeNull();
-        result.Value.Items.Count.ShouldBe(1);
-        result.Value.Items.First().BowlerName.ShouldBe("John Doe");
+        result.Value.Count.ShouldBe(1);
+        var viewModel = result.Value.First();
+        viewModel.BowlerId.ShouldBe(bowlerId);
+        viewModel.BowlerName.ShouldBe("John Doe");
+        viewModel.Titles.ShouldBe(5);
         _mockNebaApi.Verify(x => x.GetBowlerTitleCountsAsync(), Times.Once);
     }
 
@@ -88,18 +93,17 @@ public sealed class NebaApiServiceTests
 
         // Assert
         result.IsError.ShouldBe(false);
-        result.Value.Items.Count.ShouldBe(2);
-        result.Value.TotalItems.ShouldBe(2);
+        result.Value.Count.ShouldBe(2);
 
-        var firstBowler = result.Value.Items.First();
+        var firstBowler = result.Value.First();
         firstBowler.BowlerId.ShouldBe(bowler1.BowlerId);
         firstBowler.BowlerName.ShouldBe("John Doe");
-        firstBowler.TitleCount.ShouldBe(5);
+        firstBowler.Titles.ShouldBe(5);
 
-        var secondBowler = result.Value.Items.Last();
+        var secondBowler = result.Value.Last();
         secondBowler.BowlerId.ShouldBe(bowler2.BowlerId);
         secondBowler.BowlerName.ShouldBe("Jane Smith");
-        secondBowler.TitleCount.ShouldBe(3);
+        secondBowler.Titles.ShouldBe(3);
     }
 
     [Fact]
@@ -197,8 +201,7 @@ public sealed class NebaApiServiceTests
 
         // Assert
         result.IsError.ShouldBe(false);
-        result.Value.Items.ShouldBeEmpty();
-        result.Value.TotalItems.ShouldBe(0);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]

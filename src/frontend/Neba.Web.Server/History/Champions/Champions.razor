@@ -90,7 +90,7 @@
                 return;
             }
 
-            champions = result.Value.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList();
+            champions = result.Value.ToList();
         }
         finally
         {

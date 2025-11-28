@@ -1,20 +1,29 @@
 #pragma warning disable CA1031 // Do not catch general exception types - We intentionally catch all exceptions to convert to ErrorOr
 
 using ErrorOr;
-using Neba.Contracts;
 using Neba.Contracts.History.Champions;
+using Neba.Web.Server.History.Champions;
 using Refit;
 
 namespace Neba.Web.Server.Services;
 
 internal class NebaApiService(INebaApi nebaApi)
 {
-    public Task<ErrorOr<CollectionResponse<GetBowlerTitleCountsResponse>>> GetBowlerTitleCountsAsync()
+    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleCountViewModel>>> GetBowlerTitleCountsAsync()
     {
-        return ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsAsync());
+        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .Select(response => response.ToViewModel())
+            .ToList();
     }
 
-    public async Task<ErrorOr<GetBowlerTitlesResponse>> GetBowlerTitlesAsync(Guid bowlerId)
+    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Guid bowlerId)
     {
         var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 
@@ -23,14 +32,14 @@ internal class NebaApiService(INebaApi nebaApi)
             return result.Errors;
         }
 
-        return result.Value.Data;
+        return result.Value.Data.ToViewModel();
     }
 
-    private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<Refit.ApiResponse<T>>> apiCall)
+    private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
     {
         try
         {
-            Refit.ApiResponse<T> response = await apiCall();
+            ApiResponse<T> response = await apiCall();
 
             if (!response.IsSuccessStatusCode)
             {

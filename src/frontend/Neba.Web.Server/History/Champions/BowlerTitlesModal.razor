@@ -202,8 +202,7 @@
                 return;
             }
 
-            var viewModel = result.Value.ToViewModel();
-            titles = viewModel.Titles.ToList();
+            titles = result.Value.Titles.ToList();
         }
         catch (Exception ex)
         {
