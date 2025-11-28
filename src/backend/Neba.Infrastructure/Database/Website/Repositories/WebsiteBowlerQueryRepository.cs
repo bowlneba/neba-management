@@ -43,4 +43,19 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
                     .ToArray()
             })
             .SingleOrDefaultAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<BowlerTitleDto>> GetTitlesAsync(CancellationToken cancellationToken)
+        => await _dbContext.Bowlers
+            .AsNoTracking()
+            .Where(bowler => bowler.Titles.Any())
+            .SelectMany(bowler => bowler.Titles, (bowler, title) => new BowlerTitleDto
+            {
+                BowlerId = bowler.Id,
+                BowlerName = bowler.Name.ToDisplayName(),
+                TournamentMonth = title.Month,
+                TournamentYear = title.Year,
+                TournamentType = title.TournamentType
+            })
+            .ToListAsync(cancellationToken);
+
 }

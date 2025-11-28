@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Bowlers.BowlerTitleCounts;
 using Neba.Domain.Bowlers;
+using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests;
@@ -136,7 +137,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         for (int i = 0; i < result.Titles.Count; i++)
         {
             TitleDto dto = result.Titles.ElementAt(i);
-            var expectedTitle = seedBowler.Titles
+            Title expectedTitle = seedBowler.Titles
                 .OrderBy(title => title.Year)
                 .ThenBy(title => title.Month)
                 .ThenBy(title => title.TournamentType)
@@ -146,5 +147,35 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
             dto.Year.ShouldBe(expectedTitle.Year);
             dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
         }
+    }
+
+    [Fact]
+    public async Task GetTitlesAsync_ShouldReturnAllTitles()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+        await websiteDbContext.SaveChangesAsync();
+
+        int expectedTitleCount = seedBowlers.Sum(bowler => bowler.Titles.Count);
+        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 0);
+
+        var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<BowlerTitleDto> result
+            = await repository.GetTitlesAsync(CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(expectedTitleCount);
+
+        var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
+        seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
+        seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name.ToDisplayName());
     }
 }
