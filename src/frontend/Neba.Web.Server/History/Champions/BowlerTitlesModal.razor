@@ -12,16 +12,19 @@
             <h2 class="neba-modal-title">@GetModalTitle()</h2>
             <div class="flex items-center gap-3">
                 <!-- Landscape: Show count inline with header -->
-                <div class="bowler-titles-header-stats flex items-center gap-2">
-                    <span class="text-sm font-medium text-[var(--neba-blue-700)]">@titles.Count Titles</span>
-                    @if (HallOfFame)
-                    {
-                        <img src="/neba-hof.jpg"
-                             alt="Hall of Fame"
-                             class="w-8 h-8 object-contain"
-                             title="NEBA Hall of Fame" />
-                    }
-                </div>
+                @if (titles.Count > 0)
+                {
+                    <div class="bowler-titles-header-stats flex items-center gap-2">
+                        <span class="text-sm font-medium text-[var(--neba-blue-700)]">@titles.Count Titles</span>
+                        @if (HallOfFame)
+                        {
+                            <img src="/neba-hof.jpg"
+                                 alt="Hall of Fame"
+                                 class="w-8 h-8 object-contain"
+                                 title="NEBA Hall of Fame" />
+                        }
+                    </div>
+                }
                 <button type="button"
                         class="neba-modal-close"
                         @onclick="HandleClose"

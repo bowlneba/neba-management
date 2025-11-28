@@ -1,10 +1,41 @@
 /* Bowler Titles Modal - Unscoped styles to override parent modal */
 
-.bowler-titles-modal .neba-modal-content {
-    overflow: hidden !important;
+/* Ensure backdrop covers full screen and is clickable */
+.bowler-titles-modal.neba-modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
 }
 
+/* Modal content should not scroll */
+.bowler-titles-modal .neba-modal-content {
+    overflow: hidden !important;
+    max-height: 90vh !important;
+}
+
+/* Modal body should not scroll or have padding */
 .bowler-titles-modal .neba-modal-body {
     overflow: hidden !important;
     padding: 0 !important;
+}
+
+/* Ensure modal container doesn't exceed viewport and is properly centered */
+.bowler-titles-modal .neba-modal-container {
+    max-height: 90vh !important;
+    max-width: 800px !important; /* Match the MaxWidth parameter */
+}
+
+/* Desktop: Set specific width and ensure centering */
+@media (min-width: 641px) {
+    .bowler-titles-modal .neba-modal-container {
+        width: min(800px, 90vw) !important; /* Use smaller of 800px or 90vw */
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
 }

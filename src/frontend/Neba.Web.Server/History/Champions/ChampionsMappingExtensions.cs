@@ -26,7 +26,7 @@ internal static class ChampionsMappingExtensions
                     .ThenBy(title => title.Month.Value)
                     .Select(title => new TitlesViewModel
                     {
-                        TournamentDate = $"{title.Month.Name} {title.Year}",
+                        TournamentDate = $"{title.Month.ToShortString()} {title.Year}",
                         TournamentType = title.TournamentType
                     }).ToList()
             };
