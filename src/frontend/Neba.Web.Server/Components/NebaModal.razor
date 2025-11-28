@@ -3,11 +3,11 @@
 
 @if (IsOpen)
 {
-    <div class="neba-modal-backdrop"
+    <div class="neba-modal-backdrop @CssClass"
          @onclick="HandleBackdropClick"
          style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 1000 !important;">
         <div class="neba-modal-container" @onclick:stopPropagation="true">
-            <div class="neba-modal-content">
+            <div class="neba-modal-content @CssClass">
                 @if (!string.IsNullOrWhiteSpace(Title))
                 {
                     <div class="neba-modal-header">
@@ -87,6 +87,12 @@
     /// </summary>
     [Parameter]
     public string? MaxWidth { get; set; }
+
+    /// <summary>
+    /// Optional CSS class to apply to the modal for custom styling.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

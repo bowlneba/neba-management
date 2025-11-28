@@ -23,7 +23,8 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet list:*)",
       "Bash(code --list-extensions)",
-      "Bash(dotnet clean:*)"
+      "Bash(dotnet clean:*)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []

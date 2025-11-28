@@ -1,0 +1,10 @@
+/* Bowler Titles Modal - Unscoped styles to override parent modal */
+
+.bowler-titles-modal .neba-modal-content {
+    overflow: hidden !important;
+}
+
+.bowler-titles-modal .neba-modal-body {
+    overflow: hidden !important;
+    padding: 0 !important;
+}

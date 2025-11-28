@@ -1,19 +1,84 @@
-/* Portrait mode: Show summary card, hide header stats */
-.bowler-titles-summary-card {
+/*
+ * Bowler Titles Modal Layout
+ * Structure: Modal has fixed header at top, then two sections below:
+ * 1. Summary section (fixed, portrait only)
+ * 2. Table section (header fixed, list scrolls)
+ *
+ * Note: Overflow overrides are in wwwroot/bowler-titles-modal.css (unscoped)
+ * to properly target the parent NebaModal component elements.
+ */
+
+/* Summary Section - Fixed at top, visible in portrait mode only */
+.bowler-titles-summary-section {
+    padding: 1.5rem 1.5rem 0 1.5rem;
     display: block;
 }
 
+.bowler-titles-summary-card {
+    margin-bottom: 1rem;
+}
+
+/* Header stats in modal header - Hidden in portrait, shown in landscape */
 .bowler-titles-header-stats {
     display: none;
 }
 
+/* Table Section - Contains fixed header and scrollable body */
+.bowler-titles-table-section {
+    display: flex;
+    flex-direction: column;
+    /* Calculate available height: modal height - header - summary card */
+    height: calc(80vh - 120px); /* Approximate: modal header + summary card */
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* Table Header - Fixed, doesn't scroll */
+.bowler-titles-table-header {
+    flex-shrink: 0;
+}
+
+/* Scrollable List - Takes remaining space and scrolls */
+.bowler-titles-scrollable-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent the list from growing beyond available space */
+    min-height: 0;
+}
+
 /* Landscape mode on mobile: Hide summary card, show header stats */
 @media (max-width: 900px) and (max-height: 500px) {
-    .bowler-titles-summary-card {
+    .bowler-titles-summary-section {
         display: none;
     }
 
     .bowler-titles-header-stats {
         display: flex;
+    }
+
+    .bowler-titles-table-section {
+        /* Recalculate without summary card */
+        height: calc(100vh - 80px); /* Just header in landscape */
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Mobile portrait - full screen */
+@media (max-width: 640px) {
+    .bowler-titles-summary-section {
+        padding: 0.75rem 1rem 0 1rem;
+    }
+
+    .bowler-titles-table-section {
+        height: calc(100vh - 180px); /* Modal header + summary card */
+        padding: 0 1rem 0.75rem 1rem;
+    }
+}
+
+/* Desktop and larger screens */
+@media (min-width: 641px) and (min-height: 501px) {
+    .bowler-titles-table-section {
+        /* Fixed modal height on desktop */
+        height: calc(80vh - 180px);
     }
 }
