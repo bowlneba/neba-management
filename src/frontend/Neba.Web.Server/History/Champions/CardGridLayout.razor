@@ -45,7 +45,8 @@
                     @foreach (var champion in group.OrderBy(c => c.BowlerName))
                     {
                         <button type="button"
-                                class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer">
+                                class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer"
+                                @onclick="() => HandleChampionClick(champion)">
                             <div class="flex items-center gap-3">
                                 <div class="flex-1 min-w-0">
                                     <h3 class="font-semibold text-gray-900 group-hover:text-[var(--neba-blue-700)] transition-colors truncate">
@@ -74,6 +75,9 @@
     [Parameter, EditorRequired]
     public List<BowlerTitleCountViewModel> Champions { get; set; } = new();
 
+    [Parameter]
+    public EventCallback<BowlerTitleCountViewModel> OnChampionClick { get; set; }
+
     private readonly HashSet<string> expandedSections = new();
 
     protected override void OnInitialized()
@@ -95,5 +99,10 @@
         {
             expandedSections.Add(sectionId);
         }
+    }
+
+    private async Task HandleChampionClick(BowlerTitleCountViewModel champion)
+    {
+        await OnChampionClick.InvokeAsync(champion);
     }
 }

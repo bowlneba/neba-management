@@ -1,0 +1,113 @@
+@* Modal component with backdrop blur and centered content *@
+@inject IJSRuntime JSRuntime
+
+@if (IsOpen)
+{
+    <div class="neba-modal-backdrop" @onclick="HandleBackdropClick">
+        <div class="neba-modal-container" @onclick:stopPropagation="true">
+            <div class="neba-modal-content">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <div class="neba-modal-header">
+                        <h2 class="neba-modal-title">@Title</h2>
+                        @if (ShowCloseButton)
+                        {
+                            <button type="button"
+                                    class="neba-modal-close"
+                                    @onclick="HandleClose"
+                                    aria-label="Close modal">
+                                ✕
+                            </button>
+                        }
+                    </div>
+                }
+
+                <div class="neba-modal-body">
+                    @ChildContent
+                </div>
+
+                @if (FooterContent != null)
+                {
+                    <div class="neba-modal-footer">
+                        @FooterContent
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Controls whether the modal is visible.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the modal should be closed.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// Optional title displayed at the top of the modal.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// The main content to display in the modal body.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional footer content (e.g., action buttons).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Whether to show the X close button in the header. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    /// <summary>
+    /// Whether clicking the backdrop should close the modal. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnBackdropClick { get; set; } = true;
+
+    /// <summary>
+    /// Optional maximum width for the modal. Examples: "600px", "80%", "lg"
+    /// </summary>
+    [Parameter]
+    public string? MaxWidth { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsOpen)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.body.style.overflow = 'hidden'");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.body.style.overflow = ''");
+        }
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleBackdropClick()
+    {
+        if (CloseOnBackdropClick)
+        {
+            await HandleClose();
+        }
+    }
+}

@@ -30,14 +30,27 @@
     <!-- Cards Layout -->
     @if (champions.Count > 0)
     {
-        <CardGridLayout Champions="champions" />
+        <CardGridLayout Champions="champions" OnChampionClick="HandleChampionClick" />
     }
 </div>
+
+<!-- Bowler Titles Modal -->
+<BowlerTitlesModal IsOpen="@isModalOpen"
+                   OnClose="@(() => isModalOpen = false)"
+                   BowlerId="@selectedBowlerId"
+                   BowlerName="@selectedBowlerName"
+                   HallOfFame="@selectedBowlerHallOfFame" />
 
 @code {
     private List<BowlerTitleCountViewModel> champions = new();
     private string? errorMessage;
     private bool isLoading = true;
+
+    // Modal state
+    private bool isModalOpen = false;
+    private Guid? selectedBowlerId;
+    private string? selectedBowlerName;
+    private bool selectedBowlerHallOfFame;
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,5 +70,13 @@
         {
             isLoading = false;
         }
+    }
+
+    private void HandleChampionClick(BowlerTitleCountViewModel champion)
+    {
+        selectedBowlerId = champion.BowlerId;
+        selectedBowlerName = champion.BowlerName;
+        selectedBowlerHallOfFame = champion.HallOfFame;
+        isModalOpen = true;
     }
 }

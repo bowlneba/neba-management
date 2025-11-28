@@ -1,0 +1,208 @@
+@using Neba.Web.Server.Components
+
+@* Modal for displaying detailed title information for a bowler *@
+
+<NebaModal IsOpen="@IsOpen"
+           OnClose="@OnClose"
+           Title="@GetModalTitle()"
+           MaxWidth="800px">
+    @if (isLoading)
+    {
+        <div class="flex justify-center items-center py-12">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--neba-blue-700)]"></div>
+                <p class="mt-4 text-gray-600">Loading titles...</p>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="py-6">
+            <NebaAlert Severity="NotifySeverity.Error"
+                       Title="Error"
+                       Message="@errorMessage" />
+        </div>
+    }
+    else if (titles.Count == 0)
+    {
+        <div class="text-center py-12 text-gray-500">
+            No titles found for this bowler.
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            <!-- Summary Card -->
+            <div class="bg-[var(--neba-blue-50)] border border-[var(--neba-blue-200)] rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
+                        <p class="text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@titles.Count</p>
+                    </div>
+                    @if (HallOfFame)
+                    {
+                        <div class="flex items-center gap-2">
+                            <img src="/neba-hof.jpg"
+                                 alt="Hall of Fame"
+                                 class="w-12 h-12 object-contain"
+                                 title="NEBA Hall of Fame" />
+                            <span class="text-sm font-medium text-[var(--neba-blue-700)]">Hall of Fame</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Titles Table -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tournament Type
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach (var title in titles.OrderByDescending(t => t.Year).ThenByDescending(t => t.Month))
+                        {
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    @title.Month @title.Year
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--neba-blue-100)] text-[var(--neba-blue-800)]">
+                                        @title.TournamentType
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</NebaModal>
+
+@code {
+    /// <summary>
+    /// Controls whether the modal is visible.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the modal should be closed.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// The unique identifier for the bowler.
+    /// </summary>
+    [Parameter]
+    public Guid? BowlerId { get; set; }
+
+    /// <summary>
+    /// The full name of the bowler.
+    /// </summary>
+    [Parameter]
+    public string? BowlerName { get; set; }
+
+    /// <summary>
+    /// Indicates whether the bowler is in the Hall of Fame.
+    /// </summary>
+    [Parameter]
+    public bool HallOfFame { get; set; }
+
+    private List<TitleViewModel> titles = new();
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // When modal opens with a bowler ID, load their titles
+        if (IsOpen && BowlerId.HasValue && titles.Count == 0)
+        {
+            await LoadTitlesAsync();
+        }
+
+        // Reset state when modal closes
+        if (!IsOpen)
+        {
+            titles.Clear();
+            errorMessage = null;
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadTitlesAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            // API call will be implemented when endpoint is ready
+            await Task.Delay(1500); // Simulate API call
+            titles = GenerateDummyTitles();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load titles: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetModalTitle()
+    {
+        return BowlerName ?? "Bowler Titles";
+    }
+
+    // Dummy data generator - remove when API is ready
+    private List<TitleViewModel> GenerateDummyTitles()
+    {
+        var titleCount = GetRandomNumber(5, 25);
+        var dummyTitles = new List<TitleViewModel>();
+
+        var months = new[] { "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December" };
+        var tournamentTypes = new[] { "Singles", "Doubles", "Mixed Doubles", "Trios", "Team" };
+
+        for (int i = 0; i < titleCount; i++)
+        {
+            dummyTitles.Add(new TitleViewModel
+            {
+                Month = months[GetRandomNumber(0, months.Length)],
+                Year = GetRandomNumber(1995, 2025),
+                TournamentType = tournamentTypes[GetRandomNumber(0, tournamentTypes.Length)]
+            });
+        }
+
+        return dummyTitles;
+    }
+
+    private static int GetRandomNumber(int min, int max)
+    {
+        byte[] bytes = new byte[4];
+        using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(bytes);
+        }
+        var randomValue = BitConverter.ToUInt32(bytes, 0);
+        return min + (int)(randomValue % (uint)(max - min));
+    }
+
+    // View model for title display
+    private sealed record TitleViewModel
+    {
+        public required string Month { get; init; }
+        public required int Year { get; init; }
+        public required string TournamentType { get; init; }
+    }
+}

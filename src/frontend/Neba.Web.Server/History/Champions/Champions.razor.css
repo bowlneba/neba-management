@@ -90,3 +90,19 @@
 .tier-standard-card:hover {
     border-color: var(--neba-blue-700);
 }
+
+/* Collapse/Expand Animation */
+.tier-collapse-container {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.2s ease-out;
+}
+
+.tier-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.tier-expanded {
+    max-height: 10000px;
+    opacity: 1;
+}
