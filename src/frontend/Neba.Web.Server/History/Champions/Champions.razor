@@ -43,7 +43,6 @@
     {
         try
         {
-            await Task.Delay(2000);
             Refit.ApiResponse<Contracts.CollectionResponse<Contracts.History.Champions.GetBowlerTitleCountsResponse>> response = await NebaApi.GetBowlerTitleCountsAsync();
 
             if (!response.IsSuccessStatusCode)
