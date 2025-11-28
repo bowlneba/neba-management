@@ -1,4 +1,6 @@
-@if (IsVisible)
+@implements IDisposable
+
+@if (_shouldShow)
 {
     <div class="@OverlayCssClass" @onclick="HandleOverlayClick">
         <div class="neba-loading-content">
@@ -39,15 +41,127 @@
     public LoadingIndicatorScope Scope { get; set; } = LoadingIndicatorScope.Page;
 
     /// <summary>
+    /// Delay in milliseconds before showing the loading indicator.
+    /// Prevents flash for fast-loading operations. Default is 300ms.
+    /// </summary>
+    [Parameter]
+    public int DelayMs { get; set; } = 300;
+
+    /// <summary>
+    /// Minimum time in milliseconds to display the indicator once shown.
+    /// Prevents jarring flash if loading completes shortly after indicator appears. Default is 500ms.
+    /// </summary>
+    [Parameter]
+    public int MinimumDisplayMs { get; set; } = 500;
+
+    /// <summary>
     /// Callback invoked when the overlay is clicked.
     /// By default, clicking the overlay does nothing (prevents interaction with underlying content).
     /// </summary>
     [Parameter]
     public EventCallback OnOverlayClick { get; set; }
 
+    private bool _shouldShow;
+    private DateTime? _shownAt;
+    private CancellationTokenSource? _delayCancellation;
+    private CancellationTokenSource? _minimumDisplayCancellation;
+
     private string OverlayCssClass => Scope == LoadingIndicatorScope.FullScreen
         ? "neba-loading-overlay neba-loading-overlay-fullscreen"
         : "neba-loading-overlay neba-loading-overlay-page";
+
+    protected override void OnParametersSet()
+    {
+        if (IsVisible && !_shouldShow)
+        {
+            // Loading started - begin delay before showing
+            if (_delayCancellation != null)
+            {
+                _delayCancellation.Cancel();
+                _delayCancellation.Dispose();
+            }
+            _delayCancellation = new CancellationTokenSource();
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(DelayMs, _delayCancellation.Token);
+                    _shouldShow = true;
+                    _shownAt = DateTime.UtcNow;
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Delay was cancelled - loading finished before delay expired
+                }
+            });
+        }
+        else if (!IsVisible)
+        {
+            // Loading finished - cancel delay timer if still running
+            if (_delayCancellation != null)
+            {
+                _delayCancellation.Cancel();
+                _delayCancellation.Dispose();
+                _delayCancellation = null;
+            }
+
+            if (_shouldShow)
+            {
+                // Indicator is currently shown - check minimum display time
+                if (_shownAt.HasValue)
+                {
+                    var elapsed = (DateTime.UtcNow - _shownAt.Value).TotalMilliseconds;
+                    var remaining = MinimumDisplayMs - elapsed;
+
+                    if (remaining > 0)
+                    {
+                        // Wait for minimum display time in background
+                        if (_minimumDisplayCancellation != null)
+                        {
+                            _minimumDisplayCancellation.Cancel();
+                            _minimumDisplayCancellation.Dispose();
+                        }
+                        _minimumDisplayCancellation = new CancellationTokenSource();
+
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay((int)remaining, _minimumDisplayCancellation.Token);
+                                _shouldShow = false;
+                                _shownAt = null;
+                                await InvokeAsync(StateHasChanged);
+                            }
+                            catch (TaskCanceledException)
+                            {
+                                // Cancellation is expected
+                            }
+                        });
+                    }
+                    else
+                    {
+                        // Minimum time already elapsed
+                        _shouldShow = false;
+                        _shownAt = null;
+                    }
+                }
+                else
+                {
+                    // Indicator shown but no timestamp (shouldn't happen)
+                    _shouldShow = false;
+                    _shownAt = null;
+                }
+            }
+            else
+            {
+                // Never shown, ensure state is clean
+                _shouldShow = false;
+                _shownAt = null;
+            }
+        }
+    }
 
     private async Task HandleOverlayClick()
     {
@@ -55,5 +169,13 @@
         {
             await OnOverlayClick.InvokeAsync();
         }
+    }
+
+    public void Dispose()
+    {
+        _delayCancellation?.Cancel();
+        _delayCancellation?.Dispose();
+        _minimumDisplayCancellation?.Cancel();
+        _minimumDisplayCancellation?.Dispose();
     }
 }
