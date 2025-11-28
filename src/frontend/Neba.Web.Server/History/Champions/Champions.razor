@@ -1,6 +1,8 @@
 @page "/history/champions"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@inject INebaApi NebaApi
+
 <PageTitle>Champions - NEBA</PageTitle>
 
 <div class="space-y-6">
@@ -29,81 +31,16 @@
     {
         // Simulate streaming data load
         await Task.Delay(1000);
-        champions = GetDummyChampions();
-    }
 
-#pragma warning disable CA5394 // Random is fine for dummy data generation
-    private List<BowlerTitleCountViewModel> GetDummyChampions()
-    {
-        var random = new Random();
-        return new List<BowlerTitleCountViewModel>
+        Refit.ApiResponse<Contracts.CollectionResponse<Contracts.History.Champions.GetBowlerTitleCountsResponse>> response = await NebaApi.GetBowlerTitleCountsAsync();
+
+        if (!response.IsSuccessStatusCode)
         {
-            // Top tier - 2 people
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mike Lichstein", Titles = 32, HallOfFame = true },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alex Aguiar", Titles = 29, HallOfFame = random.Next(2) == 0 },
+            // handle error w/ alert
 
-            // Mid tier - 8 people
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bill Webb", Titles = 22, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Brian Boghosian", Titles = 15, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Anthony Pepe", Titles = 15, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Chris Rebstock", Titles = 14, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Jonathan Van Hees", Titles = 14, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Barry Warshafsky", Titles = 14, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Dave Forcier", Titles = 12, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Todd Lathrop", Titles = 12, HallOfFame = random.Next(2) == 0 },
+            return;
+        }
 
-            // Lower tier - 50 people with 1-5 titles
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Paul Moser", Titles = 5, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Stephen Dale Jr.", Titles = 5, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Joey Transue", Titles = 5, HallOfFame = random.Next(2) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Russ Michaud", Titles = 4, HallOfFame = random.Next(3) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Tony Reynaud", Titles = 4, HallOfFame = random.Next(3) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "John Kirker", Titles = 4, HallOfFame = random.Next(3) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "George LeCain", Titles = 4, HallOfFame = random.Next(3) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Chris Monroy", Titles = 4, HallOfFame = random.Next(3) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "James Anderson", Titles = 3, HallOfFame = random.Next(4) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Michael Bennett", Titles = 3, HallOfFame = random.Next(4) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Robert Carter", Titles = 3, HallOfFame = random.Next(4) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "David Collins", Titles = 3, HallOfFame = random.Next(4) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Thomas Davidson", Titles = 3, HallOfFame = random.Next(4) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Kevin Edwards", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Steven Foster", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mark Garcia", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Daniel Harris", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Paul Jackson", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Timothy Johnson", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Kenneth Kelly", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Ronald Lewis", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Eric Martin", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Jeffrey Mitchell", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Scott Murphy", Titles = 2, HallOfFame = random.Next(5) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Andrew Nelson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Brandon Oliver", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Ryan Parker", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Nicholas Peterson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Gary Powell", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Lawrence Reed", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Dennis Richardson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Gregory Roberts", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Peter Robinson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Raymond Rodriguez", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Craig Russell", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Justin Sanders", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Sean Scott", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Nathan Smith", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Gerald Taylor", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Harold Thomas", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Douglas Turner", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Walter Walker", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Henry Ward", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Carl Watson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Jason Webb", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Willie White", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Roy Williams", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Eugene Wilson", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Russell Wood", Titles = 1, HallOfFame = random.Next(10) == 0 },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Ralph Wright", Titles = 1, HallOfFame = random.Next(10) == 0 },
-        };
+        champions = response.Content?.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList() ?? [];
     }
-#pragma warning restore CA5394
 }
