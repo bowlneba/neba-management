@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Neba.Tests\Neba.Tests.csproj" />
     <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
+    <ProjectReference Include="..\..\src\backend\Neba.Api\Neba.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

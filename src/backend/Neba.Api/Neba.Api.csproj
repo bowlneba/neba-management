@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
 </Project>
