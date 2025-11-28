@@ -20,42 +20,53 @@
             tierPrefix = "tier-standard";
         }
 
+        var sectionId = $"tier-{group.Key}";
+        var isExpanded = expandedSections.Contains(sectionId);
+
         <div class="@tierPrefix-section space-y-4">
             <!-- Title Count Header -->
-            <div class="@tierPrefix-header">
+            <button type="button"
+                    class="@tierPrefix-header w-full flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity"
+                    @onclick="() => ToggleSection(sectionId)">
                 <h2 class="text-xl font-semibold @tierPrefix-header-text">
                     @group.Key @(group.Key == 1 ? "Title" : "Titles")
                     <span class="text-sm @tierPrefix-header-subtext italic ml-2">
                         @group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")
                     </span>
                 </h2>
-            </div>
+                <span class="@tierPrefix-header-text text-lg transition-transform @(isExpanded ? "rotate-90" : "")">
+                    ▶
+                </span>
+            </button>
 
             <!-- Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                @foreach (var champion in group.OrderBy(c => c.BowlerName))
-                {
-                    <button type="button"
-                            class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-semibold text-gray-900 group-hover:text-[var(--neba-blue-700)] transition-colors truncate">
-                                    @champion.BowlerName
-                                </h3>
-                            </div>
-                            @if (champion.HallOfFame)
-                            {
-                                <div class="flex-shrink-0">
-                                    <img src="/neba-hof.jpg"
-                                         alt="Hall of Fame"
-                                         class="w-8 h-8 object-contain"
-                                         title="NEBA Hall of Fame" />
+            @if (isExpanded)
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @foreach (var champion in group.OrderBy(c => c.BowlerName))
+                    {
+                        <button type="button"
+                                class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 group-hover:text-[var(--neba-blue-700)] transition-colors truncate">
+                                        @champion.BowlerName
+                                    </h3>
                                 </div>
-                            }
-                        </div>
-                    </button>
-                }
-            </div>
+                                @if (champion.HallOfFame)
+                                {
+                                    <div class="flex-shrink-0">
+                                        <img src="/neba-hof.jpg"
+                                             alt="Hall of Fame"
+                                             class="w-8 h-8 object-contain"
+                                             title="NEBA Hall of Fame" />
+                                    </div>
+                                }
+                            </div>
+                        </button>
+                    }
+                </div>
+            }
         </div>
     }
 </div>
@@ -63,4 +74,27 @@
 @code {
     [Parameter, EditorRequired]
     public List<BowlerTitleCountViewModel> Champions { get; set; } = new();
+
+    private readonly HashSet<string> expandedSections = new();
+
+    protected override void OnInitialized()
+    {
+        // Expand all sections by default
+        foreach (var titleCount in Champions.Select(c => c.Titles).Distinct())
+        {
+            expandedSections.Add($"tier-{titleCount}");
+        }
+    }
+
+    private void ToggleSection(string sectionId)
+    {
+        if (expandedSections.Contains(sectionId))
+        {
+            expandedSections.Remove(sectionId);
+        }
+        else
+        {
+            expandedSections.Add(sectionId);
+        }
+    }
 }

@@ -1,8 +1,8 @@
-/* Champions Page - Tier Styling */
+/* Champions Card Grid - Tier Styling */
 
 /* Elite Tier (20+ titles) - Gold/Amber */
 .tier-elite-section {
-    background: linear-gradient(to bottom right, rgb(254 252 232 / 0.5), rgb(254 249 195 / 0.5));
+    background: transparent;
     border-radius: 0.75rem;
     padding: 1.5rem;
 }
@@ -33,7 +33,7 @@
 
 /* Mid Tier (10-19 titles) - Blue */
 .tier-mid-section {
-    background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(238 242 255 / 0.5));
+    background: transparent;
     border-radius: 0.75rem;
     padding: 1.5rem;
 }
@@ -63,7 +63,7 @@
 
 /* Standard Tier (1-9 titles) - Light NEBA Blue */
 .tier-standard-section {
-    background: white;
+    background: transparent;
     border-radius: 0.75rem;
     padding: 1.5rem;
 }
