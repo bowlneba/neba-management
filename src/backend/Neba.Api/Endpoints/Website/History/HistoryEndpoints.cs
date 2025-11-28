@@ -1,4 +1,5 @@
 using Neba.Api.Endpoints.Website.History.Champions;
+using Neba.Api.Endpoints.Website.History.Titles;
 
 namespace Neba.Api.Endpoints.Website.History;
 
@@ -12,7 +13,9 @@ internal static class HistoryEndpoints
         {
             RouteGroupBuilder historyApp = app.MapGroup("/history");
 
-            historyApp.MapChampionsEndpoints();
+            historyApp
+                .MapChampionsEndpoints()
+                .MapTitlesEndpoints();
 
             return app;
         }

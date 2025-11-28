@@ -1,5 +1,6 @@
 using Neba.Application.Bowlers.BowlerTitleCounts;
 using Neba.Contracts.History.Champions;
+using Neba.Contracts.History.Titles;
 
 namespace Neba.Api.Endpoints.Website.History.Champions;
 

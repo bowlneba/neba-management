@@ -7,14 +7,16 @@ using Neba.Domain.Bowlers;
 
 namespace Neba.Api.Endpoints.Website.History.Champions;
 
-internal static class ChampionsEndpoint
+internal static class ChampionsEndpoints
 {
     #pragma warning disable S2325 // Extension methods should be static
     extension(IEndpointRouteBuilder app)
     {
         public IEndpointRouteBuilder MapChampionsEndpoints()
         {
-            app
+            RouteGroupBuilder championGroup = app.MapGroup("/champions");
+
+            championGroup
                 .MapGetBowlerTitleCountsEndpoint()
                 .MapGetBowlerTitlesEndpoint();
 
@@ -24,7 +26,7 @@ internal static class ChampionsEndpoint
         private IEndpointRouteBuilder MapGetBowlerTitleCountsEndpoint()
         {
             app.MapGet(
-                "/champions", async (
+                "/", async (
                     IQueryHandler<GetBowlerTitleCountsQuery, IReadOnlyCollection<BowlerTitleCountDto>> queryHandler,
                     CancellationToken cancellationToken) =>
             {
@@ -49,7 +51,7 @@ internal static class ChampionsEndpoint
         private IEndpointRouteBuilder MapGetBowlerTitlesEndpoint()
         {
             app.MapGet(
-                "/champions/{bowlerId:guid}", async (
+                "/{bowlerId:guid}", async (
                     IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
                     BowlerId bowlerId,
                     CancellationToken cancellationToken) =>
