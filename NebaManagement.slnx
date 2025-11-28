@@ -20,6 +20,7 @@
   </Folder>
   <Folder Name="/Shared Kernel/">
     <Project Path="src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj" />
+    <Project Path="src/shared-kernel/Neba.SharedKernel/Neba.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <File Path="tests/Directory.Build.props" />

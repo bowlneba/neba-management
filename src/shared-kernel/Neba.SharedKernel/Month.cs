@@ -1,11 +1,12 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Domain;
+namespace Neba;
 
 /// <summary>
 /// Represents a month of the year.
 /// </summary>
-public sealed class Month : SmartEnum<Month>
+public sealed class Month
+    : SmartEnum<Month>
 {
     /// <summary>
     /// Represents the month of January.

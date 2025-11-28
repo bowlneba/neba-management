@@ -17,4 +17,22 @@ internal static class ChampionsMappingExtensions
             };
         }
     }
+
+    extension(BowlerTitlesDto dto)
+    {
+        public GetBowlerTitlesResponse ToResponseModel()
+        {
+            return new GetBowlerTitlesResponse
+            {
+                BowlerId = dto.BowlerId.Value,
+                BowlerName = dto.BowlerName,
+                Titles = dto.Titles.Select(title => new TitlesResponse
+                {
+                    Month = title.Month,
+                    Year = title.Year,
+                    TournamentType = title.TournamentType.Name
+                }).ToList()
+            };
+        }
+    }
 }

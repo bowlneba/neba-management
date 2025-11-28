@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.SmartEnum" />
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="StronglyTypedId" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -13,6 +12,10 @@
     <InternalsVisibleTo Include="Neba.Tests" />
     <InternalsVisibleTo Include="Neba.IntegrationTests" />
     <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared-kernel\Neba.SharedKernel\Neba.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

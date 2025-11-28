@@ -16,10 +16,10 @@ internal static class ResultExtensions
             Error error = result.Errors[0];
 
             return Results.Problem(
-                title: GetTitle(error),
                 detail: error.Description,
-                type: GetType(error.Type),
                 statusCode: GetStatusCode(error),
+                title: GetTitle(error),
+                type: GetType(error.Type),
                 extensions: GetExtensions(error)
             );
 
