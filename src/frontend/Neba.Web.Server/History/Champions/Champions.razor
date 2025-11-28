@@ -12,8 +12,18 @@
         <p class="mt-1 text-sm text-gray-600">NEBA tournament title leaders throughout history</p>
     </div>
 
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Champions"
+                   Message="@errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => errorMessage = null)" />
+    }
+
     <!-- Loading Indicator -->
-    <NebaLoadingIndicator IsVisible="@(champions.Count == 0)"
+    <NebaLoadingIndicator IsVisible="@isLoading"
                           Text="Loading champions..."
                           Scope="LoadingIndicatorScope.Page" />
 
@@ -26,21 +36,27 @@
 
 @code {
     private List<BowlerTitleCountViewModel> champions = new();
+    private string? errorMessage;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate streaming data load
-        await Task.Delay(1000);
-
-        Refit.ApiResponse<Contracts.CollectionResponse<Contracts.History.Champions.GetBowlerTitleCountsResponse>> response = await NebaApi.GetBowlerTitleCountsAsync();
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            // handle error w/ alert
+            await Task.Delay(2000);
+            Refit.ApiResponse<Contracts.CollectionResponse<Contracts.History.Champions.GetBowlerTitleCountsResponse>> response = await NebaApi.GetBowlerTitleCountsAsync();
 
-            return;
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to load champions data. Status: {response.StatusCode}";
+                return;
+            }
+
+            champions = response.Content?.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList() ?? [];
         }
-
-        champions = response.Content?.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList() ?? [];
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
