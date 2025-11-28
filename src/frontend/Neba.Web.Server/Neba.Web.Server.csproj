@@ -9,9 +9,11 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.UnitTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Reactive" />

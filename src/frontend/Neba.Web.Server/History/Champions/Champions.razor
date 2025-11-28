@@ -1,7 +1,7 @@
 @page "/history/champions"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@inject INebaApi NebaApi
+@inject NebaApiService NebaApiService
 
 <PageTitle>Champions - NEBA</PageTitle>
 
@@ -56,15 +56,16 @@
     {
         try
         {
-            Refit.ApiResponse<Contracts.CollectionResponse<Contracts.History.Champions.GetBowlerTitleCountsResponse>> response = await NebaApi.GetBowlerTitleCountsAsync();
+            var result = await NebaApiService.GetBowlerTitleCountsAsync();
 
-            if (!response.IsSuccessStatusCode)
+            if (result.IsError)
             {
-                errorMessage = $"Failed to load champions data. Status: {response.StatusCode}";
+                var error = result.FirstError;
+                errorMessage = $"Failed to load champions data: {error.Description}";
                 return;
             }
 
-            champions = response.Content?.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList() ?? [];
+            champions = result.Value.Items.Select(getBowlerTitleCountsResponse => getBowlerTitleCountsResponse.ToViewModel()).ToList();
         }
         finally
         {

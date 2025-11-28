@@ -27,6 +27,9 @@ builder.Services.AddRefitClient<INebaApi>(new RefitSettings
         client.BaseAddress = new Uri(config.BaseUrl);
     });
 
+// API services
+builder.Services.AddScoped<NebaApiService>();
+
 // Notification services
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<AlertService>();
