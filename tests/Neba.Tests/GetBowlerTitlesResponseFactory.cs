@@ -1,7 +1,5 @@
 using Bogus;
-using Neba.Contracts.History.Champions;
-using Neba.Contracts.History.Titles;
-using Neba.UnitTests;
+using Neba.Contracts.Website.Bowlers;
 
 namespace Neba.Tests;
 

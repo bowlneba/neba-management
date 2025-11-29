@@ -1,35 +1,32 @@
-﻿using ErrorOr;
+using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
 
-namespace Neba.Api.Endpoints.Website.History.Titles;
+namespace Neba.Api.Endpoints.Website.Bowlers;
 
-internal static class TitlesEndpoints
+#pragma warning disable S2325 // Extension methods should be static
+internal static class BowlersTitlesEndpoints
 {
-    #pragma warning disable S2325 // Extension methods should be static
+    private static readonly string[] s_tags = ["titles","bowlers","website","champions"];
+
     extension(IEndpointRouteBuilder app)
     {
-        public IEndpointRouteBuilder MapTitlesEndpoints()
+        public IEndpointRouteBuilder MapBowlerTitlesEndpoints()
         {
-            RouteGroupBuilder titleGroup
-                = app
-                    .MapGroup("/titles")
-                    .WithTags("website", "history", "titles", "champions");
-
-            titleGroup
-                .MapGetTitlesEndpoint()
-                .MapGetBowlerTitlesEndpoint();
+            app
+                .MapGetBowlerTitlesEndpoint()
+                .MapGetBowlersTitlesEndpoint();
 
             return app;
         }
 
-        private IEndpointRouteBuilder MapGetTitlesEndpoint()
+        private IEndpointRouteBuilder MapGetBowlersTitlesEndpoint()
         {
             app.MapGet(
-                "/",
+                "/titles",
                 async (
                     IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
                     CancellationToken cancellationToken) =>
@@ -52,7 +49,8 @@ internal static class TitlesEndpoints
                 .WithDescription("Retrieves a list of all titles won by bowlers, including bowler and tournament details. Results are returned as a collection of title records.")
                 .Produces<CollectionResponse<GetTitlesResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
-                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json");
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
+                .WithTags(s_tags);
 
             return app;
         }
@@ -60,7 +58,7 @@ internal static class TitlesEndpoints
         private IEndpointRouteBuilder MapGetBowlerTitlesEndpoint()
         {
             app.MapGet(
-                "/{bowlerId:guid}",
+                "/{bowlerId:guid}/titles",
                 async (
                     IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
                     BowlerId bowlerId,
@@ -85,7 +83,8 @@ internal static class TitlesEndpoints
                 .Produces<ApiResponse<GetBowlerTitlesResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status404NotFound, "application/problem+json")
-                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json");
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
+                .WithTags(s_tags);
 
             return app;
         }

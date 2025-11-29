@@ -1,7 +1,7 @@
 using Bogus;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 
-namespace Neba.UnitTests;
+namespace Neba.Tests;
 
 public static class TitlesResponseFactory
 {

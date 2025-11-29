@@ -1,10 +1,10 @@
 
-namespace Neba.Contracts.History.Champions;
+namespace Neba.Contracts.Website.Bowlers;
 
 /// <summary>
-/// Response model representing a bowler and their total number of titles for the champions endpoint.
+/// Response containing a bowler's identity, name, and the collection of titles they have won.
 /// </summary>
-public sealed record GetBowlerTitleCountsResponse
+public sealed record GetBowlerTitlesResponse
 {
     /// <summary>
     /// Gets the unique identifier of the bowler.
@@ -17,7 +17,7 @@ public sealed record GetBowlerTitleCountsResponse
     public required string BowlerName { get; init; }
 
     /// <summary>
-    /// Gets the total number of titles won by the bowler.
+    /// Gets the collection of titles won by the bowler.
     /// </summary>
-    public int TitleCount { get; init; }
+    public required IReadOnlyCollection<TitlesResponse> Titles { get; init; }
 }

@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Neba.Contracts;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests;
 
-namespace Neba.IntegrationTests.Website.History;
+namespace Neba.IntegrationTests.Website.Bowlers;
 
-public sealed class TitlesIntegrationTests
+public sealed class BowlersTitlesIntegrationTests
     : IntegrationTestBase
 {
     [Fact]
@@ -31,7 +31,7 @@ public sealed class TitlesIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/history/titles", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/bowlers/titles", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public sealed class TitlesIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/history/titles/{seedBowlerId}", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{seedBowlerId}/titles", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -96,7 +96,7 @@ public sealed class TitlesIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/history/titles/{nonExistentBowlerId}", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{nonExistentBowlerId}/titles", UriKind.Relative));
 
         // Assert
         Dictionary<string, object> metadata = new()

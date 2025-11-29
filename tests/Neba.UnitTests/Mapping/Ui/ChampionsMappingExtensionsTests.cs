@@ -1,7 +1,5 @@
-using Neba.Contracts.History.Champions;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Tournaments;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
 

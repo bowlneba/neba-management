@@ -1,8 +1,7 @@
 ﻿using Neba.Application.Bowlers.BowlerTitles;
-using Neba.Contracts.History.Champions;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 
-namespace Neba.Api.Endpoints.Website.History.Titles;
+namespace Neba.Api.Endpoints.Website.Bowlers;
 
 internal static class TitlesMappingExtensions
 {

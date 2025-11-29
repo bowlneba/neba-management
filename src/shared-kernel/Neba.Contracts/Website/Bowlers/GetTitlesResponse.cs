@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Ardalis.SmartEnum.SystemTextJson;
 
-namespace Neba.Contracts.History.Titles;
+namespace Neba.Contracts.Website.Bowlers;
 
 /// <summary>
 /// Response contract representing a single title won by a bowler, including bowler and tournament details.

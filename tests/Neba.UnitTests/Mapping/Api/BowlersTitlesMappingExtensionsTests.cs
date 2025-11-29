@@ -1,14 +1,13 @@
 using Neba.Application.Bowlers.BowlerTitles;
-using Neba.Contracts.History.Titles;
 using Neba.Domain.Bowlers;
-using Neba.Api.Endpoints.Website.History.Titles;
+using Neba.Api.Endpoints.Website.Bowlers;
 using Neba.Tests;
 using Neba.Domain.Tournaments;
-using Neba.Contracts.History.Champions;
+using Neba.Contracts.Website.Bowlers;
 
 namespace Neba.UnitTests.Mapping.Api;
 
-public sealed class TitlesMappingExtensionsTests
+public sealed class BowlersTitlesMappingExtensionsTests
 {
     [Fact]
     public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerId()

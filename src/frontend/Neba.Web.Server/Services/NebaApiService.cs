@@ -1,7 +1,7 @@
 #pragma warning disable CA1031 // Do not catch general exception types - We intentionally catch all exceptions to convert to ErrorOr
 
 using ErrorOr;
-using Neba.Contracts.History.Titles;
+using Neba.Contracts.Website.Bowlers;
 using Neba.Web.Server.History.Champions;
 using Refit;
 

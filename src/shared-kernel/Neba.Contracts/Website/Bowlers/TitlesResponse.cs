@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Ardalis.SmartEnum.SystemTextJson;
 
-namespace Neba.Contracts.History.Titles;
+namespace Neba.Contracts.Website.Bowlers;
 
 /// <summary>
 /// Represents a title won by a bowler, including the month, year, and type of tournament.

@@ -1,4 +1,4 @@
-using Neba.Api.Endpoints.Website.History;
+using Neba.Api.Endpoints.Website.Bowlers;
 
 namespace Neba.Api.Endpoints.Website;
 
@@ -10,7 +10,7 @@ internal static class WebsiteEndpoints
     {
         public IEndpointRouteBuilder MapWebsiteEndpoints()
         {
-            app.MapHistoryEndpoints();
+            app.MapBowlersEndpoints();
 
             return app;
         }
