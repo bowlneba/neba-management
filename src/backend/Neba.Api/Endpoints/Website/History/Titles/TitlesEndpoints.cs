@@ -13,7 +13,10 @@ internal static class TitlesEndpoints
     {
         public IEndpointRouteBuilder MapTitlesEndpoints()
         {
-            RouteGroupBuilder titleGroup = app.MapGroup("/titles");
+            RouteGroupBuilder titleGroup
+                = app
+                    .MapGroup("/titles")
+                    .WithTags("website", "history", "titles");
 
             titleGroup
                 .MapGetTitlesEndpoint();
@@ -41,7 +44,7 @@ internal static class TitlesEndpoints
 
                 return TypedResults.Ok(CollectionResponse.Create(response));
             });
-            
+
             return app;
         }
     }

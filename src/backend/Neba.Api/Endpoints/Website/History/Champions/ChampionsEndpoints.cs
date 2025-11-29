@@ -14,7 +14,10 @@ internal static class ChampionsEndpoints
     {
         public IEndpointRouteBuilder MapChampionsEndpoints()
         {
-            RouteGroupBuilder championGroup = app.MapGroup("/champions");
+            RouteGroupBuilder championGroup
+                = app
+                    .MapGroup("/champions")
+                    .WithTags("website", "history", "champions");
 
             championGroup
                 .MapGetBowlerTitleCountsEndpoint()
