@@ -1,4 +1,7 @@
-﻿using ErrorOr;
+﻿
+using ErrorOr;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.OpenApi;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Bowlers.BowlerTitleCounts;
 using Neba.Contracts;
@@ -27,23 +30,30 @@ internal static class TitlesEndpoints
         private IEndpointRouteBuilder MapGetTitlesEndpoint()
         {
             app.MapGet(
-                "/", async (
+                "/",
+                async (
                     IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
                     CancellationToken cancellationToken) =>
-            {
-                var query = new GetTitlesQuery();
-
-                ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
-
-                if (result.IsError)
                 {
-                    return result.Problem();
-                }
+                    var query = new GetTitlesQuery();
 
-                IReadOnlyCollection<GetTitlesResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                    ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                return TypedResults.Ok(CollectionResponse.Create(response));
-            });
+                    if (result.IsError)
+                    {
+                        return result.Problem();
+                    }
+
+                    IReadOnlyCollection<GetTitlesResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetTitles")
+                .WithSummary("Get all NEBA titles won by bowlers.")
+                .WithDescription("Retrieves a list of all titles won by bowlers, including bowler and tournament details. Results are returned as a collection of title records.")
+                .Produces<CollectionResponse<GetTitlesResponse>>(StatusCodes.Status200OK, "application/json")
+                .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json");
 
             return app;
         }
