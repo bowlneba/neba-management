@@ -11,7 +11,8 @@ internal static class HistoryEndpoints
     {
         public IEndpointRouteBuilder MapHistoryEndpoints()
         {
-            RouteGroupBuilder historyApp = app.MapGroup("/history");
+            RouteGroupBuilder historyApp = app.MapGroup("/history")
+                .AllowAnonymous();
 
             historyApp
                 .MapChampionsEndpoints()

@@ -40,8 +40,8 @@ internal static class TitlesEndpoints
                 IReadOnlyCollection<GetTitlesResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
 
                 return TypedResults.Ok(CollectionResponse.Create(response));
-            })
-            .AllowAnonymous();
+            });
+            
             return app;
         }
     }
