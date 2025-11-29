@@ -1,6 +1,6 @@
 using Neba.Domain.Bowlers;
 
-namespace Neba.Application.Bowlers.BowlerTitleCounts;
+namespace Neba.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Data transfer object representing a bowler and the details of each title they have won.

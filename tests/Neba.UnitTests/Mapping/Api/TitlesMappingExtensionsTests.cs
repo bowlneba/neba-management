@@ -1,4 +1,4 @@
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.History.Titles;
 using Neba.Domain.Bowlers;
 using Neba.Api.Endpoints.Website.History.Titles;

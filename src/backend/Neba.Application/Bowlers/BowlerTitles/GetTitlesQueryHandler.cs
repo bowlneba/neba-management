@@ -1,7 +1,7 @@
 ﻿using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
 
-namespace Neba.Application.Bowlers.BowlerTitleCounts;
+namespace Neba.Application.Bowlers.BowlerTitles;
 
 internal sealed class GetTitlesQueryHandler(IWebsiteBowlerQueryRepository websiteBowlerQueryRepository)
         : IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>

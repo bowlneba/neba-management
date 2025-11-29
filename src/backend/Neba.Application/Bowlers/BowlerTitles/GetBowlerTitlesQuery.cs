@@ -1,7 +1,7 @@
 using Neba.Application.Abstractions.Messaging;
 using Neba.Domain.Bowlers;
 
-namespace Neba.Application.Bowlers.BowlerTitleCounts;
+namespace Neba.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Query to retrieve the detailed titles for a specific bowler.

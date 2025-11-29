@@ -1,9 +1,7 @@
-﻿
-using ErrorOr;
+﻿using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts;
-using Neba.Contracts.History.Champions;
 using Neba.Contracts.History.Titles;
 using Neba.Domain.Bowlers;
 
@@ -19,7 +17,7 @@ internal static class TitlesEndpoints
             RouteGroupBuilder titleGroup
                 = app
                     .MapGroup("/titles")
-                    .WithTags("website", "history", "titles");
+                    .WithTags("website", "history", "titles", "champions");
 
             titleGroup
                 .MapGetTitlesEndpoint()

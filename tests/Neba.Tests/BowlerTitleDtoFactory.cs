@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Bogus;
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Tournaments;
 

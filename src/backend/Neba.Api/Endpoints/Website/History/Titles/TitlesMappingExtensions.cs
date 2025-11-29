@@ -1,4 +1,4 @@
-﻿using Neba.Application.Bowlers.BowlerTitleCounts;
+﻿using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.History.Champions;
 using Neba.Contracts.History.Titles;
 

@@ -1,7 +1,7 @@
 #pragma warning disable CA1031 // Do not catch general exception types - We intentionally catch all exceptions to convert to ErrorOr
 
 using ErrorOr;
-using Neba.Contracts.History.Champions;
+using Neba.Contracts.History.Titles;
 using Neba.Web.Server.History.Champions;
 using Refit;
 
@@ -11,21 +11,27 @@ internal class NebaApiService(INebaApi nebaApi)
 {
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleCountViewModel>>> GetBowlerTitleCountsAsync()
     {
-        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitleCountsAsync());
+        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync());
 
         if (result.IsError)
         {
             return result.Errors;
         }
 
-        return result.Value.Items
-            .Select(response => response.ToViewModel())
-            .ToList();
+        return result.Value.Items.GroupBy(bowler => bowler.BowlerId)
+            .Select(group => new BowlerTitleCountViewModel
+            {
+                BowlerId = group.Key,
+                BowlerName = group.First().BowlerName,
+                Titles = group.Count()
+            })
+            .ToList()
+            .AsReadOnly();
     }
 
     public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Guid bowlerId)
     {
-        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
+        ErrorOr<Contracts.ApiResponse<GetBowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 
         if (result.IsError)
         {

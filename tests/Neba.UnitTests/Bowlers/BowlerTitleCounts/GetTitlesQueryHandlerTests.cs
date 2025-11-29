@@ -1,10 +1,10 @@
 ﻿using ErrorOr;
 using Moq;
 using Neba.Application.Bowlers;
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Bowlers.BowlerTitleCounts;
+namespace Neba.UnitTests.Bowlers.BowlerTitles;
 
 public sealed class GetTitlesQueryHandlerTests
 {
