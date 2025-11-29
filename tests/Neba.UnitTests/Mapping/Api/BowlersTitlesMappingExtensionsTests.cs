@@ -132,4 +132,46 @@ public sealed class BowlersTitlesMappingExtensionsTests
             response.Titles.ElementAt(i).TournamentType.ShouldBe(titles[i].TournamentType.Name);
         }
     }
+
+    [Fact]
+    public void BowlerTitlesSummaryDto_ToResponseModel_MapsBowlerIdCorrectly()
+    {
+        // Arrange
+        BowlerId bowlerId = BowlerId.New();
+        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(bowlerId: bowlerId);
+
+        // Act
+        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.BowlerId.ShouldBe(bowlerId.Value);
+    }
+
+    [Fact]
+    public void BowlerTitlesSummaryDto_ToResponseModel_MapsBowlerNameCorrectly()
+    {
+        // Arrange
+        const string bowlerName = "Alice Johnson";
+        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(bowlerName: bowlerName);
+
+        // Act
+        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.BowlerName.ShouldBe(bowlerName);
+    }
+
+    [Fact]
+    public void BowlerTitlesSummaryDto_ToResponseModel_MapsTitleCountCorrectly()
+    {
+        // Arrange
+        const int titleCount = 5;
+        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(titleCount: titleCount);
+
+        // Act
+        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.TitleCount.ShouldBe(titleCount);
+    }
 }

@@ -37,4 +37,17 @@ internal static class TitlesMappingExtensions
             };
         }
     }
+
+    extension(BowlerTitlesSummaryDto dto)
+    {
+        public GetBowlerTitlesSummaryResponse ToResponseModel()
+        {
+            return new GetBowlerTitlesSummaryResponse
+            {
+                BowlerId = dto.BowlerId.Value,
+                BowlerName = dto.BowlerName,
+                TitleCount = dto.TitleCount
+            };
+        }
+    }
 }
