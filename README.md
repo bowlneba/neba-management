@@ -44,4 +44,17 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 - [ ] API Documentation (OpenAPI/Swagger)
 
 ---
+
+### Documentation
+
+- [ ] Administrative Website Manual
+- [ ] Ubiquitous Language Definitions
+- [ ] Domain-Driven Design (DDD) Artifacts
+  - [ ] Bounded Contexts
+  - [ ] Aggregates
+  - [ ] Entities & Value Objects
+  - [ ] Domain Events
+- [ ] API Reference
+- [ ] User Guides & Tutorials
+
 This checklist will be updated as features are completed and new requirements are defined.
