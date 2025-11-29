@@ -29,23 +29,30 @@ internal static class ChampionsEndpoints
         private IEndpointRouteBuilder MapGetBowlerTitleCountsEndpoint()
         {
             app.MapGet(
-                "/", async (
+                "/",
+                async (
                     IQueryHandler<GetBowlerTitleCountsQuery, IReadOnlyCollection<BowlerTitleCountDto>> queryHandler,
                     CancellationToken cancellationToken) =>
-            {
-                var query = new GetBowlerTitleCountsQuery();
-
-                ErrorOr<IReadOnlyCollection<BowlerTitleCountDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
-
-                if (result.IsError)
                 {
-                    return result.Problem();
-                }
+                    var query = new GetBowlerTitleCountsQuery();
 
-                IReadOnlyCollection<GetBowlerTitleCountsResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                    ErrorOr<IReadOnlyCollection<BowlerTitleCountDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                return TypedResults.Ok(CollectionResponse.Create(response));
-            });
+                    if (result.IsError)
+                    {
+                        return result.Problem();
+                    }
+
+                    IReadOnlyCollection<GetBowlerTitleCountsResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetBowlerTitleCounts")
+                .WithSummary("Get all bowlers and their total number of NEBA titles.")
+                .WithDescription("Retrieves a list of all bowlers and the total number of NEBA titles each has won. Results are returned as a collection of bowler title count records.")
+                .Produces<CollectionResponse<GetBowlerTitleCountsResponse>>(StatusCodes.Status200OK, "application/json")
+                .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json");
 
             return app;
         }
@@ -53,24 +60,32 @@ internal static class ChampionsEndpoints
         private IEndpointRouteBuilder MapGetBowlerTitlesEndpoint()
         {
             app.MapGet(
-                "/{bowlerId:guid}", async (
+                "/{bowlerId:guid}",
+                async (
                     IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
                     BowlerId bowlerId,
                     CancellationToken cancellationToken) =>
-            {
-                var query = new GetBowlerTitlesQuery() { BowlerId = bowlerId };
-
-                ErrorOr<BowlerTitlesDto?> result = await queryHandler.HandleAsync(query, cancellationToken);
-
-                if (result.IsError)
                 {
-                    return result.Problem();
-                }
+                    var query = new GetBowlerTitlesQuery() { BowlerId = bowlerId };
 
-                GetBowlerTitlesResponse response = result.Value!.ToResponseModel();
+                    ErrorOr<BowlerTitlesDto?> result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                return TypedResults.Ok(ApiResponse.Create(response));
-            });
+                    if (result.IsError)
+                    {
+                        return result.Problem();
+                    }
+
+                    GetBowlerTitlesResponse response = result.Value!.ToResponseModel();
+
+                    return TypedResults.Ok(ApiResponse.Create(response));
+                })
+                .WithName("GetBowlerTitles")
+                .WithSummary("Get all NEBA titles for a specific bowler.")
+                .WithDescription("Retrieves all NEBA titles won by a specific bowler, including month, year, and tournament type for each title. Results are returned as a collection of title records for the specified bowler.")
+                .Produces<ApiResponse<GetBowlerTitlesResponse>>(StatusCodes.Status200OK, "application/json")
+                .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
+                .ProducesProblem(StatusCodes.Status404NotFound, "application/problem+json")
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json");
 
             return app;
         }
