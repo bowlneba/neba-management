@@ -9,24 +9,16 @@ namespace Neba.Web.Server.Services;
 
 internal class NebaApiService(INebaApi nebaApi)
 {
-    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleCountViewModel>>> GetBowlerTitleCountsAsync()
+    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetBowlerTitlesSummaryAsync()
     {
-        var result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync());
+        ErrorOr<Contracts.CollectionResponse<GetBowlerTitlesSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesSummaryAsync());
 
         if (result.IsError)
         {
             return result.Errors;
         }
 
-        return result.Value.Items.GroupBy(bowler => bowler.BowlerId)
-            .Select(group => new BowlerTitleCountViewModel
-            {
-                BowlerId = group.Key,
-                BowlerName = group.First().BowlerName,
-                Titles = group.Count()
-            })
-            .ToList()
-            .AsReadOnly();
+        return result.Value.Items.Select(dto => dto.ToViewModel()).ToList().AsReadOnly();
     }
 
     public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Guid bowlerId)

@@ -59,7 +59,7 @@
                    HallOfFame="@selectedBowlerHallOfFame" />
 
 @code {
-    private List<BowlerTitleCountViewModel> champions = new();
+    private List<BowlerTitleSummaryViewModel> champions = new();
     private string? errorMessage;
     private bool isLoading = true;
     private ChampionsView selectedView = ChampionsView.TitleCount;
@@ -81,7 +81,7 @@
     {
         try
         {
-            var result = await NebaApiService.GetBowlerTitleCountsAsync();
+            var result = await NebaApiService.GetBowlerTitlesSummaryAsync();
 
             if (result.IsError)
             {
@@ -103,7 +103,7 @@
         selectedView = Enum.Parse<ChampionsView>(viewValue);
     }
 
-    private void HandleChampionClick(BowlerTitleCountViewModel champion)
+    private void HandleChampionClick(BowlerTitleSummaryViewModel champion)
     {
         selectedBowlerId = champion.BowlerId;
         selectedBowlerName = champion.BowlerName;

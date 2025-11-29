@@ -3,7 +3,7 @@ namespace Neba.Web.Server.History.Champions;
 /// <summary>
 /// Represents a bowler with their total title count.
 /// </summary>
-public sealed record BowlerTitleCountViewModel
+public sealed record BowlerTitleSummaryViewModel
 {
     /// <summary>
     /// Gets the unique identifier for the bowler.

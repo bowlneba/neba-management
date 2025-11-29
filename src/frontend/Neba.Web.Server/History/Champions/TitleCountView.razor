@@ -73,10 +73,10 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<BowlerTitleCountViewModel> Champions { get; set; } = new();
+    public List<BowlerTitleSummaryViewModel> Champions { get; set; } = new();
 
     [Parameter]
-    public EventCallback<BowlerTitleCountViewModel> OnChampionClick { get; set; }
+    public EventCallback<BowlerTitleSummaryViewModel> OnChampionClick { get; set; }
 
     private readonly HashSet<string> expandedSections = new();
 
@@ -101,7 +101,7 @@
         }
     }
 
-    private async Task HandleChampionClick(BowlerTitleCountViewModel champion)
+    private async Task HandleChampionClick(BowlerTitleSummaryViewModel champion)
     {
         await OnChampionClick.InvokeAsync(champion);
     }

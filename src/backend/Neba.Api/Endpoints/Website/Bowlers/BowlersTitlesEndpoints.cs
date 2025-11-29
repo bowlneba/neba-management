@@ -41,14 +41,14 @@ internal static class BowlersTitlesEndpoints
                         return result.Problem();
                     }
 
-                    IReadOnlyCollection<GetTitlesResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                    IReadOnlyCollection<GetTitleResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
 
                     return TypedResults.Ok(CollectionResponse.Create(response));
                 })
                 .WithName("GetTitles")
                 .WithSummary("Get all NEBA titles won by bowlers.")
                 .WithDescription("Retrieves a list of all titles won by bowlers, including bowler and tournament details. Results are returned as a collection of title records.")
-                .Produces<CollectionResponse<GetTitlesResponse>>(StatusCodes.Status200OK, "application/json")
+                .Produces<CollectionResponse<GetTitleResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
                 .WithTags(s_tags);
@@ -114,7 +114,7 @@ internal static class BowlersTitlesEndpoints
                     return TypedResults.Ok(CollectionResponse.Create(response));
                 })
                 .WithName("GetBowlersTitlesSummary")
-                .WithSummary("Get a summary of titles for all bowlers.")
+                .WithSummary("Get a summary of NEBA titles for all bowlers.")
                 .WithDescription("Retrieves a summary of titles won by all bowlers, including each bowler's unique identifier, name, and total title count. Results are returned as a collection of bowler title summaries.")
                 .Produces<CollectionResponse<GetBowlerTitlesSummaryResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")

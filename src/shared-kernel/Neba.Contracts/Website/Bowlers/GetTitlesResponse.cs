@@ -6,7 +6,7 @@ namespace Neba.Contracts.Website.Bowlers;
 /// <summary>
 /// Response contract representing a single title won by a bowler, including bowler and tournament details.
 /// </summary>
-public sealed record GetTitlesResponse
+public sealed record GetTitleResponse
 {
     /// <summary>
     /// Gets the unique identifier of the bowler.

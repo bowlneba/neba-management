@@ -7,9 +7,9 @@ internal static class TitlesMappingExtensions
 {
     extension(BowlerTitleDto dto)
     {
-        public GetTitlesResponse ToResponseModel()
+        public GetTitleResponse ToResponseModel()
         {
-            return new GetTitlesResponse
+            return new GetTitleResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,

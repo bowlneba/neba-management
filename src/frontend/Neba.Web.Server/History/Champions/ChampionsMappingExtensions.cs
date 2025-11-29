@@ -5,24 +5,34 @@ namespace Neba.Web.Server.History.Champions;
 
 internal static class ChampionsMappingExtensions
 {
-    extension(GetBowlerTitleCountsResponse getBowlerTitleCountsResponse)
+    extension(GetBowlerTitlesSummaryResponse response)
     {
-        public BowlerTitleCountViewModel ToViewModel()
+        public BowlerTitleSummaryViewModel ToViewModel()
             => new()
             {
-                BowlerId = getBowlerTitleCountsResponse.BowlerId,
-                BowlerName = getBowlerTitleCountsResponse.BowlerName,
-                Titles = getBowlerTitleCountsResponse.TitleCount
+                BowlerId = response.BowlerId,
+                BowlerName = response.BowlerName,
+                Titles = response.TitleCount
             };
     }
 
-    extension(GetBowlerTitlesResponse getBowlerTitlesResponse)
+    extension(GetTitleResponse response)
+    {
+        public TitlesViewModel ToViewModel()
+            => new()
+            {
+                TournamentDate = $"{response.TournamentMonth.ToShortString()} {response.TournamentYear}",
+                TournamentType = response.TournamentType
+            };
+    }
+
+    extension(GetBowlerTitlesResponse response)
     {
         public BowlerTitlesViewModel ToViewModel()
             => new()
             {
-                BowlerName = getBowlerTitlesResponse.BowlerName,
-                Titles = getBowlerTitlesResponse.Titles
+                BowlerName = response.BowlerName,
+                Titles = response.Titles
                     .OrderBy(title => title.Year)
                     .ThenBy(title => title.Month.Value)
                     .Select(title => new TitlesViewModel

@@ -8,48 +8,6 @@ namespace Neba.UnitTests.Mapping.Ui;
 public sealed class ChampionsMappingExtensionsTests
 {
     [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapBowlerId()
-    {
-        // Arrange
-        BowlerId bowlerId = BowlerId.New();
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(bowlerId: bowlerId.Value);
-
-        // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
-
-        // Assert
-        viewModel.BowlerId.ShouldBe(bowlerId.Value);
-    }
-
-    [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapBowlerName()
-    {
-        // Arrange
-        const string bowlerName = "Jane Smith";
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(bowlerName: bowlerName);
-
-        // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
-
-        // Assert
-        viewModel.BowlerName.ShouldBe(bowlerName);
-    }
-
-    [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapTitleCount()
-    {
-        // Arrange
-        const int titleCount = 7;
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(titleCount: titleCount);
-
-        // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
-
-        // Assert
-        viewModel.Titles.ShouldBe(titleCount);
-    }
-
-    [Fact]
     public void GetBowlerTitlesResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange

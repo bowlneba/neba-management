@@ -36,8 +36,8 @@ public sealed class BowlersTitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        CollectionResponse<GetTitlesResponse>? result
-            = await response.Content.ReadFromJsonAsync<CollectionResponse<GetTitlesResponse>>();
+        CollectionResponse<GetTitleResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<GetTitleResponse>>();
 
         result.ShouldNotBeNull();
 
