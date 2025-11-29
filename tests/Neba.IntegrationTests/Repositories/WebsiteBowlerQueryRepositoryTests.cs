@@ -6,7 +6,7 @@ using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Repositories;
+namespace Neba.IntegrationTests.Repositories;
 
 /// <summary>
 /// Collection fixture to share a single WebsiteDatabase instance across all tests in this class.
@@ -30,7 +30,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         => ValueTask.CompletedTask;
 
     [Fact]
-    public async Task GetBowlerTitlesAsync_ShouldReturnNull_WhenBowlerDoesNotExist()
+    public async Task GetBowlerTitlesAsync_BowlerId_ShouldReturnNull_WhenBowlerDoesNotExist()
     {
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
@@ -54,7 +54,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
     }
 
     [Fact]
-    public async Task GetBowlerTitlesAsync_ShouldReturnCorrectTitles_ForExistingBowler()
+    public async Task GetBowlerTitlesAsync_BowlerId_ShouldReturnCorrectTitles_ForExistingBowler()
     {
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
@@ -96,7 +96,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
     }
 
     [Fact]
-    public async Task GetTitlesAsync_ShouldReturnAllTitles()
+    public async Task GetAllBowlerTitlesAsync_ShouldReturnAllTitles()
     {
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
@@ -115,7 +115,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
 
         // Act
         IReadOnlyCollection<BowlerTitleDto> result
-            = await repository.GetTitlesAsync(CancellationToken.None);
+            = await repository.GetBowlerTitlesAsync(CancellationToken.None);
 
         // Assert
         result.Count.ShouldBe(expectedTitleCount);

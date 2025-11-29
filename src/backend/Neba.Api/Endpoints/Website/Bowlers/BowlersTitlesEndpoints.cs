@@ -28,10 +28,10 @@ internal static class BowlersTitlesEndpoints
             app.MapGet(
                 "/titles",
                 async (
-                    IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
+                    IQueryHandler<GetBowlersTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new GetTitlesQuery();
+                    var query = new GetBowlersTitlesQuery();
 
                     ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
 

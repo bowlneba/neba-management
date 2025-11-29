@@ -10,13 +10,13 @@ public sealed class GetTitlesQueryHandlerTests
 {
     private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
 
-    private readonly GetTitlesQueryHandler _queryHandler;
+    private readonly GetBowlersTitlesQueryHandler _queryHandler;
 
     public GetTitlesQueryHandlerTests()
     {
         _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
 
-        _queryHandler = new GetTitlesQueryHandler(
+        _queryHandler = new GetBowlersTitlesQueryHandler(
             _mockWebsiteBowlerQueryRepository.Object);
     }
 
@@ -27,10 +27,10 @@ public sealed class GetTitlesQueryHandlerTests
         IReadOnlyCollection<BowlerTitleDto> seedTitles = BowlerTitleDtoFactory.Bogus(100);
 
         _mockWebsiteBowlerQueryRepository
-            .Setup(repository => repository.GetTitlesAsync(TestContext.Current.CancellationToken))
+            .Setup(repository => repository.GetBowlerTitlesAsync(TestContext.Current.CancellationToken))
             .ReturnsAsync(seedTitles);
 
-        GetTitlesQuery query = new();
+        GetBowlersTitlesQuery query = new();
 
         // Act
         ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);

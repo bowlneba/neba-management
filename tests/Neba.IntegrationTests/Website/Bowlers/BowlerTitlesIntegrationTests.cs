@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
@@ -9,7 +10,7 @@ using Neba.Tests;
 namespace Neba.IntegrationTests.Website.Bowlers;
 
 public sealed class BowlersTitlesIntegrationTests
-    : IntegrationTestBase
+    : ApiTestsBase
 {
     [Fact]
     public async Task GetTitles_ShouldReturnExpectedResults()
@@ -17,16 +18,15 @@ public sealed class BowlersTitlesIntegrationTests
         // Arrange
         await ResetDatabaseAsync();
 
-        int totalTitles = 0;
-
         await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
             context.Bowlers.AddRange(seedBowlers);
             await context.SaveChangesAsync();
-
-            totalTitles = seedBowlers.Sum(b => b.Titles.Count);
         });
+
+        int totalTitles = await ExecuteAsync(async context
+            => await context.Bowlers.AsNoTracking().SelectMany(b => b.Titles).CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

@@ -8,7 +8,7 @@ namespace Neba.IntegrationTests.Infrastructure;
 /// Base class for integration tests that provides a test database and web application factory.
 /// Each test class that inherits from this will get its own isolated database instance.
 /// </summary>
-public abstract class IntegrationTestBase
+public abstract class ApiTestsBase
     : IAsyncLifetime
 {
     /// <summary>

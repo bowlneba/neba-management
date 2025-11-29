@@ -27,7 +27,7 @@ public static class ApplicationDependencyInjection
         private IServiceCollection AddBowlersUseCases()
         {
             services.AddScoped<IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?>, GetBowlerTitlesQueryHandler>();
-            services.AddScoped<IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, GetTitlesQueryHandler>();
+            services.AddScoped<IQueryHandler<GetBowlersTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, GetBowlersTitlesQueryHandler>();
 
             return services;
         }
