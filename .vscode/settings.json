@@ -18,7 +18,8 @@
     "npgsql",
     "Respawn",
     "Testcontainers",
-    "uninstantiated"
+    "uninstantiated",
+    "USBC"
   ],
   "sqltools.connections": [
     {
