@@ -27,7 +27,21 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 ### Website Administration
 
 - [ ] Authentication/Authorization
-- [ ] (Further items to be determined)
+
+---
+
+### Platform & Operational Improvements (No Particular Order)
+
+(This section covers technical, quality-of-life, and operational improvements. Name subject to change.)
+
+- [ ] API Caching
+- [ ] Health Checks
+- [ ] SonarCloud Integration
+- [ ] Global Exception Handling
+- [ ] Open Telemetry
+- [ ] Rate Limiting & Throttling
+- [ ] Security Audits & Vulnerability Scanning
+- [ ] API Documentation (OpenAPI/Swagger)
 
 ---
 This checklist will be updated as features are completed and new requirements are defined.
