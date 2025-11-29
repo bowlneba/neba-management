@@ -28,6 +28,7 @@ public static class ApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?>, GetBowlerTitlesQueryHandler>();
             services.AddScoped<IQueryHandler<GetBowlersTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, GetBowlersTitlesQueryHandler>();
+            services.AddScoped<IQueryHandler<GetBowlersTitlesSummaryQuery, IReadOnlyCollection<BowlerTitlesSummaryDto>>, GetBowlersTitlesSummaryQueryHandler>();
 
             return services;
         }

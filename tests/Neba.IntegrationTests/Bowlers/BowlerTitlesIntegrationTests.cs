@@ -7,7 +7,7 @@ using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests;
 
-namespace Neba.IntegrationTests.Website.Bowlers;
+namespace Neba.IntegrationTests.Bowlers;
 
 public sealed class BowlersTitlesIntegrationTests
     : ApiTestsBase
@@ -105,5 +105,38 @@ public sealed class BowlersTitlesIntegrationTests
         };
 
         await response.ShouldBeNotFound("Bowler.NotFound", "Bowler was not found.", metadata);
+    }
+
+    [Fact]
+    public async Task GetBowlerTitlesSummary_ShouldReturnExpectedResults()
+    {
+        // Arrange
+        await ResetDatabaseAsync();
+
+        await SeedAsync(async context =>
+        {
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+            context.Bowlers.AddRange(seedBowlers);
+            await context.SaveChangesAsync();
+        });
+
+        int totalBowlersWithTitles = await ExecuteAsync(async context
+            => await context.Bowlers.AsNoTracking().Where(b => b.Titles.Count > 0).CountAsync());
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/bowlers/titles/summary", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<GetBowlerTitlesSummaryResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<GetBowlerTitlesSummaryResponse>>();
+
+        result.ShouldNotBeNull();
+
+        result.Items.Count.ShouldBe(totalBowlersWithTitles);
+        result.TotalItems.ShouldBe(totalBowlersWithTitles);
     }
 }

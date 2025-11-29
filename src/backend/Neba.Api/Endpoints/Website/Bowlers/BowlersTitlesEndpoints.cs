@@ -18,7 +18,8 @@ internal static class BowlersTitlesEndpoints
         {
             app
                 .MapGetBowlerTitlesEndpoint()
-                .MapGetBowlersTitlesEndpoint();
+                .MapGetBowlersTitlesEndpoint()
+                .MapGetBowlerTitlesSummaryEndpoint();
 
             return app;
         }
@@ -83,6 +84,40 @@ internal static class BowlersTitlesEndpoints
                 .Produces<ApiResponse<GetBowlerTitlesResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status404NotFound, "application/problem+json")
+                .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
+                .WithTags(s_tags);
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapGetBowlerTitlesSummaryEndpoint()
+        {
+            app.MapGet(
+                "/titles/summary",
+                async (
+                    IQueryHandler<GetBowlersTitlesSummaryQuery, IReadOnlyCollection<BowlerTitlesSummaryDto>> queryHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var query = new GetBowlersTitlesSummaryQuery();
+
+                    ErrorOr<IReadOnlyCollection<BowlerTitlesSummaryDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
+
+                    if (result.IsError)
+                    {
+                        return result.Problem();
+                    }
+
+                    IReadOnlyCollection<GetBowlerTitlesSummaryResponse> response = result.Value
+                        .Select(dto => dto.ToResponseModel())
+                        .ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetBowlersTitlesSummary")
+                .WithSummary("Get a summary of titles for all bowlers.")
+                .WithDescription("Retrieves a summary of titles won by all bowlers, including each bowler's unique identifier, name, and total title count. Results are returned as a collection of bowler title summaries.")
+                .Produces<CollectionResponse<GetBowlerTitlesSummaryResponse>>(StatusCodes.Status200OK, "application/json")
+                .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
                 .WithTags(s_tags);
 
