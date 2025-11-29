@@ -1,6 +1,5 @@
-using Neba.Contracts.History.Titles;
 
-namespace Neba.Contracts.History.Champions;
+namespace Neba.Contracts.History.Titles;
 
 /// <summary>
 /// Response containing a bowler's identity, name, and the collection of titles they have won.

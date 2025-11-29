@@ -4,6 +4,7 @@ using Neba.Domain.Bowlers;
 using Neba.Api.Endpoints.Website.History.Titles;
 using Neba.Tests;
 using Neba.Domain.Tournaments;
+using Neba.Contracts.History.Champions;
 
 namespace Neba.UnitTests.Mapping.Api;
 
@@ -77,5 +78,59 @@ public sealed class TitlesMappingExtensionsTests
 
         // Assert
         response.TournamentType.ShouldBe(tournamentType.Name);
+    }
+
+    [Fact]
+    public void BowlerTitlesDto_ToResponseModel_MapsBowlerIdCorrectly()
+    {
+        // Arrange
+        BowlerId bowlerId = BowlerId.New();
+        BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(bowlerId: bowlerId);
+
+        // Act
+        GetBowlerTitlesResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.BowlerId.ShouldBe(bowlerId.Value);
+    }
+
+    [Fact]
+    public void BowlerTitlesDto_ToResponseModel_MapsBowlerNameCorrectly()
+    {
+        // Arrange
+        const string bowlerName = "Jane Smith";
+        BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(bowlerName: bowlerName);
+
+        // Act
+        GetBowlerTitlesResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.BowlerName.ShouldBe(bowlerName);
+    }
+
+    [Fact]
+    public void BowlerTitlesDto_ToResponseModel_MapsTitlesCorrectly()
+    {
+        // Arrange
+        TitleDto[] titles =
+        [
+            TitleDtoFactory.Create(month: Month.January, year: 2020, tournamentType: TournamentType.Women),
+            TitleDtoFactory.Create(month: Month.March, year: 2021, tournamentType: TournamentType.Senior)
+        ];
+
+        BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(titles: titles);
+
+        // Act
+        GetBowlerTitlesResponse response = dto.ToResponseModel();
+
+        // Assert
+        response.Titles.Count.ShouldBe(titles.Length);
+
+        for (int i = 0; i < titles.Length; i++)
+        {
+            response.Titles.ElementAt(i).Month.ShouldBe(titles[i].Month);
+            response.Titles.ElementAt(i).Year.ShouldBe(titles[i].Year);
+            response.Titles.ElementAt(i).TournamentType.ShouldBe(titles[i].TournamentType.Name);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Neba.Contracts.History.Champions;
+using Neba.Contracts.History.Titles;
 
 namespace Neba.Web.Server.History.Champions;
 
