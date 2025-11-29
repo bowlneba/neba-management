@@ -18,10 +18,10 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 - [ ] High Block
 - [ ] Hall of Fame (including HOF indicator for champions)
 - [ ] Bowling Centers
-- [ ] About
 - [ ] Tournaments
 - [ ] News
 - [ ] Sponsors
+- [ ] About
 - [ ] Stats
 
 ### Website Administration
