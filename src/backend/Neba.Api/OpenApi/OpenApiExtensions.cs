@@ -9,7 +9,27 @@ internal static class OpenApiExtensions
     {
         public IServiceCollection ConfigureOpenApi()
         {
-            services.AddOpenApi();
+            services.AddOpenApi(options =>
+            {
+                options.AddSchemaTransformer<MonthSchemaTransformer>();
+
+                options.AddDocumentTransformer((document, _, _) =>
+                {
+                    document.Info = new()
+                    {
+                        Title = "NEBA API",
+                        Description = "API for the New England Bowling Association (NEBA) management system.",
+                        Version = "v1",
+                        Contact = new()
+                        {
+                            Name = "NEBA Tech Support",
+                            Email = "tech@bowlneba.com"
+                        }
+                    };
+
+                    return Task.CompletedTask;
+                });
+            });
 
             return services;
         }
