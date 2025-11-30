@@ -13,7 +13,7 @@ public sealed class BowlersTitlesIntegrationTests
     : ApiTestsBase
 {
     [Fact]
-    public async Task GetTitles_ShouldReturnExpectedResults()
+    public async Task ListBowlerTitles_ShouldReturnExpectedResults()
     {
         // Arrange
         await ResetDatabaseAsync();
@@ -108,7 +108,7 @@ public sealed class BowlersTitlesIntegrationTests
     }
 
     [Fact]
-    public async Task GetBowlerTitlesSummary_ShouldReturnExpectedResults()
+    public async Task ListBowlerTitleSummaries_ShouldReturnExpectedResults()
     {
         // Arrange
         await ResetDatabaseAsync();

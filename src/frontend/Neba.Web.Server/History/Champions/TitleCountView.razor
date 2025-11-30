@@ -1,7 +1,7 @@
 @* Card Grid Layout - Modern, visual card-based design *@
 
 <div class="space-y-8">
-    @foreach (var group in Champions.GroupBy(c => c.Titles).OrderByDescending(g => g.Key))
+    @foreach (var group in Champions.GroupBy(c => c.TitleCount).OrderByDescending(g => g.Key))
     {
         var isEliteTier = group.Key >= 20;
         var isMidTier = group.Key >= 10 && group.Key < 20;
@@ -83,7 +83,7 @@
     protected override void OnInitialized()
     {
         // Expand all sections by default
-        foreach (var titleCount in Champions.Select(c => c.Titles).Distinct())
+        foreach (var titleCount in Champions.Select(c => c.TitleCount).Distinct())
         {
             expandedSections.Add($"tier-{titleCount}");
         }

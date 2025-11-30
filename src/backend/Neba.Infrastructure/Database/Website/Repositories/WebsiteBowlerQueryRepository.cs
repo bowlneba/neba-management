@@ -13,6 +13,7 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
     public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListBowlerTitleSummariesAsync(CancellationToken cancellationToken)
         => await _dbContext.Bowlers
             .AsNoTracking()
+            .Where(bowler => bowler.Titles.Any())
             .Select(bowler => new BowlerTitleSummaryDto
             {
                 BowlerId = bowler.Id,

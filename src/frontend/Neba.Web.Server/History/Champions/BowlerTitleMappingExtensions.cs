@@ -2,7 +2,7 @@ using Neba.Contracts.Website.Bowlers;
 
 namespace Neba.Web.Server.History.Champions;
 
-internal static class ChampionsMappingExtensions
+internal static class BowlerTitleMappingExtensions
 {
     extension(BowlerTitleSummaryResponse response)
     {
@@ -11,7 +11,7 @@ internal static class ChampionsMappingExtensions
             {
                 BowlerId = response.BowlerId,
                 BowlerName = response.BowlerName,
-                Titles = response.TitleCount
+                TitleCount = response.TitleCount
             };
     }
 
