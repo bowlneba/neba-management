@@ -79,7 +79,20 @@ public static class InfrastructureDependencyInjection
                 throw new InvalidOperationException("KeyVault:VaultUrl is not configured but KeyVault is enabled.");
             }
 
-            config.AddAzureKeyVault(new Uri(vaultUrl), new DefaultAzureCredential());
+            var vaultUri = new Uri(vaultUrl);
+            var defaultAzureCredential = new DefaultAzureCredential();
+
+            config.AddAzureKeyVault(vaultUri, defaultAzureCredential);
+
+            string[] keyVaultTags = ["keyvault", "azure"];
+            services.AddHealthChecks()
+                .AddAzureKeyVault(vaultUri, defaultAzureCredential,
+                    _ =>
+                    {
+                        // This is where specific secret/key checks would go
+                    },
+                    name: "Azure Key Vault",
+                    tags: keyVaultTags);
 
             return services;
         }
