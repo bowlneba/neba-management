@@ -25,6 +25,8 @@ internal static class HealthCheckExtensions
         /// <returns>The web application for method chaining.</returns>
         public WebApplication UseHealthChecks()
         {
+            app.MapGet("/ping", () => Results.Ok("Pong"));
+
             app.MapHealthChecks("/health", new()
             {
                 Predicate = _ => true,
