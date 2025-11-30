@@ -41,7 +41,7 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 - [ ] Open Telemetry
 - [ ] Rate Limiting & Throttling
 - [ ] Security Audits & Vulnerability Scanning
-- [ ] API Documentation (OpenAPI/Swagger)
+- [x] API Documentation (OpenAPI/Swagger)
 
 ---
 

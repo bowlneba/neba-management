@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Neba.Api.Endpoints.Website;
+using Neba.Api.OpenApi;
 using Neba.Application;
 using Neba.Infrastructure;
 
@@ -7,7 +8,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.ConfigureOpenApi();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
@@ -33,11 +34,7 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseOpenApi();
 
 app.UseHttpsRedirection();
 
@@ -54,8 +51,10 @@ await app.RunAsync();
 /// This partial class makes the implicit Program class accessible for integration tests.
 /// </summary>
 #pragma warning disable CA1050 // Declare types in namespaces
+#pragma warning disable CA1515
 public partial class Program
 #pragma warning restore CA1050
+#pragma warning restore CA1515
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Program"/> class.

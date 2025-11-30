@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Bowlers;
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Bowlers;
 
 namespace Neba.Infrastructure.Database.Website.Repositories;
@@ -10,15 +10,29 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 {
     private readonly WebsiteDbContext _dbContext = dbContext;
 
-    public async Task<IReadOnlyCollection<BowlerTitleCountDto>> GetBowlerTitleCountsAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListBowlerTitleSummariesAsync(CancellationToken cancellationToken)
         => await _dbContext.Bowlers
             .AsNoTracking()
             .Where(bowler => bowler.Titles.Any())
-            .Select(bowler => new BowlerTitleCountDto
+            .Select(bowler => new BowlerTitleSummaryDto
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name.ToDisplayName(),
                 TitleCount = bowler.Titles.Count
+            })
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<BowlerTitleDto>> ListBowlerTitlesAsync(CancellationToken cancellationToken)
+        => await _dbContext.Bowlers
+            .AsNoTracking()
+            .Where(bowler => bowler.Titles.Any())
+            .SelectMany(bowler => bowler.Titles, (bowler, title) => new BowlerTitleDto
+            {
+                BowlerId = bowler.Id,
+                BowlerName = bowler.Name.ToDisplayName(),
+                TournamentMonth = title.Month,
+                TournamentYear = title.Year,
+                TournamentType = title.TournamentType
             })
             .ToListAsync(cancellationToken);
 
@@ -43,19 +57,4 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
                     .ToArray()
             })
             .SingleOrDefaultAsync(cancellationToken);
-
-    public async Task<IReadOnlyCollection<BowlerTitleDto>> GetTitlesAsync(CancellationToken cancellationToken)
-        => await _dbContext.Bowlers
-            .AsNoTracking()
-            .Where(bowler => bowler.Titles.Any())
-            .SelectMany(bowler => bowler.Titles, (bowler, title) => new BowlerTitleDto
-            {
-                BowlerId = bowler.Id,
-                BowlerName = bowler.Name.ToDisplayName(),
-                TournamentMonth = title.Month,
-                TournamentYear = title.Year,
-                TournamentType = title.TournamentType
-            })
-            .ToListAsync(cancellationToken);
-
 }

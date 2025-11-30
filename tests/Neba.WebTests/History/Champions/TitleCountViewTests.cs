@@ -12,7 +12,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     {
         // Arrange & Act
         var cut = Render<TitleCountView>(parameters => parameters
-            .Add(p => p.Champions, new List<BowlerTitleCountViewModel>()));
+            .Add(p => p.Champions, new List<BowlerTitleSummaryViewModel>()));
 
         // Assert
         var sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
@@ -23,11 +23,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldGroupChampionsByTitleCount()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Charlie", Titles = 3, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Charlie", TitleCount = 3, HallOfFame = false }
         };
 
         // Act
@@ -43,9 +43,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyEliteTierStylesForTwentyOrMoreTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite Bowler", Titles = 25, HallOfFame = true }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite Bowler", TitleCount = 25, HallOfFame = true }
         };
 
         // Act
@@ -61,9 +61,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyMidTierStylesForTenToNineteenTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid Tier Bowler", Titles = 15, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid Tier Bowler", TitleCount = 15, HallOfFame = false }
         };
 
         // Act
@@ -79,9 +79,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyStandardTierStylesForLessThanTenTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard Bowler", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard Bowler", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -97,10 +97,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayCorrectHeaderText()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -117,9 +117,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldUseSingularFormForOneTitle()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 1, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 1, HallOfFame = false }
         };
 
         // Act
@@ -136,10 +136,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldExpandAllSectionsByDefault()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", Titles = 3, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TitleCount = 3, HallOfFame = false }
         };
 
         // Act
@@ -155,9 +155,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldToggleSectionWhenHeaderClicked()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false }
         };
 
         var cut = Render<TitleCountView>(parameters => parameters
@@ -183,10 +183,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldRenderChampionCards()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -202,10 +202,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayBowlerNamesInCards()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice Smith", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob Jones", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice Smith", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob Jones", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -221,9 +221,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayHallOfFameBadgeForHallOfFamers()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Hall of Famer", Titles = 20, HallOfFame = true }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Hall of Famer", TitleCount = 20, HallOfFame = true }
         };
 
         // Act
@@ -239,9 +239,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldNotDisplayHallOfFameBadgeForNonHallOfFamers()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Regular Bowler", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Regular Bowler", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -257,15 +257,15 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public async Task ShouldInvokeOnChampionClickWhenCardClicked()
     {
         // Arrange
-        BowlerTitleCountViewModel? clickedChampion = null;
-        var champions = new List<BowlerTitleCountViewModel>
+        BowlerTitleSummaryViewModel? clickedChampion = null;
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false }
         };
 
         var cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions)
-            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleCountViewModel>(
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleSummaryViewModel>(
                 this, champion => clickedChampion = champion)));
 
         // Act
@@ -281,11 +281,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderChampionsAlphabeticallyWithinGroup()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Zara", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mike", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Zara", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mike", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -303,11 +303,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderGroupsByTitleCountDescending()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Low", Titles = 3, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid", Titles = 10, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "High", Titles = 25, HallOfFame = true }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Low", TitleCount = 3, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid", TitleCount = 10, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "High", TitleCount = 25, HallOfFame = true }
         };
 
         // Act
@@ -325,9 +325,9 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyCorrectGridClasses()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", Titles = 5, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false }
         };
 
         // Act
@@ -346,13 +346,13 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldHandleMultipleGroupsCorrectly()
     {
         // Arrange
-        var champions = new List<BowlerTitleCountViewModel>
+        var champions = new List<BowlerTitleSummaryViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite 1", Titles = 25, HallOfFame = true },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite 2", Titles = 25, HallOfFame = true },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid 1", Titles = 10, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard 1", Titles = 3, HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard 2", Titles = 3, HallOfFame = false }
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite 1", TitleCount = 25, HallOfFame = true },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Elite 2", TitleCount = 25, HallOfFame = true },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Mid 1", TitleCount = 10, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard 1", TitleCount = 3, HallOfFame = false },
+            new() { BowlerId = Guid.NewGuid(), BowlerName = "Standard 2", TitleCount = 3, HallOfFame = false }
         };
 
         // Act

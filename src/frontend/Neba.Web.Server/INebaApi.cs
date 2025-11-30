@@ -1,14 +1,17 @@
 using Neba.Contracts;
-using Neba.Contracts.History.Champions;
+using Neba.Contracts.Website.Bowlers;
 using Refit;
 
 namespace Neba.Web.Server;
 
 internal interface INebaApi
 {
-    [Get("/history/champions")]
-    Task<Refit.ApiResponse<CollectionResponse<GetBowlerTitleCountsResponse>>> GetBowlerTitleCountsAsync();
+    [Get("/bowlers/titles/summary")]
+    Task<Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>> GetBowlerTitlesSummaryAsync();
 
-    [Get("/history/champions/{bowlerId}")]
-    Task<Refit.ApiResponse<Contracts.ApiResponse<GetBowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
+    [Get("/bowlers/titles")]
+    Task<Refit.ApiResponse<CollectionResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync();
+
+    [Get("/bowlers/{bowlerId}/titles")]
+    Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
 }

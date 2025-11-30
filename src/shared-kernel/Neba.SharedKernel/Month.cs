@@ -91,6 +91,6 @@ public sealed class Month
     /// <returns>The three-letter abbreviated month name.</returns>
     public string ToShortString()
     {
-        return this.Name.Substring(0, 3);
+        return Name.Substring(0, 3);
     }
 }

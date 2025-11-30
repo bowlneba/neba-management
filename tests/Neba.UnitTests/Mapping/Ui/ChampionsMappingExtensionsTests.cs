@@ -1,7 +1,6 @@
-using Neba.Contracts.History.Champions;
-using Neba.Contracts.History.Titles;
+using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Tournaments;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
 
@@ -10,53 +9,53 @@ namespace Neba.UnitTests.Mapping.Ui;
 public sealed class ChampionsMappingExtensionsTests
 {
     [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapBowlerId()
+    public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapBowlerId()
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(bowlerId: bowlerId.Value);
+        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(bowlerId: bowlerId.Value, titleCount: 0);
 
         // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
+        BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
 
         // Assert
         viewModel.BowlerId.ShouldBe(bowlerId.Value);
     }
 
     [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapBowlerName()
+    public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange
-        const string bowlerName = "Jane Smith";
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(bowlerName: bowlerName);
+        const string bowlerName = "John Doe";
+        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(bowlerName: bowlerName, titleCount: 0);
 
         // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
+        BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
 
         // Assert
         viewModel.BowlerName.ShouldBe(bowlerName);
     }
 
     [Fact]
-    public void GetBowlerTitleCountsResponse_ToViewModel_ShouldMapTitleCount()
+    public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapTitleCount()
     {
         // Arrange
-        const int titleCount = 7;
-        GetBowlerTitleCountsResponse response = GetBowlerTitleCountsResponseFactory.Create(titleCount: titleCount);
+        const int titleCount = 3;
+        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(titleCount: titleCount);
 
         // Act
-        BowlerTitleCountViewModel viewModel = response.ToViewModel();
+        BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
 
         // Assert
-        viewModel.Titles.ShouldBe(titleCount);
+        viewModel.TitleCount.ShouldBe(titleCount);
     }
 
     [Fact]
-    public void GetBowlerTitlesResponse_ToViewModel_ShouldMapBowlerName()
+    public void BowlerTitlesResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange
         const string bowlerName = "Jane Smith";
-        GetBowlerTitlesResponse response = GetBowlerTitlesResponseFactory.Create(bowlerName: bowlerName, titleCount: 0);
+        BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(bowlerName: bowlerName, titleCount: 0);
 
         // Act
         BowlerTitlesViewModel viewModel = response.ToViewModel();
@@ -66,17 +65,17 @@ public sealed class ChampionsMappingExtensionsTests
     }
 
     [Fact]
-    public void GetBowlerTitlesResponse_ToViewModel_ShouldMapTitlesInOrder()
+    public void BowlerTitlesResponse_ToViewModel_ShouldMapTitlesInOrder()
     {
         // Arrange
-        IReadOnlyCollection<TitlesResponse> titles = new[]
+        IReadOnlyCollection<TitleResponse> titles = new[]
         {
             TitlesResponseFactory.Create(month: Month.March, year: 2020),
             TitlesResponseFactory.Create(month: Month.January, year: 2019),
             TitlesResponseFactory.Create(month: Month.February, year: 2020)
         };
 
-        GetBowlerTitlesResponse response = GetBowlerTitlesResponseFactory.Create(
+        BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(
             bowlerName: "Jane Smith",
             titles: titles);
 
@@ -84,7 +83,7 @@ public sealed class ChampionsMappingExtensionsTests
         BowlerTitlesViewModel viewModel = response.ToViewModel();
 
         // Assert
-        List<TitlesViewModel> mappedTitles = [.. viewModel.Titles];
+        List<TitleViewModel> mappedTitles = [.. viewModel.Titles];
         mappedTitles.Count.ShouldBe(3);
         mappedTitles[0].TournamentDate.ShouldBe("Jan 2019");
         mappedTitles[1].TournamentDate.ShouldBe("Feb 2020");

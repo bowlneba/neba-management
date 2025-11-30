@@ -1,0 +1,43 @@
+using ErrorOr;
+using Neba.Application.Bowlers;
+using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Tests;
+
+namespace Neba.UnitTests.Bowlers.BowlerTitles;
+
+public sealed class ListBowlerTitleSummariesQueryHandlerTests
+{
+    private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
+
+    private readonly ListBowlerTitleSummariesQueryHandler _queryHandler;
+
+    public ListBowlerTitleSummariesQueryHandlerTests()
+    {
+        _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
+
+        _queryHandler = new ListBowlerTitleSummariesQueryHandler(
+            _mockWebsiteBowlerQueryRepository.Object);
+    }
+
+    [Fact]
+    public async Task HandleAsync_ShouldReturnAllBowlersTitlesSummary()
+    {
+        // Arrange
+        IReadOnlyCollection<BowlerTitleSummaryDto> seedSummaries = BowlerTitleSummaryDtoFactory.Bogus(50);
+
+        _mockWebsiteBowlerQueryRepository
+            .Setup(repository => repository.ListBowlerTitleSummariesAsync(TestContext.Current.CancellationToken))
+            .ReturnsAsync(seedSummaries);
+
+        ListBowlerTitleSummariesQuery query = new();
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+
+        IReadOnlyCollection<BowlerTitleSummaryDto> summaries = result.Value;
+        summaries.ShouldBeEquivalentTo(seedSummaries);
+    }
+}

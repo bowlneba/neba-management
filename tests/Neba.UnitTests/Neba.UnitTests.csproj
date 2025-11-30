@@ -26,4 +26,8 @@
     <PackageReference Include="Moq" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Moq" />
+  </ItemGroup>
+
 </Project>

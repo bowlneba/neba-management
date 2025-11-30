@@ -1,4 +1,4 @@
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Bowlers;
 
 namespace Neba.Application.Bowlers;
@@ -9,11 +9,18 @@ namespace Neba.Application.Bowlers;
 public interface IWebsiteBowlerQueryRepository
 {
     /// <summary>
-    /// Asynchronously retrieves a collection of bowlers and their total title counts.
+    /// Asynchronously retrieves a summary of titles for all bowlers.
     /// </summary>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleCountDto"/>.</returns>
-    Task<IReadOnlyCollection<BowlerTitleCountDto>> GetBowlerTitleCountsAsync(CancellationToken cancellationToken);
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleSummaryDto"/>.</returns>
+    Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListBowlerTitleSummariesAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Asynchronously retrieves a collection of all bowler titles, including bowler and tournament details for each title.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleDto"/>.</returns>
+    Task<IReadOnlyCollection<BowlerTitleDto>> ListBowlerTitlesAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously retrieves the detailed titles for a specific bowler.
@@ -22,11 +29,4 @@ public interface IWebsiteBowlerQueryRepository
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="BowlerTitlesDto"/> if found; otherwise, null.</returns>
     Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Asynchronously retrieves a collection of all bowler titles, including bowler and tournament details for each title.
-    /// </summary>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerTitleDto"/>.</returns>
-    Task<IReadOnlyCollection<BowlerTitleDto>> GetTitlesAsync(CancellationToken cancellationToken);
 }

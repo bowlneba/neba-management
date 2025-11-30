@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Abstractions.Messaging;
-using Neba.Application.Bowlers.BowlerTitleCounts;
+using Neba.Application.Bowlers.BowlerTitles;
 
 namespace Neba.Application;
 
@@ -26,9 +26,9 @@ public static class ApplicationDependencyInjection
 
         private IServiceCollection AddBowlersUseCases()
         {
-            services.AddScoped<IQueryHandler<GetBowlerTitleCountsQuery, IReadOnlyCollection<BowlerTitleCountDto>>, GetBowlerTitleCountsQueryHandler>();
-            services.AddScoped<IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?>, GetBowlerTitlesQueryHandler>();
-            services.AddScoped<IQueryHandler<GetTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, GetTitlesQueryHandler>();
+            services.AddScoped<IQueryHandler<BowlerTitlesQuery, BowlerTitlesDto?>, BowlerTitlesQueryHandler>();
+            services.AddScoped<IQueryHandler<ListBowlerTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, ListBowlerTitlesQueryHandler>();
+            services.AddScoped<IQueryHandler<ListBowlerTitleSummariesQuery, IReadOnlyCollection<BowlerTitleSummaryDto>>, ListBowlerTitleSummariesQueryHandler>();
 
             return services;
         }
