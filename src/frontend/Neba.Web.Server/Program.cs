@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
+using Neba.Web.Server.Notifications;
 using Neba.Web.Server.Services;
 using Refit;
 

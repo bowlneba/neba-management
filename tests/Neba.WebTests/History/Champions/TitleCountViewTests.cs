@@ -1,7 +1,7 @@
+using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Neba.Web.Server.History.Champions;
-using Shouldly;
 
 namespace Neba.WebTests.History.Champions;
 
@@ -11,11 +11,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldRenderEmptyWhenNoChampions()
     {
         // Arrange & Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, new List<BowlerTitleSummaryViewModel>()));
 
         // Assert
-        var sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
+        IReadOnlyList<IElement> sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
         sections.ShouldBeEmpty();
     }
 
@@ -31,11 +31,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert - Should have 2 groups (5 titles and 3 titles)
-        var headers = cut.FindAll("h2");
+        IReadOnlyList<IElement> headers = cut.FindAll("h2");
         headers.Count.ShouldBe(2);
     }
 
@@ -49,11 +49,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var eliteSection = cut.Find(".tier-elite-section");
+        IElement eliteSection = cut.Find(".tier-elite-section");
         eliteSection.ShouldNotBeNull();
     }
 
@@ -67,11 +67,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var midSection = cut.Find(".tier-mid-section");
+        IElement midSection = cut.Find(".tier-mid-section");
         midSection.ShouldNotBeNull();
     }
 
@@ -85,11 +85,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var standardSection = cut.Find(".tier-standard-section");
+        IElement standardSection = cut.Find(".tier-standard-section");
         standardSection.ShouldNotBeNull();
     }
 
@@ -104,11 +104,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var header = cut.Find("h2");
+        IElement header = cut.Find("h2");
         header.TextContent.ShouldContain("5 Titles");
         header.TextContent.ShouldContain("2 bowlers");
     }
@@ -123,11 +123,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var header = cut.Find("h2");
+        IElement header = cut.Find("h2");
         header.TextContent.ShouldContain("1 Title");
         header.TextContent.ShouldContain("1 bowler");
     }
@@ -143,11 +143,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var expandedSections = cut.FindAll(".tier-expanded");
+        IReadOnlyList<IElement> expandedSections = cut.FindAll(".tier-expanded");
         expandedSections.Count.ShouldBe(2);
     }
 
@@ -160,22 +160,22 @@ public sealed class TitleCountViewTests : TestContextWrapper
             new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false }
         };
 
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Act - Click the toggle button
-        var toggleButton = cut.Find("button[type='button']");
+        IElement toggleButton = cut.Find("button[type='button']");
         toggleButton.Click();
 
         // Assert - Section should be collapsed
-        var collapsedSections = cut.FindAll(".tier-collapsed");
+        IReadOnlyList<IElement> collapsedSections = cut.FindAll(".tier-collapsed");
         collapsedSections.Count.ShouldBe(1);
 
         // Act - Click again
         toggleButton.Click();
 
         // Assert - Section should be expanded again
-        var expandedSections = cut.FindAll(".tier-expanded");
+        IReadOnlyList<IElement> expandedSections = cut.FindAll(".tier-expanded");
         expandedSections.Count.ShouldBe(1);
     }
 
@@ -190,11 +190,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var cards = cut.FindAll("button.group");
+        IReadOnlyList<IElement> cards = cut.FindAll("button.group");
         cards.Count.ShouldBe(2);
     }
 
@@ -209,7 +209,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
@@ -227,11 +227,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var hofImage = cut.Find("img[alt='Hall of Fame']");
+        IElement hofImage = cut.Find("img[alt='Hall of Fame']");
         hofImage.ShouldNotBeNull();
     }
 
@@ -245,11 +245,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var hofImages = cut.FindAll("img[alt='Hall of Fame']");
+        IReadOnlyList<IElement> hofImages = cut.FindAll("img[alt='Hall of Fame']");
         hofImages.ShouldBeEmpty();
     }
 
@@ -263,13 +263,13 @@ public sealed class TitleCountViewTests : TestContextWrapper
             new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TitleCount = 5, HallOfFame = false }
         };
 
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions)
             .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleSummaryViewModel>(
                 this, champion => clickedChampion = champion)));
 
         // Act
-        var card = cut.Find("button.group");
+        IElement card = cut.Find("button.group");
         await card.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         // Assert
@@ -289,11 +289,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var cards = cut.FindAll("button.group h3");
+        IReadOnlyList<IElement> cards = cut.FindAll("button.group h3");
         cards[0].TextContent.ShouldContain("Alice");
         cards[1].TextContent.ShouldContain("Mike");
         cards[2].TextContent.ShouldContain("Zara");
@@ -311,11 +311,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var headers = cut.FindAll("h2");
+        IReadOnlyList<IElement> headers = cut.FindAll("h2");
         headers[0].TextContent.ShouldContain("25 Titles");
         headers[1].TextContent.ShouldContain("10 Titles");
         headers[2].TextContent.ShouldContain("3 Titles");
@@ -331,11 +331,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var grid = cut.Find(".grid");
+        IElement grid = cut.Find(".grid");
         grid.ClassList.ShouldContain("grid-cols-1");
         grid.ClassList.ShouldContain("sm:grid-cols-2");
         grid.ClassList.ShouldContain("lg:grid-cols-3");
@@ -356,14 +356,14 @@ public sealed class TitleCountViewTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<TitleCountView>(parameters => parameters
+        IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
 
         // Assert
-        var sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
+        IReadOnlyList<IElement> sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
         sections.Count.ShouldBe(3);
 
-        var cards = cut.FindAll("button.group");
+        IReadOnlyList<IElement> cards = cut.FindAll("button.group");
         cards.Count.ShouldBe(5);
     }
 }

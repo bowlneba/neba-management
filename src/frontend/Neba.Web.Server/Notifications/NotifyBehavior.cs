@@ -1,4 +1,4 @@
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Defines how a notification should be delivered to the user.

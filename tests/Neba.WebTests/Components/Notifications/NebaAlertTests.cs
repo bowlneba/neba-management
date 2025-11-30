@@ -1,8 +1,7 @@
+using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Neba.Web.Server.Components.Notifications;
-using Neba.Web.Server.Services;
-using Shouldly;
+using Neba.Web.Server.Notifications;
 
 namespace Neba.WebTests.Components.Notifications;
 
@@ -12,12 +11,12 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderAlertWithMessage()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message"));
 
         // Assert
-        var contentElement = cut.Find(".neba-alert-content");
+        IElement contentElement = cut.Find(".neba-alert-content");
         contentElement.TextContent.ShouldContain("Test message");
     }
 
@@ -25,16 +24,16 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderAlertWithTitleAndMessage()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Warning)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Title, "Test Title"));
 
         // Assert
-        var titleElement = cut.Find(".neba-alert-title");
+        IElement titleElement = cut.Find(".neba-alert-title");
         titleElement.TextContent.ShouldBe("Test Title");
 
-        var contentElement = cut.Find(".neba-alert-content");
+        IElement contentElement = cut.Find(".neba-alert-content");
         contentElement.TextContent.ShouldContain("Test message");
     }
 
@@ -42,7 +41,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldNotRenderTitleWhenNotProvided()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message"));
 
@@ -59,12 +58,12 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldApplyCorrectSeverityClass(NotifySeverity severity, string expectedClass)
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, severity)
             .Add(p => p.Message, "Test message"));
 
         // Assert
-        var alertElement = cut.Find(".neba-alert");
+        IElement alertElement = cut.Find(".neba-alert");
         alertElement.ClassList.ShouldContain($"neba-alert-{expectedClass}");
     }
 
@@ -75,13 +74,13 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldApplyCorrectVariantClass(AlertVariant variant, string expectedClass)
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Variant, variant));
 
         // Assert
-        var alertElement = cut.Find(".neba-alert");
+        IElement alertElement = cut.Find(".neba-alert");
         alertElement.ClassList.ShouldContain($"neba-alert-{expectedClass}");
     }
 
@@ -89,12 +88,12 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldUseFilledVariantByDefault()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message"));
 
         // Assert
-        var alertElement = cut.Find(".neba-alert");
+        IElement alertElement = cut.Find(".neba-alert");
         alertElement.ClassList.ShouldContain("neba-alert-filled");
     }
 
@@ -107,12 +106,12 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldSetCorrectAriaRole(NotifySeverity severity, string expectedRole)
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, severity)
             .Add(p => p.Message, "Test message"));
 
         // Assert
-        var alertElement = cut.Find(".neba-alert");
+        IElement alertElement = cut.Find(".neba-alert");
         alertElement.GetAttribute("role").ShouldBe(expectedRole);
     }
 
@@ -120,12 +119,12 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderIconByDefault()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Success)
             .Add(p => p.Message, "Test message"));
 
         // Assert
-        var iconComponent = cut.FindComponent<NebaIcon>();
+        IRenderedComponent<NebaIcon> iconComponent = cut.FindComponent<NebaIcon>();
         iconComponent.ShouldNotBeNull();
         iconComponent.Instance.Severity.ShouldBe(NotifySeverity.Success);
     }
@@ -134,7 +133,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldNotRenderIconWhenShowIconIsFalse()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.ShowIcon, false));
@@ -147,7 +146,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldNotRenderCloseButtonByDefault()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message"));
 
@@ -159,13 +158,13 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderCloseButtonWhenDismissible()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Dismissible, true));
 
         // Assert
-        var closeButton = cut.Find("button.neba-alert-close");
+        IElement closeButton = cut.Find("button.neba-alert-close");
         closeButton.ShouldNotBeNull();
         closeButton.GetAttribute("aria-label").ShouldBe("Dismiss alert");
     }
@@ -175,14 +174,14 @@ public sealed class NebaAlertTests : TestContextWrapper
     {
         // Arrange
         var dismissCalled = false;
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Dismissible, true)
             .Add(p => p.OnDismiss, EventCallback.Factory.Create(this, () => dismissCalled = true)));
 
         // Act
-        var closeButton = cut.Find("button.neba-alert-close");
+        IElement closeButton = cut.Find("button.neba-alert-close");
         closeButton.Click();
 
         // Assert
@@ -194,14 +193,14 @@ public sealed class NebaAlertTests : TestContextWrapper
     {
         // Arrange
         var closeIconClicked = false;
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Dismissible, true)
             .Add(p => p.OnCloseIconClicked, EventCallback.Factory.Create(this, () => closeIconClicked = true)));
 
         // Act
-        var closeButton = cut.Find("button.neba-alert-close");
+        IElement closeButton = cut.Find("button.neba-alert-close");
         closeButton.Click();
 
         // Assert
@@ -214,7 +213,7 @@ public sealed class NebaAlertTests : TestContextWrapper
         // Arrange
         var dismissCalled = false;
         var closeIconClicked = false;
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
             .Add(p => p.Dismissible, true)
@@ -222,7 +221,7 @@ public sealed class NebaAlertTests : TestContextWrapper
             .Add(p => p.OnCloseIconClicked, EventCallback.Factory.Create(this, () => closeIconClicked = true)));
 
         // Act
-        var closeButton = cut.Find("button.neba-alert-close");
+        IElement closeButton = cut.Find("button.neba-alert-close");
         closeButton.Click();
 
         // Assert
@@ -241,16 +240,16 @@ public sealed class NebaAlertTests : TestContextWrapper
         };
 
         // Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Error)
             .Add(p => p.Message, "Validation failed")
             .Add(p => p.ValidationMessages, validationMessages));
 
         // Assert
-        var listElement = cut.Find("ul.neba-alert-validation-list");
+        IElement listElement = cut.Find("ul.neba-alert-validation-list");
         listElement.ShouldNotBeNull();
 
-        var listItems = cut.FindAll("li");
+        IReadOnlyList<IElement> listItems = cut.FindAll("li");
         listItems.Count.ShouldBe(2);
         listItems[0].TextContent.ShouldBe("Email is required");
         listItems[1].TextContent.ShouldBe("Password must be at least 8 characters");
@@ -260,14 +259,14 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderMessageWhenValidationMessagesEmpty()
     {
         // Arrange & Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Error)
             .Add(p => p.Message, "Test message")
             .Add(p => p.ValidationMessages, new List<string>()));
 
         // Assert
         cut.FindAll("ul.neba-alert-validation-list").ShouldBeEmpty();
-        var contentElement = cut.Find(".neba-alert-content");
+        IElement contentElement = cut.Find(".neba-alert-content");
         contentElement.TextContent.ShouldContain("Test message");
     }
 
@@ -278,18 +277,18 @@ public sealed class NebaAlertTests : TestContextWrapper
         var validationMessages = new List<string> { "Validation error 1" };
 
         // Act
-        var cut = Render<NebaAlert>(parameters => parameters
+        IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Error)
             .Add(p => p.Message, "Generic message")
             .Add(p => p.ValidationMessages, validationMessages));
 
         // Assert
-        var listElement = cut.Find("ul.neba-alert-validation-list");
+        IElement listElement = cut.Find("ul.neba-alert-validation-list");
         listElement.ShouldNotBeNull();
         listElement.TextContent.ShouldContain("Validation error 1");
 
         // The generic message div should not be rendered when validation messages are present
-        var contentElement = cut.Find(".neba-alert-content");
+        IElement contentElement = cut.Find(".neba-alert-content");
         contentElement.InnerHtml.ShouldNotContain("Generic message");
     }
 }

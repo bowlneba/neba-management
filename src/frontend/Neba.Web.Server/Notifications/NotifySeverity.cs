@@ -1,4 +1,4 @@
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Defines the severity level for a notification.

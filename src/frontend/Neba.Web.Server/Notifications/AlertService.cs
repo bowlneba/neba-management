@@ -1,5 +1,5 @@
 
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Service for managing and displaying alerts in the UI.
