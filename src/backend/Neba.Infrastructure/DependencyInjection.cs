@@ -47,6 +47,7 @@ public static class InfrastructureDependencyInjection
             services.AddHealthChecks()
                 .AddNpgSql(
                     connectionString: bowlnebaConnectionString,
+                    name: "Bowlneba Database",
                     tags: bowlnebaTags);
             services.AddRepositories();
 
