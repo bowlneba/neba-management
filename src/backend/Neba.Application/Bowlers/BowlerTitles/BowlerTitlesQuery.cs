@@ -6,7 +6,7 @@ namespace Neba.Application.Bowlers.BowlerTitles;
 /// <summary>
 /// Query to retrieve the detailed titles for a specific bowler.
 /// </summary>
-public sealed record GetBowlerTitlesQuery
+public sealed record BowlerTitlesQuery
     : IQuery<BowlerTitlesDto?>
 {
     /// <summary>

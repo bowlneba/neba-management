@@ -7,9 +7,9 @@ internal static class TitlesMappingExtensions
 {
     extension(BowlerTitleDto dto)
     {
-        public GetTitleResponse ToResponseModel()
+        public BowlerTitleResponse ToResponseModel()
         {
-            return new GetTitleResponse
+            return new BowlerTitleResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,
@@ -22,13 +22,13 @@ internal static class TitlesMappingExtensions
 
     extension(BowlerTitlesDto dto)
     {
-        public GetBowlerTitlesResponse ToResponseModel()
+        public BowlerTitlesResponse ToResponseModel()
         {
-            return new GetBowlerTitlesResponse
+            return new BowlerTitlesResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,
-                Titles = dto.Titles.Select(title => new TitlesResponse
+                Titles = dto.Titles.Select(title => new TitleResponse
                 {
                     Month = title.Month,
                     Year = title.Year,
@@ -38,11 +38,11 @@ internal static class TitlesMappingExtensions
         }
     }
 
-    extension(BowlerTitlesSummaryDto dto)
+    extension(BowlerTitleSummaryDto dto)
     {
-        public GetBowlerTitlesSummaryResponse ToResponseModel()
+        public BowlerTitleSummaryResponse ToResponseModel()
         {
-            return new GetBowlerTitlesSummaryResponse
+            return new BowlerTitleSummaryResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,

@@ -7,17 +7,17 @@ using Neba.Tests;
 
 namespace Neba.UnitTests.Bowlers.BowlerTitles;
 
-public sealed class GetBowlerTitlesQueryHandlerTests
+public sealed class BowlerTitlesQueryHandlerTests
 {
     private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
 
-    private readonly GetBowlerTitlesQueryHandler _queryHandler;
+    private readonly BowlerTitlesQueryHandler _queryHandler;
 
-    public GetBowlerTitlesQueryHandlerTests()
+    public BowlerTitlesQueryHandlerTests()
     {
         _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
 
-        _queryHandler = new GetBowlerTitlesQueryHandler(
+        _queryHandler = new BowlerTitlesQueryHandler(
             _mockWebsiteBowlerQueryRepository.Object);
     }
 
@@ -26,7 +26,7 @@ public sealed class GetBowlerTitlesQueryHandlerTests
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
-        GetBowlerTitlesQuery query = new() { BowlerId = bowlerId };
+        BowlerTitlesQuery query = new() { BowlerId = bowlerId };
 
         _mockWebsiteBowlerQueryRepository
             .Setup(repo => repo.GetBowlerTitlesAsync(bowlerId, TestContext.Current.CancellationToken))
@@ -49,7 +49,7 @@ public sealed class GetBowlerTitlesQueryHandlerTests
     {
         // Arrange
         BowlerTitlesDto bowler = BowlerTitlesDtoFactory.Bogus();
-        GetBowlerTitlesQuery query = new() { BowlerId = bowler.BowlerId };
+        BowlerTitlesQuery query = new() { BowlerId = bowler.BowlerId };
 
         _mockWebsiteBowlerQueryRepository
             .Setup(repo => repo.GetBowlerTitlesAsync(bowler.BowlerId, TestContext.Current.CancellationToken))

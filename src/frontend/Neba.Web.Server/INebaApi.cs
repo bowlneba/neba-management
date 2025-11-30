@@ -7,11 +7,11 @@ namespace Neba.Web.Server;
 internal interface INebaApi
 {
     [Get("/bowlers/titles/summary")]
-    Task<Refit.ApiResponse<CollectionResponse<GetBowlerTitlesSummaryResponse>>> GetBowlerTitlesSummaryAsync();
+    Task<Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>> GetBowlerTitlesSummaryAsync();
 
     [Get("/bowlers/titles")]
-    Task<Refit.ApiResponse<CollectionResponse<GetBowlerTitlesResponse>>> GetBowlerTitlesAsync();
+    Task<Refit.ApiResponse<CollectionResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync();
 
     [Get("/bowlers/{bowlerId}/titles")]
-    Task<Refit.ApiResponse<Contracts.ApiResponse<GetBowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
+    Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
 }

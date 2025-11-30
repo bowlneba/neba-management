@@ -4,10 +4,10 @@ internal sealed record BowlerTitlesViewModel
 {
     public required string BowlerName { get; init; }
 
-    public required IReadOnlyCollection<TitlesViewModel> Titles { get; init; }
+    public required IReadOnlyCollection<TitleViewModel> Titles { get; init; }
 }
 
-internal sealed record TitlesViewModel
+internal sealed record TitleViewModel
 {
     public required string TournamentDate { get; init; }
 

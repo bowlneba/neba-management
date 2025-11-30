@@ -36,8 +36,8 @@ public sealed class BowlersTitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        CollectionResponse<GetTitleResponse>? result
-            = await response.Content.ReadFromJsonAsync<CollectionResponse<GetTitleResponse>>();
+        CollectionResponse<BowlerTitleResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<BowlerTitleResponse>>();
 
         result.ShouldNotBeNull();
 
@@ -71,8 +71,8 @@ public sealed class BowlersTitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        ApiResponse<GetBowlerTitlesResponse>? result =
-            await response.Content.ReadFromJsonAsync<ApiResponse<GetBowlerTitlesResponse>>();
+        ApiResponse<BowlerTitlesResponse>? result =
+            await response.Content.ReadFromJsonAsync<ApiResponse<BowlerTitlesResponse>>();
 
         result.ShouldNotBeNull();
         result.Data.BowlerId.ShouldBe(seedBowlerId.Value);
@@ -131,8 +131,8 @@ public sealed class BowlersTitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        CollectionResponse<GetBowlerTitlesSummaryResponse>? result
-            = await response.Content.ReadFromJsonAsync<CollectionResponse<GetBowlerTitlesSummaryResponse>>();
+        CollectionResponse<BowlerTitleSummaryResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<BowlerTitleSummaryResponse>>();
 
         result.ShouldNotBeNull();
 

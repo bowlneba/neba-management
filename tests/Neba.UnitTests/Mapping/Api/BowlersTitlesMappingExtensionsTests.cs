@@ -17,7 +17,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerId: bowlerId);
 
         // Act
-        GetTitleResponse response = dto.ToResponseModel();
+        BowlerTitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerId.ShouldBe(bowlerId.Value);
@@ -31,7 +31,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
-        GetTitleResponse response = dto.ToResponseModel();
+        BowlerTitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerName.ShouldBe(bowlerName);
@@ -45,7 +45,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentMonth: tournamentMonth);
 
         // Act
-        GetTitleResponse response = dto.ToResponseModel();
+        BowlerTitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentMonth.ShouldBe(tournamentMonth);
@@ -59,7 +59,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentYear: tournamentYear);
 
         // Act
-        GetTitleResponse response = dto.ToResponseModel();
+        BowlerTitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentYear.ShouldBe(tournamentYear);
@@ -73,7 +73,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentType: tournamentType);
 
         // Act
-        GetTitleResponse response = dto.ToResponseModel();
+        BowlerTitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentType.ShouldBe(tournamentType.Name);
@@ -87,7 +87,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(bowlerId: bowlerId);
 
         // Act
-        GetBowlerTitlesResponse response = dto.ToResponseModel();
+        BowlerTitlesResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerId.ShouldBe(bowlerId.Value);
@@ -101,7 +101,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
-        GetBowlerTitlesResponse response = dto.ToResponseModel();
+        BowlerTitlesResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerName.ShouldBe(bowlerName);
@@ -120,7 +120,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(titles: titles);
 
         // Act
-        GetBowlerTitlesResponse response = dto.ToResponseModel();
+        BowlerTitlesResponse response = dto.ToResponseModel();
 
         // Assert
         response.Titles.Count.ShouldBe(titles.Length);
@@ -134,42 +134,42 @@ public sealed class BowlersTitlesMappingExtensionsTests
     }
 
     [Fact]
-    public void BowlerTitlesSummaryDto_ToResponseModel_MapsBowlerIdCorrectly()
+    public void BowlerTitleSummaryDto_ToResponseModel_MapsBowlerIdCorrectly()
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
-        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(bowlerId: bowlerId);
+        BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(bowlerId: bowlerId);
 
         // Act
-        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+        BowlerTitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerId.ShouldBe(bowlerId.Value);
     }
 
     [Fact]
-    public void BowlerTitlesSummaryDto_ToResponseModel_MapsBowlerNameCorrectly()
+    public void BowlerTitleSummaryDto_ToResponseModel_MapsBowlerNameCorrectly()
     {
         // Arrange
         const string bowlerName = "Alice Johnson";
-        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(bowlerName: bowlerName);
+        BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
-        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+        BowlerTitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerName.ShouldBe(bowlerName);
     }
 
     [Fact]
-    public void BowlerTitlesSummaryDto_ToResponseModel_MapsTitleCountCorrectly()
+    public void BowlerTitleSummaryDto_ToResponseModel_MapsTitleCountCorrectly()
     {
         // Arrange
         const int titleCount = 5;
-        BowlerTitlesSummaryDto dto = BowlerTitlesSummaryDtoFactory.Create(titleCount: titleCount);
+        BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(titleCount: titleCount);
 
         // Act
-        GetBowlerTitlesSummaryResponse response = dto.ToResponseModel();
+        BowlerTitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.TitleCount.ShouldBe(titleCount);

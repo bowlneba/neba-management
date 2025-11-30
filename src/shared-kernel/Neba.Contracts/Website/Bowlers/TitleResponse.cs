@@ -6,7 +6,7 @@ namespace Neba.Contracts.Website.Bowlers;
 /// <summary>
 /// Represents a title won by a bowler, including the month, year, and type of tournament.
 /// </summary>
-public sealed record TitlesResponse
+public sealed record TitleResponse
 {
     /// <summary>
     /// Gets the month in which the title was won.

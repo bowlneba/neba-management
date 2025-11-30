@@ -115,7 +115,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
 
         // Act
         IReadOnlyCollection<BowlerTitleDto> result
-            = await repository.GetBowlerTitlesAsync(CancellationToken.None);
+            = await repository.ListBowlerTitlesAsync(CancellationToken.None);
 
         // Assert
         result.Count.ShouldBe(expectedTitleCount);

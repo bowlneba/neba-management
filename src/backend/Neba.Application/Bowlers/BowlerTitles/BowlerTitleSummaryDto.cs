@@ -1,14 +1,16 @@
-namespace Neba.Contracts.Website.Bowlers;
+using Neba.Domain.Bowlers;
+
+namespace Neba.Application.Bowlers.BowlerTitles;
 
 /// <summary>
-/// Represents a summary response containing a bowler's unique identifier, name, and total title count.
+/// Represents a summary of a bowler's titles, including the bowler's ID, name, and total title count.
 /// </summary>
-public sealed record GetBowlerTitlesSummaryResponse
+public sealed record BowlerTitleSummaryDto
 {
     /// <summary>
     /// The unique identifier of the bowler.
     /// </summary>
-    public required Guid BowlerId { get; init; }
+    public required BowlerId BowlerId { get; init; }
 
     /// <summary>
     /// The full name of the bowler.

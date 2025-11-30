@@ -10,10 +10,10 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 {
     private readonly WebsiteDbContext _dbContext = dbContext;
 
-    public async Task<IReadOnlyCollection<BowlerTitlesSummaryDto>> GetAllBowlerTitlesSummaryAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListBowlerTitleSummariesAsync(CancellationToken cancellationToken)
         => await _dbContext.Bowlers
             .AsNoTracking()
-            .Select(bowler => new BowlerTitlesSummaryDto
+            .Select(bowler => new BowlerTitleSummaryDto
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name.ToDisplayName(),
@@ -21,7 +21,7 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
             })
             .ToListAsync(cancellationToken);
 
-    public async Task<IReadOnlyCollection<BowlerTitleDto>> GetBowlerTitlesAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BowlerTitleDto>> ListBowlerTitlesAsync(CancellationToken cancellationToken)
         => await _dbContext.Bowlers
             .AsNoTracking()
             .Where(bowler => bowler.Titles.Any())

@@ -11,7 +11,7 @@ internal class NebaApiService(INebaApi nebaApi)
 {
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetBowlerTitlesSummaryAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<GetBowlerTitlesSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesSummaryAsync());
+        ErrorOr<Contracts.CollectionResponse<BowlerTitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesSummaryAsync());
 
         if (result.IsError)
         {
@@ -23,7 +23,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Guid bowlerId)
     {
-        ErrorOr<Contracts.ApiResponse<GetBowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
+        ErrorOr<Contracts.ApiResponse<BowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 
         if (result.IsError)
         {

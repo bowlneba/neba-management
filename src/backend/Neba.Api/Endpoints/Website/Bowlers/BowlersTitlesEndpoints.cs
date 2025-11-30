@@ -29,10 +29,10 @@ internal static class BowlersTitlesEndpoints
             app.MapGet(
                 "/titles",
                 async (
-                    IQueryHandler<GetBowlersTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
+                    IQueryHandler<ListBowlerTitlesQuery, IReadOnlyCollection<BowlerTitleDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new GetBowlersTitlesQuery();
+                    var query = new ListBowlerTitlesQuery();
 
                     ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
 
@@ -41,14 +41,14 @@ internal static class BowlersTitlesEndpoints
                         return result.Problem();
                     }
 
-                    IReadOnlyCollection<GetTitleResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                    IReadOnlyCollection<BowlerTitleResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
 
                     return TypedResults.Ok(CollectionResponse.Create(response));
                 })
                 .WithName("GetTitles")
                 .WithSummary("Get all NEBA titles won by bowlers.")
                 .WithDescription("Retrieves a list of all titles won by bowlers, including bowler and tournament details. Results are returned as a collection of title records.")
-                .Produces<CollectionResponse<GetTitleResponse>>(StatusCodes.Status200OK, "application/json")
+                .Produces<CollectionResponse<BowlerTitleResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
                 .WithTags(s_tags);
@@ -61,11 +61,11 @@ internal static class BowlersTitlesEndpoints
             app.MapGet(
                 "/{bowlerId:guid}/titles",
                 async (
-                    IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
+                    IQueryHandler<BowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
                     BowlerId bowlerId,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new GetBowlerTitlesQuery() { BowlerId = bowlerId };
+                    var query = new BowlerTitlesQuery() { BowlerId = bowlerId };
 
                     ErrorOr<BowlerTitlesDto?> result = await queryHandler.HandleAsync(query, cancellationToken);
 
@@ -74,14 +74,14 @@ internal static class BowlersTitlesEndpoints
                         return result.Problem();
                     }
 
-                    GetBowlerTitlesResponse response = result.Value!.ToResponseModel();
+                    BowlerTitlesResponse response = result.Value!.ToResponseModel();
 
                     return TypedResults.Ok(ApiResponse.Create(response));
                 })
                 .WithName("GetBowlerTitles")
                 .WithSummary("Get all NEBA titles for a specific bowler.")
                 .WithDescription("Retrieves all NEBA titles won by a specific bowler, including month, year, and tournament type for each title. Results are returned as a collection of title records for the specified bowler.")
-                .Produces<ApiResponse<GetBowlerTitlesResponse>>(StatusCodes.Status200OK, "application/json")
+                .Produces<ApiResponse<BowlerTitlesResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status404NotFound, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
@@ -95,19 +95,19 @@ internal static class BowlersTitlesEndpoints
             app.MapGet(
                 "/titles/summary",
                 async (
-                    IQueryHandler<GetBowlersTitlesSummaryQuery, IReadOnlyCollection<BowlerTitlesSummaryDto>> queryHandler,
+                    IQueryHandler<ListBowlerTitleSummariesQuery, IReadOnlyCollection<BowlerTitleSummaryDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new GetBowlersTitlesSummaryQuery();
+                    var query = new ListBowlerTitleSummariesQuery();
 
-                    ErrorOr<IReadOnlyCollection<BowlerTitlesSummaryDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
+                    ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
 
                     if (result.IsError)
                     {
                         return result.Problem();
                     }
 
-                    IReadOnlyCollection<GetBowlerTitlesSummaryResponse> response = result.Value
+                    IReadOnlyCollection<BowlerTitleSummaryResponse> response = result.Value
                         .Select(dto => dto.ToResponseModel())
                         .ToList();
 
@@ -116,7 +116,7 @@ internal static class BowlersTitlesEndpoints
                 .WithName("GetBowlersTitlesSummary")
                 .WithSummary("Get a summary of NEBA titles for all bowlers.")
                 .WithDescription("Retrieves a summary of titles won by all bowlers, including each bowler's unique identifier, name, and total title count. Results are returned as a collection of bowler title summaries.")
-                .Produces<CollectionResponse<GetBowlerTitlesSummaryResponse>>(StatusCodes.Status200OK, "application/json")
+                .Produces<CollectionResponse<BowlerTitleSummaryResponse>>(StatusCodes.Status200OK, "application/json")
                 .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
                 .WithTags(s_tags);

@@ -7,7 +7,7 @@ public static class TitlesResponseFactory
 {
     public const string TournamentType = "Open Championship";
 
-    public static TitlesResponse Create(
+    public static TitleResponse Create(
         Month? month = null,
         int? year = null,
         string? tournamentType = null)
@@ -18,14 +18,14 @@ public static class TitlesResponseFactory
             TournamentType = tournamentType ?? TournamentType
         };
 
-    public static TitlesResponse Bogus(int? seed = null)
+    public static TitleResponse Bogus(int? seed = null)
         => Bogus(1, seed).Single();
 
-    public static IReadOnlyCollection<TitlesResponse> Bogus(
+    public static IReadOnlyCollection<TitleResponse> Bogus(
         int count,
         int? seed = null)
     {
-        Faker<TitlesResponse> faker = new Faker<TitlesResponse>()
+        Faker<TitleResponse> faker = new Faker<TitleResponse>()
             .RuleFor(response => response.Month, f => f.PickRandom(Month.List.ToArray()))
             .RuleFor(response => response.Year, f => f.Date.Past(70).Year)
             .RuleFor(response => response.TournamentType, f => f.Lorem.Word());

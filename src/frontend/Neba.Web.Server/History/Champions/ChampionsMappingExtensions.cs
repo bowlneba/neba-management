@@ -1,11 +1,10 @@
-
 using Neba.Contracts.Website.Bowlers;
 
 namespace Neba.Web.Server.History.Champions;
 
 internal static class ChampionsMappingExtensions
 {
-    extension(GetBowlerTitlesSummaryResponse response)
+    extension(BowlerTitleSummaryResponse response)
     {
         public BowlerTitleSummaryViewModel ToViewModel()
             => new()
@@ -16,9 +15,9 @@ internal static class ChampionsMappingExtensions
             };
     }
 
-    extension(GetTitleResponse response)
+    extension(BowlerTitleResponse response)
     {
-        public TitlesViewModel ToViewModel()
+        public TitleViewModel ToViewModel()
             => new()
             {
                 TournamentDate = $"{response.TournamentMonth.ToShortString()} {response.TournamentYear}",
@@ -26,7 +25,7 @@ internal static class ChampionsMappingExtensions
             };
     }
 
-    extension(GetBowlerTitlesResponse response)
+    extension(BowlerTitlesResponse response)
     {
         public BowlerTitlesViewModel ToViewModel()
             => new()
@@ -35,7 +34,7 @@ internal static class ChampionsMappingExtensions
                 Titles = response.Titles
                     .OrderBy(title => title.Year)
                     .ThenBy(title => title.Month.Value)
-                    .Select(title => new TitlesViewModel
+                    .Select(title => new TitleViewModel
                     {
                         TournamentDate = $"{title.Month.ToShortString()} {title.Year}",
                         TournamentType = title.TournamentType

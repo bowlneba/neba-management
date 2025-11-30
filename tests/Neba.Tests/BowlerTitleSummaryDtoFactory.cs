@@ -4,16 +4,16 @@ using Neba.Domain.Bowlers;
 
 namespace Neba.Tests;
 
-public static class BowlerTitlesSummaryDtoFactory
+public static class BowlerTitleSummaryDtoFactory
 {
     public const string BowlerName = "John Doe";
 
-    public static BowlerTitlesSummaryDto Create(
+    public static BowlerTitleSummaryDto Create(
         BowlerId? bowlerId = null,
         string? bowlerName = null,
         int? titleCount = null)
     {
-        return new BowlerTitlesSummaryDto
+        return new BowlerTitleSummaryDto
         {
             BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? BowlerName,
@@ -21,14 +21,14 @@ public static class BowlerTitlesSummaryDtoFactory
         };
     }
 
-    public static BowlerTitlesSummaryDto Bogus(int? seed = null)
+    public static BowlerTitleSummaryDto Bogus(int? seed = null)
         => Bogus(1, seed).Single();
 
-    public static IReadOnlyCollection<BowlerTitlesSummaryDto> Bogus(
+    public static IReadOnlyCollection<BowlerTitleSummaryDto> Bogus(
         int count,
         int? seed = null)
     {
-        Faker<BowlerTitlesSummaryDto> faker = new Bogus.Faker<BowlerTitlesSummaryDto>()
+        Faker<BowlerTitleSummaryDto> faker = new Bogus.Faker<BowlerTitleSummaryDto>()
             .RuleFor(b => b.BowlerId, f => BowlerId.New())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
             .RuleFor(b => b.TitleCount, f => f.Random.Int(0, 20));

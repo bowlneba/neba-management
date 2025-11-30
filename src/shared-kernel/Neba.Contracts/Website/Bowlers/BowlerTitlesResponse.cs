@@ -4,7 +4,7 @@ namespace Neba.Contracts.Website.Bowlers;
 /// <summary>
 /// Response containing a bowler's identity, name, and the collection of titles they have won.
 /// </summary>
-public sealed record GetBowlerTitlesResponse
+public sealed record BowlerTitlesResponse
 {
     /// <summary>
     /// Gets the unique identifier of the bowler.
@@ -19,5 +19,5 @@ public sealed record GetBowlerTitlesResponse
     /// <summary>
     /// Gets the collection of titles won by the bowler.
     /// </summary>
-    public required IReadOnlyCollection<TitlesResponse> Titles { get; init; }
+    public required IReadOnlyCollection<TitleResponse> Titles { get; init; }
 }

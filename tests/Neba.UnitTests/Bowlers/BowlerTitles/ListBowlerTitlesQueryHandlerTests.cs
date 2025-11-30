@@ -6,17 +6,17 @@ using Neba.Tests;
 
 namespace Neba.UnitTests.Bowlers.BowlerTitles;
 
-public sealed class GetTitlesQueryHandlerTests
+public sealed class ListBowlerTitlesQueryHandlerTests
 {
     private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
 
-    private readonly GetBowlersTitlesQueryHandler _queryHandler;
+    private readonly ListBowlerTitlesQueryHandler _queryHandler;
 
-    public GetTitlesQueryHandlerTests()
+    public ListBowlerTitlesQueryHandlerTests()
     {
         _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
 
-        _queryHandler = new GetBowlersTitlesQueryHandler(
+        _queryHandler = new ListBowlerTitlesQueryHandler(
             _mockWebsiteBowlerQueryRepository.Object);
     }
 
@@ -27,10 +27,10 @@ public sealed class GetTitlesQueryHandlerTests
         IReadOnlyCollection<BowlerTitleDto> seedTitles = BowlerTitleDtoFactory.Bogus(100);
 
         _mockWebsiteBowlerQueryRepository
-            .Setup(repository => repository.GetBowlerTitlesAsync(TestContext.Current.CancellationToken))
+            .Setup(repository => repository.ListBowlerTitlesAsync(TestContext.Current.CancellationToken))
             .ReturnsAsync(seedTitles);
 
-        GetBowlersTitlesQuery query = new();
+        ListBowlerTitlesQuery query = new();
 
         // Act
         ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);

@@ -4,14 +4,14 @@ using Neba.Domain.Bowlers;
 
 namespace Neba.Application.Bowlers.BowlerTitles;
 
-internal sealed class GetBowlerTitlesQueryHandler(
+internal sealed class BowlerTitlesQueryHandler(
     IWebsiteBowlerQueryRepository websiteBowler)
-        : IQueryHandler<GetBowlerTitlesQuery, BowlerTitlesDto?>
+        : IQueryHandler<BowlerTitlesQuery, BowlerTitlesDto?>
 {
     private readonly IWebsiteBowlerQueryRepository _websiteBowler = websiteBowler;
 
     public async Task<ErrorOr<BowlerTitlesDto?>> HandleAsync(
-        GetBowlerTitlesQuery request,
+        BowlerTitlesQuery request,
         CancellationToken cancellationToken)
     {
         BowlerTitlesDto? bowler = await _websiteBowler
