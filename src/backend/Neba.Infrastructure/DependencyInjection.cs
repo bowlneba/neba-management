@@ -43,6 +43,11 @@ public static class InfrastructureDependencyInjection
                 .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
+            string[] bowlnebaTags = ["database", "bowlneba"];
+            services.AddHealthChecks()
+                .AddNpgSql(
+                    connectionString: bowlnebaConnectionString,
+                    tags: bowlnebaTags);
             services.AddRepositories();
 
             return services;
