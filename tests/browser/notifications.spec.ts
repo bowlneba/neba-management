@@ -498,10 +498,11 @@ test.describe('Notification Test Harness', () => {
     test('Testing menu item visible in navigation', async ({ page }) => {
       await page.goto('/');
 
-      // Open mobile menu if on mobile viewport
-      const isMobile = page.viewportSize()!.width < 768;
-      if (isMobile) {
-        const menuToggle = page.locator('button.neba-menu-toggle');
+      // If a mobile menu toggle is present (mobile view), click it to open navigation.
+      // This is more robust than checking `page.viewportSize()` which can differ
+      // between Chromium and Chrome channels or device emulation modes.
+      const menuToggle = page.locator('button.neba-menu-toggle');
+      if (await menuToggle.isVisible()) {
         await menuToggle.click();
       }
 
@@ -509,12 +510,21 @@ test.describe('Notification Test Harness', () => {
       const testingMenu = page.locator('a.neba-nav-link', { hasText: 'Testing' });
       await expect(testingMenu).toBeVisible();
 
-      // Hover over Testing to reveal the Notifications submenu
-      await testingMenu.hover();
+      // On mobile the submenu is usually revealed by clicking the parent link;
+      // on desktop it may be revealed by hover. Try clicking first, fallback to hover.
+      try {
+        await testingMenu.click({ timeout: 500 }).catch(() => {});
+      } catch {
+        // ignore - we'll try hover below
+      }
 
-      // Verify Notifications link is present in the dropdown
+      // As a final fallback, hover to reveal dropdown for desktop-like behavior.
+      await testingMenu.hover().catch(() => {});
+
+      // Verify Notifications link is present in the dropdown (allow for CSS transitions)
       const notificationsLink = page.locator('a.neba-dropdown-link[href="/testing/notifications"]');
-      await expect(notificationsLink).toBeVisible();
+      await notificationsLink.waitFor({ state: 'attached', timeout: 2000 });
+      await expect(notificationsLink).toBeVisible({ timeout: 4000 });
     });
   });
 });
