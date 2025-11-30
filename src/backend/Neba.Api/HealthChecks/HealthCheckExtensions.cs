@@ -28,27 +28,13 @@ internal static class HealthCheckExtensions
             app.MapHealthChecks("/health", new()
             {
                 Predicate = _ => true,
-                ResponseWriter = async (context, report) =>
-                {
-                    context.Response.ContentType = "application/json";
+                ResponseWriter = HealthCheckResponseWriter.Default()
+            });
 
-                    var response = new
-                    {
-                        Status = report.Status.ToString(),
-                        Checks = report.Entries.Select(entry => new
-                        {
-                            Name = entry.Key,
-                            Status = entry.Value.Status.ToString(),
-                            entry.Value.Description,
-                            entry.Value.Data,
-                            Exception = entry.Value.Exception?.Message,
-                            Duration = entry.Value.Duration.ToString()
-                        }),
-                        TotalDuration = report.TotalDuration.ToString()
-                    };
-
-                    await context.Response.WriteAsJsonAsync(response);
-                }
+            app.MapHealthChecks("/health/bowlneba", new()
+            {
+                Predicate = check => check.Tags.Contains("bowlneba"),
+                ResponseWriter = HealthCheckResponseWriter.Default()
             });
 
             return app;
