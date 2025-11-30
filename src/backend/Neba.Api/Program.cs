@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Neba.Api.Endpoints.Website;
+using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Application;
 using Neba.Infrastructure;
@@ -34,7 +35,9 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
-app.UseOpenApi();
+app
+    .UseOpenApi()
+    .UseHealthChecks();
 
 app.UseHttpsRedirection();
 
