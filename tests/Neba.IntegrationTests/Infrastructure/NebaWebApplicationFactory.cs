@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Neba.Api;
 using Neba.Infrastructure.Database.Website;
 using Neba.Tests;
 
@@ -14,7 +15,7 @@ namespace Neba.IntegrationTests.Infrastructure;
 /// Each test class should create its own instance of WebsiteDatabase and pass it to this factory.
 /// </summary>
 public sealed class NebaWebApplicationFactory
-    : WebApplicationFactory<Program>
+    : WebApplicationFactory<IApiAssemblyMarker>
 {
     private readonly WebsiteDatabase _database;
 
