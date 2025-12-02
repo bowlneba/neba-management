@@ -42,7 +42,7 @@ test.describe('Champions Page', () => {
         });
 
       // Verify cards are displayed
-      const cards = page.locator('button.group');
+      const cards = page.getByTestId('champion-card');
       await expect(cards.first()).toBeVisible({ timeout: 5000 });
     });
 
@@ -64,7 +64,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
 
       // Card should have bowler name
@@ -92,7 +92,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
 
       // Hover over card
@@ -168,7 +168,7 @@ test.describe('Champions Page', () => {
         .catch(() => {});
 
       // Click first champion card
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -181,7 +181,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
 
       // Get bowler name from card
@@ -199,7 +199,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -217,7 +217,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -233,7 +233,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -252,7 +252,7 @@ test.describe('Champions Page', () => {
         .catch(() => {});
 
       // Find a Hall of Fame card (has HOF badge)
-      const hofCard = page.locator('button.group:has(img[alt="Hall of Fame"])').first();
+      const hofCard = page.getByTestId('champion-card').filter({ has: page.locator('img[alt="Hall of Fame"]') }).first();
 
       // Check if there are any HOF members
       const hofCount = await hofCard.count();
@@ -272,7 +272,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -291,7 +291,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -309,7 +309,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -328,7 +328,7 @@ test.describe('Champions Page', () => {
         .catch(() => {});
 
       // Cards should be visible
-      const cards = page.locator('button.group');
+      const cards = page.getByTestId('champion-card');
       await expect(cards.first()).toBeVisible({ timeout: 5000 });
     });
 
@@ -339,7 +339,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -354,7 +354,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
@@ -407,7 +407,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
 
       // Should be a button element
@@ -419,7 +419,7 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      const firstCard = page.locator('button.group').first();
+      const firstCard = page.getByTestId('champion-card').first();
       await expect(firstCard).toBeVisible({ timeout: 5000 });
       await firstCard.click();
 
