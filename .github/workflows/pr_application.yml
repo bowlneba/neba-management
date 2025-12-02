@@ -123,6 +123,14 @@ jobs:
           path: "**/TestResults/**/*.trx"
           retention-days: 30
 
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-${{ matrix.test-name }}
+          path: "**/TestResults/**/coverage.opencover.xml"
+          retention-days: 30
+
   browser-tests:
     needs: build
     runs-on: ubuntu-latest
@@ -166,23 +174,23 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+      - name: Run tests with coverage
+        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build projects
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Run Playwright tests
-        run: npx playwright test --project=${{ matrix.browser }}
-        working-directory: tests/browser
-
-      - name: Upload Playwright report
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report-${{ matrix.browser }}
-          path: tests/browser/playwright-report/
+          name: test-results-${{ matrix.test-name }}
+          path: "**/TestResults/**/*.trx"
+          retention-days: 30
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-${{ matrix.test-name }}
+          path: "**/TestResults/**/coverage.opencover.xml"
           retention-days: 30
 
       - name: Upload test traces

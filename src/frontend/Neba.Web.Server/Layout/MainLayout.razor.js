@@ -5,7 +5,7 @@ function getBreakpoint(name) {
     const value = getComputedStyle(document.documentElement)
         .getPropertyValue(`--neba-breakpoint-${name}`)
         .trim();
-    return parseInt(value);
+    return Number.parseInt(value, 10);
 }
 
 export function toggleMobileMenu() {
@@ -51,7 +51,7 @@ function initializeNavigation() {
         const link = item.querySelector('[aria-haspopup]');
 
         link?.addEventListener('keydown', (event) => {
-            if (window.innerWidth > tabletMaxBreakpoint) {
+            if (globalThis.innerWidth > tabletMaxBreakpoint) {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     toggleDropdown(item);
@@ -112,21 +112,18 @@ function initializeNavigation() {
 
     // Add scroll shadow effect to navbar
     const navbar = document.querySelector('.neba-navbar');
-    let lastScrollY = window.scrollY;
 
     function handleScroll() {
-        const currentScrollY = window.scrollY;
+        const currentScrollY = globalThis.scrollY;
 
         if (currentScrollY > 10) {
             navbar?.classList.add('scrolled');
         } else {
             navbar?.classList.remove('scrolled');
         }
-
-        lastScrollY = currentScrollY;
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    globalThis.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
 
 }// Initialize on DOM ready and after Blazor updates
