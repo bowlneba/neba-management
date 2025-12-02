@@ -35,7 +35,7 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 (This section covers technical, quality-of-life, and operational improvements. Name subject to change.)
 
 - [ ] API Caching
-- [ ] Health Checks
+- [x] Health Checks
 - [ ] SonarCloud Integration
 - [ ] Global Exception Handling
 - [ ] Open Telemetry
