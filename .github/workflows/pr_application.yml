@@ -125,7 +125,7 @@ jobs:
   browser-tests:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     name: Playwright E2E Tests
 
     strategy:
