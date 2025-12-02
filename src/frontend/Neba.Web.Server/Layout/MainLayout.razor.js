@@ -5,7 +5,7 @@ function getBreakpoint(name) {
     const value = getComputedStyle(document.documentElement)
         .getPropertyValue(`--neba-breakpoint-${name}`)
         .trim();
-    return parseInt(value);
+    return Number.parseInt(value);
 }
 
 export function toggleMobileMenu() {
