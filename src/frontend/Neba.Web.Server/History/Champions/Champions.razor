@@ -1,0 +1,122 @@
+@page "/history/champions"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inject NebaApiService NebaApiService
+
+<PageTitle>Champions - NEBA</PageTitle>
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Champions</h1>
+        <p class="mt-1 text-sm text-gray-600">NEBA tournament title leaders throughout history</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Champions"
+                   Message="@errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@isLoading"
+                          Text="Loading champions..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- View Toggle Segmented Control -->
+    @if (!isLoading && champions.Count > 0)
+    {
+        <div class="flex justify-start">
+            <NebaSegmentedControl Options="viewOptions"
+                                  SelectedValue="@selectedView.ToString()"
+                                  OnValueChanged="HandleViewChanged" />
+        </div>
+    }
+
+    <!-- View Content -->
+    @if (champions.Count > 0)
+    {
+        @if (selectedView == ChampionsView.TitleCount)
+        {
+            <TitleCountView Champions="champions" OnChampionClick="HandleChampionClick" />
+        }
+        else
+        {
+            <YearView Champions="champions" OnChampionClick="HandleYearViewChampionClick" />
+        }
+    }
+</div>
+
+<!-- Bowler Titles Modal -->
+<BowlerTitlesModal IsOpen="@isModalOpen"
+                   OnClose="@(() => isModalOpen = false)"
+                   BowlerId="@selectedBowlerId"
+                   BowlerName="@selectedBowlerName"
+                   HallOfFame="@selectedBowlerHallOfFame" />
+
+@code {
+    private List<BowlerTitleSummaryViewModel> champions = new();
+    private string? errorMessage;
+    private bool isLoading = true;
+    private ChampionsView selectedView = ChampionsView.TitleCount;
+
+    // Modal state
+    private bool isModalOpen = false;
+    private Guid? selectedBowlerId;
+    private string? selectedBowlerName;
+    private bool selectedBowlerHallOfFame;
+
+    // Segmented control options
+    private readonly List<SegmentedControlOption> viewOptions = new()
+    {
+        new() { Label = "By Titles", Value = nameof(ChampionsView.TitleCount) },
+        new() { Label = "By Year", Value = nameof(ChampionsView.Year) }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await NebaApiService.GetBowlerTitlesSummaryAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                errorMessage = $"Failed to load champions data: {error.Description}";
+                return;
+            }
+
+            champions = result.Value.ToList();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HandleViewChanged(string viewValue)
+    {
+        selectedView = Enum.Parse<ChampionsView>(viewValue);
+    }
+
+    private void HandleChampionClick(BowlerTitleSummaryViewModel champion)
+    {
+        selectedBowlerId = champion.BowlerId;
+        selectedBowlerName = champion.BowlerName;
+        selectedBowlerHallOfFame = champion.HallOfFame;
+        isModalOpen = true;
+    }
+
+    private void HandleYearViewChampionClick(BowlerTitleViewModel title)
+    {
+        selectedBowlerId = title.BowlerId;
+        selectedBowlerName = title.BowlerName;
+        selectedBowlerHallOfFame = title.HallOfFame;
+        isModalOpen = true;
+    }
+}

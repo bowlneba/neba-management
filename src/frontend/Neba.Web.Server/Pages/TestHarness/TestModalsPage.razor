@@ -1,0 +1,133 @@
+@page "/testing/modals"
+@rendermode InteractiveServer
+
+@if (!IsTestEnvironment)
+{
+    NavigationManager.NavigateTo("/not-found", true);
+    return;
+}
+
+<h1 class="text-3xl font-bold mb-6 text-[var(--neba-text)]">Modal Test Harness</h1>
+
+<div class="space-y-8">
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Basic Modal</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showBasicModal = true" data-testid="open-basic-modal-btn">
+            Open Basic Modal
+        </button>
+
+        <NebaModal IsOpen="_showBasicModal" OnClose="() => _showBasicModal = false" Title="Basic Modal">
+            <p data-testid="basic-modal-content">This is a basic modal with a title and close button.</p>
+        </NebaModal>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Modal Without Close Button</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showNoCloseButtonModal = true" data-testid="open-no-close-button-modal-btn">
+            Open Modal Without Close Button
+        </button>
+
+        <NebaModal IsOpen="_showNoCloseButtonModal" OnClose="() => _showNoCloseButtonModal = false" Title="No Close Button" ShowCloseButton="false">
+            <p data-testid="no-close-button-modal-content">This modal has no close button. Click the backdrop or use the button below to close.</p>
+            <button class="neba-btn neba-btn-secondary mt-4" @onclick="() => _showNoCloseButtonModal = false" data-testid="close-modal-btn">
+                Close Modal
+            </button>
+        </NebaModal>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Modal Without Backdrop Close</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showNoBackdropCloseModal = true" data-testid="open-no-backdrop-close-modal-btn">
+            Open Modal Without Backdrop Close
+        </button>
+
+        <NebaModal IsOpen="_showNoBackdropCloseModal" OnClose="() => _showNoBackdropCloseModal = false" Title="No Backdrop Close" CloseOnBackdropClick="false">
+            <p data-testid="no-backdrop-close-modal-content">This modal cannot be closed by clicking the backdrop. Use the X button or the button below.</p>
+            <button class="neba-btn neba-btn-secondary mt-4" @onclick="() => _showNoBackdropCloseModal = false" data-testid="close-modal-btn">
+                Close Modal
+            </button>
+        </NebaModal>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Modal with Footer</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showFooterModal = true" data-testid="open-footer-modal-btn">
+            Open Modal with Footer
+        </button>
+
+        <NebaModal IsOpen="_showFooterModal" OnClose="() => _showFooterModal = false" Title="Modal with Footer">
+            <ChildContent>
+                <p data-testid="footer-modal-content">This modal has footer content with action buttons.</p>
+            </ChildContent>
+            <FooterContent>
+                <div class="flex gap-2 justify-end">
+                    <button class="neba-btn neba-btn-secondary" @onclick="() => _showFooterModal = false" data-testid="cancel-btn">
+                        Cancel
+                    </button>
+                    <button class="neba-btn neba-btn-primary" @onclick="HandleConfirm" data-testid="confirm-btn">
+                        Confirm
+                    </button>
+                </div>
+            </FooterContent>
+        </NebaModal>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Modal Without Title</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showNoTitleModal = true" data-testid="open-no-title-modal-btn">
+            Open Modal Without Title
+        </button>
+
+        <NebaModal IsOpen="_showNoTitleModal" OnClose="() => _showNoTitleModal = false">
+            <p data-testid="no-title-modal-content">This modal has no title. You can still close it by clicking the backdrop.</p>
+        </NebaModal>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Modal with Custom CSS</h2>
+        <button class="neba-btn neba-btn-primary" @onclick="() => _showCustomCssModal = true" data-testid="open-custom-css-modal-btn">
+            Open Modal with Custom CSS
+        </button>
+
+        <NebaModal IsOpen="_showCustomCssModal" OnClose="() => _showCustomCssModal = false" Title="Custom Styled Modal" CssClass="custom-modal">
+            <p data-testid="custom-css-modal-content">This modal has custom CSS applied via the CssClass parameter.</p>
+        </NebaModal>
+    </section>
+
+    @if (_confirmationMessage != null)
+    {
+        <div class="p-4 bg-green-100 border border-green-400 rounded" data-testid="confirmation-message">
+            @_confirmationMessage
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IWebHostEnvironment Environment { get; set; } = default!;
+
+    private bool IsTestEnvironment => Environment.IsDevelopment() || Environment.EnvironmentName == "Test";
+
+    private bool _showBasicModal;
+    private bool _showNoCloseButtonModal;
+    private bool _showNoBackdropCloseModal;
+    private bool _showFooterModal;
+    private bool _showNoTitleModal;
+    private bool _showCustomCssModal;
+    private string? _confirmationMessage;
+
+    private void HandleConfirm()
+    {
+        _showFooterModal = false;
+        _confirmationMessage = "Action confirmed!";
+        StateHasChanged();
+
+        // Clear message after 3 seconds
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            _confirmationMessage = null;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+}

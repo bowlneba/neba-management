@@ -1,0 +1,227 @@
+@using Neba.Web.Server.Components
+@using Neba.Web.Server.Notifications
+@inject NebaApiService NebaApiService
+
+@* Modal for displaying detailed title information for a bowler *@
+
+<NebaModal IsOpen="@IsOpen"
+           OnClose="@OnClose"
+           MaxWidth="800px"
+           CssClass="bowler-titles-modal">
+    <div class="neba-modal-header">
+        <div class="flex items-center justify-between w-full gap-4">
+            <h2 class="neba-modal-title">@GetModalTitle()</h2>
+            <div class="flex items-center gap-3">
+                <!-- Landscape: Show count inline with header -->
+                @if (titles.Count > 0)
+                {
+                    <div class="bowler-titles-header-stats flex items-center gap-2">
+                        <span class="text-sm font-medium text-[var(--neba-blue-700)]">@titles.Count Titles</span>
+                        @if (HallOfFame)
+                        {
+                            <img src="/neba-hof.jpg"
+                                 alt="Hall of Fame"
+                                 class="w-8 h-8 object-contain"
+                                 title="NEBA Hall of Fame" />
+                        }
+                    </div>
+                }
+                <button type="button"
+                        class="neba-modal-close"
+                        @onclick="HandleClose"
+                        aria-label="Close modal">
+                    ✕
+                </button>
+            </div>
+        </div>
+    </div>
+    @if (isLoading)
+    {
+        <div class="neba-modal-body">
+            <div class="flex justify-center items-center py-12">
+                <div class="text-center">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--neba-blue-700)]"></div>
+                    <p class="mt-4 text-gray-600">Loading titles...</p>
+                </div>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="neba-modal-body">
+            <div class="py-6">
+                <NebaAlert Severity="NotifySeverity.Error"
+                           Title="Error"
+                           Message="@errorMessage" />
+            </div>
+        </div>
+    }
+    else if (titles.Count == 0)
+    {
+        <div class="neba-modal-body">
+            <div class="text-center py-12 text-gray-500">
+                No titles found for this bowler.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="neba-modal-body">
+            <!-- Summary Card Section - FIXED (Portrait only) -->
+            <div class="bowler-titles-summary-section">
+                <div class="bowler-titles-summary-card bg-[var(--neba-blue-50)] border border-[var(--neba-blue-200)] rounded-lg p-3 sm:p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs sm:text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
+                            <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@titles.Count</p>
+                        </div>
+                        @if (HallOfFame)
+                        {
+                            <div class="flex items-center gap-2">
+                                <img src="/neba-hof.jpg"
+                                     alt="Hall of Fame"
+                                     class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                                     title="NEBA Hall of Fame" />
+                                <span class="text-xs sm:text-sm font-medium text-[var(--neba-blue-700)] hidden xs:inline">Hall of Fame</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section - Contains header (fixed) and body (scrollable) -->
+            <div class="bowler-titles-table-section">
+                <!-- Table Headers - FIXED -->
+                <div class="bowler-titles-table-header">
+                    <div class="flex border border-gray-200 rounded-t-lg bg-gray-50">
+                        <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            &nbsp;
+                        </div>
+                        <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                        </div>
+                        <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Titles List - SCROLLABLE -->
+                <div class="bowler-titles-scrollable-list">
+                    <div class="border-x border-b border-gray-200 rounded-b-lg bg-white">
+                        @for (int i = 0; i < titles.Count; i++)
+                        {
+                            var title = titles[i];
+                            var number = i + 1;
+                            <div class="flex border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+                                <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500">
+                                    #@number
+                                </div>
+                                <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                                    @title.TournamentDate
+                                </div>
+                                <div class="flex-1 px-2 sm:px-4 py-2 sm:py-3">
+                                    <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--neba-blue-100)] text-[var(--neba-blue-800)] whitespace-nowrap">
+                                        @title.TournamentType
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</NebaModal>
+
+@code {
+    /// <summary>
+    /// Controls whether the modal is visible.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the modal should be closed.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// The unique identifier for the bowler.
+    /// </summary>
+    [Parameter]
+    public Guid? BowlerId { get; set; }
+
+    /// <summary>
+    /// The full name of the bowler.
+    /// </summary>
+    [Parameter]
+    public string? BowlerName { get; set; }
+
+    /// <summary>
+    /// Indicates whether the bowler is in the Hall of Fame.
+    /// </summary>
+    [Parameter]
+    public bool HallOfFame { get; set; }
+
+    private List<TitleViewModel> titles = new();
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // When modal opens with a bowler ID, load their titles
+        if (IsOpen && BowlerId.HasValue && titles.Count == 0)
+        {
+            await LoadTitlesAsync();
+        }
+
+        // Reset state when modal closes
+        if (!IsOpen)
+        {
+            titles.Clear();
+            errorMessage = null;
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadTitlesAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await NebaApiService.GetBowlerTitlesAsync(BowlerId!.Value);
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                errorMessage = $"Failed to load titles: {error.Description}";
+                return;
+            }
+
+            titles = result.Value.Titles.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load titles: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetModalTitle()
+    {
+        return BowlerName ?? "Bowler Titles";
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

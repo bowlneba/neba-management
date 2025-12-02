@@ -9,9 +9,12 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Neba.UnitTests" />
+    <InternalsVisibleTo Include="Neba.WebTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Reactive" />
@@ -19,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Neba.Web.Client\Neba.Web.Client.csproj" />
+    <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

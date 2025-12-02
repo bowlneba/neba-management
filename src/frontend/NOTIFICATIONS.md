@@ -412,7 +412,7 @@ public enum AlertVariant
 
 ### ToastManager
 
-Located in [Components/Notifications/ToastManager.razor](Neba.Web.Server/Components/Notifications/ToastManager.razor)
+Located in [Notifications/ToastManager.razor](Neba.Web.Server/Notifications/ToastManager.razor)
 
 Automatically included in `MainLayout.razor`. Manages toast display, queuing, and auto-dismiss behavior.
 
@@ -422,7 +422,7 @@ Automatically included in `MainLayout.razor`. Manages toast display, queuing, an
 
 ### AlertContainer
 
-Located in [Components/Notifications/AlertContainer.razor](Neba.Web.Server/Components/Notifications/AlertContainer.razor)
+Located in [Notifications/AlertContainer.razor](Neba.Web.Server/Notifications/AlertContainer.razor)
 
 Subscribe to `AlertService` and display persistent alerts.
 
@@ -439,13 +439,13 @@ Subscribe to `AlertService` and display persistent alerts.
 
 ### NebaAlert
 
-Located in [Components/Notifications/NebaAlert.razor](Neba.Web.Server/Components/Notifications/NebaAlert.razor)
+Located in [Notifications/NebaAlert.razor](Neba.Web.Server/Notifications/NebaAlert.razor)
 
 The underlying alert component. Use `AlertService` instead of using this directly.
 
 ### NebaToast
 
-Located in [Components/Notifications/NebaToast.razor](Neba.Web.Server/Components/Notifications/NebaToast.razor)
+Located in [Notifications/NebaToast.razor](Neba.Web.Server/Notifications/NebaToast.razor)
 
 The underlying toast component. Use `NotificationService` instead of using this directly.
 
@@ -547,7 +547,7 @@ protected override void OnInitialized()
 
 - **Specification**: [.github/instructions/ui-notifications.instructions.md](../../.github/instructions/ui-notifications.instructions.md)
 - **Services**: [Neba.Web.Server/Services/](Neba.Web.Server/Services/)
-- **Components**: [Neba.Web.Server/Components/Notifications/](Neba.Web.Server/Components/Notifications/)
+- **Components**: [Neba.Web.Server/Notifications/](Neba.Web.Server/Notifications/)
 - **Styling**: [Neba.Web.Server/wwwroot/neba_theme.css](Neba.Web.Server/wwwroot/neba_theme.css)
 
 ---
@@ -557,5 +557,5 @@ protected override void OnInitialized()
 If you encounter issues or need clarification:
 
 1. Check the [specification document](../../.github/instructions/ui-notifications.instructions.md) for design decisions
-2. Review component implementations in [Components/Notifications/](Neba.Web.Server/Components/Notifications/)
+2. Review component implementations in [Notifications/](Neba.Web.Server/Notifications/)
 3. Examine service implementations in [Services/](Neba.Web.Server/Services/)

@@ -4,3 +4,6 @@
 # CS0618/CS0619: Obsolete member usage (bUnit API will be updated when library is upgraded)
 dotnet_diagnostic.CS0618.severity = warning
 dotnet_diagnostic.CS0619.severity = warning
+
+# CA2000: Dispose objects before losing scope (Mock objects in tests don't need disposal)
+dotnet_diagnostic.CA2000.severity = none

@@ -2,15 +2,19 @@ name: Deploy API
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/backend/Neba.Api/**'
-  #     - 'src/backend/Neba.Application/**'
-  #     - 'src/backend/Neba.Domain/**'
-  #     - 'src/backend/Neba.Infrastructure/**'
-  #     - '.github/workflows/deploy_api.yml'
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'Production'
+        type: string
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'Production'
+        type: string
 
 permissions:
   id-token: write  # Required for OIDC authentication
@@ -24,7 +28,7 @@ jobs:
   build:
     name: Build API
     runs-on: ubuntu-latest
-    environment: Production
+    environment: ${{ inputs.environment || 'Production' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -56,10 +60,10 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Deploy API to Production
+    name: Deploy API to ${{ inputs.environment || 'Production' }}
     runs-on: ubuntu-latest
     needs: build
-    environment: Production
+    environment: ${{ inputs.environment || 'Production' }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v6

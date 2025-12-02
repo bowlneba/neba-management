@@ -1,0 +1,102 @@
+name: Deploy All
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - Production
+  # push:
+  #   branches:
+  #     - main
+
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  # Step 1: Deploy infrastructure first
+  deploy-infrastructure:
+    name: Deploy Infrastructure
+    uses: ./.github/workflows/deploy_infrastructure.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
+
+  # Step 2: Deploy database migrations after infrastructure is ready
+  deploy-migrations:
+    name: Deploy Database Migrations
+    needs: deploy-infrastructure
+    uses: ./.github/workflows/deploy_migrations.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+    permissions:
+      contents: read
+
+  # Step 3: Deploy API and Web in parallel after migrations complete
+  deploy-api:
+    name: Deploy API
+    needs: deploy-migrations
+    uses: ./.github/workflows/deploy_api.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
+
+  deploy-web:
+    name: Deploy Web App
+    needs: deploy-migrations
+    uses: ./.github/workflows/deploy_web.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
+
+  # Step 4: Final summary after all deployments complete
+  deployment-summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [deploy-infrastructure, deploy-migrations, deploy-api, deploy-web]
+    if: always()
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Generate deployment summary
+        run: |
+          echo "### 🎉 Full Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** ${{ vars.AZURE_LOCATION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Infrastructure: ${{ needs.deploy-infrastructure.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Database Migrations: ${{ needs.deploy-migrations.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- API: ${{ needs.deploy-api.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Web App: ${{ needs.deploy-web.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Application URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **API:** https://${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web App:** https://${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for failures
+        if: |
+          needs.deploy-infrastructure.result != 'success' ||
+          needs.deploy-migrations.result != 'success' ||
+          needs.deploy-api.result != 'success' ||
+          needs.deploy-web.result != 'success'
+        run: |
+          echo "❌ One or more deployment steps failed" >> $GITHUB_STEP_SUMMARY
+          exit 1

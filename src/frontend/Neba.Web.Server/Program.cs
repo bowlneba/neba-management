@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
+using Neba.Web.Server.Notifications;
 using Neba.Web.Server.Services;
 using Refit;
 
@@ -13,12 +14,22 @@ builder.Services.AddOptions<NebaApiConfiguration>()
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<NebaApiConfiguration>>().Value);
 
-builder.Services.AddRefitClient<INebaApi>()
+builder.Services.AddRefitClient<INebaApi>(new RefitSettings
+{
+    ContentSerializer = new SystemTextJsonContentSerializer(
+            new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            })
+})
     .ConfigureHttpClient((sp, client) =>
     {
         NebaApiConfiguration config = sp.GetRequiredService<NebaApiConfiguration>();
         client.BaseAddress = new Uri(config.BaseUrl);
     });
+
+// API services
+builder.Services.AddScoped<NebaApiService>();
 
 // Notification services
 builder.Services.AddScoped<INotificationService, NotificationService>();

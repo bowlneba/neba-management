@@ -1,0 +1,109 @@
+@* Card Grid Layout - Modern, visual card-based design *@
+
+<div class="space-y-8">
+    @foreach (var group in Champions.GroupBy(c => c.TitleCount).OrderByDescending(g => g.Key))
+    {
+        var isEliteTier = group.Key >= 20;
+        var isMidTier = group.Key >= 10 && group.Key < 20;
+
+        string tierPrefix;
+        if (isEliteTier)
+        {
+            tierPrefix = "tier-elite";
+        }
+        else if (isMidTier)
+        {
+            tierPrefix = "tier-mid";
+        }
+        else
+        {
+            tierPrefix = "tier-standard";
+        }
+
+        var sectionId = $"tier-{group.Key}";
+        var isExpanded = expandedSections.Contains(sectionId);
+
+        <div class="@tierPrefix-section space-y-4">
+            <!-- Title Count Header -->
+            <button type="button"
+                    class="@tierPrefix-header w-full flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity"
+                    @onclick="() => ToggleSection(sectionId)">
+                <h2 class="text-xl font-semibold @tierPrefix-header-text">
+                    @group.Key @(group.Key == 1 ? "Title" : "Titles")
+                    <span class="text-sm @tierPrefix-header-subtext italic ml-2">
+                        @group.Count() @(group.Count() == 1 ? "bowler" : "bowlers")
+                    </span>
+                </h2>
+                <span class="@tierPrefix-header-text text-lg transition-transform @(isExpanded ? "rotate-90" : "")">
+                    ▶
+                </span>
+            </button>
+
+            <!-- Cards Grid -->
+            <div class="tier-collapse-container @(isExpanded ? "tier-expanded" : "tier-collapsed")">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @foreach (var champion in group.OrderBy(c => c.BowlerName))
+                    {
+                        <button type="button"
+                                data-testid="champion-card"
+                                class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer"
+                                @onclick="() => HandleChampionClick(champion)">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 group-hover:text-[var(--neba-blue-700)] transition-colors truncate">
+                                        @champion.BowlerName
+                                    </h3>
+                                </div>
+                                @if (champion.HallOfFame)
+                                {
+                                    <div class="flex-shrink-0">
+                                        <img src="/neba-hof.jpg"
+                                             alt="Hall of Fame"
+                                             class="w-8 h-8 object-contain"
+                                             title="NEBA Hall of Fame" />
+                                    </div>
+                                }
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<BowlerTitleSummaryViewModel> Champions { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<BowlerTitleSummaryViewModel> OnChampionClick { get; set; }
+
+    private readonly HashSet<string> expandedSections = new();
+
+    protected override void OnInitialized()
+    {
+        // Expand all sections by default
+        foreach (var titleCount in Champions.Select(c => c.TitleCount).Distinct())
+        {
+            expandedSections.Add($"tier-{titleCount}");
+        }
+    }
+
+    private void ToggleSection(string sectionId)
+    {
+        if (expandedSections.Contains(sectionId))
+        {
+            expandedSections.Remove(sectionId);
+        }
+        else
+        {
+            expandedSections.Add(sectionId);
+        }
+    }
+
+    private async Task HandleChampionClick(BowlerTitleSummaryViewModel champion)
+    {
+        await OnChampionClick.InvokeAsync(champion);
+    }
+}

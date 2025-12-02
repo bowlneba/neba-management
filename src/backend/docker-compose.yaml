@@ -7,8 +7,32 @@ services:
       context: ../..
       dockerfile: src/backend/Neba.Api/Dockerfile
     ports:
-      - "5200:8080"
+      - "5150:8080"
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Docker
+    depends_on:
+      - neba.db
+    networks:
+      - neba-network
 
+  neba.db:
+    container_name: neba-db
+    image: postgres:17.6
+    environment:
+      - POSTGRES_DB=bowlneba
+      - POSTGRES_USER=neba
+      - POSTGRES_PASSWORD=neba
+    volumes:
+      - neba-db-data:/var/lib/postgresql/data
+    ports:
+      - 19630:5432
+    networks:
+      - neba-network
+
+networks:
+  neba-network:
+    driver: bridge
+
+volumes:
+  neba-db-data:
