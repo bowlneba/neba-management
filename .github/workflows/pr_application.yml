@@ -131,7 +131,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, 'Mobile Chrome', 'Mobile Safari']
+        include:
+          - project: chromium
+            browser: chromium
+          - project: 'Mobile Chrome'
+            browser: chromium
+          - project: 'Mobile Safari'
+            browser: webkit
 
     steps:
       - uses: actions/checkout@v5
@@ -171,14 +177,14 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run Playwright tests
-        run: npx playwright test --project=${{ matrix.browser }}
+        run: npx playwright test --project="${{ matrix.project }}"
         working-directory: tests/browser
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: playwright-report-${{ matrix.project }}
           path: tests/browser/playwright-report/
           retention-days: 30
 
@@ -186,6 +192,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-traces-${{ matrix.browser }}
+          name: playwright-traces-${{ matrix.project }}
           path: tests/browser/test-results/
           retention-days: 7
