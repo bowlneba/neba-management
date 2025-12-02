@@ -47,7 +47,7 @@
         }
         else
         {
-            <YearView Champions="champions" />
+            <YearView Champions="champions" OnChampionClick="HandleYearViewChampionClick" />
         }
     }
 </div>
@@ -109,6 +109,14 @@
         selectedBowlerId = champion.BowlerId;
         selectedBowlerName = champion.BowlerName;
         selectedBowlerHallOfFame = champion.HallOfFame;
+        isModalOpen = true;
+    }
+
+    private void HandleYearViewChampionClick(BowlerTitleViewModel title)
+    {
+        selectedBowlerId = title.BowlerId;
+        selectedBowlerName = title.BowlerName;
+        selectedBowlerHallOfFame = title.HallOfFame;
         isModalOpen = true;
     }
 }

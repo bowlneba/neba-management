@@ -33,6 +33,18 @@ internal class NebaApiService(INebaApi nebaApi)
         return result.Value.Data.ToViewModel();
     }
 
+    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleViewModel>>> GetAllTitlesAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<BowlerTitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items.Select(dto => dto.ToViewModel()).ToList();
+    }
+
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
     {
         try

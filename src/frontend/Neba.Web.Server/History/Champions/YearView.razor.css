@@ -1,14 +1,44 @@
-.year-view-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    padding: 3rem;
+/* Year header styling */
+::deep .year-header {
+    background: linear-gradient(to right, var(--neba-blue-100), rgb(224, 231, 255));
+    border: 1px solid var(--neba-blue-300);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-.year-view-placeholder h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
+::deep .year-header:hover {
+    opacity: 0.9;
+}
+
+/* Champion name styling */
+::deep .champion-name {
     color: var(--neba-blue-700);
+    cursor: pointer;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+::deep .champion-name:hover {
+    color: var(--neba-blue-900);
+    text-decoration: underline;
+}
+
+/* Collapse/Expand animation */
+::deep .year-collapse-container {
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+::deep .year-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+::deep .year-expanded {
+    max-height: 5000px; /* Large enough to accommodate any content */
+    opacity: 1;
 }

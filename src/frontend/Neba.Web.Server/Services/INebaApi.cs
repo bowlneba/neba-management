@@ -10,7 +10,7 @@ internal interface INebaApi
     Task<Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>> GetBowlerTitlesSummaryAsync();
 
     [Get("/bowlers/titles")]
-    Task<Refit.ApiResponse<CollectionResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync();
+    Task<Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>> GetAllTitlesAsync();
 
     [Get("/bowlers/{bowlerId}/titles")]
     Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);

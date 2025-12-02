@@ -17,7 +17,18 @@ internal static class BowlerTitleMappingExtensions
 
     extension(BowlerTitleResponse response)
     {
-        public TitleViewModel ToViewModel()
+        public BowlerTitleViewModel ToViewModel()
+            => new()
+            {
+                BowlerId = response.BowlerId,
+                BowlerName = response.BowlerName,
+                TournamentMonth = response.TournamentMonth.Value,
+                TournamentYear = response.TournamentYear,
+                TournamentType = response.TournamentType,
+                HallOfFame = false // Will be set later when we have Hall of Fame data
+            };
+
+        public TitleViewModel ToTitleViewModel()
             => new()
             {
                 TournamentDate = $"{response.TournamentMonth.ToShortString()} {response.TournamentYear}",
