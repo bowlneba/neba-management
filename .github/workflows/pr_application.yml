@@ -122,6 +122,22 @@ jobs:
           path: "**/TestResults/**/*.trx"
           retention-days: 30
 
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-results-${{ matrix.test-name }}
+          path: "**/TestResults/**/*.trx"
+          retention-days: 30
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-${{ matrix.test-name }}
+          path: "**/TestResults/**/coverage.opencover.xml"
+          retention-days: 30
+
   browser-tests:
     # Disabled for PRs - run manually with workflow_dispatch or in nightly builds
     if: github.event_name == 'workflow_dispatch'
@@ -171,6 +187,8 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+      - name: Run tests with coverage
+        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Restore dependencies
         run: dotnet restore
@@ -188,7 +206,6 @@ jobs:
         with:
           name: playwright-report-${{ matrix.project }}
           path: tests/browser/playwright-report/
-          retention-days: 30
 
       - name: Upload test traces
         if: failure()

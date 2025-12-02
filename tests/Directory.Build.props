@@ -4,6 +4,10 @@
 
   <PropertyGroup>
     <RootNamespace>Neba.Tests</RootNamespace>
+
+    <!-- Code coverage settings for SonarCloud -->
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>opencover</CoverletOutputFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit.v3" />
