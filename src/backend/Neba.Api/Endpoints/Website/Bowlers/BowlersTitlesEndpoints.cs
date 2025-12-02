@@ -10,7 +10,7 @@ namespace Neba.Api.Endpoints.Website.Bowlers;
 #pragma warning disable S2325 // Extension methods should be static
 internal static class BowlersTitlesEndpoints
 {
-    private static readonly string[] s_tags = ["titles","bowlers","website","champions"];
+    private static readonly string[] s_tags = ["titles", "bowlers", "website", "champions"];
 
     extension(IEndpointRouteBuilder app)
     {

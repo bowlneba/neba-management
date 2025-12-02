@@ -45,6 +45,7 @@
                     @foreach (var champion in group.OrderBy(c => c.BowlerName))
                     {
                         <button type="button"
+                                data-testid="champion-card"
                                 class="group block w-full bg-white rounded-lg border @tierPrefix-card p-5 hover:shadow-lg transition-all duration-200 text-left cursor-pointer"
                                 @onclick="() => HandleChampionClick(champion)">
                             <div class="flex items-center gap-3">

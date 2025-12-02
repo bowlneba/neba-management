@@ -1,6 +1,7 @@
 using System.Reactive.Subjects;
+using Neba.Web.Server.Services;
 
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Implementation of INotificationService using System.Reactive for publish-subscribe pattern.

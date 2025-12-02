@@ -35,5 +35,5 @@ public sealed class Title : Entity<TitleId>
 
     internal Title()
         : base(TitleId.New())
-    {}
+    { }
 }

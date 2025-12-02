@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Neba.Web.Client\Neba.Web.Client.csproj" />
-    <ProjectReference Include="..\..\shared-kernel\neba.contracts\neba.contracts.csproj" />
+    <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

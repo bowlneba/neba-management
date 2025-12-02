@@ -1,9 +1,9 @@
-using Neba.Application.Bowlers.BowlerTitles;
-using Neba.Domain.Bowlers;
 using Neba.Api.Endpoints.Website.Bowlers;
-using Neba.Tests;
-using Neba.Domain.Tournaments;
+using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Domain.Bowlers;
+using Neba.Domain.Tournaments;
+using Neba.Tests;
 
 namespace Neba.UnitTests.Mapping.Api;
 

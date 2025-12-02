@@ -1,4 +1,4 @@
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Default configuration values for toast notifications.

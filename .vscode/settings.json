@@ -11,15 +11,20 @@
   "cSpell.words": [
     "Antiforgery",
     "Ardalis",
+    "Blazor",
     "bowlneba",
+    "bunit",
     "efcore",
     "Instantiator",
     "Neba",
     "npgsql",
     "Respawn",
+    "Roslynator",
+    "Shouldly",
     "Testcontainers",
     "uninstantiated",
-    "USBC"
+    "USBC",
+    "xunit"
   ],
   "sqltools.connections": [
     {

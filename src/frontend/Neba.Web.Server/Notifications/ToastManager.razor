@@ -1,3 +1,4 @@
+@using Neba.Web.Server.Notifications
 @using Neba.Web.Server.Services
 @using System.Reactive.Linq
 @implements IDisposable
@@ -50,7 +51,7 @@
     {
         if (firstRender)
         {
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Notifications/ToastManager.razor.js");
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Notifications/ToastManager.razor.js");
             _isMobile = await _module.InvokeAsync<bool>("isMobile");
             _effectiveDuration = _isMobile
                 ? TimeSpan.FromMilliseconds(ToastDefaults.MobileDurationMs)

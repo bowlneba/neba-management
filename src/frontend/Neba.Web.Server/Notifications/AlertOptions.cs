@@ -1,4 +1,4 @@
-namespace Neba.Web.Server.Services;
+namespace Neba.Web.Server.Notifications;
 
 /// <summary>
 /// Configuration options for alert appearance and behavior.

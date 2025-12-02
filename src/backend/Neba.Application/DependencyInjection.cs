@@ -9,8 +9,8 @@ namespace Neba.Application;
 /// </summary>
 public static class ApplicationDependencyInjection
 {
-    #pragma warning disable S2325 // Extension methods should be static
-    #pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable CA1034 // Nested types should not be visible
     extension(IServiceCollection services)
     {
         /// <summary>

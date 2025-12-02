@@ -15,8 +15,8 @@ namespace Neba.Infrastructure;
 /// </summary>
 public static class InfrastructureDependencyInjection
 {
-    #pragma warning disable S2325 // Extension methods should be static
-    #pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable CA1034 // Nested types should not be visible
 
     extension(IServiceCollection services)
     {
@@ -42,6 +42,13 @@ public static class InfrastructureDependencyInjection
             services.AddDbContext<WebsiteDbContext>(options => options
                 .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
+
+            string[] bowlnebaTags = ["database", "bowlneba"];
+
+            services.AddHealthChecks()
+                .AddDbContextCheck<WebsiteDbContext>(
+                    name: "Bowlneba Database",
+                    tags: bowlnebaTags);
 
             services.AddRepositories();
 
@@ -73,7 +80,20 @@ public static class InfrastructureDependencyInjection
                 throw new InvalidOperationException("KeyVault:VaultUrl is not configured but KeyVault is enabled.");
             }
 
-            config.AddAzureKeyVault(new Uri(vaultUrl), new DefaultAzureCredential());
+            var vaultUri = new Uri(vaultUrl);
+            var defaultAzureCredential = new DefaultAzureCredential();
+
+            config.AddAzureKeyVault(vaultUri, defaultAzureCredential);
+
+            string[] keyVaultTags = ["keyvault", "azure"];
+            services.AddHealthChecks()
+                .AddAzureKeyVault(vaultUri, defaultAzureCredential,
+                    _ =>
+                    {
+                        // This is where specific secret/key checks would go
+                    },
+                    name: "Azure Key Vault",
+                    tags: keyVaultTags);
 
             return services;
         }

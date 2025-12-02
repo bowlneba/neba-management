@@ -17,7 +17,7 @@ internal sealed class MonthSchemaTransformer
             schema.Format = "int32";
             schema.Minimum = "1";
             schema.Maximum = "12";
-            schema.Example =  JsonValue.Create(7);
+            schema.Example = JsonValue.Create(7);
         }
 
         return Task.CompletedTask;

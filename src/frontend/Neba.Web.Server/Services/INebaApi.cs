@@ -2,7 +2,7 @@ using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Refit;
 
-namespace Neba.Web.Server;
+namespace Neba.Web.Server.Services;
 
 internal interface INebaApi
 {

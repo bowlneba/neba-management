@@ -15,7 +15,7 @@ internal sealed class TitleConfiguration
         builder.ToTable("titles", "website");
         builder.HasKey(title => title.Id);
 
-        builder.HasIndex(title => new {title.Year, title.Month});
+        builder.HasIndex(title => new { title.Year, title.Month });
 
         builder
             .Property(title => title.Id)

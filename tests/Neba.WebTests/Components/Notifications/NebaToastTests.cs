@@ -1,8 +1,6 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Neba.Web.Server.Components.Notifications;
-using Neba.Web.Server.Services;
-using Shouldly;
+using Neba.Web.Server.Notifications;
 
 namespace Neba.WebTests.Components.Notifications;
 
@@ -15,11 +13,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var messageElement = cut.Find(".neba-toast-message");
+        AngleSharp.Dom.IElement messageElement = cut.Find(".neba-toast-message");
         messageElement.TextContent.ShouldBe("Test message");
     }
 
@@ -30,14 +28,14 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Warning, "Test message", "Test Title");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var titleElement = cut.Find(".neba-toast-title");
+        AngleSharp.Dom.IElement titleElement = cut.Find(".neba-toast-title");
         titleElement.TextContent.ShouldBe("Test Title");
 
-        var messageElement = cut.Find(".neba-toast-message");
+        AngleSharp.Dom.IElement messageElement = cut.Find(".neba-toast-message");
         messageElement.TextContent.ShouldBe("Test message");
     }
 
@@ -48,7 +46,7 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
@@ -67,11 +65,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(severity, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var toastElement = cut.Find(".neba-toast");
+        AngleSharp.Dom.IElement toastElement = cut.Find(".neba-toast");
         toastElement.ClassList.ShouldContain($"neba-toast-{expectedClass}");
     }
 
@@ -87,11 +85,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(severity, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var toastElement = cut.Find(".neba-toast");
+        AngleSharp.Dom.IElement toastElement = cut.Find(".neba-toast");
         toastElement.GetAttribute("aria-live").ShouldBe(expectedAriaLive);
     }
 
@@ -102,11 +100,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var dismissButton = cut.Find("button.neba-toast-dismiss");
+        AngleSharp.Dom.IElement dismissButton = cut.Find("button.neba-toast-dismiss");
         dismissButton.ShouldNotBeNull();
         dismissButton.GetAttribute("aria-label").ShouldBe("Dismiss notification");
     }
@@ -119,11 +117,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var dismissCalled = false;
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload)
             .Add(p => p.OnDismiss, EventCallback.Factory.Create(this, () => dismissCalled = true)));
 
-        var dismissButton = cut.Find("button.neba-toast-dismiss");
+        AngleSharp.Dom.IElement dismissButton = cut.Find("button.neba-toast-dismiss");
         dismissButton.Click();
 
         // Allow time for async dismiss operation
@@ -140,17 +138,17 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
-        var dismissButton = cut.Find("button.neba-toast-dismiss");
+        AngleSharp.Dom.IElement dismissButton = cut.Find("button.neba-toast-dismiss");
         dismissButton.Click();
 
         // Wait for state change
         cut.WaitForState(() => cut.Find(".neba-toast").ClassList.Contains("dismissing"), timeout: TimeSpan.FromMilliseconds(100));
 
         // Assert
-        var toastElement = cut.Find(".neba-toast");
+        AngleSharp.Dom.IElement toastElement = cut.Find(".neba-toast");
         toastElement.ClassList.ShouldContain("dismissing");
     }
 
@@ -161,11 +159,11 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Success, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
-        var iconComponent = cut.FindComponent<NebaIcon>();
+        IRenderedComponent<NebaIcon> iconComponent = cut.FindComponent<NebaIcon>();
         iconComponent.ShouldNotBeNull();
         iconComponent.Instance.Severity.ShouldBe(NotifySeverity.Success);
     }
@@ -178,7 +176,7 @@ public sealed class NebaToastTests : TestContextWrapper
         var customDuration = TimeSpan.FromSeconds(10);
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload)
             .Add(p => p.Duration, customDuration));
 
@@ -193,7 +191,7 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
@@ -207,7 +205,7 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload));
 
         // Assert
@@ -221,7 +219,7 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload)
             .Add(p => p.PauseOnHover, false));
 
@@ -236,14 +234,14 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload)
             .Add(p => p.PauseOnHover, true));
 
-        var toastElement = cut.Find(".neba-toast");
+        AngleSharp.Dom.IElement toastElement = cut.Find(".neba-toast");
 
         // Assert - should not throw
-        var act = () => toastElement.MouseEnter();
+        Action act = () => toastElement.MouseEnter();
         act.ShouldNotThrow();
     }
 
@@ -254,15 +252,15 @@ public sealed class NebaToastTests : TestContextWrapper
         var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
-        var cut = Render<NebaToast>(parameters => parameters
+        IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
             .Add(p => p.Payload, payload)
             .Add(p => p.PauseOnHover, true));
 
-        var toastElement = cut.Find(".neba-toast");
+        AngleSharp.Dom.IElement toastElement = cut.Find(".neba-toast");
         toastElement.MouseEnter();
 
         // Assert - should not throw
-        var act = () => toastElement.MouseLeave();
+        Action act = () => toastElement.MouseLeave();
         act.ShouldNotThrow();
     }
 }
