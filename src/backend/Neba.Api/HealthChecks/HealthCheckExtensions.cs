@@ -3,20 +3,6 @@ namespace Neba.Api.HealthChecks;
 internal static class HealthCheckExtensions
 {
     #pragma warning disable S2325 // Extension methods should be static
-    extension(IServiceCollection services)
-    {
-        /// <summary>
-        /// Adds health check services to the dependency injection container.
-        /// </summary>
-        /// <returns>The service collection for method chaining.</returns>
-        public IServiceCollection ConfigureHealthChecks()
-        {
-            services.AddHealthChecks();
-
-            return services;
-        }
-    }
-
     extension(WebApplication app)
     {
         /// <summary>
