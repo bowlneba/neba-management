@@ -51,7 +51,7 @@ function initializeNavigation() {
         const link = item.querySelector('[aria-haspopup]');
 
         link?.addEventListener('keydown', (event) => {
-            if (window.innerWidth > tabletMaxBreakpoint) {
+            if (globalThis.innerWidth > tabletMaxBreakpoint) {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     toggleDropdown(item);
@@ -114,7 +114,7 @@ function initializeNavigation() {
     const navbar = document.querySelector('.neba-navbar');
 
     function handleScroll() {
-        const currentScrollY = window.scrollY;
+        const currentScrollY = globalThis.scrollY;
 
         if (currentScrollY > 10) {
             navbar?.classList.add('scrolled');
@@ -123,7 +123,7 @@ function initializeNavigation() {
         }
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    globalThis.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
 
 }// Initialize on DOM ready and after Blazor updates
