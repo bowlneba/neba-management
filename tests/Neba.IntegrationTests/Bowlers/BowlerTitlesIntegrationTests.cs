@@ -66,7 +66,7 @@ public sealed class BowlersTitlesIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{seedBowlerId}/titles", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{seedBowlerId.Value}/titles", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -96,7 +96,7 @@ public sealed class BowlersTitlesIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{nonExistentBowlerId}/titles", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/bowlers/{nonExistentBowlerId.Value}/titles", UriKind.Relative));
 
         // Assert
         Dictionary<string, object> metadata = new()

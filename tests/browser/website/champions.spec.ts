@@ -24,12 +24,12 @@ test.describe('Champions Page', () => {
       expect(title).toBeDefined();
     });
 
-    test('displays loading indicator initially', async ({ page }) => {
+    test('displays loading indicator initially', ({ page }) => {
       // Note: This test might be flaky depending on how fast the data loads
       // The loading indicator should appear briefly
-      const loadingIndicator = page.locator('.neba-loading-overlay-page');
+      page.locator('.neba-loading-overlay-page');
       // We just verify it exists in the DOM, it may already be hidden
-      await expect(page.locator('body')).toBeTruthy();
+      expect(page.locator('body')).toBeTruthy();
     });
   });
 

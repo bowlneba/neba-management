@@ -40,7 +40,7 @@ public sealed class YearViewTests : TestContextWrapper
             }).ToList();
 
             var collectionResponse = new CollectionResponse<BowlerTitleResponse> { Items = dtos };
-            var apiResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>(
+            using var apiResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>(
                 new HttpResponseMessage(System.Net.HttpStatusCode.OK),
                 collectionResponse,
                 new RefitSettings());
