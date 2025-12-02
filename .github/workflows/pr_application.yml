@@ -131,9 +131,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium]
-        # For cross-browser testing, add: firefox, webkit
-        # Full matrix runs in nightly builds to save CI time on PRs
+        browser: [chromium, 'Mobile Chrome', 'Mobile Safari']
 
     steps:
       - uses: actions/checkout@v5
