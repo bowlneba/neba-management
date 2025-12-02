@@ -7,6 +7,7 @@ using Moq;
 using Neba;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Tests;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Refit;
@@ -79,9 +80,9 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TournamentMonth = 11, TournamentYear = 2024, TournamentType = "Doubles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Charlie", TournamentMonth = 10, TournamentYear = 2023, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(tournamentMonth: 12, tournamentYear: 2024),
+            BowlerTitleViewModelFactory.Create(tournamentMonth: 11, tournamentYear: 2024),
+            BowlerTitleViewModelFactory.Create(tournamentMonth: 10, tournamentYear: 2023)
         };
         SetupMockApiService(titles);
 
@@ -104,8 +105,8 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TournamentMonth = 11, TournamentYear = 2024, TournamentType = "Doubles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2024)
         };
         SetupMockApiService(titles);
 
@@ -129,7 +130,7 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create()
         };
         SetupMockApiService(titles);
 
@@ -152,8 +153,8 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TournamentMonth = 10, TournamentYear = 2023, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
         SetupMockApiService(titles);
 
@@ -176,7 +177,7 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create()
         };
         SetupMockApiService(titles);
 
@@ -209,7 +210,7 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create()
         };
         SetupMockApiService(titles);
 
@@ -234,7 +235,7 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice Smith", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(bowlerName: "Alice Smith")
         };
         SetupMockApiService(titles);
 
@@ -258,9 +259,9 @@ public sealed class YearViewTests : TestContextWrapper
         // Arrange
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2022, TournamentType = "Singles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Bob", TournamentMonth = 11, TournamentYear = 2024, TournamentType = "Doubles", HallOfFame = false },
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Charlie", TournamentMonth = 10, TournamentYear = 2023, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2022),
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
+            BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
         SetupMockApiService(titles);
 
@@ -286,7 +287,7 @@ public sealed class YearViewTests : TestContextWrapper
         BowlerTitleViewModel? clickedChampion = null;
         var titles = new List<BowlerTitleViewModel>
         {
-            new() { BowlerId = Guid.NewGuid(), BowlerName = "Alice", TournamentMonth = 12, TournamentYear = 2024, TournamentType = "Singles", HallOfFame = false }
+            BowlerTitleViewModelFactory.Create(bowlerName: "Alice")
         };
         SetupMockApiService(titles);
 

@@ -23,6 +23,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
       <ProjectReference Include="..\..\src\shared-kernel\neba.contracts\neba.contracts.csproj" />
+      <ProjectReference Include="..\Neba.Tests\Neba.Tests.csproj" />
     </ItemGroup>
 
 </Project>
