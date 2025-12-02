@@ -2,7 +2,7 @@ namespace Neba.Api.HealthChecks;
 
 internal static class HealthCheckExtensions
 {
-    #pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable S2325 // Extension methods should be static
     extension(WebApplication app)
     {
         /// <summary>

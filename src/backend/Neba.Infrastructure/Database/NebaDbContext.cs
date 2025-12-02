@@ -15,9 +15,9 @@ internal abstract class NebaDbContext(DbContextOptions options)
 
         optionsBuilder.EnableDetailedErrors();
 
-    #if DEBUG
+#if DEBUG
         optionsBuilder.EnableSensitiveDataLogging();
-    #endif
+#endif
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

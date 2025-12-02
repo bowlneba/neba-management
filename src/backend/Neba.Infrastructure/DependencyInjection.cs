@@ -15,8 +15,8 @@ namespace Neba.Infrastructure;
 /// </summary>
 public static class InfrastructureDependencyInjection
 {
-    #pragma warning disable S2325 // Extension methods should be static
-    #pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable CA1034 // Nested types should not be visible
 
     extension(IServiceCollection services)
     {
@@ -44,7 +44,7 @@ public static class InfrastructureDependencyInjection
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
             string[] bowlnebaTags = ["database", "bowlneba"];
-            
+
             services.AddHealthChecks()
                 .AddDbContextCheck<WebsiteDbContext>(
                     name: "Bowlneba Database",

@@ -5,7 +5,7 @@ namespace Neba.IntegrationTests;
 
 internal static class HttpResponseAssertionExtensions
 {
-    #pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable S2325 // Extension methods should be static
     extension(HttpResponseMessage response)
     {
         public async Task ShouldBeNotFound(string title, string detail, Dictionary<string, object>? metadata = null)

@@ -41,7 +41,7 @@ public sealed record Name
     public string? Nickname { get; init; }
 
     internal Name()
-    {}
+    { }
 
     /// <summary>
     /// Creates a new <see cref="Name"/> value object after validating required fields according to NEBA domain rules.
