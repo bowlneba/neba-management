@@ -112,7 +112,6 @@ function initializeNavigation() {
 
     // Add scroll shadow effect to navbar
     const navbar = document.querySelector('.neba-navbar');
-    let lastScrollY = window.scrollY;
 
     function handleScroll() {
         const currentScrollY = window.scrollY;
@@ -122,8 +121,6 @@ function initializeNavigation() {
         } else {
             navbar?.classList.remove('scrolled');
         }
-
-        lastScrollY = currentScrollY;
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
