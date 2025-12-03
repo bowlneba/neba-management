@@ -51,6 +51,7 @@ public sealed class YearViewTests : TestContextWrapper
         }
 
         // Use the real NebaApiService with the mocked INebaApi
+        // The service will call GetAllTitlesAsync and transform it to GetTitlesByYearAsync
         var nebaApiService = new NebaApiService(mockNebaApi.Object);
         TestContext.Services.AddSingleton(nebaApiService);
     }
@@ -62,11 +63,8 @@ public sealed class YearViewTests : TestContextWrapper
         var titles = new List<BowlerTitleViewModel>();
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -86,11 +84,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -110,11 +105,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -134,11 +126,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -158,11 +147,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -181,10 +167,7 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -214,11 +197,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -239,11 +219,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -265,11 +242,8 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions));
+        IRenderedComponent<YearView> cut = Render<YearView>();
 
         await Task.Delay(200); // Wait for async rendering
 
@@ -291,10 +265,7 @@ public sealed class YearViewTests : TestContextWrapper
         };
         SetupMockApiService(titles);
 
-        var champions = new List<BowlerTitleSummaryViewModel>();
-
         IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
-            .Add(p => p.Champions, champions)
             .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(
                 this, champion => clickedChampion = champion)));
 

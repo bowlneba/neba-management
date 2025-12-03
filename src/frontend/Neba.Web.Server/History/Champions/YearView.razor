@@ -104,13 +104,10 @@ else
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public List<BowlerTitleSummaryViewModel> Champions { get; set; } = new();
-
     [Parameter]
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
-    private List<YearGroup> titlesByYear = new();
+    private List<TitlesByYearViewModel> titlesByYear = new();
     private string? errorMessage;
     private bool isLoading = true;
     private readonly HashSet<string> expandedSections = new();
@@ -127,7 +124,7 @@ else
 
         try
         {
-            var result = await NebaApiService.GetAllTitlesAsync();
+            var result = await NebaApiService.GetTitlesByYearAsync();
 
             if (result.IsError)
             {
@@ -136,25 +133,7 @@ else
                 return;
             }
 
-            // Get Hall of Fame info from Champions parameter
-            var hallOfFameMap = Champions.ToDictionary(c => c.BowlerId, c => c.HallOfFame);
-
-            // Update Hall of Fame status for each title
-            var titlesWithHoF = result.Value
-                .Select(t => t with { HallOfFame = hallOfFameMap.GetValueOrDefault(t.BowlerId, false) })
-                .ToList();
-
-            // Group by year
-            titlesByYear = titlesWithHoF
-                .GroupBy(t => t.TournamentYear)
-                .Select(g => new YearGroup
-                {
-                    Year = g.Key,
-                    Titles = g.OrderByDescending(t => t.TournamentMonth)
-                             .ThenBy(t => t.TournamentType)
-                             .ToList()
-                })
-                .ToList();
+            titlesByYear = result.Value.ToList();
 
             // Expand all sections by default
             foreach (var yearGroup in titlesByYear)
@@ -207,11 +186,5 @@ else
             12 => "December",
             _ => "Unknown"
         };
-    }
-
-    private sealed class YearGroup
-    {
-        public required int Year { get; init; }
-        public required List<BowlerTitleViewModel> Titles { get; init; }
     }
 }
