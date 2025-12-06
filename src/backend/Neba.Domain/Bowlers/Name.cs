@@ -23,10 +23,10 @@ public sealed record Name
     public required string LastName { get; init; }
 
     /// <summary>
-    /// The bowler's middle initial, if provided, as used in legal or formal contexts.
+    /// The bowler's middle name, if provided, as used in legal or formal contexts.
     /// </summary>
-    /// <value>Middle initial of the bowler</value>
-    public string? MiddleInitial { get; init; }
+    /// <value>Middle name of the bowler</value>
+    public string? MiddleName { get; init; }
 
     /// <summary>
     /// The suffix for the bowler's name (e.g., Jr., Sr., III), if applicable, as used in official records.
@@ -48,14 +48,14 @@ public sealed record Name
     /// </summary>
     /// <param name="firstName">The bowler's first name (required).</param>
     /// <param name="lastName">The bowler's last name (required).</param>
-    /// <param name="middleInitial">The bowler's middle initial (optional).</param>
+    /// <param name="middleName">The bowler's middle name (optional).</param>
     /// <param name="suffix">The bowler's name suffix (optional).</param>
     /// <param name="nickname">The bowler's nickname (optional).</param>
     /// <returns>An <see cref="ErrorOr{T}"/> containing the created <see cref="Name"/> or validation errors.</returns>
     public static ErrorOr<Name> Create(
         string firstName,
         string lastName,
-        string? middleInitial = null,
+        string? middleName = null,
         string? suffix = null,
         string? nickname = null
     )
@@ -81,7 +81,7 @@ public sealed record Name
         {
             FirstName = firstName,
             LastName = lastName,
-            MiddleInitial = middleInitial,
+            MiddleName = middleName,
             Suffix = suffix,
             Nickname = nickname
         };
@@ -95,9 +95,9 @@ public sealed record Name
     {
         StringBuilder parts = new(FirstName);
 
-        if (!string.IsNullOrWhiteSpace(MiddleInitial))
+        if (!string.IsNullOrWhiteSpace(MiddleName))
         {
-            parts.Append(CultureInfo.CurrentCulture, $" {MiddleInitial}.");
+            parts.Append(CultureInfo.CurrentCulture, $" {MiddleName}");
         }
 
         parts.Append(CultureInfo.CurrentCulture, $" {LastName}");

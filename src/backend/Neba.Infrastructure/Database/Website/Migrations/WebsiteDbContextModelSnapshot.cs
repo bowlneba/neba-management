@@ -97,11 +97,10 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                                 .HasColumnType("character varying(30)")
                                 .HasColumnName("last_name");
 
-                            b1.Property<string>("MiddleInitial")
-                                .HasMaxLength(1)
-                                .HasColumnType("character(1)")
-                                .HasColumnName("middle_initial")
-                                .IsFixedLength();
+                            b1.Property<string>("MiddleName")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("middle_name");
 
                             b1.Property<string>("Nickname")
                                 .HasMaxLength(30)

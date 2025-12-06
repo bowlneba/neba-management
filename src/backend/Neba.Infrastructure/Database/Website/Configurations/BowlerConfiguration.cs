@@ -30,10 +30,9 @@ internal sealed class BowlerConfiguration
                     .IsRequired();
 
                 nameBuilder
-                    .Property(name => name.MiddleInitial)
-                    .HasColumnName("middle_initial")
-                    .HasMaxLength(1)
-                    .IsFixedLength();
+                    .Property(name => name.MiddleName)
+                    .HasColumnName("middle_name")
+                    .HasMaxLength(20);
 
                 nameBuilder
                     .Property(name => name.LastName)
