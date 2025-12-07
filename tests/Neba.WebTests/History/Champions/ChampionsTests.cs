@@ -30,7 +30,7 @@ public sealed class ChampionsTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsChampions()
     {
         // Arrange - Set up successful API response
-        var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
+        using var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
             new HttpResponseMessage(System.Net.HttpStatusCode.OK),
             new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } },
             new RefitSettings());
@@ -67,11 +67,11 @@ public sealed class ChampionsTests : TestContextWrapper
     public void HandleViewChanged_ValidView_SwitchesView()
     {
         // Arrange
-        var summaryResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
+        using var summaryResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
             new HttpResponseMessage(System.Net.HttpStatusCode.OK),
             new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } },
             new RefitSettings());
-        var titlesResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>(
+        using var titlesResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>(
             new HttpResponseMessage(System.Net.HttpStatusCode.OK),
             new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse>() },
             new RefitSettings());
@@ -93,7 +93,7 @@ public sealed class ChampionsTests : TestContextWrapper
     public void Render_WithData_IncludesModal()
     {
         // Arrange
-        var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
+        using var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
             new HttpResponseMessage(System.Net.HttpStatusCode.OK),
             new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } },
             new RefitSettings());
