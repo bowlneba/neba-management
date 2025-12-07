@@ -102,6 +102,10 @@
 
             champions = result.Value.ToList();
         }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load champions data: {ex.Message}";
+        }
         finally
         {
             isLoading = false;
