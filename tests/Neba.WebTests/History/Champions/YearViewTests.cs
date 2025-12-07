@@ -120,7 +120,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldExpandAllSectionsByDefault()
+    public void OnParametersSet_Titles_ExpandsAllSections()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -148,7 +148,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldToggleSectionWhenHeaderClicked()
+    public async Task ToggleSection_HeaderClicked_TogglesExpansion()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -185,7 +185,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldDisplayTableWithCorrectColumns()
+    public void Render_Titles_DisplaysTableWithCorrectColumns()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -214,7 +214,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldDisplayChampionNamesAsClickableButtons()
+    public void Render_Titles_DisplaysChampionNamesAsClickableButtons()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -242,7 +242,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldSortYearsDescending()
+    public void Render_MultipleYears_SortsYearsDescending()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -273,7 +273,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldInvokeOnChampionClickWhenChampionNameClicked()
+    public async Task HandleChampionClick_ChampionClicked_InvokesOnChampionClickCallback()
     {
         // Arrange
         BowlerTitleViewModel? clickedChampion = null;
