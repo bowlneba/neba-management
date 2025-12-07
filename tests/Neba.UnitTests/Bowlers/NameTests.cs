@@ -143,7 +143,7 @@ public sealed class NameTests
     }
 
     [Fact]
-    public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleInitialAndSuffixAreProvided()
+    public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleNameAndSuffixAreProvided()
     {
         // Arrange
         Name name = NameFactory.Create(
