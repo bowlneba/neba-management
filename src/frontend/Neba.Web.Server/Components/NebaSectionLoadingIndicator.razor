@@ -1,0 +1,32 @@
+@if (IsVisible)
+{
+    <div class="absolute inset-0 bg-gray-200/90 backdrop-blur-md flex items-center justify-center z-10 rounded-lg">
+        <div class="flex flex-col items-center">
+            <div class="neba-loading-wave neba-loading-wave-animated">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Text))
+            {
+                <div class="text-gray-900 font-medium text-base mt-4">@Text</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Controls whether the loading indicator is visible.
+    /// </summary>
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    /// <summary>
+    /// Optional text to display below the loading animation.
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+}

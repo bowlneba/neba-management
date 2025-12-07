@@ -3,10 +3,11 @@
 ## Purpose
 Loading is a distinct user experience concern separate from notifications. It communicates system status, prevents unintended double actions, and guides user expectations during asynchronous operations.
 
-The NEBA UI will support **three separate loading patterns**, each with specific use cases and design rules:
+The NEBA UI will support **four separate loading patterns**, each with specific use cases and design rules:
 1. Inline Loading
-2. Button-Level Loading
-3. Full-Page Blocking Overlay
+2. Section Loading Overlay
+3. Button-Level Loading
+4. Full-Page Blocking Overlay
 
 These patterns are deliberately separated to avoid UX overlap and ensure consistent behavior across the application.
 
@@ -31,7 +32,42 @@ A default `.neba-spinner` exists and should be used for inline loading.
 
 ---
 
-# 2. Button-Level Loading
+# 2. Section Loading Overlay
+Section loading overlays are used for **content regions** that load asynchronously while keeping the rest of the page interactive.
+
+### Examples
+- Loading awards data on the Bowler of the Year page while description remains visible
+- Loading statistics in a specific section while navigation remains available
+- Loading chart data in a dashboard widget
+
+### Characteristics
+- Overlays only a specific section of the page
+- Semi-transparent background with backdrop blur
+- Displays centered spinner with optional text
+- Allows users to read other content on the page
+- Does not block page-level navigation
+- Uses relative positioning on container element
+
+### Implementation
+Use the `NebaSectionLoadingIndicator` component:
+- Wrap the section to be loaded in a container with `position: relative`
+- Add `NebaSectionLoadingIndicator` as first child
+- Component uses `position: absolute` to overlay the section
+- Configure `BackgroundOpacity` (0-100) for better text readability on light backgrounds
+
+### When to Use
+- Content sections that load independently
+- When page header/navigation should remain accessible during load
+- When users can benefit from reading static content while dynamic content loads
+- When multiple sections might load at different times
+
+### Accessibility
+- Spinner must have `aria-label="Loading"`
+- Loading text should clearly describe what is loading
+
+---
+
+# 3. Button-Level Loading
 Button-level loading provides immediate feedback for **user-triggered actions** and prevents accidental repeated input.
 
 ### Required Behavior
@@ -56,7 +92,7 @@ A small spinner class (e.g., `.neba-spinner-sm`) should be used to avoid disrupt
 
 ---
 
-# 3. Full-Page Blocking Overlay
+# 4. Full-Page Blocking Overlay
 The blocking overlay is for operations where the user **must not** interact with the UI until the operation is finished.
 
 ### When to Use
@@ -82,28 +118,31 @@ The blocking overlay is for operations where the user **must not** interact with
 
 ---
 
-# 4. Choosing the Correct Loading Pattern
+# 5. Choosing the Correct Loading Pattern
 The following matrix determines which loading pattern should be used based on action type:
 
-| Scenario | Inline | Button-Level | Overlay |
-|----------|--------|--------------|----------|
-| Loading page data | ✔️ | | |
-| Loading tournament entries | ✔️ | | |
-| Submitting a form | | ✔️ | |
-| Saving settings | | ✔️ | |
-| Processing payment | | | ✔️ |
-| Finalizing tournament | | ✔️ (initial) | ✔️ (long-running) |
-| Performing bulk updates | | | ✔️ |
-| Minor action (enable/disable toggle) | | ✔️ | |
+| Scenario | Inline | Section | Button-Level | Page Overlay |
+|----------|--------|---------|--------------|--------------|
+| Loading page data | ✔️ | | | |
+| Loading tournament entries | ✔️ | | | |
+| Loading section while header visible | | ✔️ | | |
+| Loading awards while description visible | | ✔️ | | |
+| Submitting a form | | | ✔️ | |
+| Saving settings | | | ✔️ | |
+| Processing payment | | | | ✔️ |
+| Finalizing tournament | | | ✔️ (initial) | ✔️ (long-running) |
+| Performing bulk updates | | | | ✔️ |
+| Minor action (enable/disable toggle) | | | ✔️ | |
 
 ### Guiding Principle
-- **Inline** is for *data-fetching*.
+- **Inline** is for *simple data-fetching*.
+- **Section** is for *independent content regions*.
 - **Button-level** is for *user actions*.
-- **Overlay** is for *critical, blocking operations*.
+- **Page Overlay** is for *critical, blocking operations*.
 
 ---
 
-# 5. Interaction With Notification System
+# 6. Interaction With Notification System
 Loading patterns are not notifications, but they **pair with notifications**.
 
 ### Correct Patterns
@@ -116,7 +155,7 @@ Allow the loading state to complete before showing any notification.
 
 ---
 
-# 6. Configurability
+# 7. Configurability
 Loading patterns should be **consistent**, but some configurability is acceptable.
 
 ### Allowed
@@ -139,7 +178,7 @@ public class UiPreferences
 
 ---
 
-# 7. UI Consistency Rules
+# 8. UI Consistency Rules
 1. **Every user-triggered asynchronous operation must show a loading state.**
 2. **Double-submit must always be prevented.**
 3. **Blocking overlay must be used sparingly and only for critical operations.**
@@ -149,7 +188,7 @@ public class UiPreferences
 
 ---
 
-# 8. Future Enhancements (Optional)
+# 9. Future Enhancements (Optional)
 - Skeleton loaders (placeholder UI for lists or cards)
 - Progress bars for long operations
 - Debounced button spinners (e.g., appear only if >150ms)
