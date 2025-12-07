@@ -70,11 +70,34 @@ public sealed class TestApiResponse<T> : IDisposable
     /// </summary>
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Protected implementation of Dispose pattern.
+    /// </summary>
+    /// <param name="disposing">true if called from Dispose(), false if called from finalizer</param>
+    private void Dispose(bool disposing)
+    {
         if (!_disposed)
         {
-            _apiResponse?.Dispose();
-            _httpResponse?.Dispose();
+            if (disposing)
+            {
+                // Dispose managed resources
+                _apiResponse?.Dispose();
+                _httpResponse?.Dispose();
+            }
+            // Dispose unmanaged resources here if any
             _disposed = true;
         }
+    }
+
+    /// <summary>
+    /// Finalizer for cleanup in case Dispose is not called.
+    /// </summary>
+    ~TestApiResponse()
+    {
+        Dispose(false);
     }
 }
