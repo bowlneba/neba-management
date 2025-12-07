@@ -1,5 +1,3 @@
-using Neba.Domain;
-
 namespace Neba.UnitTests;
 
 public sealed class MonthTests

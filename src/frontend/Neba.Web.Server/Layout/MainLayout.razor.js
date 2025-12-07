@@ -37,17 +37,17 @@ function initializeNavigation() {
 
     // Dropdown toggle
     const dropdownToggles = document.querySelectorAll('[data-action="toggle-dropdown"]');
-    dropdownToggles.forEach(toggle => {
+    for (const toggle of dropdownToggles) {
         const dropdownLink = toggle.querySelector('[aria-haspopup]');
 
         dropdownLink?.addEventListener('click', (event) => {
             event.preventDefault(); // Always prevent navigation for dropdown links
             toggleDropdown(toggle);
         });
-    });
+    }
 
     // Keyboard support for dropdowns (Desktop only)
-    dropdownToggles.forEach(item => {
+    for (const item of dropdownToggles) {
         const link = item.querySelector('[aria-haspopup]');
 
         link?.addEventListener('keydown', (event) => {
@@ -62,7 +62,7 @@ function initializeNavigation() {
                 }
             }
         });
-    });
+    }
 
     // Escape key to close mobile menu and dropdowns
     document.addEventListener('keydown', (event) => {
@@ -78,11 +78,11 @@ function initializeNavigation() {
             }
 
             // Close any open dropdowns
-            document.querySelectorAll('.neba-nav-item.active').forEach(item => {
+            for (const item of document.querySelectorAll('.neba-nav-item.active')) {
                 const link = item.querySelector('[aria-haspopup]');
                 item.classList.remove('active');
                 link?.setAttribute('aria-expanded', 'false');
-            });
+            }
         }
     });
 
@@ -102,11 +102,11 @@ function initializeNavigation() {
     // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
         if (!event.target.closest('.neba-nav-item')) {
-            document.querySelectorAll('.neba-nav-item.active').forEach(item => {
+            for (const item of document.querySelectorAll('.neba-nav-item.active')) {
                 const link = item.querySelector('[aria-haspopup]');
                 item.classList.remove('active');
                 link?.setAttribute('aria-expanded', 'false');
-            });
+            }
         }
     });
 

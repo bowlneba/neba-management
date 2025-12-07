@@ -15,6 +15,7 @@
     "bowlneba",
     "bunit",
     "efcore",
+    "Famers",
     "Instantiator",
     "Neba",
     "npgsql",
@@ -38,5 +39,9 @@
       "database": "bowlneba",
       "username": "neba"
     }
-  ]
+  ],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "bowlneba",
+    "projectKey": "bowlneba_neba-management"
+  }
 }

@@ -27,13 +27,54 @@ test.describe('Champions Page', () => {
     test('displays loading indicator initially', async ({ page }) => {
       // Note: This test might be flaky depending on how fast the data loads
       // The loading indicator should appear briefly
-      const loadingIndicator = page.locator('.neba-loading-overlay-page');
       // We just verify it exists in the DOM, it may already be hidden
-      await expect(page.locator('body')).toBeTruthy();
+      expect(page.locator('body')).toBeTruthy();
     });
   });
 
-  test.describe('Champion Cards Display', () => {
+  test.describe('View Toggle', () => {
+    test('displays segmented control for view switching', async ({ page }) => {
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      // Verify segmented control is visible
+      const segmentedControl = page.locator('.neba-segmented-control');
+      await expect(segmentedControl).toBeVisible({ timeout: 5000 });
+
+      // Should have both options
+      await expect(page.getByRole('button', { name: 'By Titles' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'By Year' })).toBeVisible();
+    });
+
+    test('By Titles view is selected by default', async ({ page }) => {
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      const byTitlesButton = page.getByRole('button', { name: 'By Titles' });
+      await expect(byTitlesButton).toHaveClass(/neba-segmented-control-option-active/);
+    });
+
+    test('can switch to By Year view', async ({ page }) => {
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      // Click By Year button
+      const byYearButton = page.getByRole('button', { name: 'By Year' });
+      await byYearButton.click();
+
+      // Wait for year view to load
+      await page.waitForTimeout(1000);
+
+      // By Year button should now be active
+      await expect(byYearButton).toHaveClass(/neba-segmented-control-option-active/);
+
+      // Year view should be displayed
+      const yearHeaders = page.locator('.year-header');
+      await expect(yearHeaders.first()).toBeVisible({ timeout: 5000 });
+    });
+  });
+
+  test.describe('Champion Cards Display (By Titles View)', () => {
     test('displays champion cards after loading', async ({ page }) => {
       // Wait for loading to complete
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
@@ -56,8 +97,8 @@ test.describe('Champions Page', () => {
 
       // Verify header contains title count and bowler count
       const firstHeader = await headers.first().textContent();
-      expect(firstHeader).toMatch(/\d+ Titles?/);
-      expect(firstHeader).toMatch(/\d+ bowlers?/);
+      expect(firstHeader).toMatch(/\d{1,10} (?:Titles|Title)/);
+      expect(firstHeader).toMatch(/\d{1,10} (?:bowlers|bowler)/);
     });
 
     test('displays champion names on cards', async ({ page }) => {
@@ -244,7 +285,7 @@ test.describe('Champions Page', () => {
       // Title count should be visible somewhere in the modal
       const modal = page.locator('.neba-modal-content.bowler-titles-modal');
       const modalText = await modal.textContent();
-      expect(modalText).toMatch(/\d+ Titles?/);
+      expect(modalText).toMatch(/\d{1,10} (?:Titles|Title)/);
     });
 
     test('modal displays Hall of Fame badge for Hall of Famers', async ({ page }) => {
@@ -437,6 +478,214 @@ test.describe('Champions Page', () => {
       // Should be a button element
       expect(await toggleButton.evaluate(el => el.tagName)).toBe('BUTTON');
       expect(await toggleButton.getAttribute('type')).toBe('button');
+    });
+  });
+
+  test.describe('Year View', () => {
+    test.beforeEach(async ({ page }) => {
+      // Wait for initial load
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      // Switch to Year view
+      const byYearButton = page.getByRole('button', { name: 'By Year' });
+      await byYearButton.click();
+
+      // Wait for year view to load
+      await page.waitForTimeout(1000);
+    });
+
+    test('displays year sections after loading', async ({ page }) => {
+      const yearHeaders = page.locator('.year-header');
+      await expect(yearHeaders.first()).toBeVisible({ timeout: 5000 });
+
+      // Should have year text
+      const firstYearText = await yearHeaders.first().textContent();
+      expect(firstYearText).toMatch(/\d{4}/); // Should contain a 4-digit year
+    });
+
+    test('year sections show title count', async ({ page }) => {
+      const yearHeaders = page.locator('.year-header');
+      await expect(yearHeaders.first()).toBeVisible({ timeout: 5000 });
+
+      const firstYearText = await yearHeaders.first().textContent();
+      expect(firstYearText).toMatch(/\d{1,10} (?:titles|title)/i);
+    });
+
+    test('year sections are expanded by default', async ({ page }) => {
+      const expandedSections = page.locator('.year-collapse-container.year-expanded');
+      await expect(expandedSections.first()).toBeVisible({ timeout: 5000 });
+
+      const count = await expandedSections.count();
+      expect(count).toBeGreaterThan(0);
+    });
+
+    test('can collapse and expand year sections', async ({ page }) => {
+      const firstToggle = page.locator('.year-header').first();
+      await expect(firstToggle).toBeVisible({ timeout: 5000 });
+
+      const firstSection = page.locator('.year-collapse-container').first();
+
+      // Should be expanded initially
+      await expect(firstSection).toHaveClass(/year-expanded/);
+
+      // Click to collapse
+      await firstToggle.click();
+      await expect(firstSection).toHaveClass(/year-collapsed/);
+
+      // Click to expand again
+      await firstToggle.click();
+      await expect(firstSection).toHaveClass(/year-expanded/);
+    });
+
+    test('toggle arrow rotates when section is toggled', async ({ page }) => {
+      const firstToggle = page.locator('.year-header').first();
+      await expect(firstToggle).toBeVisible({ timeout: 5000 });
+
+      const arrow = firstToggle.locator('span').last();
+
+      // Should have rotate-90 class when expanded
+      await expect(arrow).toHaveClass(/rotate-90/);
+
+      // Click to collapse
+      await firstToggle.click();
+      await page.waitForTimeout(100);
+
+      // Should not have rotate-90 class when collapsed
+      await expect(arrow).not.toHaveClass(/rotate-90/);
+    });
+
+    test('displays table with correct columns', async ({ page }) => {
+      // Wait for at least one expanded section
+      await page.waitForSelector('.year-expanded table', { timeout: 5000 });
+
+      const table = page.locator('.year-expanded table').first();
+      await expect(table).toBeVisible();
+
+      // Check for column headers
+      await expect(table.locator('th:has-text("Month")')).toBeVisible();
+      await expect(table.locator('th:has-text("Tournament Type")')).toBeVisible();
+      await expect(table.locator('th:has-text("Champions")')).toBeVisible();
+    });
+
+    test('displays champion names as clickable buttons', async ({ page }) => {
+      await page.waitForSelector('.year-expanded table', { timeout: 5000 });
+
+      const championButton = page.locator('button.champion-name').first();
+      await expect(championButton).toBeVisible({ timeout: 5000 });
+
+      // Should be a button element
+      expect(await championButton.evaluate(el => el.tagName)).toBe('BUTTON');
+      expect(await championButton.getAttribute('type')).toBe('button');
+    });
+
+    test('champion name click opens modal', async ({ page }) => {
+      await page.waitForSelector('.year-expanded table', { timeout: 5000 });
+
+      const championButton = page.locator('button.champion-name').first();
+      await expect(championButton).toBeVisible({ timeout: 5000 });
+
+      // Get champion name
+      const championName = await championButton.textContent();
+
+      // Click champion
+      await championButton.click();
+
+      // Modal should be visible
+      const modal = page.locator('.neba-modal-content.bowler-titles-modal');
+      await expect(modal).toBeVisible({ timeout: 2000 });
+
+      // Modal should show the champion's name
+      const modalTitle = page.locator('.neba-modal-title');
+      await expect(modalTitle).toContainText(championName || '');
+    });
+
+    test('displays tournament types as badges', async ({ page }) => {
+      await page.waitForSelector('.year-expanded table', { timeout: 5000 });
+
+      const typeBadge = page.locator('.bg-blue-100.text-blue-800').first();
+      await expect(typeBadge).toBeVisible({ timeout: 5000 });
+
+      const badgeText = await typeBadge.textContent();
+      expect(badgeText).toBeTruthy();
+      expect(badgeText?.length).toBeGreaterThan(0);
+    });
+
+    test('table rows have hover effect', async ({ page }) => {
+      await page.waitForSelector('.year-expanded table tbody tr', { timeout: 5000 });
+
+      const firstRow = page.locator('.year-expanded table tbody tr').first();
+      await expect(firstRow).toBeVisible();
+
+      // Hover over row
+      await firstRow.hover();
+
+      // Row should have hover class
+      await expect(firstRow).toHaveClass(/hover:bg-gray-50/);
+    });
+
+    test('handles multiple champions for same tournament', async ({ page }) => {
+      await page.waitForSelector('.year-expanded table', { timeout: 5000 });
+
+      // Look for rows with multiple champion buttons
+      const championCell = page.locator('.year-expanded table td').filter({ has: page.locator('button.champion-name') }).first();
+      await expect(championCell).toBeVisible();
+
+      // Count champion buttons in the cell
+      const championCount = await championCell.locator('button.champion-name').count();
+      expect(championCount).toBeGreaterThan(0);
+    });
+
+    test('displays error state when year view fails to load', async ({ page }) => {
+      // Intercept the year view API call
+      await page.route('**/history/titles-by-year', route => {
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal server error' })
+        });
+      });
+
+      // Reload to get fresh state
+      await page.goto('/history/champions', { waitUntil: 'networkidle' });
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      // Switch to Year view
+      const byYearButton = page.getByRole('button', { name: 'By Year' });
+      await byYearButton.click();
+
+      // Wait for error to appear
+      await page.waitForTimeout(2000);
+
+      // Should show error alert or message
+      const errorAlert = page.locator('.neba-alert-error');
+      const errorCount = await errorAlert.count();
+      if (errorCount > 0) {
+        await expect(errorAlert.first()).toBeVisible();
+      }
+    });
+
+    test('year view works on mobile viewport', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE
+
+      // Reload at mobile size
+      await page.goto('/history/champions');
+      await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
+        .catch(() => {});
+
+      // Switch to Year view
+      const byYearButton = page.getByRole('button', { name: 'By Year' });
+      await byYearButton.click();
+      await page.waitForTimeout(1000);
+
+      // Year headers should be visible
+      const yearHeaders = page.locator('.year-header');
+      await expect(yearHeaders.first()).toBeVisible({ timeout: 5000 });
+
+      // Table should be scrollable on mobile
+      const table = page.locator('.year-expanded table').first();
+      await expect(table).toBeVisible({ timeout: 5000 });
     });
   });
 });

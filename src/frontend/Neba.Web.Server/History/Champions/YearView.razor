@@ -1,7 +1,6 @@
 @using Neba.Web.Server.Notifications
-@inject NebaApiService NebaApiService
 
-@if (isLoading)
+@if (IsLoading)
 {
     <div class="flex justify-center items-center py-12">
         <div class="text-center">
@@ -10,17 +9,17 @@
         </div>
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(errorMessage))
+else if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
     <div class="py-6">
         <NebaAlert Severity="NotifySeverity.Error"
                    Title="Error Loading Titles"
-                   Message="@errorMessage"
+                   Message="@ErrorMessage"
                    Dismissible="true"
-                   OnDismiss="@(() => errorMessage = null)" />
+                   OnDismiss="OnErrorDismiss" />
     </div>
 }
-else if (titlesByYear.Count == 0)
+else if (TitlesByYear == null || TitlesByYear.Count == 0)
 {
     <div class="text-center py-12 text-gray-500">
         No titles found.
@@ -29,7 +28,7 @@ else if (titlesByYear.Count == 0)
 else
 {
     <div class="space-y-4">
-        @foreach (var yearGroup in titlesByYear.OrderByDescending(g => g.Year))
+        @foreach (var yearGroup in TitlesByYear.OrderByDescending(g => g.Year))
         {
             var sectionId = $"year-{yearGroup.Year}";
             var isExpanded = expandedSections.Contains(sectionId);
@@ -104,72 +103,58 @@ else
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public List<BowlerTitleSummaryViewModel> Champions { get; set; } = new();
+    [Parameter]
+    public List<TitlesByYearViewModel>? TitlesByYear { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback OnErrorDismiss { get; set; }
 
     [Parameter]
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
-    private List<YearGroup> titlesByYear = new();
-    private string? errorMessage;
-    private bool isLoading = true;
     private readonly HashSet<string> expandedSections = new();
+    private string? previousDataHash;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        await LoadTitlesAsync();
+        if (TitlesByYear != null)
+        {
+            var currentDataHash = ComputeDataHash(TitlesByYear);
+            if (currentDataHash != previousDataHash)
+            {
+                // Data has changed, reset expanded sections
+                expandedSections.Clear();
+
+                // Expand all sections by default when data is loaded or refreshed
+                foreach (var yearGroup in TitlesByYear)
+                {
+                    expandedSections.Add($"year-{yearGroup.Year}");
+                }
+
+                previousDataHash = currentDataHash;
+            }
+        }
     }
 
-    private async Task LoadTitlesAsync()
+    private static string ComputeDataHash(List<TitlesByYearViewModel> data)
     {
-        isLoading = true;
-        errorMessage = null;
+        // Create a deterministic string representation for hashing
+        var dataString = string.Join("|",
+            data.OrderBy(d => d.Year)
+                .Select(yearGroup =>
+                    $"{yearGroup.Year}:{string.Join(",",
+                        yearGroup.Titles
+                            .OrderBy(t => t.BowlerId)
+                            .Select(t => $"{t.BowlerId}:{t.TournamentYear}:{t.TournamentMonth}:{t.TournamentType}:{t.HallOfFame}"))}"));
 
-        try
-        {
-            var result = await NebaApiService.GetAllTitlesAsync();
-
-            if (result.IsError)
-            {
-                var error = result.FirstError;
-                errorMessage = $"Failed to load titles: {error.Description}";
-                return;
-            }
-
-            // Get Hall of Fame info from Champions parameter
-            var hallOfFameMap = Champions.ToDictionary(c => c.BowlerId, c => c.HallOfFame);
-
-            // Update Hall of Fame status for each title
-            var titlesWithHoF = result.Value
-                .Select(t => t with { HallOfFame = hallOfFameMap.GetValueOrDefault(t.BowlerId, false) })
-                .ToList();
-
-            // Group by year
-            titlesByYear = titlesWithHoF
-                .GroupBy(t => t.TournamentYear)
-                .Select(g => new YearGroup
-                {
-                    Year = g.Key,
-                    Titles = g.OrderByDescending(t => t.TournamentMonth)
-                             .ThenBy(t => t.TournamentType)
-                             .ToList()
-                })
-                .ToList();
-
-            // Expand all sections by default
-            foreach (var yearGroup in titlesByYear)
-            {
-                expandedSections.Add($"year-{yearGroup.Year}");
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to load titles: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        // Return the canonical string for reliable comparison
+        return dataString;
     }
 
     private void ToggleSection(string sectionId)
@@ -207,11 +192,5 @@ else
             12 => "December",
             _ => "Unknown"
         };
-    }
-
-    private sealed class YearGroup
-    {
-        public required int Year { get; init; }
-        public required List<BowlerTitleViewModel> Titles { get; init; }
     }
 }

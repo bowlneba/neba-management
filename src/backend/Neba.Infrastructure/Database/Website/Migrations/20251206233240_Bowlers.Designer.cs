@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Infrastructure.Database.Website.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20251126205052_BowlerEntity")]
-    partial class BowlerEntity
+    [Migration("20251206233240_Bowlers")]
+    partial class Bowlers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,40 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                     b.ToTable("bowlers", "website");
                 });
 
+            modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("BowlerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bowler_id");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer")
+                        .HasColumnName("month");
+
+                    b.Property<int>("TournamentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("tournament_type");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer")
+                        .HasColumnName("year");
+
+                    b.HasKey("Id")
+                        .HasName("pk_titles");
+
+                    b.HasIndex("BowlerId")
+                        .HasDatabaseName("ix_titles_bowler_id");
+
+                    b.HasIndex("Year", "Month")
+                        .HasDatabaseName("ix_titles_year_month");
+
+                    b.ToTable("titles", "website");
+                });
+
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
                     b.OwnsOne("Neba.Domain.Bowlers.Name", "Name", b1 =>
@@ -66,11 +100,10 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                                 .HasColumnType("character varying(30)")
                                 .HasColumnName("last_name");
 
-                            b1.Property<string>("MiddleInitial")
-                                .HasMaxLength(1)
-                                .HasColumnType("character(1)")
-                                .HasColumnName("middle_initial")
-                                .IsFixedLength();
+                            b1.Property<string>("MiddleName")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("middle_name");
 
                             b1.Property<string>("Nickname")
                                 .HasMaxLength(30)
@@ -96,6 +129,23 @@ namespace Neba.Infrastructure.Database.Website.Migrations
 
                     b.Navigation("Name")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
+                {
+                    b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
+                        .WithMany("Titles")
+                        .HasForeignKey("BowlerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_titles_bowlers_bowler_id");
+
+                    b.Navigation("Bowler");
+                });
+
+            modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
+                {
+                    b.Navigation("Titles");
                 });
 #pragma warning restore 612, 618
         }

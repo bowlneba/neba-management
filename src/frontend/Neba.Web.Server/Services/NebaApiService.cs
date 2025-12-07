@@ -1,5 +1,6 @@
 #pragma warning disable CA1031 // Do not catch general exception types - We intentionally catch all exceptions to convert to ErrorOr
 
+using System.Collections.ObjectModel;
 using ErrorOr;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Web.Server.History.Champions;
@@ -33,7 +34,7 @@ internal class NebaApiService(INebaApi nebaApi)
         return result.Value.Data.ToViewModel();
     }
 
-    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleViewModel>>> GetAllTitlesAsync()
+    public async Task<ErrorOr<IReadOnlyCollection<TitlesByYearViewModel>>> GetTitlesByYearAsync()
     {
         ErrorOr<Contracts.CollectionResponse<BowlerTitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
 
@@ -42,7 +43,23 @@ internal class NebaApiService(INebaApi nebaApi)
             return result.Errors;
         }
 
-        return result.Value.Items.Select(dto => dto.ToViewModel()).ToList();
+        var titles = result.Value.Items.Select(dto => dto.ToViewModel()).ToList();
+
+        ReadOnlyCollection<TitlesByYearViewModel> titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .OrderByDescending(group => group.Key)
+            .Select(g => new TitlesByYearViewModel
+            {
+                Year = g.Key,
+                Titles = g.OrderByDescending(t => t.TournamentMonth)
+                          .ThenBy(t => t.TournamentType)
+                          .ToList()
+                          .AsReadOnly()
+            })
+            .ToList()
+            .AsReadOnly();
+
+        return titlesByYear;
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)

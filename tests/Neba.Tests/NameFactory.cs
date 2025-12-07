@@ -6,7 +6,7 @@ public static class NameFactory
 {
     public const string FirstName = "John";
     public const string LastName = "Doe";
-    public const string MiddleInitial = "A";
+    public const string MiddleName = "Allan";
     public const string Suffix = "Jr.";
     public const string Nickname = "Johnny";
     private static readonly string[] s_suffixes = ["Jr.", "Sr.", "III", "IV"];
@@ -14,7 +14,7 @@ public static class NameFactory
     public static Name Create(
         string firstName = FirstName,
         string lastName = LastName,
-        string? middleInitial = null,
+        string? middleName = null,
         string? suffix = null,
         string? nickname = null
     )
@@ -22,7 +22,7 @@ public static class NameFactory
         {
             FirstName = firstName,
             LastName = lastName,
-            MiddleInitial = middleInitial,
+            MiddleName = middleName,
             Suffix = suffix,
             Nickname = nickname
         };
@@ -39,7 +39,7 @@ public static class NameFactory
             {
                 FirstName = f.Person.FirstName,
                 LastName = f.Person.LastName,
-                MiddleInitial = f.Random.Bool(0.3f) ? f.Random.Char('A', 'Z').ToString() : null,
+                MiddleName = f.Random.Bool(0.3f) ? f.Name.FirstName() : null,
                 Suffix = f.Random.Bool(0.2f) ? f.PickRandom(s_suffixes) : null,
                 Nickname = f.Random.Bool(0.4f) ? f.Name.FirstName() : null
             });

@@ -67,7 +67,7 @@ public sealed class NameTests
         Name name = result.Value;
         name.FirstName.ShouldBe(NameFactory.FirstName);
         name.LastName.ShouldBe(NameFactory.LastName);
-        name.MiddleInitial.ShouldBeNull();
+        name.MiddleName.ShouldBeNull();
         name.Suffix.ShouldBeNull();
         name.Nickname.ShouldBeNull();
     }
@@ -79,7 +79,7 @@ public sealed class NameTests
         ErrorOr<Name> result = Name.Create(
             NameFactory.FirstName,
             NameFactory.LastName,
-            NameFactory.MiddleInitial,
+            NameFactory.MiddleName,
             NameFactory.Suffix,
             NameFactory.Nickname
         );
@@ -90,7 +90,7 @@ public sealed class NameTests
         Name name = result.Value;
         name.FirstName.ShouldBe(NameFactory.FirstName);
         name.LastName.ShouldBe(NameFactory.LastName);
-        name.MiddleInitial.ShouldBe(NameFactory.MiddleInitial);
+        name.MiddleName.ShouldBe(NameFactory.MiddleName);
         name.Suffix.ShouldBe(NameFactory.Suffix);
         name.Nickname.ShouldBe(NameFactory.Nickname);
     }
@@ -117,13 +117,13 @@ public sealed class NameTests
         Name name = NameFactory.Create(
             firstName: NameFactory.FirstName,
             lastName: NameFactory.LastName,
-            middleInitial: NameFactory.MiddleInitial);
+            middleName: NameFactory.MiddleName);
 
         // Act
         string legalName = name.ToLegalName();
 
         // Assert
-        legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleInitial}. {NameFactory.LastName}");
+        legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleName} {NameFactory.LastName}");
     }
 
     [Fact]
@@ -143,20 +143,20 @@ public sealed class NameTests
     }
 
     [Fact]
-    public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleInitialAndSuffixAreProvided()
+    public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleNameAndSuffixAreProvided()
     {
         // Arrange
         Name name = NameFactory.Create(
             firstName: NameFactory.FirstName,
             lastName: NameFactory.LastName,
-            middleInitial: NameFactory.MiddleInitial,
+            middleName: NameFactory.MiddleName,
             suffix: NameFactory.Suffix);
 
         // Act
         string legalName = name.ToLegalName();
 
         // Assert
-        legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleInitial}. {NameFactory.LastName}, {NameFactory.Suffix}");
+        legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleName} {NameFactory.LastName}, {NameFactory.Suffix}");
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public sealed class NameTests
         Name name = NameFactory.Create(
             firstName: NameFactory.FirstName,
             lastName: NameFactory.LastName,
-            middleInitial: NameFactory.MiddleInitial,
+            middleName: NameFactory.MiddleName,
             suffix: NameFactory.Suffix,
             nickname: NameFactory.Nickname);
 
@@ -231,7 +231,7 @@ public sealed class NameTests
         Name name = NameFactory.Create(
             firstName: NameFactory.FirstName,
             lastName: NameFactory.LastName,
-            middleInitial: NameFactory.MiddleInitial,
+            middleName: NameFactory.MiddleName,
             suffix: NameFactory.Suffix,
             nickname: NameFactory.Nickname);
 
