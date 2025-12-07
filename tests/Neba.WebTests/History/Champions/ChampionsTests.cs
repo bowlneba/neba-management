@@ -4,6 +4,7 @@ using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Neba;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Tests;
@@ -11,6 +12,7 @@ using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Neba.WebTests;
 using Refit;
+using System.Reflection;
 
 namespace Neba.WebTests.History.Champions;
 
@@ -61,11 +63,11 @@ public sealed class ChampionsTests : TestContextWrapper
     }
 
     [Fact]
-    public void HandleViewChanged_ValidView_SwitchesView()
+    public async Task HandleViewChanged_ValidView_SwitchesView()
     {
-        // Arrange
+        // Arrange - Set up mocks for both summary and titles data to simulate view switching scenario
         using var summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
-        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse>() });
+        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse> { BowlerTitleResponseFactory.Bogus() } });
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
@@ -75,9 +77,33 @@ public sealed class ChampionsTests : TestContextWrapper
             .ReturnsAsync(titlesResponse.ApiResponse);
 
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
+        var instance = cut.Instance;
 
-        // Act & Assert - Component should handle view switching without throwing
-        cut.ShouldNotBeNull();
+        // Get private fields via reflection
+        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(selectedViewField);
+        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(titlesByYearField);
+
+        // Assert initial state
+        var initialView = (ChampionsView)selectedViewField.GetValue(instance)!;
+        Assert.Equal(ChampionsView.TitleCount, initialView);
+
+        var initialTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
+        Assert.Null(initialTitlesByYear);
+
+        // Act - Invoke HandleViewChanged to switch to Year view
+        var handleViewChangedMethod = typeof(Neba.Web.Server.History.Champions.Champions).GetMethod("HandleViewChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(handleViewChangedMethod);
+        await (Task)handleViewChangedMethod.Invoke(instance, new object[] { "Year" })!;
+
+        // Assert - View should have switched and titlesByYear should be loaded
+        var newView = (ChampionsView)selectedViewField.GetValue(instance)!;
+        Assert.Equal(ChampionsView.Year, newView);
+
+        var loadedTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
+        Assert.NotNull(loadedTitlesByYear);
+        Assert.NotEmpty(loadedTitlesByYear);
     }
 
     [Fact]
