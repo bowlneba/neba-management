@@ -109,15 +109,21 @@ public sealed class ChampionsTests : TestContextWrapper
     [Fact]
     public void Render_WithData_IncludesModal()
     {
-        // Arrange
+        // Arrange - Set up successful API response with champion data
         using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
             .ReturnsAsync(response.ApiResponse);
 
-        // Act & Assert - Component should render with modal
+        // Act
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
+
+        // Assert - Component should render and include the modal component
         cut.ShouldNotBeNull();
+        
+        // Verify that the BowlerTitlesModal component is present in the rendered output
+        var modalComponent = cut.FindComponent<Neba.Web.Server.History.Champions.BowlerTitlesModal>();
+        modalComponent.ShouldNotBeNull();
     }
 }
