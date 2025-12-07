@@ -47,6 +47,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
         ReadOnlyCollection<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
+            .OrderByDescending(group => group.Key)
             .Select(g => new TitlesByYearViewModel
             {
                 Year = g.Key,
