@@ -119,23 +119,42 @@ else
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
     private readonly HashSet<string> expandedSections = new();
-    private List<TitlesByYearViewModel>? previousTitlesByYear;
+    private string? previousDataHash;
 
     protected override void OnParametersSet()
     {
-        if (TitlesByYear != null && !TitlesByYear.SequenceEqual(previousTitlesByYear ?? new List<TitlesByYearViewModel>()))
+        if (TitlesByYear != null)
         {
-            // Data has changed, reset expanded sections
-            expandedSections.Clear();
-            
-            // Expand all sections by default when data is loaded or refreshed
-            foreach (var yearGroup in TitlesByYear)
+            var currentDataHash = ComputeDataHash(TitlesByYear);
+            if (currentDataHash != previousDataHash)
             {
-                expandedSections.Add($"year-{yearGroup.Year}");
+                // Data has changed, reset expanded sections
+                expandedSections.Clear();
+
+                // Expand all sections by default when data is loaded or refreshed
+                foreach (var yearGroup in TitlesByYear)
+                {
+                    expandedSections.Add($"year-{yearGroup.Year}");
+                }
+
+                previousDataHash = currentDataHash;
             }
-            
-            previousTitlesByYear = new List<TitlesByYearViewModel>(TitlesByYear);
         }
+    }
+
+    private static string ComputeDataHash(List<TitlesByYearViewModel> data)
+    {
+        // Create a deterministic string representation for hashing
+        var dataString = string.Join("|",
+            data.OrderBy(d => d.Year)
+                .Select(yearGroup =>
+                    $"{yearGroup.Year}:{string.Join(",",
+                        yearGroup.Titles
+                            .OrderBy(t => t.BowlerId)
+                            .Select(t => $"{t.BowlerId}:{t.TournamentYear}:{t.TournamentMonth}:{t.TournamentType}:{t.HallOfFame}"))}"));
+
+        // Use a simple hash for comparison (could be replaced with a more robust hash if needed)
+        return dataString.GetHashCode().ToString();
     }
 
     private void ToggleSection(string sectionId)
