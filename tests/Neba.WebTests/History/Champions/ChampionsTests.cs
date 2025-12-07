@@ -1,3 +1,4 @@
+using System.Net.Http;
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
@@ -10,7 +11,6 @@ using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Neba.WebTests;
 using Refit;
-using System.Net.Http;
 
 namespace Neba.WebTests.History.Champions;
 
