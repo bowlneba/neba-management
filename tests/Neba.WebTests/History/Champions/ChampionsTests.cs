@@ -27,7 +27,7 @@ public sealed class ChampionsTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldLoadChampionsOnInitialization()
+    public void OnInitializedAsync_SuccessfulApiResponse_LoadsChampions()
     {
         // Arrange - Set up successful API response
         var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
@@ -48,7 +48,7 @@ public sealed class ChampionsTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldHandleInitializationErrors()
+    public void OnInitializedAsync_ApiError_HandlesErrorGracefully()
     {
         // Arrange - Simulate API error during initialization
         _mockNebaApi
@@ -64,7 +64,7 @@ public sealed class ChampionsTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldHandleViewSwitching()
+    public void HandleViewChanged_ValidView_SwitchesView()
     {
         // Arrange
         var summaryResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
@@ -90,7 +90,7 @@ public sealed class ChampionsTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldRenderModalComponent()
+    public void Render_WithData_IncludesModal()
     {
         // Arrange
         var response = new Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>(
