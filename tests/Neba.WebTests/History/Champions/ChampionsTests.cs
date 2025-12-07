@@ -26,17 +26,11 @@ public sealed class ChampionsTests : TestContextWrapper
         TestContext.Services.AddSingleton(_nebaApiService);
     }
 
-    private static Refit.ApiResponse<T> CreateApiResponse<T>(T content)
-    {
-        var httpResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-        return new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
-    }
-
     [Fact]
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsChampions()
     {
         // Arrange - Set up successful API response
-        using var response = CreateApiResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
+        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
@@ -70,8 +64,8 @@ public sealed class ChampionsTests : TestContextWrapper
     public void HandleViewChanged_ValidView_SwitchesView()
     {
         // Arrange
-        using var summaryResponse = CreateApiResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
-        using var titlesResponse = CreateApiResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse>() });
+        using var summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
+        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse>() });
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
@@ -90,7 +84,7 @@ public sealed class ChampionsTests : TestContextWrapper
     public void Render_WithData_IncludesModal()
     {
         // Arrange
-        using var response = CreateApiResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
+        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
