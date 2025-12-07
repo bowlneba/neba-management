@@ -17,7 +17,7 @@ namespace Neba.WebTests.History.Champions;
 public sealed class YearViewTests : TestContextWrapper
 {
     [Fact]
-    public async Task ShouldDisplayEmptyMessageWhenNoTitles()
+    public void ShouldDisplayEmptyMessageWhenNoTitles()
     {
         // Arrange
         var titlesByYear = new List<TitlesByYearViewModel>();
@@ -35,7 +35,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldGroupTitlesByYear()
+    public void ShouldGroupTitlesByYear()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -64,7 +64,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldDisplayYearHeadersWithTitleCounts()
+    public void ShouldDisplayYearHeadersWithTitleCounts()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -93,7 +93,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldUseSingularFormForOneTitle()
+    public void ShouldUseSingularFormForOneTitle()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -120,7 +120,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldExpandAllSectionsByDefault()
+    public void ShouldExpandAllSectionsByDefault()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -185,7 +185,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldDisplayTableWithCorrectColumns()
+    public void ShouldDisplayTableWithCorrectColumns()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -214,7 +214,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldDisplayChampionNamesAsClickableButtons()
+    public void ShouldDisplayChampionNamesAsClickableButtons()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -242,7 +242,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public async Task ShouldSortYearsDescending()
+    public void ShouldSortYearsDescending()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
