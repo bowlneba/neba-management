@@ -50,7 +50,10 @@ internal class NebaApiService(INebaApi nebaApi)
             .Select(g => new TitlesByYearViewModel
             {
                 Year = g.Key,
-                Titles = g.ToList().AsReadOnly()
+                Titles = g.OrderByDescending(t => t.TournamentMonth)
+                          .ThenBy(t => t.TournamentType)
+                          .ToList()
+                          .AsReadOnly()
             })
             .ToList()
             .AsReadOnly();
