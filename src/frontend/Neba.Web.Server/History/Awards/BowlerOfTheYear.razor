@@ -1,0 +1,144 @@
+@page "/history/bowler-of-the-year"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+<div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Bowler of the Year</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
+            <div class="text-base text-gray-700 leading-relaxed bg-white/80 rounded-lg shadow-sm p-4 border border-gray-100">
+                <p class="mb-2">
+                    The Bowler of the Year honors represent the highest competitive distinction within NEBA, recognizing season-long excellence across all divisions.
+                </p>
+                <p class="mb-2">
+                    The <span class="font-semibold text-[var(--neba-blue-700)]">Male (Open) Bowler of the Year</span> award—NEBA’s original and most prestigious seasonal title—is named in honor of <span class="font-semibold">George Chikar</span>, NEBA’s biggest fan, whose support and dedication left a lasting mark on the organization.
+                </p>
+                <p class="mb-2">
+                    Additional divisions were added over time as the association expanded: <span class="font-semibold">Rookie of the Year</span> in 1994, <span class="font-semibold">Senior Bowler of the Year</span> in 2003, and in 2015 a trio of new categories debuted—<span class="font-semibold">Women’s Bowler of the Year</span>, <span class="font-semibold">Super Senior Bowler of the Year</span>, and <span class="font-semibold">Youth Bowler of the Year</span>.
+                </p>
+                <p>
+                    Together, these awards form the core of NEBA’s annual recognition of sustained performance, competitiveness, and impact on the tour.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@isLoading"
+                          Text="Loading awards..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Awards Grid -->
+    @if (!isLoading && awardsByYear.Count > 0)
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var yearData in awardsByYear)
+            {
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                    <!-- Year Header -->
+                    <div class="text-3xl font-bold text-[var(--neba-blue-700)] mb-4 pb-3 border-b-2 border-[var(--neba-blue-300)]">
+                        @yearData.Season
+                    </div>
+
+                    <!-- Award Categories and Winners -->
+                    <div class="space-y-4">
+                        @foreach (var award in yearData.WinnersByCategory)
+                        {
+                            <div>
+                                <div class="text-xs uppercase text-gray-500 font-semibold mb-1">
+                                    @award.Key
+                                </div>
+                                <div class="text-lg text-[var(--neba-blue-900)] font-medium">
+                                    @award.Value
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-12 text-gray-500">
+            <p>No awards data available.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BowlerOfTheYearByYearViewModel> awardsByYear = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate API call delay
+        await Task.Delay(1500);
+
+        // Dummy data for now - will be replaced with API call later
+        awardsByYear = new List<BowlerOfTheYearByYearViewModel>
+        {
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2024",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "Mike Anderson" },
+                    { "Senior", "Bobby Ramsey" },
+                    { "Junior", "Lisa Chen" }
+                }
+            },
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2023",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "John Smith" },
+                    { "Senior", "Michael Reale" },
+                    { "Junior", "Jane Doe" }
+                }
+            },
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2022",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "Tom Johnson" },
+                    { "Senior", "Malik Grove" },
+                    { "Junior", "Sarah Williams" }
+                }
+            },
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2020/21",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "Bob Martinez" },
+                    { "Senior", "Kenny Livengood" },
+                    { "Junior", "Amy Rodriguez" }
+                }
+            },
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2019",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "Chris Taylor" },
+                    { "Senior", "Aaron Major" },
+                    { "Junior", "David Lee" }
+                }
+            },
+            new BowlerOfTheYearByYearViewModel
+            {
+                Season = "2018",
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Open", "Steve Brown" },
+                    { "Senior", "Dave Simard" },
+                    { "Junior", "Emily White" }
+                }
+            }
+        };
+
+        isLoading = false;
+    }
+}
