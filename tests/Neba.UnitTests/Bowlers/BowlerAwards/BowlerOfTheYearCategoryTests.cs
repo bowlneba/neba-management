@@ -1,6 +1,6 @@
-using Neba.Domain.Bowlers;
+using Neba.Domain.Bowlers.BowlerAwards;
 
-namespace Neba.UnitTests.Bowlers;
+namespace Neba.UnitTests.Bowlers.BowlerAwards;
 
 public sealed class BowlerOfTheYearCategoryTests
 {
@@ -8,7 +8,7 @@ public sealed class BowlerOfTheYearCategoryTests
     public void BowlerOfTheYearCategory_ShouldHaveSixCategories()
     {
         // Arrange & Act
-        IReadOnlyCollection<BowlerOfTheYearCategory> categories = Neba.Domain.Bowlers.BowlerOfTheYearCategory.List;
+        IReadOnlyCollection<BowlerOfTheYearCategory> categories = BowlerOfTheYearCategory.List;
 
         // Assert
         categories.Count.ShouldBe(6);
