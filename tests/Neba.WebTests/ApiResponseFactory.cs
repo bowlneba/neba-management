@@ -13,11 +13,12 @@ public static class ApiResponseFactory
     /// </summary>
     /// <typeparam name="T">The type of the response content.</typeparam>
     /// <param name="content">The content to include in the response.</param>
-    /// <returns>An ApiResponse with HTTP 200 OK status containing the specified content.</returns>
-    public static Refit.ApiResponse<T> CreateSuccessResponse<T>(T content)
+    /// <returns>A TestApiResponse wrapper that ensures proper disposal.</returns>
+    public static TestApiResponse<T> CreateSuccessResponse<T>(T content)
     {
         var httpResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-        return new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
+        var apiResponse = new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
+        return new TestApiResponse<T>(apiResponse, httpResponse);
     }
 
     /// <summary>
@@ -26,10 +27,55 @@ public static class ApiResponseFactory
     /// <typeparam name="T">The type of the response content.</typeparam>
     /// <param name="content">The content to include in the response.</param>
     /// <param name="statusCode">The HTTP status code for the response.</param>
-    /// <returns>An ApiResponse with the specified status code containing the specified content.</returns>
-    public static Refit.ApiResponse<T> CreateResponse<T>(T content, System.Net.HttpStatusCode statusCode)
+    /// <returns>A TestApiResponse wrapper that ensures proper disposal.</returns>
+    public static TestApiResponse<T> CreateResponse<T>(T content, System.Net.HttpStatusCode statusCode)
     {
         var httpResponse = new HttpResponseMessage(statusCode);
-        return new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
+        var apiResponse = new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
+        return new TestApiResponse<T>(apiResponse, httpResponse);
+    }
+}
+
+/// <summary>
+/// Wrapper class that ensures proper disposal of both ApiResponse and HttpResponseMessage.
+/// </summary>
+public sealed class TestApiResponse<T> : IDisposable
+{
+    private readonly Refit.ApiResponse<T> _apiResponse;
+    private readonly HttpResponseMessage _httpResponse;
+    private bool _disposed;
+
+    internal TestApiResponse(Refit.ApiResponse<T> apiResponse, HttpResponseMessage httpResponse)
+    {
+        _apiResponse = apiResponse;
+        _httpResponse = httpResponse;
+    }
+
+    /// <summary>
+    /// Gets the underlying ApiResponse.
+    /// </summary>
+    public Refit.ApiResponse<T> ApiResponse => _apiResponse;
+
+    /// <summary>
+    /// Converts the TestApiResponse to an ApiResponse.
+    /// </summary>
+    public Refit.ApiResponse<T> ToApiResponse() => _apiResponse;
+
+    /// <summary>
+    /// Implicit conversion to ApiResponse for seamless usage in tests.
+    /// </summary>
+    public static implicit operator Refit.ApiResponse<T>(TestApiResponse<T> testResponse) => testResponse._apiResponse;
+
+    /// <summary>
+    /// Disposes of both the ApiResponse and HttpResponseMessage.
+    /// </summary>
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            _apiResponse?.Dispose();
+            _httpResponse?.Dispose();
+            _disposed = true;
+        }
     }
 }

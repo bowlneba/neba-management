@@ -34,7 +34,7 @@ public sealed class ChampionsTests : TestContextWrapper
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
-            .ReturnsAsync(response);
+            .ReturnsAsync(response.ApiResponse);
 
         // Act
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
@@ -69,10 +69,10 @@ public sealed class ChampionsTests : TestContextWrapper
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
-            .ReturnsAsync(summaryResponse);
+            .ReturnsAsync(summaryResponse.ApiResponse);
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
-            .ReturnsAsync(titlesResponse);
+            .ReturnsAsync(titlesResponse.ApiResponse);
 
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
 
@@ -88,7 +88,7 @@ public sealed class ChampionsTests : TestContextWrapper
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesSummaryAsync())
-            .ReturnsAsync(response);
+            .ReturnsAsync(response.ApiResponse);
 
         // Act & Assert - Component should render with modal
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
