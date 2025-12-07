@@ -182,18 +182,23 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 	var rjBurlone = mappedBowlers.Single(b => b.ApplicationId == 4653);
 	rjBurlone.FirstName = "RJ";
 	rjBurlone.MiddleName = null;
+	
+	var laJones = mappedBowlers.Single(b => b.ApplicationId == 1188);
+	laJones.FirstName = "L.A.";
 
 	//-----------------------------------------------------------------------
 
-	foreach (var bowler in mappedBowlers)
-	{
-		Bowlers.Add(bowler);
-		await SaveChangesAsync();
-	}
+	//foreach (var bowler in mappedBowlers)
+	//{
+	//	Bowlers.Add(bowler);
+	//	await SaveChangesAsync();
+	//}
 	
-	//Bowlers.AddRange(mappedBowlers);
+	Bowlers.AddRange(mappedBowlers);
 
-	//await SaveChangesAsync();
+	await SaveChangesAsync();
+	
+	"Bowlers Migrated".Dump();
 
 	return mergedBowlers;
 }
@@ -314,72 +319,72 @@ public sealed class TournamentType
 	/// <summary>
 	/// Singles tournament (1 player per team).
 	/// </summary>
-	public static readonly TournamentType Singles = new("Singles", 10, 1);
+	public static readonly TournamentType Singles = new("Singles", 10, 1,13);
 
 	/// <summary>
 	/// Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType Doubles = new("Doubles", 20, 2);
+	public static readonly TournamentType Doubles = new("Doubles", 20, 2, 1);
 
 	/// <summary>
 	/// Trios tournament (3 players per team).
 	/// </summary>
-	public static readonly TournamentType Trios = new("Trios", 30, 3);
+	public static readonly TournamentType Trios = new("Trios", 30, 3, 2);
 
 	/// <summary>
 	/// Non-Champions tournament.
 	/// </summary>
-	public static readonly TournamentType NonChampions = new("Non-Champs", 11, 1);
+	public static readonly TournamentType NonChampions = new("Non-Champs", 11, 1,8);
 
 	/// <summary>
 	/// Tournament of Champions event.
 	/// </summary>
-	public static readonly TournamentType TournamentOfChampions = new("T of C", 12, 1);
+	public static readonly TournamentType TournamentOfChampions = new("T of C", 12, 1,7);
 
 	/// <summary>
 	/// Invitational tournament.
 	/// </summary>
-	public static readonly TournamentType Invitational = new("Invitational", 13, 1);
+	public static readonly TournamentType Invitational = new("Invitational", 13, 1, 11);
 
 	/// <summary>
 	/// Masters tournament.
 	/// </summary>
-	public static readonly TournamentType Masters = new("Masters", 14, 1);
+	public static readonly TournamentType Masters = new("Masters", 14, 1,12);
 
 	/// <summary>
 	/// High Roller tournament.
 	/// </summary>
-	public static readonly TournamentType HighRoller = new("High Roller", 15, 1);
+	public static readonly TournamentType HighRoller = new("High Roller", 15, 1, 3);
 
 	/// <summary>
 	/// Senior tournament.
 	/// </summary>
-	public static readonly TournamentType Senior = new("Senior", 16, 1);
+	public static readonly TournamentType Senior = new("Senior", 16, 1, 4);
 
 	/// <summary>
 	/// Women tournament.
 	/// </summary>
-	public static readonly TournamentType Women = new("Women's", 17, 1);
+	public static readonly TournamentType Women = new("Women's", 17, 1,15);
 
 	/// <summary>
 	/// Over 40 tournament.
 	/// </summary>
-	public static readonly TournamentType OverForty = new("Over 40", 18, 1);
+	public static readonly TournamentType OverForty = new("Over 40", 18, 1,6);
 
 	/// <summary>
 	/// 40-49 age group tournament.
 	/// </summary>
-	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1);
+	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1,5);
 
 	/// <summary>
 	/// Over/Under 50 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2);
+	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2,14);
 
 	/// <summary>
 	/// Over/Under 40 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 22, 2);
+	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 22, 2,9);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TournamentType"/> class.
@@ -387,10 +392,11 @@ public sealed class TournamentType
 	/// <param name="name">The display name of the tournament type.</param>
 	/// <param name="value">The unique integer value for the tournament type.</param>
 	/// <param name="teamSize">The number of players per team for this tournament type.</param>
-	private TournamentType(string name, int value, int teamSize)
+	private TournamentType(string name, int value, int teamSize, int websiteId)
 		: base(name, value)
 	{
 		TeamSize = teamSize;
+		WebsiteId = websiteId;
 	}
 
 	/// <summary>
@@ -404,13 +410,33 @@ public sealed class TournamentType
 	/// Gets the number of players per team for this tournament type.
 	/// </summary>
 	public int TeamSize { get; }
+
+	public int WebsiteId { get; }
+	
+	public static TournamentType FromWebsiteId(int websiteId)
+		=> List.Single(tournamentType => tournamentType.WebsiteId == websiteId);
 }
 
 public async Task MigrateTitlesAsync(Dictionary<int ,Guid> bowlerIdByWebsiteId)
 {
 	var titlesTable = await QueryStatsDatabaseAsync("select * from dbo.Titles");
+
+	var titles = titlesTable.AsEnumerable()
+	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
+	.Select(row => new Titles
+	{
+		Id = Guid.NewGuid(),
+		BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")],
+		Month = row.Field<DateTime>("TitleDate").Month,
+		Year = row.Field<DateTime>("TitleDate").Year,
+		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
+	}).ToList();
 	
+	Titles.AddRange(titles);
 	
+	await SaveChangesAsync();
+	
+	"Titles Migrated".Dump();
 }
 
 static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
