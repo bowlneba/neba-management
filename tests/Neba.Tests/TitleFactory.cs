@@ -1,4 +1,3 @@
-using Neba.Domain;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Tournaments;
 

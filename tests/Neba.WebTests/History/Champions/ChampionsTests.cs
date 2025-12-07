@@ -1,17 +1,11 @@
-using System.Net.Http;
-using AngleSharp.Dom;
 using Bunit;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Neba;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
-using Neba.WebTests;
-using Refit;
 using System.Reflection;
 
 namespace Neba.WebTests.History.Champions;
@@ -121,7 +115,7 @@ public sealed class ChampionsTests : TestContextWrapper
 
         // Assert - Component should render and include the modal component
         cut.ShouldNotBeNull();
-        
+
         // Verify that the BowlerTitlesModal component is present in the rendered output
         var modalComponent = cut.FindComponent<Neba.Web.Server.History.Champions.BowlerTitlesModal>();
         modalComponent.ShouldNotBeNull();

@@ -1,16 +1,8 @@
 using AngleSharp.Dom;
 using Bunit;
-using ErrorOr;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Neba;
-using Neba.Contracts;
-using Neba.Contracts.Website.Bowlers;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
-using Neba.Web.Server.Services;
-using Refit;
 
 namespace Neba.WebTests.History.Champions;
 

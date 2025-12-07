@@ -1,4 +1,3 @@
-using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
 using Neba.Tests;

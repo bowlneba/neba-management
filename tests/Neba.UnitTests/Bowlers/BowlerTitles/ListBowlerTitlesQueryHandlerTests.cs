@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Moq;
 using Neba.Application.Bowlers;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Tests;

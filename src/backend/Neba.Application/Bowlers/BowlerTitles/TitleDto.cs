@@ -1,4 +1,3 @@
-using Neba.Domain;
 using Neba.Domain.Tournaments;
 
 namespace Neba.Application.Bowlers.BowlerTitles;

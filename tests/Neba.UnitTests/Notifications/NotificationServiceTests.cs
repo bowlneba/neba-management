@@ -1,5 +1,4 @@
 using Neba.Web.Server.Notifications;
-using Neba.Web.Server.Services;
 
 namespace Neba.UnitTests.Notifications;
 

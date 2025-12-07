@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website.Configurations;
-using SmartEnum.EFCore;
 
 namespace Neba.Infrastructure.Database.Website;
 
