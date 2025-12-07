@@ -119,16 +119,22 @@ else
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
     private readonly HashSet<string> expandedSections = new();
+    private List<TitlesByYearViewModel>? previousTitlesByYear;
 
     protected override void OnParametersSet()
     {
-        if (TitlesByYear != null && expandedSections.Count == 0)
+        if (TitlesByYear != null && !TitlesByYear.SequenceEqual(previousTitlesByYear ?? new List<TitlesByYearViewModel>()))
         {
-            // Expand all sections by default when data is first loaded
+            // Data has changed, reset expanded sections
+            expandedSections.Clear();
+            
+            // Expand all sections by default when data is loaded or refreshed
             foreach (var yearGroup in TitlesByYear)
             {
                 expandedSections.Add($"year-{yearGroup.Year}");
             }
+            
+            previousTitlesByYear = new List<TitlesByYearViewModel>(TitlesByYear);
         }
     }
 
