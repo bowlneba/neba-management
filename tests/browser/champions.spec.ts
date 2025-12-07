@@ -27,9 +27,8 @@ test.describe('Champions Page', () => {
     test('displays loading indicator initially', async ({ page }) => {
       // Note: This test might be flaky depending on how fast the data loads
       // The loading indicator should appear briefly
-      const loadingIndicator = page.locator('.neba-loading-overlay-page');
       // We just verify it exists in the DOM, it may already be hidden
-      await expect(page.locator('body')).toBeTruthy();
+      expect(page.locator('body')).toBeTruthy();
     });
   });
 
@@ -98,8 +97,8 @@ test.describe('Champions Page', () => {
 
       // Verify header contains title count and bowler count
       const firstHeader = await headers.first().textContent();
-      expect(firstHeader).toMatch(/\d+ Titles?/);
-      expect(firstHeader).toMatch(/\d+ bowlers?/);
+      expect(firstHeader).toMatch(/\d{1,10} (?:Titles|Title)/);
+      expect(firstHeader).toMatch(/\d{1,10} (?:bowlers|bowler)/);
     });
 
     test('displays champion names on cards', async ({ page }) => {
@@ -286,7 +285,7 @@ test.describe('Champions Page', () => {
       // Title count should be visible somewhere in the modal
       const modal = page.locator('.neba-modal-content.bowler-titles-modal');
       const modalText = await modal.textContent();
-      expect(modalText).toMatch(/\d+ Titles?/);
+      expect(modalText).toMatch(/\d{1,10} (?:Titles|Title)/);
     });
 
     test('modal displays Hall of Fame badge for Hall of Famers', async ({ page }) => {
@@ -510,7 +509,7 @@ test.describe('Champions Page', () => {
       await expect(yearHeaders.first()).toBeVisible({ timeout: 5000 });
 
       const firstYearText = await yearHeaders.first().textContent();
-      expect(firstYearText).toMatch(/\d+ titles?/i);
+      expect(firstYearText).toMatch(/\d{1,10} (?:titles|title)/i);
     });
 
     test('year sections are expanded by default', async ({ page }) => {
