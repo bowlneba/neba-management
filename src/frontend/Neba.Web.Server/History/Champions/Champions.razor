@@ -47,7 +47,11 @@
         }
         else
         {
-            <YearView OnChampionClick="HandleYearViewChampionClick" />
+            <YearView TitlesByYear="@titlesByYear"
+                      IsLoading="@isYearViewLoading"
+                      ErrorMessage="@yearViewErrorMessage"
+                      OnErrorDismiss="() => yearViewErrorMessage = null"
+                      OnChampionClick="HandleYearViewChampionClick" />
         }
     }
 </div>
@@ -64,6 +68,11 @@
     private string? errorMessage;
     private bool isLoading = true;
     private ChampionsView selectedView = ChampionsView.TitleCount;
+
+    // Year view data
+    private List<TitlesByYearViewModel>? titlesByYear;
+    private bool isYearViewLoading = false;
+    private string? yearViewErrorMessage;
 
     // Modal state
     private bool isModalOpen = false;
@@ -99,9 +108,42 @@
         }
     }
 
-    private void HandleViewChanged(string viewValue)
+    private async Task LoadTitlesByYearAsync()
     {
-        selectedView = Enum.Parse<ChampionsView>(viewValue);
+        isYearViewLoading = true;
+        yearViewErrorMessage = null;
+
+        try
+        {
+            var result = await NebaApiService.GetTitlesByYearAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                yearViewErrorMessage = $"Failed to load titles: {error.Description}";
+                return;
+            }
+
+            titlesByYear = result.Value.ToList();
+        }
+        catch (Exception ex)
+        {
+            yearViewErrorMessage = $"Failed to load titles: {ex.Message}";
+        }
+        finally
+        {
+            isYearViewLoading = false;
+        }
+    }
+
+    private async Task HandleViewChanged(string viewValue)
+    {
+        var newView = Enum.Parse<ChampionsView>(viewValue);
+        if (newView == ChampionsView.Year && titlesByYear == null)
+        {
+            await LoadTitlesByYearAsync();
+        }
+        selectedView = newView;
     }
 
     private void HandleChampionClick(BowlerTitleSummaryViewModel champion)

@@ -16,57 +16,19 @@ namespace Neba.WebTests.History.Champions;
 
 public sealed class YearViewTests : TestContextWrapper
 {
-    private void SetupMockApiService(ErrorOr<IReadOnlyCollection<BowlerTitleViewModel>> result)
-    {
-        var mockNebaApi = new Mock<INebaApi>();
-
-        if (result.IsError)
-        {
-            // Mock failure scenario - throw HttpRequestException to simulate network error
-            mockNebaApi
-                .Setup(x => x.GetAllTitlesAsync())
-                .ThrowsAsync(new HttpRequestException("Simulated API error"));
-        }
-        else
-        {
-            // Mock success scenario - convert ViewModels back to DTOs for the API response
-            var dtos = result.Value.Select(vm => new BowlerTitleResponse
-            {
-                BowlerId = vm.BowlerId,
-                BowlerName = vm.BowlerName,
-                TournamentMonth = Month.FromValue(vm.TournamentMonth),
-                TournamentYear = vm.TournamentYear,
-                TournamentType = vm.TournamentType
-            }).ToList();
-
-            var collectionResponse = new CollectionResponse<BowlerTitleResponse> { Items = dtos };
-            using var apiResponse = new Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>(
-                new HttpResponseMessage(System.Net.HttpStatusCode.OK),
-                collectionResponse,
-                new RefitSettings());
-
-            mockNebaApi
-                .Setup(x => x.GetAllTitlesAsync())
-                .ReturnsAsync(apiResponse);
-        }
-
-        // Use the real NebaApiService with the mocked INebaApi
-        // The service will call GetAllTitlesAsync and transform it to GetTitlesByYearAsync
-        var nebaApiService = new NebaApiService(mockNebaApi.Object);
-        TestContext.Services.AddSingleton(nebaApiService);
-    }
-
     [Fact]
     public async Task ShouldDisplayEmptyMessageWhenNoTitles()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>();
-        SetupMockApiService(titles);
+        var titlesByYear = new List<TitlesByYearViewModel>();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         cut.Markup.ShouldContain("No titles found");
@@ -82,12 +44,19 @@ public sealed class YearViewTests : TestContextWrapper
             BowlerTitleViewModelFactory.Create(tournamentMonth: 11, tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentMonth: 10, tournamentYear: 2023)
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IReadOnlyList<IElement> yearHeaders = cut.FindAll(".year-header");
@@ -103,12 +72,19 @@ public sealed class YearViewTests : TestContextWrapper
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024)
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IElement yearHeader = cut.Find(".year-header h3");
@@ -124,12 +100,19 @@ public sealed class YearViewTests : TestContextWrapper
         {
             BowlerTitleViewModelFactory.Create()
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IElement yearHeader = cut.Find(".year-header h3");
@@ -145,12 +128,19 @@ public sealed class YearViewTests : TestContextWrapper
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IReadOnlyList<IElement> expandedSections = cut.FindAll(".year-expanded");
@@ -165,11 +155,18 @@ public sealed class YearViewTests : TestContextWrapper
         {
             BowlerTitleViewModelFactory.Create()
         };
-        SetupMockApiService(titles);
 
-        IRenderedComponent<YearView> cut = Render<YearView>();
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Act - Click the toggle button
         IElement toggleButton = cut.Find(".year-header");
@@ -195,12 +192,19 @@ public sealed class YearViewTests : TestContextWrapper
         {
             BowlerTitleViewModelFactory.Create()
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IElement thead = cut.Find("thead");
@@ -217,12 +221,19 @@ public sealed class YearViewTests : TestContextWrapper
         {
             BowlerTitleViewModelFactory.Create(bowlerName: "Alice Smith")
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IElement championButton = cut.Find(".champion-name");
@@ -240,12 +251,19 @@ public sealed class YearViewTests : TestContextWrapper
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         // Act
-        IRenderedComponent<YearView> cut = Render<YearView>();
-
-        await Task.Delay(200); // Wait for async rendering
+        IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
+            .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(this, _ => { }))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Assert
         IReadOnlyList<IElement> yearHeaders = cut.FindAll(".year-header h3");
@@ -263,13 +281,19 @@ public sealed class YearViewTests : TestContextWrapper
         {
             BowlerTitleViewModelFactory.Create(bowlerName: "Alice")
         };
-        SetupMockApiService(titles);
+
+        var titlesByYear = titles
+            .GroupBy(t => t.TournamentYear)
+            .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
+            .ToList();
 
         IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
+            .Add(p => p.TitlesByYear, titlesByYear)
+            .Add(p => p.IsLoading, false)
+            .Add(p => p.ErrorMessage, null)
             .Add(p => p.OnChampionClick, EventCallback.Factory.Create<BowlerTitleViewModel>(
-                this, champion => clickedChampion = champion)));
-
-        await Task.Delay(200); // Wait for async rendering
+                this, champion => clickedChampion = champion))
+            .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => { })));
 
         // Act
         IElement championButton = cut.Find(".champion-name");

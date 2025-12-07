@@ -1,7 +1,6 @@
 @using Neba.Web.Server.Notifications
-@inject NebaApiService NebaApiService
 
-@if (isLoading)
+@if (IsLoading)
 {
     <div class="flex justify-center items-center py-12">
         <div class="text-center">
@@ -10,17 +9,17 @@
         </div>
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(errorMessage))
+else if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
     <div class="py-6">
         <NebaAlert Severity="NotifySeverity.Error"
                    Title="Error Loading Titles"
-                   Message="@errorMessage"
+                   Message="@ErrorMessage"
                    Dismissible="true"
-                   OnDismiss="@(() => errorMessage = null)" />
+                   OnDismiss="OnErrorDismiss" />
     </div>
 }
-else if (titlesByYear.Count == 0)
+else if (TitlesByYear == null || TitlesByYear.Count == 0)
 {
     <div class="text-center py-12 text-gray-500">
         No titles found.
@@ -29,7 +28,7 @@ else if (titlesByYear.Count == 0)
 else
 {
     <div class="space-y-4">
-        @foreach (var yearGroup in titlesByYear.OrderByDescending(g => g.Year))
+        @foreach (var yearGroup in TitlesByYear.OrderByDescending(g => g.Year))
         {
             var sectionId = $"year-{yearGroup.Year}";
             var isExpanded = expandedSections.Contains(sectionId);
@@ -105,49 +104,31 @@ else
 
 @code {
     [Parameter]
+    public List<TitlesByYearViewModel>? TitlesByYear { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback OnErrorDismiss { get; set; }
+
+    [Parameter]
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
-    private List<TitlesByYearViewModel> titlesByYear = new();
-    private string? errorMessage;
-    private bool isLoading = true;
     private readonly HashSet<string> expandedSections = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        await LoadTitlesAsync();
-    }
-
-    private async Task LoadTitlesAsync()
-    {
-        isLoading = true;
-        errorMessage = null;
-
-        try
+        if (TitlesByYear != null && expandedSections.Count == 0)
         {
-            var result = await NebaApiService.GetTitlesByYearAsync();
-
-            if (result.IsError)
-            {
-                var error = result.FirstError;
-                errorMessage = $"Failed to load titles: {error.Description}";
-                return;
-            }
-
-            titlesByYear = result.Value.ToList();
-
-            // Expand all sections by default
-            foreach (var yearGroup in titlesByYear)
+            // Expand all sections by default when data is first loaded
+            foreach (var yearGroup in TitlesByYear)
             {
                 expandedSections.Add($"year-{yearGroup.Year}");
             }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Failed to load titles: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
         }
     }
 
