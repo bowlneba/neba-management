@@ -153,8 +153,8 @@ else
                             .OrderBy(t => t.BowlerId)
                             .Select(t => $"{t.BowlerId}:{t.TournamentYear}:{t.TournamentMonth}:{t.TournamentType}:{t.HallOfFame}"))}"));
 
-        // Use a simple hash for comparison (could be replaced with a more robust hash if needed)
-        return dataString.GetHashCode().ToString();
+        // Return the canonical string for reliable comparison
+        return dataString;
     }
 
     private void ToggleSection(string sectionId)
