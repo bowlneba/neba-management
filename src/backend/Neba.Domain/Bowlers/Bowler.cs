@@ -1,4 +1,5 @@
 using Neba.Domain.Abstractions;
+using Neba.Domain.Bowlers.BowlerAwards;
 using Neba.Domain.Tournaments;
 
 namespace Neba.Domain.Bowlers;
@@ -30,7 +31,10 @@ public sealed class Bowler
         : base(BowlerId.New())
     {
         Titles = [];
+        BowlerOfTheYears = [];
     }
 
     internal IReadOnlyCollection<Title> Titles { get; init; }
+
+    internal IReadOnlyCollection<BowlerOfTheYear> BowlerOfTheYears { get; init;}
 }
