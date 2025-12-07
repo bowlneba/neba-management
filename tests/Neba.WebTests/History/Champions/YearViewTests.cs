@@ -17,7 +17,7 @@ namespace Neba.WebTests.History.Champions;
 public sealed class YearViewTests : TestContextWrapper
 {
     [Fact]
-    public void ShouldDisplayEmptyMessageWhenNoTitles()
+    public void Render_NoTitles_DisplaysEmptyMessage()
     {
         // Arrange
         var titlesByYear = new List<TitlesByYearViewModel>();
@@ -35,7 +35,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldGroupTitlesByYear()
+    public void Render_Titles_GroupsByYear()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -64,7 +64,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldDisplayYearHeadersWithTitleCounts()
+    public void Render_Titles_DisplaysYearHeadersWithCounts()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
@@ -93,7 +93,7 @@ public sealed class YearViewTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldUseSingularFormForOneTitle()
+    public void Render_OneTitle_UsesSingularForm()
     {
         // Arrange
         var titles = new List<BowlerTitleViewModel>
