@@ -20,16 +20,21 @@
   <NuGetReference>Microsoft.Data.SqlClient</NuGetReference>
   <NuGetReference>NameParserSharp</NuGetReference>
   <NuGetReference>Ardalis.SmartEnum</NuGetReference>
+  <NuGetReference>HtmlAgilityPack</NuGetReference>
   <Namespace>Ardalis.SmartEnum</Namespace>
+  <Namespace>HtmlAgilityPack</Namespace>
   <Namespace>Microsoft.Data.SqlClient</Namespace>
   <Namespace>NameParser</Namespace>
+  <Namespace>System.Net.Http</Namespace>
   <Namespace>System.Text.Json</Namespace>
   <Namespace>System.Text.Json.Serialization</Namespace>
   <Namespace>System.Threading.Tasks</Namespace>
+  <Namespace>System.Web</Namespace>
 </Query>
 
 async Task Main()
 {
+	BowlersOfTheYears.RemoveRange(BowlersOfTheYears);
 	Titles.RemoveRange(Titles);
 	Bowlers.RemoveRange(Bowlers);
 	
@@ -44,6 +49,7 @@ async Task Main()
 	var websiteNamesByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.websiteName!);
 	
 	await MigrateTitlesAsync(bowlerIdByWebsiteId);
+	await MigrateBowlerOfTheYears(bowlerIdByWebsiteId, websiteNamesByWebsiteId, bowlerIdBySoftwareId, softwareNamesBySoftwareId!);
 }
 
 // You can define other methods, fields, classes and namespaces here
@@ -438,6 +444,397 @@ public async Task MigrateTitlesAsync(Dictionary<int ,Guid> bowlerIdByWebsiteId)
 	
 	"Titles Migrated".Dump();
 }
+
+public async Task MigrateBowlerOfTheYears(
+	Dictionary<int, Guid> bowlerIdsByWebsiteId, 
+	Dictionary<int, HumanName> bowlerNamesByWebsiteId,
+	Dictionary<int, Guid> bowlerIdsBySoftwareId,
+	Dictionary<int, HumanName> bowlerNamesBySoftwareId)
+{
+	var bowlerIdsByWebsiteName = (from bowlerNameByWebsiteId in bowlerNamesByWebsiteId
+								 from bowlerIdByWebsiteId in bowlerIdsByWebsiteId
+								 where bowlerNameByWebsiteId.Key == bowlerIdByWebsiteId.Key
+								 select new KeyValuePair<HumanName,Guid>(bowlerNamesByWebsiteId[bowlerIdByWebsiteId.Key], bowlerIdsByWebsiteId[bowlerIdByWebsiteId.Key])).ToList();
+
+	var bowlerIdsBySoftwareName = (from bowlerNameBySoftwareId in bowlerNamesBySoftwareId
+								   from bowlerIdBySoftwareId in bowlerIdsBySoftwareId
+								   where bowlerNameBySoftwareId.Key == bowlerIdBySoftwareId.Key
+								   select new KeyValuePair<HumanName,Guid>(bowlerNamesBySoftwareId[bowlerIdBySoftwareId.Key], bowlerIdsBySoftwareId[bowlerIdBySoftwareId.Key])).ToList();
+
+
+
+	var bowlerOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/bowler-of-the-year/");	
+	var womanOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/woman-bowler-of-the-year/");
+	var seniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/senior-bowler-of-the-year/");	
+	var superSeniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/super-senior-bowler-of-the-year/");			 
+	var rookieOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/rookie-of-the-year/");
+	var youthOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/youth-bowler-of-the-year/");
+	
+	await Task.WhenAll(
+		bowlerOfTheYearsTask,
+		womanOfTheYearsTask,
+		seniorOfTheYearsTask, 
+		superSeniorOfTheYearsTask,
+		rookieOfTheYearsTask,
+		youthOfTheYearsTask);
+	
+	var bowlerOfTheYears = await bowlerOfTheYearsTask;
+	var womanOfTheYears = await womanOfTheYearsTask;
+	var seniorOfTheYears = await seniorOfTheYearsTask;
+	var superSeniorOfTheYears = await superSeniorOfTheYearsTask;
+	var rookieOfTheYears = await rookieOfTheYearsTask;
+	var youthOfTheYears = await youthOfTheYearsTask;
+
+	foreach (var bowlerOfTheYear in bowlerOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Open, bowlerOfTheYear.year, bowlerOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName); 
+	}
+	
+	"Bowler of the Year Migrated".Dump();
+
+	foreach (var womanOfTheYear in womanOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Woman, womanOfTheYear.year, womanOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}	
+	
+	"Woman Bowler of the Year Migrated".Dump();
+
+	foreach (var seniorOfTheYear in seniorOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Senior, seniorOfTheYear.year, seniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Senior Bowler of the Year Migrated".Dump();
+
+	foreach (var superSeniorOfTheYear in superSeniorOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.SuperSenior, superSeniorOfTheYear.year, superSeniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Super Senior Bowler of the Year Migrated".Dump();
+
+	foreach (var rookieOfTheYear in rookieOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Rookie, rookieOfTheYear.year, rookieOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Rookie Bowler of the Year Migrated".Dump();
+
+	foreach (var youthOfTheYear in youthOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Youth, youthOfTheYear.year, youthOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Youth Bowler of the Year Migrated".Dump();
+	
+	await SaveChangesAsync();
+}
+
+public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, string year, string bowlerName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName, IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+{
+	var websiteBowlers = bowlerIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+	var softwareBowlers = bowlerIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase)); ;
+
+	if (websiteBowlers.Any())
+	{
+		if (websiteBowlers.Count() > 1)
+		{
+			websiteBowlers.Dump($"Multiple Website People for {bowlerName}");
+		}
+		else
+		{
+			var bowler = websiteBowlers.Single();
+			var record = new BowlerOfTheYears
+			{
+				Id = Guid.NewGuid(),
+				BowlerId = bowler.Value,
+				Category = category,
+				Season = year.StartsWith("2020") ? "2020-2021" : year
+			};
+
+			BowlersOfTheYears.Add(record);
+		}
+	}
+	else if (softwareBowlers.Any())
+	{
+		if (softwareBowlers.Count() > 1)
+		{
+			softwareBowlers.Dump($"Multiple Software People for {bowlerName}");
+		}
+		else
+		{
+			var bowler = softwareBowlers.Single();
+			var record = new BowlerOfTheYears
+			{
+				Id = Guid.NewGuid(),
+				BowlerId = bowler.Value,
+				Category = category,
+				Season = year.StartsWith("2020") ? "2020-2021" : year
+			};
+
+			BowlersOfTheYears.Add(record);
+		}
+	}
+	else //Not on website or software
+	{	
+		if (bowlerName.Contains("Brust") || bowlerName.Contains("Bissmann"))
+		{
+			var manualBowler = bowlerIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
+
+			var manualRecord = new BowlerOfTheYears
+			{
+				Id = Guid.NewGuid(),
+				BowlerId = manualBowler.Value,
+				Category = category,
+				Season = year
+			};
+			
+			BowlersOfTheYears.Add(manualRecord);
+			
+			return;
+		}
+		
+		$"{bowlerName} is not a champion nor in the software, creating new".Dump();
+
+		var newBowlerName = new HumanName(bowlerName);
+		var newBowler = new Bowlers
+		{
+			Id = Guid.NewGuid(),
+			FirstName = newBowlerName.First,
+			MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
+			LastName = newBowlerName.Last,
+			Suffix = string.IsNullOrWhiteSpace(newBowlerName.Suffix) ? null : newBowlerName.Suffix.Replace(".", ""),
+			Nickname = string.IsNullOrWhiteSpace(newBowlerName.Nickname) ? null : newBowlerName.Nickname,
+			ApplicationId = null,
+			WebsiteId = null
+		};
+
+		Bowlers.Add(newBowler);
+
+		var record = new BowlerOfTheYears
+		{
+			Id = Guid.NewGuid(),
+			BowlerId = newBowler.Id,
+			Category = category,
+			Season = year.StartsWith("2020") ? "2020-2021" : year
+		};
+
+		BowlersOfTheYears.Add(record);
+	}
+}
+
+public static class BowlerOfTheYearScraper
+{
+	public static async Task<List<(string year, string name)>> ScrapeAsync(string url)
+	{
+		var results = new List<(string year, string name)>();
+
+		using var httpClient = new HttpClient();
+		var html = await httpClient.GetStringAsync(url);
+
+		var htmlDoc = new HtmlDocument();
+		htmlDoc.LoadHtml(html);
+
+		// Pattern to match year entries like "1963", "2020/21", etc.
+		var yearPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s*[:.]?\s*(.+)$");
+
+		// Collect all text nodes and parse them
+		var allText = htmlDoc.DocumentNode.InnerText;
+
+		// Decode HTML entities like &nbsp; and &copy;
+		allText = System.Web.HttpUtility.HtmlDecode(allText);
+
+		var lines = allText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+		foreach (var line in lines)
+		{
+			var trimmed = line.Trim();
+
+			// Try to match year pattern
+			var match = yearPattern.Match(trimmed);
+			if (match.Success)
+			{
+				var year = match.Groups[1].Value;
+				var name = match.Groups[2].Value.Trim();
+
+				// Filter out invalid entries
+				if (!string.IsNullOrWhiteSpace(name) && name.Length > 2)
+				{
+					// Skip entries that look like copyright, links, or other non-name content
+					if (name.Contains("©") ||
+						name.Contains("All Rights Reserved") ||
+						name.Contains("Copyright") ||
+						name.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+
+					// Handle ties - split on " and " to get multiple names
+					AddNamesFromEntry(results, year, name);
+				}
+			}
+			else
+			{
+				// Alternative parsing: look for strong tags followed by text
+				// Check if line starts with a 4-digit year
+				if (Regex.IsMatch(trimmed, @"^\d{4}"))
+				{
+					var parts = trimmed.Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length >= 2)
+					{
+						var year = parts[0].TrimEnd(':', '.');
+						var name = parts[1].Trim();
+
+						// Filter out invalid entries
+						if (name.Contains("©") ||
+							name.Contains("All Rights Reserved") ||
+							name.Contains("Copyright"))
+						{
+							continue;
+						}
+
+						// Handle ties - split on " and " to get multiple names
+						AddNamesFromEntry(results, year, name);
+					}
+				}
+			}
+		}
+
+		// If the above didn't work well, try a more specific approach
+		if (results.Count < 10)
+		{
+			results.Clear();
+
+			// Look for strong tags containing years
+			var strongNodes = htmlDoc.DocumentNode.SelectNodes("//strong");
+			if (strongNodes != null)
+			{
+				foreach (var strongNode in strongNodes)
+				{
+					var yearText = System.Web.HttpUtility.HtmlDecode(strongNode.InnerText.Trim().TrimEnd(':', '.'));
+
+					// Check if it's a year (4 digits or year range like 2020/21)
+					if (Regex.IsMatch(yearText, @"^\d{4}(?:/\d{2})?$"))
+					{
+						// Get the next text node (the name)
+						var nextNode = strongNode.NextSibling;
+						while (nextNode != null && string.IsNullOrWhiteSpace(nextNode.InnerText))
+						{
+							nextNode = nextNode.NextSibling;
+						}
+
+						if (nextNode != null)
+						{
+							var name = System.Web.HttpUtility.HtmlDecode(nextNode.InnerText.Trim());
+							// Clean up the name (remove leading colons, spaces, etc.)
+							name = Regex.Replace(name, @"^[:\s]+", "").Trim();
+
+							// Take only the first line if there are multiple lines
+							var firstLine = name.Split('\n')[0].Trim();
+
+							// Filter out invalid entries
+							if (!string.IsNullOrWhiteSpace(firstLine) &&
+								firstLine.Length > 2 &&
+								!firstLine.Contains("©") &&
+								!firstLine.Contains("All Rights Reserved") &&
+								!firstLine.Contains("Copyright"))
+							{
+								// Handle ties - split on " and " to get multiple names
+								AddNamesFromEntry(results, yearText, firstLine);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return results.OrderBy(r => r.year).ToList();
+	}
+
+	private static void AddNamesFromEntry(List<(string year, string name)> results, string year, string nameEntry)
+	{
+		// Check if there are multiple names separated by " and "
+		if (nameEntry.Contains(" and ", StringComparison.OrdinalIgnoreCase))
+		{
+			// Split on " and " (case-insensitive)
+			var names = Regex.Split(nameEntry, @"\s+and\s+", RegexOptions.IgnoreCase);
+
+			foreach (var name in names)
+			{
+				var trimmedName = name.Trim();
+				if (!string.IsNullOrWhiteSpace(trimmedName) && !results.Any(r => r.year == year && r.name == trimmedName))
+				{
+					results.Add((year, trimmedName));
+				}
+			}
+		}
+		else
+		{
+			// Single name entry
+			if (!results.Any(r => r.year == year && r.name == nameEntry))
+			{
+				results.Add((year, nameEntry));
+			}
+		}
+	}
+}
+
+/// <summary>
+/// Represents a category for the Bowler of the Year award, using a smart enum pattern.
+/// </summary>
+public sealed class BowlerOfTheYearCategory
+	: SmartEnum<BowlerOfTheYearCategory>
+{
+	/// <summary>
+	/// Open category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Open = new("Bowler of the Year", 1);
+
+	/// <summary>
+	/// Woman category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Woman = new("Woman Bowler of the Year", 2);
+
+	/// <summary>
+	/// Senior category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Senior = new("Senior Bowler of the Year", 50);
+
+	/// <summary>
+	/// Super Senior category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory SuperSenior = new("Super Senior Bowler of the Year", 60);
+
+	/// <summary>
+	/// Rookie of the Year category.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Rookie = new("Rookie of the Year", 10);
+
+	/// <summary>
+	/// Youth category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Youth = new("Youth Bowler of the Year", 20);
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="BowlerOfTheYearCategory"/> class with the specified name and value.
+	/// </summary>
+	/// <param name="name">The name of the category.</param>
+	/// <param name="value">The integer value of the category.</param>
+	private BowlerOfTheYearCategory(string name, int value)
+		: base(name, value)
+	{ }
+
+	/// <summary>
+	/// Private parameterless constructor for serialization or ORM support.
+	/// </summary>
+	private BowlerOfTheYearCategory()
+		: this(string.Empty, 0)
+	{ }
+}
+
 
 static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 {
