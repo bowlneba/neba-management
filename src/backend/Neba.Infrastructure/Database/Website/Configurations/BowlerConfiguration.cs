@@ -62,9 +62,9 @@ internal sealed class BowlerConfiguration
             .HasForeignKey(title => title.BowlerId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(bowler => bowler.BowlerOfTheYears)
-            .WithOne(bowlerOfTheYear => bowlerOfTheYear.Bowler)
-            .HasForeignKey(bowlerOfTheYear => bowlerOfTheYear.BowlerId)
+        builder.HasMany(bowler => bowler.SeasonAwards)
+            .WithOne(seasonAward => seasonAward.Bowler)
+            .HasForeignKey(seasonAward => seasonAward.BowlerId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

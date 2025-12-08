@@ -1,3 +1,4 @@
+using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Bowlers.BowlerAwards;
 using Neba.Domain.Tournaments;
@@ -12,7 +13,7 @@ public static class BowlerFactory
         int? websiteId = null,
         int? applicationId = null,
         IReadOnlyCollection<Title>? titles = null,
-        IReadOnlyCollection<BowlerOfTheYear>? bowlerOfTheYears = null)
+        IReadOnlyCollection<SeasonAward>? seasonAwards = null)
             => new()
             {
                 Id = id ?? BowlerId.New(),
@@ -20,7 +21,7 @@ public static class BowlerFactory
                 WebsiteId = websiteId,
                 ApplicationId = applicationId,
                 Titles = titles ?? [],
-                BowlerOfTheYears = bowlerOfTheYears ?? []
+                SeasonAwards = seasonAwards ?? []
             };
 
     public static Bowler Bogus(int? seed = null)
@@ -41,7 +42,7 @@ public static class BowlerFactory
                     WebsiteId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
                     ApplicationId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
                     Titles = TitleFactory.Bogus(bowlerId, f.Random.Int(0, 10), seed),
-                    BowlerOfTheYears = BowlerOfTheYearFactory.Bogus(bowlerId, f.Random.Int(0, 5), seed)
+                    SeasonAwards = SeasonAwardFactory.BogusBowlerOfTheYear(bowlerId, f.Random.Int(0, 5), seed)
                 };
             });
 

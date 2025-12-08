@@ -26,7 +26,7 @@ public sealed class AwardsIntegrationTests
         });
 
         int totalBowlerOfTheYearWins = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking().SelectMany(b => b.BowlerOfTheYears).CountAsync());
+            => await context.Bowlers.AsNoTracking().SelectMany(b => b.SeasonAwards).CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

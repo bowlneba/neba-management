@@ -26,6 +26,6 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
 
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
         modelBuilder.ApplyConfiguration(new TitleConfiguration());
-        modelBuilder.ApplyConfiguration(new BowlerOfTheYearConfiguration());
+        modelBuilder.ApplyConfiguration(new SeasonAwardConfiguration());
     }
 }
