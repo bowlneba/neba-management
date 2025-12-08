@@ -36,5 +36,5 @@ public sealed class Bowler
 
     internal IReadOnlyCollection<Title> Titles { get; init; }
 
-    internal IReadOnlyCollection<BowlerOfTheYear> BowlerOfTheYears { get; init;}
+    internal IReadOnlyCollection<BowlerOfTheYear> BowlerOfTheYears { get; init; }
 }

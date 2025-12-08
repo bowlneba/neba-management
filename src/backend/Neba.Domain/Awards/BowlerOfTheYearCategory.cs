@@ -52,5 +52,5 @@ public sealed class BowlerOfTheYearCategory
     /// </summary>
     private BowlerOfTheYearCategory()
         : this(string.Empty, 0)
-    {}
+    { }
 }
