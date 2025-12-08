@@ -13,6 +13,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             .AsNoTracking()
             .Select(award => new BowlerOfTheYearDto
             {
+                Id = award.Id,
                 BowlerId = award.BowlerId,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
