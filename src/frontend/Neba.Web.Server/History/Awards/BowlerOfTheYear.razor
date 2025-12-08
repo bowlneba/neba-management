@@ -24,6 +24,16 @@
         </div>
     </div>
 
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Awards"
+                   Message="@errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => errorMessage = null)" />
+    }
+
     <!-- Awards Section with Loading Overlay -->
     <div class="relative min-h-[400px] mt-6">
         <!-- Loading Indicator (scoped to this section) -->
@@ -71,20 +81,31 @@
 
 @code {
     private List<BowlerOfTheYearByYearViewModel> awardsByYear = new();
+    private string? errorMessage;
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await ApiService.GetBowlerOfTheYearAwardsAsync();
-
-        if (result.IsError)
+        try
         {
-            // Handle error - awards will remain empty and UI will show "No awards data available"
-            isLoading = false;
-            return;
-        }
+            var result = await ApiService.GetBowlerOfTheYearAwardsAsync();
 
-        awardsByYear = result.Value.ToList();
-        isLoading = false;
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                errorMessage = $"Failed to load awards data: {error.Description}";
+                return;
+            }
+
+            awardsByYear = result.Value.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load awards data: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }

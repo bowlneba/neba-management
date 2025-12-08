@@ -131,12 +131,14 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
         component.ShouldNotBeNull();
         component.Instance.ShouldBeOfType<Neba.Web.Server.History.Awards.BowlerOfTheYear>();
 
-        // Should display the "no data" message when error occurs
-        component.Markup.ShouldContain("No awards data available");
+        // Should display error alert with appropriate message
+        component.Markup.ShouldContain("Error Loading Awards");
+        component.Markup.ShouldContain("Failed to load awards data");
+        component.Markup.ShouldContain("API Error");
     }
 
     [Fact]
-    public void OnInitializedAsync_ApiReturnsError_DisplaysNoDataMessage()
+    public void OnInitializedAsync_ApiReturnsError_DisplaysErrorAlert()
     {
         // Arrange
         var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
@@ -153,8 +155,9 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
         // Act
         IRenderedComponent<Neba.Web.Server.History.Awards.BowlerOfTheYear> cut = Render<Neba.Web.Server.History.Awards.BowlerOfTheYear>();
 
-        // Assert - Should display "no data" message when API returns error status
-        cut.Markup.ShouldContain("No awards data available");
+        // Assert - Should display error alert when API returns error status
+        cut.Markup.ShouldContain("Error Loading Awards");
+        cut.Markup.ShouldContain("Failed to load awards data");
     }
 
     [Fact]
