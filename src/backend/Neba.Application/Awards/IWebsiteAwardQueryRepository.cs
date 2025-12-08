@@ -1,6 +1,4 @@
-using Neba.Application.Awards;
-
-namespace Neba.Application.Bowlers.BowlerAwards;
+namespace Neba.Application.Awards;
 
 /// <summary>
 /// Interface for querying Bowler of the Year awards from the website database.

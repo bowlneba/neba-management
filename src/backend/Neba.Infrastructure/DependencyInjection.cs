@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.Awards;
 using Neba.Application.Bowlers;
 using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Application.Bowlers.BowlerTitles;
