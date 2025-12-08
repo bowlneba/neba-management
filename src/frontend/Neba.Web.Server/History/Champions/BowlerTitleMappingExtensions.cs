@@ -18,7 +18,7 @@ internal static class BowlerTitleMappingExtensions
             };
     }
 
-    extension(Contracts.Website.Titles.TitleResponse response)
+    extension(TitleResponse response)
     {
         public BowlerTitleViewModel ToViewModel()
             => new()
