@@ -12,7 +12,7 @@ namespace Neba.Api.Endpoints.Website.Bowlers;
 
 internal static class BowlersTitlesEndpoints
 {
-    private static readonly string[] s_tags = ["titles", "bowlers", "website"];
+    private static readonly string[] s_tags = ["bowlers", "website"];
 
     extension(IEndpointRouteBuilder app)
     {
