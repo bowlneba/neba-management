@@ -547,15 +547,16 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 		else
 		{
 			var bowler = websiteBowlers.Single();
-			var record = new BowlerOfTheYears
+			var record = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
+				AwardType = 1,
 				BowlerId = bowler.Value,
-				Category = category,
+				BowlerOfTheYearCategory = category,
 				Season = year.StartsWith("2020") ? "2020-2021" : year
 			};
 
-			BowlersOfTheYears.Add(record);
+			SeasonAwards.Add(record);
 		}
 	}
 	else if (softwareBowlers.Any())
@@ -567,15 +568,16 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 		else
 		{
 			var bowler = softwareBowlers.Single();
-			var record = new BowlerOfTheYears
+			var record = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
+				AwardType = 1,
 				BowlerId = bowler.Value,
-				Category = category,
+				BowlerOfTheYearCategory = category,
 				Season = year.StartsWith("2020") ? "2020-2021" : year
 			};
 
-			BowlersOfTheYears.Add(record);
+			SeasonAwards.Add(record);
 		}
 	}
 	else //Not on website or software
@@ -584,15 +586,16 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 		{
 			var manualBowler = bowlerIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
 
-			var manualRecord = new BowlerOfTheYears
+			var manualRecord = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
+				AwardType = 1,
 				BowlerId = manualBowler.Value,
-				Category = category,
+				BowlerOfTheYearCategory = category,
 				Season = year
 			};
 			
-			BowlersOfTheYears.Add(manualRecord);
+			SeasonAwards.Add(manualRecord);
 			
 			return;
 		}
@@ -614,15 +617,16 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 
 		Bowlers.Add(newBowler);
 
-		var record = new BowlerOfTheYears
+		var record = new SeasonAwards
 		{
 			Id = Guid.NewGuid(),
+			AwardType = 1,
 			BowlerId = newBowler.Id,
-			Category = category,
+			BowlerOfTheYearCategory = category,
 			Season = year.StartsWith("2020") ? "2020-2021" : year
 		};
 
-		BowlersOfTheYears.Add(record);
+		SeasonAwards.Add(record);
 	}
 }
 
