@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using ErrorOr;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
+using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Refit;
 
@@ -61,6 +62,31 @@ internal class NebaApiService(INebaApi nebaApi)
             .AsReadOnly();
 
         return titlesByYear;
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<BowlerOfTheYearByYearViewModel>>> GetBowlerOfTheYearAwardsAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Awards.BowlerOfTheYearResponse>> result
+            = await ExecuteApiCallAsync(() => nebaApi.GetBowlerOfTheYearAwardsAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .GroupBy(dto => dto.Season)
+            .OrderByDescending(group => group.Key)
+            .Select(group => new BowlerOfTheYearByYearViewModel
+            {
+                Season = group.Key,
+                WinnersByCategory = group
+                    .Select(dto => new KeyValuePair<string, string>(dto.Category, dto.BowlerName))
+                    .ToList()
+                    .AsReadOnly()
+            })
+            .ToList()
+            .AsReadOnly();
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)

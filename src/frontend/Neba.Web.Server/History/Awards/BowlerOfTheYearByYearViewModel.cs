@@ -23,5 +23,5 @@ public sealed record BowlerOfTheYearByYearViewModel
     /// Maps each award category to the name of the winning bowler for that category.
     /// For example: { "Open": "Jane Smith", "Senior": "John Doe" }
     /// </summary>
-    public required Dictionary<string, string> WinnersByCategory { get; init; }
+    public required IEnumerable<KeyValuePair<string, string>> WinnersByCategory { get; init; }
 }

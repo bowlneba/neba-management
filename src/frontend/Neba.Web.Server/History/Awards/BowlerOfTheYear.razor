@@ -1,5 +1,7 @@
 @page "/history/bowler-of-the-year"
 @using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Services
+@inject NebaApiService ApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 <div>
     <h1 class="text-3xl font-bold text-gray-900 mb-2">Bowler of the Year</h1>
@@ -73,74 +75,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate API call delay
-        await Task.Delay(1500);
+        var result = await ApiService.GetBowlerOfTheYearAwardsAsync();
 
-        // Dummy data for now - will be replaced with API call later
-        awardsByYear = new List<BowlerOfTheYearByYearViewModel>
+        if (result.IsError)
         {
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2024",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "Mike Anderson" },
-                    { "Senior", "Bobby Ramsey" },
-                    { "Junior", "Lisa Chen" }
-                }
-            },
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2023",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "John Smith" },
-                    { "Senior", "Michael Reale" },
-                    { "Junior", "Jane Doe" }
-                }
-            },
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2022",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "Tom Johnson" },
-                    { "Senior", "Malik Grove" },
-                    { "Junior", "Sarah Williams" }
-                }
-            },
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2020/21",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "Bob Martinez" },
-                    { "Senior", "Kenny Livengood" },
-                    { "Junior", "Amy Rodriguez" }
-                }
-            },
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2019",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "Chris Taylor" },
-                    { "Senior", "Aaron Major" },
-                    { "Junior", "David Lee" }
-                }
-            },
-            new BowlerOfTheYearByYearViewModel
-            {
-                Season = "2018",
-                WinnersByCategory = new Dictionary<string, string>
-                {
-                    { "Open", "Steve Brown" },
-                    { "Senior", "Dave Simard" },
-                    { "Junior", "Emily White" }
-                }
-            }
-        };
+            // Handle error - awards will remain empty and UI will show "No awards data available"
+            isLoading = false;
+            return;
+        }
 
+        awardsByYear = result.Value.ToList();
         isLoading = false;
     }
 }

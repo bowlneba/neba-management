@@ -1,6 +1,6 @@
 using Refit;
 
-namespace Neba.WebTests;
+namespace Neba.Tests;
 
 /// <summary>
 /// Factory class for creating API response objects for testing.
