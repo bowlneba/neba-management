@@ -8,26 +8,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Neba.Infrastructure.Database.Website.Migrations
 {
     /// <inheritdoc />
-    public partial class BowlerOfTheYear : Migration
+    public partial class SeasonAwards : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "bowler_of_the_years",
+                name: "season_awards",
                 schema: "website",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    award_type = table.Column<int>(type: "integer", nullable: false),
                     season = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
-                    category = table.Column<int>(type: "integer", nullable: false),
-                    bowler_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    bowler_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    bowler_of_the_year_category = table.Column<int>(type: "integer", nullable: true),
+                    high_block_score = table.Column<int>(type: "integer", nullable: true),
+                    season_total_pins = table.Column<int>(type: "integer", nullable: true),
+                    season_total_games = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_bowler_of_the_years", x => x.id);
+                    table.PrimaryKey("pk_season_awards", x => x.id);
                     table.ForeignKey(
-                        name: "fk_bowler_of_the_years_bowlers_bowler_id",
+                        name: "fk_season_awards_bowlers_bowler_id",
                         column: x => x.bowler_id,
                         principalSchema: "website",
                         principalTable: "bowlers",
@@ -36,15 +40,15 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_bowler_of_the_years_bowler_id",
+                name: "ix_season_awards_bowler_id",
                 schema: "website",
-                table: "bowler_of_the_years",
+                table: "season_awards",
                 column: "bowler_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_bowler_of_the_years_season",
+                name: "ix_season_awards_season",
                 schema: "website",
-                table: "bowler_of_the_years",
+                table: "season_awards",
                 column: "season");
         }
 
@@ -52,7 +56,7 @@ namespace Neba.Infrastructure.Database.Website.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "bowler_of_the_years",
+                name: "season_awards",
                 schema: "website");
         }
     }

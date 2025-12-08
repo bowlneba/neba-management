@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Infrastructure.Database.Website.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20251207203310_BowlerOfTheYear")]
-    partial class BowlerOfTheYear
+    [Migration("20251208235428_SeasonAwards")]
+    partial class SeasonAwards
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,54 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Neba.Domain.Awards.SeasonAward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("AwardType")
+                        .HasColumnType("integer")
+                        .HasColumnName("award_type");
+
+                    b.Property<Guid>("BowlerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bowler_id");
+
+                    b.Property<int?>("BowlerOfTheYearCategory")
+                        .HasColumnType("integer")
+                        .HasColumnName("bowler_of_the_year_category");
+
+                    b.Property<int?>("HighBlockScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("high_block_score");
+
+                    b.Property<string>("Season")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)")
+                        .HasColumnName("season");
+
+                    b.Property<int?>("SeasonTotalGames")
+                        .HasColumnType("integer")
+                        .HasColumnName("season_total_games");
+
+                    b.Property<int?>("SeasonTotalPins")
+                        .HasColumnType("integer")
+                        .HasColumnName("season_total_pins");
+
+                    b.HasKey("Id")
+                        .HasName("pk_season_awards");
+
+                    b.HasIndex("BowlerId")
+                        .HasDatabaseName("ix_season_awards_bowler_id");
+
+                    b.HasIndex("Season")
+                        .HasDatabaseName("ix_season_awards_season");
+
+                    b.ToTable("season_awards", "website");
+                });
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
@@ -44,38 +92,6 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasName("pk_bowlers");
 
                     b.ToTable("bowlers", "website");
-                });
-
-            modelBuilder.Entity("Neba.Domain.Bowlers.BowlerAwards.BowlerOfTheYear", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("BowlerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("bowler_id");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("integer")
-                        .HasColumnName("category");
-
-                    b.Property<string>("Season")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
-                        .HasColumnName("season");
-
-                    b.HasKey("Id")
-                        .HasName("pk_bowler_of_the_years");
-
-                    b.HasIndex("BowlerId")
-                        .HasDatabaseName("ix_bowler_of_the_years_bowler_id");
-
-                    b.HasIndex("Season")
-                        .HasDatabaseName("ix_bowler_of_the_years_season");
-
-                    b.ToTable("bowler_of_the_years", "website");
                 });
 
             modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
@@ -110,6 +126,18 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasDatabaseName("ix_titles_year_month");
 
                     b.ToTable("titles", "website");
+                });
+
+            modelBuilder.Entity("Neba.Domain.Awards.SeasonAward", b =>
+                {
+                    b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
+                        .WithMany("SeasonAwards")
+                        .HasForeignKey("BowlerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_season_awards_bowlers_bowler_id");
+
+                    b.Navigation("Bowler");
                 });
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
@@ -163,18 +191,6 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Neba.Domain.Bowlers.BowlerAwards.BowlerOfTheYear", b =>
-                {
-                    b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
-                        .WithMany("BowlerOfTheYears")
-                        .HasForeignKey("BowlerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_bowler_of_the_years_bowlers_bowler_id");
-
-                    b.Navigation("Bowler");
-                });
-
             modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
                 {
                     b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
@@ -189,7 +205,7 @@ namespace Neba.Infrastructure.Database.Website.Migrations
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
-                    b.Navigation("BowlerOfTheYears");
+                    b.Navigation("SeasonAwards");
 
                     b.Navigation("Titles");
                 });
