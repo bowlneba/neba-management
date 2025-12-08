@@ -2,7 +2,7 @@ using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Bowlers.BowlerAwards;
 
-namespace Neba.Application.Bowlers.BowlerAwards;
+namespace Neba.Application.Awards;
 
 /// <summary>
 /// Data transfer object representing a Bowler of the Year award.
@@ -12,7 +12,7 @@ public sealed record BowlerOfTheYearDto
     /// <summary>
     /// The unique identifier of the Bowler of the Year award.
     /// </summary>
-    public required BowlerOfTheYearId Id { get; init; }
+    public required SeasonAwardId Id { get; init; }
 
     /// <summary>
     /// The unique identifier of the bowler who received the award.

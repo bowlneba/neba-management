@@ -1,6 +1,7 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Awards;
 using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Application.Bowlers.BowlerTitles;
 

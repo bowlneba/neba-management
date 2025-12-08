@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Application.Awards;
 using Neba.Application.Bowlers.BowlerAwards;
 
 namespace Neba.Infrastructure.Database.Website.Repositories;
@@ -9,15 +10,16 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
     private readonly WebsiteDbContext _dbContext = dbContext;
 
     public async Task<IReadOnlyCollection<BowlerOfTheYearDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken)
-        => await _dbContext.BowlerOfTheYears
+        => await _dbContext.SeasonAwards
             .AsNoTracking()
+            .Where(award => award.AwardType == Domain.Awards.SeasonAwardType.BowlerOfTheYear)
             .Select(award => new BowlerOfTheYearDto
             {
                 Id = award.Id,
                 BowlerId = award.BowlerId,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
-                Category = award.Category
+                Category = award.BowlerOfTheYearCategory!
             })
             .ToListAsync(cancellationToken);
 }

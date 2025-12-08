@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Bowlers.BowlerAwards;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Website.Configurations;
 
@@ -17,8 +17,8 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
     public DbSet<Title> Titles
         => Set<Title>();
 
-    public DbSet<BowlerOfTheYear> BowlerOfTheYears
-        => Set<BowlerOfTheYear>();
+    public DbSet<SeasonAward> SeasonAwards
+        => Set<SeasonAward>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

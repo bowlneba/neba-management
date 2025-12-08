@@ -1,3 +1,5 @@
+using Neba.Application.Awards;
+
 namespace Neba.Application.Bowlers.BowlerAwards;
 
 /// <summary>

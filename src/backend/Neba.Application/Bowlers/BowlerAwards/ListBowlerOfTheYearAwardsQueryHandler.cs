@@ -1,4 +1,5 @@
 using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Awards;
 
 namespace Neba.Application.Bowlers.BowlerAwards;
 
