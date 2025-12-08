@@ -1,4 +1,5 @@
 using Neba.Domain.Abstractions;
+using Neba.Domain.Awards;
 
 namespace Neba.Domain.Bowlers.BowlerAwards;
 

@@ -1,6 +1,5 @@
 using Neba.Domain.Abstractions;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Bowlers.BowlerAwards;
 
 namespace Neba.Domain.Awards;
 

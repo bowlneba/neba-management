@@ -1,6 +1,5 @@
 using System.Net;
 using ErrorOr;
-using Moq;
 using Neba.Contracts;
 using Neba.Contracts.Website.Awards;
 using Neba.Contracts.Website.Bowlers;

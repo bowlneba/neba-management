@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Domain.Bowlers.BowlerAwards;
+namespace Neba.Domain.Awards;
 
 /// <summary>
 /// Represents a category for the Bowler of the Year award, using a smart enum pattern.
