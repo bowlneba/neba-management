@@ -11,7 +11,7 @@ public sealed class BowlerOfTheYear
     /// <summary>
     /// EF Core parameterless constructor for ORM support.
     /// </summary>
-    internal BowlerOfTheYear()
+    public BowlerOfTheYear()
         : base(BowlerOfTheYearId.New())
     { }
 

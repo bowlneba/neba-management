@@ -8,9 +8,6 @@ using Neba.Tests;
 
 namespace Neba.IntegrationTests.Repositories;
 
-/// <summary>
-/// Collection fixture to share a single WebsiteDatabase instance across all tests in this class.
-/// </summary>
 [CollectionDefinition(nameof(WebsiteBowlerQueryRepositoryTests))]
 public sealed class WebsiteBowlerQueryRepositoryTestsFixture
     : ICollectionFixture<WebsiteDatabase>;

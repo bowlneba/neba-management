@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Bowlers;
+using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
@@ -60,6 +61,7 @@ public static class InfrastructureDependencyInjection
         {
             services.AddScoped<IWebsiteBowlerQueryRepository, WebsiteBowlerQueryRepository>();
             services.AddScoped<IWebsiteTitleQueryRepository, WebsiteTitleQueryRepository>();
+            services.AddScoped<IWebsiteAwardQueryRepository, WebsiteAwardQueryRepository>();
 
             return services;
         }
