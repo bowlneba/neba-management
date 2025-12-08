@@ -19,5 +19,5 @@ public sealed record BowlerTitlesResponse
     /// <summary>
     /// Gets the collection of titles won by the bowler.
     /// </summary>
-    public required IReadOnlyCollection<TitleResponse> Titles { get; init; }
+    public required IReadOnlyCollection<BowlerTitleResponse> Titles { get; init; }
 }

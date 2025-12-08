@@ -1,5 +1,6 @@
 ﻿using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 
 namespace Neba.Api.Endpoints.Website.Bowlers;
 
@@ -9,9 +10,9 @@ internal static class TitlesMappingExtensions
 {
     extension(BowlerTitleDto dto)
     {
-        public BowlerTitleResponse ToResponseModel()
+        public Contracts.Website.Titles.TitleResponse ToResponseModel()
         {
-            return new BowlerTitleResponse
+            return new Contracts.Website.Titles.TitleResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,
@@ -30,7 +31,7 @@ internal static class TitlesMappingExtensions
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,
-                Titles = dto.Titles.Select(title => new TitleResponse
+                Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
                     Month = title.Month,
                     Year = title.Year,
@@ -42,9 +43,9 @@ internal static class TitlesMappingExtensions
 
     extension(BowlerTitleSummaryDto dto)
     {
-        public BowlerTitleSummaryResponse ToResponseModel()
+        public TitleSummaryResponse ToResponseModel()
         {
-            return new BowlerTitleSummaryResponse
+            return new TitleSummaryResponse
             {
                 BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,

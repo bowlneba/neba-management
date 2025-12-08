@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
-using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests;
@@ -36,8 +36,8 @@ public sealed class TitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        CollectionResponse<BowlerTitleResponse>? result
-            = await response.Content.ReadFromJsonAsync<CollectionResponse<BowlerTitleResponse>>();
+        CollectionResponse<TitleResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<TitleResponse>>();
 
         result.ShouldNotBeNull();
 
@@ -69,8 +69,8 @@ public sealed class TitlesIntegrationTests
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        CollectionResponse<BowlerTitleSummaryResponse>? result
-            = await response.Content.ReadFromJsonAsync<CollectionResponse<BowlerTitleSummaryResponse>>();
+        CollectionResponse<TitleSummaryResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<TitleSummaryResponse>>();
 
         result.ShouldNotBeNull();
 

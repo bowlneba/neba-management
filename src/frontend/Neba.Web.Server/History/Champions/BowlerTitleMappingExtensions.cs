@@ -1,4 +1,5 @@
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 
 namespace Neba.Web.Server.History.Champions;
 
@@ -6,7 +7,7 @@ namespace Neba.Web.Server.History.Champions;
 
 internal static class BowlerTitleMappingExtensions
 {
-    extension(BowlerTitleSummaryResponse response)
+    extension(TitleSummaryResponse response)
     {
         public BowlerTitleSummaryViewModel ToViewModel()
             => new()
@@ -17,7 +18,7 @@ internal static class BowlerTitleMappingExtensions
             };
     }
 
-    extension(BowlerTitleResponse response)
+    extension(Contracts.Website.Titles.TitleResponse response)
     {
         public BowlerTitleViewModel ToViewModel()
             => new()

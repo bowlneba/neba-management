@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using ErrorOr;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Neba.Web.Server.History.Champions;
 using Refit;
 
@@ -12,7 +13,7 @@ internal class NebaApiService(INebaApi nebaApi)
 {
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetTitlesSummaryAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<BowlerTitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetTitlesSummaryAsync());
+        ErrorOr<Contracts.CollectionResponse<TitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetTitlesSummaryAsync());
 
         if (result.IsError)
         {
@@ -36,7 +37,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<IReadOnlyCollection<TitlesByYearViewModel>>> GetTitlesByYearAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<BowlerTitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
+        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Titles.TitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
 
         if (result.IsError)
         {

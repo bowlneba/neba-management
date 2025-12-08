@@ -1,9 +1,9 @@
-namespace Neba.Contracts.Website.Bowlers;
+namespace Neba.Contracts.Website.Titles;
 
 /// <summary>
 /// Represents a summary response containing a bowler's unique identifier, name, and total title count.
 /// </summary>
-public sealed record BowlerTitleSummaryResponse
+public sealed record TitleSummaryResponse
 {
     /// <summary>
     /// The unique identifier of the bowler.
