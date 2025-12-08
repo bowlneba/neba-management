@@ -3,6 +3,8 @@ using Neba.Contracts.Website.Bowlers;
 
 namespace Neba.Api.Endpoints.Website.Bowlers;
 
+#pragma warning disable S1144 // Remove unused constructor of private type.
+
 internal static class TitlesMappingExtensions
 {
     extension(BowlerTitleDto dto)

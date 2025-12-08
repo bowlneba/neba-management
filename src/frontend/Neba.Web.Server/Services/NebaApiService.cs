@@ -10,9 +10,9 @@ namespace Neba.Web.Server.Services;
 
 internal class NebaApiService(INebaApi nebaApi)
 {
-    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetBowlerTitlesSummaryAsync()
+    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetTitlesSummaryAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<BowlerTitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesSummaryAsync());
+        ErrorOr<Contracts.CollectionResponse<BowlerTitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetTitlesSummaryAsync());
 
         if (result.IsError)
         {

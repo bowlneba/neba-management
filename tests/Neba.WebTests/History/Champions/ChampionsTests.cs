@@ -29,7 +29,7 @@ public sealed class ChampionsTests : TestContextWrapper
         using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(response.ApiResponse);
 
         // Act
@@ -45,7 +45,7 @@ public sealed class ChampionsTests : TestContextWrapper
     {
         // Arrange - Simulate API error during initialization
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ThrowsAsync(new InvalidOperationException("API Error"));
 
         // Act
@@ -64,7 +64,7 @@ public sealed class ChampionsTests : TestContextWrapper
         using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse> { BowlerTitleResponseFactory.Bogus() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(summaryResponse.ApiResponse);
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
@@ -107,7 +107,7 @@ public sealed class ChampionsTests : TestContextWrapper
         using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(response.ApiResponse);
 
         // Act

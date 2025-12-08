@@ -1,9 +1,11 @@
 ﻿
 namespace Neba.Api.Endpoints.Website.Bowlers;
 
+#pragma warning disable S1144 // Remove unused constructor of private type.
+#pragma warning disable S2325 // Extension methods should be static
+
 internal static class BowlersEndpoints
 {
-#pragma warning disable S2325 // Extension methods should be static
     extension(IEndpointRouteBuilder app)
     {
         public IEndpointRouteBuilder MapBowlersEndpoints()
