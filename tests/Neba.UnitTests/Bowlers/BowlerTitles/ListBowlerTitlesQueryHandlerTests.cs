@@ -7,16 +7,16 @@ namespace Neba.UnitTests.Bowlers.BowlerTitles;
 
 public sealed class ListBowlerTitlesQueryHandlerTests
 {
-    private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
+    private readonly Mock<IWebsiteTitleQueryRepository> _mockWebsiteTitleQueryRepository;
 
     private readonly ListBowlerTitlesQueryHandler _queryHandler;
 
     public ListBowlerTitlesQueryHandlerTests()
     {
-        _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
+        _mockWebsiteTitleQueryRepository = new Mock<IWebsiteTitleQueryRepository>(MockBehavior.Strict);
 
         _queryHandler = new ListBowlerTitlesQueryHandler(
-            _mockWebsiteBowlerQueryRepository.Object);
+            _mockWebsiteTitleQueryRepository.Object);
     }
 
     [Fact]
@@ -25,8 +25,8 @@ public sealed class ListBowlerTitlesQueryHandlerTests
         // Arrange
         IReadOnlyCollection<BowlerTitleDto> seedTitles = BowlerTitleDtoFactory.Bogus(100);
 
-        _mockWebsiteBowlerQueryRepository
-            .Setup(repository => repository.ListBowlerTitlesAsync(TestContext.Current.CancellationToken))
+        _mockWebsiteTitleQueryRepository
+            .Setup(repository => repository.ListTitlesAsync(TestContext.Current.CancellationToken))
             .ReturnsAsync(seedTitles);
 
         ListBowlerTitlesQuery query = new();

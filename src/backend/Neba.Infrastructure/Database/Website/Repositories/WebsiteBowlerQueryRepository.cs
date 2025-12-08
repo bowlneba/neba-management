@@ -10,32 +10,6 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 {
     private readonly WebsiteDbContext _dbContext = dbContext;
 
-    public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListBowlerTitleSummariesAsync(CancellationToken cancellationToken)
-        => await _dbContext.Bowlers
-            .AsNoTracking()
-            .Where(bowler => bowler.Titles.Any())
-            .Select(bowler => new BowlerTitleSummaryDto
-            {
-                BowlerId = bowler.Id,
-                BowlerName = bowler.Name.ToDisplayName(),
-                TitleCount = bowler.Titles.Count
-            })
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyCollection<BowlerTitleDto>> ListBowlerTitlesAsync(CancellationToken cancellationToken)
-        => await _dbContext.Bowlers
-            .AsNoTracking()
-            .Where(bowler => bowler.Titles.Any())
-            .SelectMany(bowler => bowler.Titles, (bowler, title) => new BowlerTitleDto
-            {
-                BowlerId = bowler.Id,
-                BowlerName = bowler.Name.ToDisplayName(),
-                TournamentMonth = title.Month,
-                TournamentYear = title.Year,
-                TournamentType = title.TournamentType
-            })
-            .ToListAsync(cancellationToken);
-
     public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken)
         => await _dbContext.Bowlers
             .AsNoTracking()

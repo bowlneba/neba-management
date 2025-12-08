@@ -3,15 +3,14 @@ using Neba.Application.Abstractions.Messaging;
 
 namespace Neba.Application.Bowlers.BowlerTitles;
 
-internal sealed class ListBowlerTitlesQueryHandler(IWebsiteBowlerQueryRepository websiteBowlerQueryRepository)
+internal sealed class ListBowlerTitlesQueryHandler(IWebsiteTitleQueryRepository websiteTitleQueryRepository)
         : IQueryHandler<ListBowlerTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>
 {
-    private readonly IWebsiteBowlerQueryRepository _websiteBowlerQueryRepository = websiteBowlerQueryRepository;
+    private readonly IWebsiteTitleQueryRepository _websiteTitleQueryRepository = websiteTitleQueryRepository;
 
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleDto>>> HandleAsync(ListBowlerTitlesQuery query, CancellationToken cancellationToken)
     {
-        IReadOnlyCollection<BowlerTitleDto> titles = await _websiteBowlerQueryRepository.ListBowlerTitlesAsync(cancellationToken);
-
+        IReadOnlyCollection<BowlerTitleDto> titles = await _websiteTitleQueryRepository.ListTitlesAsync(cancellationToken);
         return titles.ToErrorOr();
     }
 }
