@@ -32,12 +32,9 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         ListBowlerTitleSummariesQuery query = new();
 
         // Act
-        ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+        IReadOnlyCollection<BowlerTitleSummaryDto> summaries = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.IsError.ShouldBeFalse();
-
-        IReadOnlyCollection<BowlerTitleSummaryDto> summaries = result.Value;
         summaries.ShouldBeEquivalentTo(seedSummaries);
     }
 }

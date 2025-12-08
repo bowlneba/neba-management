@@ -8,9 +8,10 @@ internal sealed class ListBowlerTitleSummariesQueryHandler(IWebsiteTitleQueryRep
 {
     private readonly IWebsiteTitleQueryRepository _websiteTitleQueryRepository = websiteTitleQueryRepository;
 
-    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>>> HandleAsync(ListBowlerTitleSummariesQuery query, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> HandleAsync(ListBowlerTitleSummariesQuery query, CancellationToken cancellationToken)
     {
         IReadOnlyCollection<BowlerTitleSummaryDto> titlesSummary = await _websiteTitleQueryRepository.ListTitleSummariesAsync(cancellationToken);
-        return titlesSummary.ToErrorOr();
+
+        return titlesSummary;
     }
 }

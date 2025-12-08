@@ -32,7 +32,7 @@ public sealed class BowlerTitlesQueryHandlerTests
             .ReturnsAsync((BowlerTitlesDto?)null);
 
         // Act
-        ErrorOr<BowlerTitlesDto?> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+        ErrorOr<BowlerTitlesDto> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -55,7 +55,7 @@ public sealed class BowlerTitlesQueryHandlerTests
             .ReturnsAsync(bowler);
 
         // Act
-        ErrorOr<BowlerTitlesDto?> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+        ErrorOr<BowlerTitlesDto> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.IsError.ShouldBeFalse();

@@ -29,13 +29,13 @@ internal static class BowlersTitlesEndpoints
             app.MapGet(
                 "/{bowlerId:guid}/titles",
                 async (
-                    IQueryHandler<BowlerTitlesQuery, BowlerTitlesDto?> queryHandler,
+                    IQueryHandler<BowlerTitlesQuery, ErrorOr<BowlerTitlesDto>> queryHandler,
                     BowlerId bowlerId,
                     CancellationToken cancellationToken) =>
                 {
                     var query = new BowlerTitlesQuery() { BowlerId = bowlerId };
 
-                    ErrorOr<BowlerTitlesDto?> result = await queryHandler.HandleAsync(query, cancellationToken);
+                    ErrorOr<BowlerTitlesDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 
                     if (result.IsError)
                     {

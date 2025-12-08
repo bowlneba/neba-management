@@ -6,11 +6,11 @@ namespace Neba.Application.Bowlers.BowlerTitles;
 
 internal sealed class BowlerTitlesQueryHandler(
     IWebsiteBowlerQueryRepository websiteBowler)
-        : IQueryHandler<BowlerTitlesQuery, BowlerTitlesDto?>
+        : IQueryHandler<BowlerTitlesQuery, ErrorOr<BowlerTitlesDto>>
 {
     private readonly IWebsiteBowlerQueryRepository _websiteBowler = websiteBowler;
 
-    public async Task<ErrorOr<BowlerTitlesDto?>> HandleAsync(
+    public async Task<ErrorOr<BowlerTitlesDto>> HandleAsync(
         BowlerTitlesQuery request,
         CancellationToken cancellationToken)
     {

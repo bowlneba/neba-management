@@ -15,6 +15,6 @@ public interface IQueryHandler<in TQuery, TResponse>
     /// </summary>
     /// <param name="query">The query to process.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="ErrorOr{TResponse}"/> with the response.</returns>
-    Task<ErrorOr<TResponse>> HandleAsync(TQuery query, CancellationToken cancellationToken);
+    /// <returns>A task that represents the asynchronous operation. The task result contains the response.</returns>
+    Task<TResponse> HandleAsync(TQuery query, CancellationToken cancellationToken);
 }

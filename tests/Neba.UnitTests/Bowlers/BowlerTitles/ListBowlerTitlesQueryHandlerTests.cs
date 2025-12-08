@@ -32,12 +32,9 @@ public sealed class ListBowlerTitlesQueryHandlerTests
         ListBowlerTitlesQuery query = new();
 
         // Act
-        ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+        IReadOnlyCollection<BowlerTitleDto> titles = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.IsError.ShouldBeFalse();
-
-        IReadOnlyCollection<BowlerTitleDto> titles = result.Value;
         titles.ShouldBeEquivalentTo(seedTitles);
     }
 }

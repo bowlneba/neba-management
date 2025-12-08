@@ -36,14 +36,9 @@ internal static class TitlesEndpoints
                 {
                     var query = new ListBowlerTitlesQuery();
 
-                    ErrorOr<IReadOnlyCollection<BowlerTitleDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
+                    IReadOnlyCollection<BowlerTitleDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                    if (result.IsError)
-                    {
-                        return result.Problem();
-                    }
-
-                    IReadOnlyCollection<TitleResponse> response = result.Value.Select(dto => dto.ToResponseModel()).ToList();
+                    IReadOnlyCollection<TitleResponse> response = result.Select(dto => dto.ToResponseModel()).ToList();
 
                     return TypedResults.Ok(CollectionResponse.Create(response));
                 })
@@ -68,14 +63,9 @@ internal static class TitlesEndpoints
                 {
                     var query = new ListBowlerTitleSummariesQuery();
 
-                    ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>> result = await queryHandler.HandleAsync(query, cancellationToken);
+                    IReadOnlyCollection<BowlerTitleSummaryDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                    if (result.IsError)
-                    {
-                        return result.Problem();
-                    }
-
-                    IReadOnlyCollection<TitleSummaryResponse> response = result.Value
+                    IReadOnlyCollection<TitleSummaryResponse> response = result
                         .Select(dto => dto.ToResponseModel())
                         .ToList();
 
