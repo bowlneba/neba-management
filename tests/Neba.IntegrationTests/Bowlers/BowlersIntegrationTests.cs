@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;

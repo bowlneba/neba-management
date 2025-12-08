@@ -1,5 +1,3 @@
-using ErrorOr;
-
 namespace Neba.Application.Abstractions.Messaging;
 
 /// <summary>

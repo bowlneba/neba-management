@@ -18,6 +18,7 @@ public static class BowlerOfTheYearDtoFactory
     {
         return new BowlerOfTheYearDto
         {
+            Id = BowlerOfTheYearId.New(),
             BowlerName = bowlerName ?? BowlerName,
             Season = season ?? "2024-2025",
             Category = category ?? BowlerOfTheYearCategory.Open,
@@ -33,6 +34,7 @@ public static class BowlerOfTheYearDtoFactory
         int? seed = null)
     {
         Faker<BowlerOfTheYearDto> faker = new Faker<BowlerOfTheYearDto>()
+            .RuleFor(boy => boy.Id, _ => BowlerOfTheYearId.New())
             .RuleFor(boy => boy.BowlerName, f => f.Person.FullName)
             .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
             .RuleFor(boy => boy.Category, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()))

@@ -1,4 +1,3 @@
-using ErrorOr;
 using Neba.Api.Endpoints.Website.Bowlers;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Bowlers.BowlerTitles;
@@ -46,7 +45,6 @@ internal static class TitlesEndpoints
                 .WithSummary("Get all NEBA titles won by bowlers.")
                 .WithDescription("Retrieves a list of all titles won by bowlers, including bowler and tournament details. Results are returned as a collection of title records.")
                 .Produces<CollectionResponse<BowlerTitleResponse>>(StatusCodes.Status200OK, ContentTypes.ApplicationJson)
-                .ProducesProblem(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, ContentTypes.ApplicationProblemJson)
                 .WithTags(s_tags);
 
@@ -75,7 +73,6 @@ internal static class TitlesEndpoints
                 .WithSummary("Get a summary of NEBA titles won by bowlers.")
                 .WithDescription("Retrieves a summary of titles won by all bowlers, including each bowler's unique identifier, name, and total title count. Results are returned as a collection of bowler title summaries.")
                 .Produces<CollectionResponse<TitleSummaryResponse>>(StatusCodes.Status200OK, "application/json")
-                .ProducesProblem(StatusCodes.Status400BadRequest, "application/problem+json")
                 .ProducesProblem(StatusCodes.Status500InternalServerError, "application/problem+json")
                 .WithTags(s_tags);
 

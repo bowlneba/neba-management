@@ -1,5 +1,4 @@
-﻿using ErrorOr;
-using Neba.Application.Abstractions.Messaging;
+﻿using Neba.Application.Abstractions.Messaging;
 
 namespace Neba.Application.Bowlers.BowlerTitles;
 

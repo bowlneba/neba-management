@@ -1,6 +1,4 @@
-﻿using ErrorOr;
-using Neba.Application.Bowlers;
-using Neba.Application.Bowlers.BowlerTitles;
+﻿using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Tests;
 
 namespace Neba.UnitTests.Bowlers.BowlerTitles;

@@ -9,6 +9,11 @@ namespace Neba.Application.Bowlers.BowlerAwards;
 public sealed record BowlerOfTheYearDto
 {
     /// <summary>
+    /// The unique identifier of the Bowler of the Year award.
+    /// </summary>
+    public required BowlerOfTheYearId Id { get; init; }
+
+    /// <summary>
     /// The unique identifier of the bowler who received the award.
     /// </summary>
     public required BowlerId BowlerId { get; init; }

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests;

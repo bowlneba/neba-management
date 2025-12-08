@@ -1,24 +1,24 @@
-﻿using Neba.Application.Bowlers.BowlerTitles;
+﻿using Neba.Application.Bowlers.BowlerAwards;
+using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Contracts.Website.Awards;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
 
-namespace Neba.Api.Endpoints.Website.Bowlers;
+namespace Neba.Api.Endpoints.Website.Awards;
 
 #pragma warning disable S1144 // Remove unused constructor of private type.
 
-internal static class TitlesMappingExtensions
+internal static class AwardsMappingExtensions
 {
-    extension(BowlerTitleDto dto)
+    extension(BowlerOfTheYearDto dto)
     {
-        public TitleResponse ToResponseModel()
+        public BowlerOfTheYearResponse ToResponseModel()
         {
-            return new TitleResponse
+            return new BowlerOfTheYearResponse
             {
-                BowlerId = dto.BowlerId.Value,
                 BowlerName = dto.BowlerName,
-                TournamentMonth = dto.TournamentMonth,
-                TournamentYear = dto.TournamentYear,
-                TournamentType = dto.TournamentType.Name
+                Season = dto.Season,
+                Category = dto.Category.Name
             };
         }
     }
