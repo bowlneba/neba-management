@@ -3,7 +3,6 @@ using Bogus;
 using Neba.Application.Awards;
 using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
-using Neba.Domain.Bowlers.BowlerAwards;
 
 namespace Neba.Tests;
 

@@ -43,38 +43,6 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                     b.ToTable("bowlers", "website");
                 });
 
-            modelBuilder.Entity("Neba.Domain.Bowlers.BowlerAwards.BowlerOfTheYear", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("BowlerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("bowler_id");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("integer")
-                        .HasColumnName("category");
-
-                    b.Property<string>("Season")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
-                        .HasColumnName("season");
-
-                    b.HasKey("Id")
-                        .HasName("pk_bowler_of_the_years");
-
-                    b.HasIndex("BowlerId")
-                        .HasDatabaseName("ix_bowler_of_the_years_bowler_id");
-
-                    b.HasIndex("Season")
-                        .HasDatabaseName("ix_bowler_of_the_years_season");
-
-                    b.ToTable("bowler_of_the_years", "website");
-                });
-
             modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
                 {
                     b.Property<Guid>("Id")
@@ -160,18 +128,6 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Neba.Domain.Bowlers.BowlerAwards.BowlerOfTheYear", b =>
-                {
-                    b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
-                        .WithMany("BowlerOfTheYears")
-                        .HasForeignKey("BowlerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_bowler_of_the_years_bowlers_bowler_id");
-
-                    b.Navigation("Bowler");
-                });
-
             modelBuilder.Entity("Neba.Domain.Tournaments.Title", b =>
                 {
                     b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
@@ -186,8 +142,6 @@ namespace Neba.Infrastructure.Database.Website.Migrations
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
-                    b.Navigation("BowlerOfTheYears");
-
                     b.Navigation("Titles");
                 });
 #pragma warning restore 612, 618
