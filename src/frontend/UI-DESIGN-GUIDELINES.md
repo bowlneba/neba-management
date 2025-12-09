@@ -553,8 +553,7 @@ Use GPU-accelerated properties:
 |-----------|---------|---------------|
 | `NebaModal` | Dialog/modal overlays | [NebaModal.razor](Neba.Web.Server/Components/NebaModal.razor) |
 | `NebaSegmentedControl` | Tab-like navigation | [NebaSegmentedControl.razor](Neba.Web.Server/Components/NebaSegmentedControl.razor) |
-| `NebaLoadingIndicator` | Page/section loading | [LOADING.md](LOADING.md) |
-| `NebaSectionLoadingIndicator` | Section-specific loading | [LOADING.md](LOADING.md) |
+| `NebaLoadingIndicator` | Page and section loading (use `Scope="LoadingIndicatorScope.Section"` for section-specific) | [LOADING.md](LOADING.md) |
 | `NebaSkeletonLoader` | Loading placeholders | [NebaSkeletonLoader.razor](Neba.Web.Server/Components/NebaSkeletonLoader.razor) |
 | `NebaErrorBoundary` | Error handling | [NebaErrorBoundary.razor](Neba.Web.Server/Components/NebaErrorBoundary.razor) |
 | `NebaAlert` | Persistent notifications | [NOTIFICATIONS.md](NOTIFICATIONS.md) |
