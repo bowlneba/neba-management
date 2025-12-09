@@ -1,111 +1,123 @@
-/* Champions Card Grid - Tier Styling */
-
-/* Collapse/Expand Animation */
-.tier-collapse-container {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out;
-    opacity: 1;
-    margin-top: 1rem;
-}
-
-.tier-collapse-container.tier-collapsed {
-    grid-template-rows: 0fr;
-    opacity: 0;
-    margin-top: 0;
-}
-
-.tier-collapse-container > * {
-    overflow: hidden;
-}
-
-/* Elite Tier (20+ titles) - Gold/Amber */
+/* Tier sections */
 .tier-elite-section {
-    background: transparent;
-    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(62, 79, 217, 0.05) 0%, rgba(42, 58, 160, 0.05) 100%);
     padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--neba-blue-700);
 }
 
+.tier-mid-section {
+    background: rgba(108, 119, 225, 0.03);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--neba-blue-500);
+}
+
+.tier-standard-section {
+    background: rgba(165, 174, 235, 0.02);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--neba-blue-300);
+}
+
+/* Tier headers */
 .tier-elite-header {
-    background: linear-gradient(to right, rgb(254 243 199), rgb(254 249 195));
-    border: 1px solid rgb(252 211 77);
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 .tier-elite-header-text {
-    color: rgb(120 53 15);
-}
-
-.tier-elite-header-subtext {
-    color: rgb(161 98 7);
-}
-
-.tier-elite-card {
-    border-color: rgb(252 211 77);
-}
-
-.tier-elite-card:hover {
-    border-color: rgb(245 158 11);
-    box-shadow: 0 10px 15px -3px rgb(254 243 199 / 0.5), 0 4px 6px -4px rgb(254 243 199 / 0.5);
-}
-
-/* Mid Tier (10-19 titles) - Blue */
-.tier-mid-section {
-    background: transparent;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-}
-
-.tier-mid-header {
-    background: linear-gradient(to right, rgb(219 234 254), rgb(224 231 255));
-    border: 1px solid rgb(147 197 253);
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-}
-
-.tier-mid-header-text {
-    color: rgb(30 58 138);
-}
-
-.tier-mid-header-subtext {
-    color: rgb(29 78 216);
-}
-
-.tier-mid-card {
-    border-color: rgb(147 197 253);
-}
-
-.tier-mid-card:hover {
-    border-color: var(--neba-blue-700);
-}
-
-/* Standard Tier (1-9 titles) - Light NEBA Blue */
-.tier-standard-section {
-    background: transparent;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-}
-
-.tier-standard-header {
-    background: linear-gradient(to right, var(--neba-blue-100), rgb(224 231 255));
-    border: 1px solid var(--neba-blue-300);
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-}
-
-.tier-standard-header-text {
     color: var(--neba-blue-700);
 }
 
-.tier-standard-header-subtext {
+.tier-elite-header-subtext {
+    color: var(--neba-blue-600);
+    opacity: 0.8;
+}
+
+.tier-mid-header {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.tier-mid-header-text {
     color: var(--neba-blue-600);
 }
 
+.tier-mid-header-subtext {
+    color: var(--neba-blue-500);
+    opacity: 0.8;
+}
+
+.tier-standard-header {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.tier-standard-header-text {
+    color: var(--neba-blue-500);
+}
+
+.tier-standard-header-subtext {
+    color: var(--neba-blue-400);
+    opacity: 0.8;
+}
+
+/* Tier cards */
+.tier-elite-card {
+    border-color: var(--neba-blue-300);
+    transition: all 0.2s ease;
+}
+
+.tier-elite-card:hover {
+    border-color: var(--neba-blue-700);
+    box-shadow: 0 4px 6px -1px rgba(62, 79, 217, 0.2), 0 2px 4px -1px rgba(62, 79, 217, 0.1);
+}
+
+.tier-mid-card {
+    border-color: var(--neba-border);
+    transition: all 0.2s ease;
+}
+
+.tier-mid-card:hover {
+    border-color: var(--neba-blue-500);
+    box-shadow: 0 4px 6px -1px rgba(108, 119, 225, 0.15), 0 2px 4px -1px rgba(108, 119, 225, 0.08);
+}
+
 .tier-standard-card {
-    border-color: rgb(229 231 235);
+    border-color: var(--neba-border);
+    transition: all 0.2s ease;
 }
 
 .tier-standard-card:hover {
-    border-color: var(--neba-blue-700);
+    border-color: var(--neba-blue-300);
+    box-shadow: 0 4px 6px -1px rgba(165, 174, 235, 0.1), 0 2px 4px -1px rgba(165, 174, 235, 0.06);
+}
+
+/* Collapse/expand animations */
+.tier-collapse-container {
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.tier-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.tier-expanded {
+    max-height: 5000px;
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .tier-elite-section,
+    .tier-mid-section,
+    .tier-standard-section {
+        padding: 1rem;
+    }
 }
