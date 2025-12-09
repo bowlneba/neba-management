@@ -60,6 +60,7 @@ async Task Main()
 
 	await MigrateTitlesAsync(bowlerIdsByWebsiteId);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
 }
 
 // You can define other methods, fields, classes and namespaces here
@@ -318,7 +319,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 	var websiteBowlers = bowlerIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 	var softwareBowlers = bowlerIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
-		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase)); ;
+		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 
 	if (websiteBowlers.Any())
 	{
@@ -413,9 +414,123 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 }
 
 
-public void MigrateHighBlock()
+public async Task MigrateHighBlockAsync(
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
 {
+	var highBlocks = await HighBlockScraper.ScrapeAsync(@"https://www.bowlneba.com/history/high-block/");
 
+	foreach (var highBlock in highBlocks)
+	{
+		var websiteBowlers = bowlerIdsByWebsiteName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+		var softwareBowlers = bowlerIdsBySoftwareName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+
+		if (websiteBowlers.Any())
+		{
+			if (websiteBowlers.Count() > 1)
+			{
+				if (highBlock.name == "Steve Hardy")
+				{
+					SeasonAwards.Add(new()
+					{
+						Id = Guid.NewGuid(),
+						AwardType = SeasonAwardType.High5GameBlock,
+						BowlerId = bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Steve Hardy", StringComparison.OrdinalIgnoreCase)).Value,
+						Season = highBlock.year,
+						HighBlockScore = highBlock.score
+					});
+
+					continue;
+				}
+				else if (highBlock.name == "Mark Blanchette")
+				{
+					SeasonAwards.Add(new()
+					{
+						Id = Guid.NewGuid(),
+						AwardType = SeasonAwardType.High5GameBlock,
+						BowlerId = bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Mark Blanchette", StringComparison.OrdinalIgnoreCase)).Value,
+						Season = highBlock.year,
+						HighBlockScore = highBlock.score
+					});
+
+					continue;
+				}
+				
+				websiteBowlers.Dump($"Multiple Website People for {highBlock.name}");
+			}
+			else
+			{
+				var bowler = websiteBowlers.Single();
+				var record = new SeasonAwards
+				{
+					Id = Guid.NewGuid(),
+					AwardType = SeasonAwardType.High5GameBlock,
+					BowlerId = bowler.Value,
+					Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
+					HighBlockScore = highBlock.score
+				};
+
+				SeasonAwards.Add(record);
+			}
+		}
+		else if (softwareBowlers.Any())
+		{	
+			if (softwareBowlers.Count() > 1)
+			{
+				softwareBowlers.Dump($"Multiple Software People for {highBlock.name}");
+			}
+			else
+			{
+				var bowler = softwareBowlers.Single();
+				var record = new SeasonAwards
+				{
+					Id = Guid.NewGuid(),
+					AwardType = SeasonAwardType.High5GameBlock,
+					BowlerId = bowler.Value,
+					Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
+					HighBlockScore = highBlock.score
+				};
+
+				SeasonAwards.Add(record);
+			}
+		}
+		else //Not on website or software
+		{
+			$"------ {highBlock.name} is not a champion nor in the software, creating new ------".Dump();
+
+			var newBowlerName = new HumanName(highBlock.name);
+			var newBowler = new Bowlers
+			{
+				Id = Guid.NewGuid(),
+				FirstName = newBowlerName.First,
+				MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
+				LastName = newBowlerName.Last,
+				Suffix = string.IsNullOrWhiteSpace(newBowlerName.Suffix) ? null : newBowlerName.Suffix.Replace(".", ""),
+				Nickname = string.IsNullOrWhiteSpace(newBowlerName.Nickname) ? null : newBowlerName.Nickname,
+				ApplicationId = null,
+				WebsiteId = null
+			};
+
+			Bowlers.Add(newBowler);
+
+			var record = new SeasonAwards
+			{
+				Id = Guid.NewGuid(),
+				AwardType = SeasonAwardType.High5GameBlock,
+				BowlerId = newBowler.Id,
+				Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
+				HighBlockScore = highBlock.score
+			};
+
+			SeasonAwards.Add(record);
+		}
+	}
+	
+	await SaveChangesAsync();
+	
+	"High Block Migrated".Dump();
 }
 
 #region Enumerations
@@ -917,49 +1032,90 @@ public static class HighBlockScraper
 		// Decode HTML entities like &nbsp; and &copy;
 		allText = System.Web.HttpUtility.HtmlDecode(allText);
 
-		var lines = allText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+		var lines = allText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+			.Select(l => l.Trim())
+			.Where(l => !string.IsNullOrWhiteSpace(l))
+			.ToList();
 
-		// Pattern to match: year, name, score (e.g., "1966 Randy Bubar 1168")
-		// or year with "Not awarded" (e.g., "1963 Not awarded")
-		var entryPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s+(.+?)\s+(\d{3,4})$");
-		var notAwardedPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s+Not\s+awarded", RegexOptions.IgnoreCase);
+		// Pattern to match a 4-digit year (or year range like 2020/21)
+		var yearPattern = new Regex(@"^\d{4}(?:/\d{2})?$");
+		var notAwardedPattern = new Regex(@"^Not\s+awarded$", RegexOptions.IgnoreCase);
+		var scorePattern = new Regex(@"^\d{3,4}\*?$"); // Score with optional asterisk
 
-		foreach (var line in lines)
+		for (int i = 0; i < lines.Count - 2; i++)
 		{
-			var trimmed = line.Trim();
+			var currentLine = lines[i];
 
-			// Skip entries where no award was given
-			if (notAwardedPattern.IsMatch(trimmed))
+			// Check if current line is a year
+			if (yearPattern.IsMatch(currentLine))
 			{
-				continue;
-			}
+				var year = currentLine;
+				var nextLine = lines[i + 1];
 
-			// Try to match year, name, score pattern
-			var match = entryPattern.Match(trimmed);
-			if (match.Success)
-			{
-				var year = match.Groups[1].Value;
-				var name = match.Groups[2].Value.Trim();
-				var scoreText = match.Groups[3].Value;
-
-				// Remove any asterisks or special characters from the score
-				scoreText = scoreText.Replace("*", "").Trim();
-
-				if (int.TryParse(scoreText, out int score))
+				// Check if next line is "Not awarded"
+				if (notAwardedPattern.IsMatch(nextLine))
 				{
-					// Filter out invalid entries
-					if (!string.IsNullOrWhiteSpace(name) && name.Length > 2)
-					{
-						// Skip entries that look like copyright, links, or other non-name content
-						if (name.Contains("©") ||
-							name.Contains("All Rights Reserved") ||
-							name.Contains("Copyright") ||
-							name.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-						{
-							continue;
-						}
+					continue; // Skip this entry
+				}
 
-						results.Add((year, name, score));
+				// Next line should be the name, and the line after should be the score
+				var nameEntry = nextLine;
+
+				// Make sure we have a line after the name
+				if (i + 2 < lines.Count)
+				{
+					var potentialScore = lines[i + 2];
+
+					// Check if it looks like a score
+					if (scorePattern.IsMatch(potentialScore))
+					{
+						// Remove asterisks or special characters from the score
+						var scoreText = potentialScore.Replace("*", "").Trim();
+
+						if (int.TryParse(scoreText, out int score))
+						{
+							// Check if there are multiple names separated by commas (ties)
+							if (nameEntry.Contains(","))
+							{
+								// Split on comma to get multiple names
+								var names = nameEntry.Split(',')
+									.Select(n => n.Trim())
+									.Where(n => !string.IsNullOrWhiteSpace(n) && n.Length > 2)
+									.ToList();
+
+								foreach (var name in names)
+								{
+									// Skip entries that look like copyright, links, or other non-name content
+									if (!name.Contains("©") &&
+										!name.Contains("All Rights Reserved") &&
+										!name.Contains("Copyright") &&
+										!name.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+									{
+										results.Add((year, name, score));
+									}
+								}
+							}
+							else
+							{
+								// Single name entry
+								var name = nameEntry;
+
+								// Filter out invalid entries
+								if (!string.IsNullOrWhiteSpace(name) && name.Length > 2)
+								{
+									// Skip entries that look like copyright, links, or other non-name content
+									if (name.Contains("©") ||
+										name.Contains("All Rights Reserved") ||
+										name.Contains("Copyright") ||
+										name.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+									{
+										continue;
+									}
+
+									results.Add((year, name, score));
+								}
+							}
+						}
 					}
 				}
 			}
