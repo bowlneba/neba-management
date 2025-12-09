@@ -24,8 +24,9 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                     bowler_id = table.Column<Guid>(type: "uuid", nullable: false),
                     bowler_of_the_year_category = table.Column<int>(type: "integer", nullable: true),
                     high_block_score = table.Column<int>(type: "integer", nullable: true),
-                    season_total_pins = table.Column<int>(type: "integer", nullable: true),
-                    season_total_games = table.Column<int>(type: "integer", nullable: true)
+                    average = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: true),
+                    season_total_games = table.Column<int>(type: "integer", nullable: true),
+                    tournaments = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

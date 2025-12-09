@@ -29,6 +29,11 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<decimal?>("Average")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("average");
+
                     b.Property<int>("AwardType")
                         .HasColumnType("integer")
                         .HasColumnName("award_type");
@@ -55,9 +60,9 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("season_total_games");
 
-                    b.Property<int?>("SeasonTotalPins")
+                    b.Property<int?>("Tournaments")
                         .HasColumnType("integer")
-                        .HasColumnName("season_total_pins");
+                        .HasColumnName("tournaments");
 
                     b.HasKey("Id")
                         .HasName("pk_season_awards");

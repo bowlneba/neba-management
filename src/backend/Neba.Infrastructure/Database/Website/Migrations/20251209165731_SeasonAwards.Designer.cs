@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Infrastructure.Database.Website.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20251208235428_SeasonAwards")]
+    [Migration("20251209165731_SeasonAwards")]
     partial class SeasonAwards
     {
         /// <inheritdoc />
@@ -31,6 +31,11 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<decimal?>("Average")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("average");
 
                     b.Property<int>("AwardType")
                         .HasColumnType("integer")
@@ -58,9 +63,9 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("season_total_games");
 
-                    b.Property<int?>("SeasonTotalPins")
+                    b.Property<int?>("Tournaments")
                         .HasColumnType("integer")
-                        .HasColumnName("season_total_pins");
+                        .HasColumnName("tournaments");
 
                     b.HasKey("Id")
                         .HasName("pk_season_awards");
