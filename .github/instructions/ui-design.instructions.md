@@ -80,7 +80,7 @@ background: #ffffff;
 
         <!-- Content Section with Loading -->
         <div class="relative min-h-[400px]">
-            <NebaSectionLoadingIndicator IsVisible="@isLoading" Text="Loading..." />
+            <NebaLoadingIndicator Scope="LoadingIndicatorScope.Section" IsVisible="@isLoading" Text="Loading..." />
 
             @if (data != null)
             {
