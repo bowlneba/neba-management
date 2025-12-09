@@ -1,0 +1,92 @@
+@* Error boundary component for graceful error handling *@
+@using Neba.Web.Server.Notifications
+@inherits ErrorBoundary
+
+@if (CurrentException is not null)
+{
+    <div class="neba-panel my-6">
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Something went wrong"
+                   Message="@GetErrorMessage()"
+                   ShowIcon="true"
+                   Dismissible="false" />
+
+        <div class="mt-4 flex gap-3">
+            <button class="neba-btn neba-btn-primary" @onclick="Recover">
+                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Try Again
+            </button>
+
+            @if (ShowDetails && !string.IsNullOrWhiteSpace(CurrentException.StackTrace))
+            {
+                <button class="neba-btn neba-btn-secondary" @onclick="ToggleDetails">
+                    @(showDetails ? "Hide" : "Show") Details
+                </button>
+            }
+        </div>
+
+        @if (ShowDetails && showDetails && CurrentException.StackTrace is not null)
+        {
+            <div class="mt-4 p-4 bg-[var(--neba-gray-050)] border border-[var(--neba-border)] rounded-lg overflow-x-auto">
+                <h4 class="font-semibold mb-2 text-sm text-[var(--neba-text)]">Stack Trace:</h4>
+                <pre class="text-xs text-[var(--neba-text)] whitespace-pre-wrap font-mono">@CurrentException.StackTrace</pre>
+            </div>
+        }
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    private bool showDetails = false;
+
+    /// <summary>
+    /// Whether to show detailed error information (stack trace).
+    /// Should be false in production.
+    /// </summary>
+    [Parameter]
+    public bool ShowDetails { get; set; } = false;
+
+    /// <summary>
+    /// Custom error message to display. If not provided, uses the exception message.
+    /// </summary>
+    [Parameter]
+    public string? CustomMessage { get; set; }
+
+    private string GetErrorMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(CustomMessage))
+        {
+            return CustomMessage;
+        }
+
+        if (ShowDetails && CurrentException is not null)
+        {
+            return CurrentException.Message;
+        }
+
+        return "An unexpected error occurred. Please try again.";
+    }
+
+    private void ToggleDetails()
+    {
+        showDetails = !showDetails;
+    }
+
+    protected override async Task OnErrorAsync(Exception exception)
+    {
+        // Log the error (you can inject ILogger here if needed)
+        await base.OnErrorAsync(exception);
+        showDetails = false; // Reset details view
+    }
+
+    private new void Recover()
+    {
+        showDetails = false;
+        base.Recover();
+    }
+}
