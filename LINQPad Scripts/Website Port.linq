@@ -626,17 +626,27 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 	}
 }
 
+public static class WebScraperHelper
+{
+	public static async Task<HtmlDocument> FetchHtmlDocumentAsync(string url)
+	{
+		using var httpClient = new HttpClient();
+		var html = await httpClient.GetStringAsync(url);
+
+		var htmlDoc = new HtmlDocument();
+		htmlDoc.LoadHtml(html);
+
+		return htmlDoc;
+	}
+}
+
 public static class BowlerOfTheYearScraper
 {
 	public static async Task<List<(string year, string name)>> ScrapeAsync(string url)
 	{
 		var results = new List<(string year, string name)>();
 
-		using var httpClient = new HttpClient();
-		var html = await httpClient.GetStringAsync(url);
-
-		var htmlDoc = new HtmlDocument();
-		htmlDoc.LoadHtml(html);
+		var htmlDoc = await WebScraperHelper.FetchHtmlDocumentAsync(url);
 
 		// Pattern to match year entries like "1963", "2020/21", etc.
 		var yearPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s*[:.]?\s*(.+)$");
@@ -779,6 +789,72 @@ public static class BowlerOfTheYearScraper
 				results.Add((year, nameEntry));
 			}
 		}
+	}
+}
+
+public static class HighBlockScraper
+{
+	public static async Task<List<(string year, string name, int score)>> ScrapeAsync(string url)
+	{
+		var results = new List<(string year, string name, int score)>();
+
+		var htmlDoc = await WebScraperHelper.FetchHtmlDocumentAsync(url);
+
+		// Get all text content
+		var allText = htmlDoc.DocumentNode.InnerText;
+
+		// Decode HTML entities like &nbsp; and &copy;
+		allText = System.Web.HttpUtility.HtmlDecode(allText);
+
+		var lines = allText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+		// Pattern to match: year, name, score (e.g., "1966 Randy Bubar 1168")
+		// or year with "Not awarded" (e.g., "1963 Not awarded")
+		var entryPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s+(.+?)\s+(\d{3,4})$");
+		var notAwardedPattern = new Regex(@"^(\d{4}(?:/\d{2})?)\s+Not\s+awarded", RegexOptions.IgnoreCase);
+
+		foreach (var line in lines)
+		{
+			var trimmed = line.Trim();
+
+			// Skip entries where no award was given
+			if (notAwardedPattern.IsMatch(trimmed))
+			{
+				continue;
+			}
+
+			// Try to match year, name, score pattern
+			var match = entryPattern.Match(trimmed);
+			if (match.Success)
+			{
+				var year = match.Groups[1].Value;
+				var name = match.Groups[2].Value.Trim();
+				var scoreText = match.Groups[3].Value;
+
+				// Remove any asterisks or special characters from the score
+				scoreText = scoreText.Replace("*", "").Trim();
+
+				if (int.TryParse(scoreText, out int score))
+				{
+					// Filter out invalid entries
+					if (!string.IsNullOrWhiteSpace(name) && name.Length > 2)
+					{
+						// Skip entries that look like copyright, links, or other non-name content
+						if (name.Contains("©") ||
+							name.Contains("All Rights Reserved") ||
+							name.Contains("Copyright") ||
+							name.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+						{
+							continue;
+						}
+
+						results.Add((year, name, score));
+					}
+				}
+			}
+		}
+
+		return results.OrderBy(r => r.year).ToList();
 	}
 }
 
