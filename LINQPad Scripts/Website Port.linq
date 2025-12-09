@@ -34,7 +34,7 @@
 
 async Task Main()
 {
-	BowlersOfTheYears.RemoveRange(BowlersOfTheYears);
+	SeasonAwards.RemoveRange(SeasonAwards);
 	Titles.RemoveRange(Titles);
 	Bowlers.RemoveRange(Bowlers);
 	
@@ -42,14 +42,24 @@ async Task Main()
 	
 	var mergedBowlers = await MigrateBowlersAsync();
 	
-	var bowlerIdBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b => b.bowlerId);
-	var bowlerIdByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.bowlerId);
+	var bowlerIdsBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b => b.bowlerId);
+	var bowlerIdsByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.bowlerId);
 	
 	var softwareNamesBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b=> b.softwareName);
 	var websiteNamesByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.websiteName!);
-	
-	await MigrateTitlesAsync(bowlerIdByWebsiteId);
-	await MigrateBowlerOfTheYears(bowlerIdByWebsiteId, websiteNamesByWebsiteId, bowlerIdBySoftwareId, softwareNamesBySoftwareId!);
+
+	var bowlerIdsByWebsiteName = (from bowlerNameByWebsiteId in websiteNamesByWebsiteId
+								  from bowlerIdByWebsiteId in bowlerIdsByWebsiteId
+								  where bowlerNameByWebsiteId.Key == bowlerIdByWebsiteId.Key
+								  select new KeyValuePair<HumanName, Guid>(websiteNamesByWebsiteId[bowlerIdByWebsiteId.Key], bowlerIdsByWebsiteId[bowlerIdByWebsiteId.Key])).ToList();
+
+	var bowlerIdsBySoftwareName = (from bowlerNameBySoftwareId in softwareNamesBySoftwareId
+								   from bowlerIdBySoftwareId in bowlerIdsBySoftwareId
+								   where bowlerNameBySoftwareId.Key == bowlerIdBySoftwareId.Key
+								   select new KeyValuePair<HumanName, Guid>(softwareNamesBySoftwareId[bowlerIdBySoftwareId.Key]!, bowlerIdsBySoftwareId[bowlerIdBySoftwareId.Key])).ToList();
+
+	await MigrateTitlesAsync(bowlerIdsByWebsiteId);
+	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
 }
 
 // You can define other methods, fields, classes and namespaces here
@@ -446,23 +456,9 @@ public async Task MigrateTitlesAsync(Dictionary<int ,Guid> bowlerIdByWebsiteId)
 }
 
 public async Task MigrateBowlerOfTheYears(
-	Dictionary<int, Guid> bowlerIdsByWebsiteId, 
-	Dictionary<int, HumanName> bowlerNamesByWebsiteId,
-	Dictionary<int, Guid> bowlerIdsBySoftwareId,
-	Dictionary<int, HumanName> bowlerNamesBySoftwareId)
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
 {
-	var bowlerIdsByWebsiteName = (from bowlerNameByWebsiteId in bowlerNamesByWebsiteId
-								 from bowlerIdByWebsiteId in bowlerIdsByWebsiteId
-								 where bowlerNameByWebsiteId.Key == bowlerIdByWebsiteId.Key
-								 select new KeyValuePair<HumanName,Guid>(bowlerNamesByWebsiteId[bowlerIdByWebsiteId.Key], bowlerIdsByWebsiteId[bowlerIdByWebsiteId.Key])).ToList();
-
-	var bowlerIdsBySoftwareName = (from bowlerNameBySoftwareId in bowlerNamesBySoftwareId
-								   from bowlerIdBySoftwareId in bowlerIdsBySoftwareId
-								   where bowlerNameBySoftwareId.Key == bowlerIdBySoftwareId.Key
-								   select new KeyValuePair<HumanName,Guid>(bowlerNamesBySoftwareId[bowlerIdBySoftwareId.Key], bowlerIdsBySoftwareId[bowlerIdBySoftwareId.Key])).ToList();
-
-
-
 	var bowlerOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/bowler-of-the-year/");	
 	var womanOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/woman-bowler-of-the-year/");
 	var seniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/senior-bowler-of-the-year/");	
@@ -550,7 +546,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			var record = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
-				AwardType = 1,
+				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = bowler.Value,
 				BowlerOfTheYearCategory = category,
 				Season = year.StartsWith("2020") ? "2020-2021" : year
@@ -571,7 +567,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			var record = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
-				AwardType = 1,
+				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = bowler.Value,
 				BowlerOfTheYearCategory = category,
 				Season = year.StartsWith("2020") ? "2020-2021" : year
@@ -589,7 +585,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			var manualRecord = new SeasonAwards
 			{
 				Id = Guid.NewGuid(),
-				AwardType = 1,
+				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = manualBowler.Value,
 				BowlerOfTheYearCategory = category,
 				Season = year
@@ -600,7 +596,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			return;
 		}
 		
-		$"{bowlerName} is not a champion nor in the software, creating new".Dump();
+		$"------ {bowlerName} is not a champion nor in the software, creating new ------".Dump();
 
 		var newBowlerName = new HumanName(bowlerName);
 		var newBowler = new Bowlers
@@ -620,7 +616,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 		var record = new SeasonAwards
 		{
 			Id = Guid.NewGuid(),
-			AwardType = 1,
+			AwardType = SeasonAwardType.BowlerOfTheYear,
 			BowlerId = newBowler.Id,
 			BowlerOfTheYearCategory = category,
 			Season = year.StartsWith("2020") ? "2020-2021" : year
@@ -838,6 +834,52 @@ public sealed class BowlerOfTheYearCategory
 		: this(string.Empty, 0)
 	{ }
 }
+
+public void MigrateHighBlock()
+{
+	
+}
+
+/// <summary>
+/// Represents the types of season awards that can be given in NEBA, using a SmartEnum pattern for extensibility.
+/// </summary>
+public sealed class SeasonAwardType
+	: SmartEnum<SeasonAwardType>
+{
+	internal static readonly SeasonAwardType s_default = new("Default", 0);
+
+	/// <summary>
+	/// Awarded to the bowler with the best overall performance during the season.
+	/// </summary>
+	public static readonly SeasonAwardType BowlerOfTheYear = new("Bowler of the Year", 1);
+
+	/// <summary>
+	/// Awarded for achieving the highest average during the season.
+	/// </summary>
+	public static readonly SeasonAwardType HighAverage = new("High Average", 2);
+
+	/// <summary>
+	/// Awarded for the highest 5-game block score in a single event or season.
+	/// </summary>
+	public static readonly SeasonAwardType High5GameBlock = new("High 5-Game Block", 3);
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with the specified name and value.
+	/// </summary>
+	/// <param name="name">The display name of the award type.</param>
+	/// <param name="value">The unique value of the award type.</param>
+	private SeasonAwardType(string name, int value)
+		: base(name, value)
+	{ }
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with default values.
+	/// </summary>
+	private SeasonAwardType()
+		: this(string.Empty, 0)
+	{ }
+}
+
 
 
 static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
