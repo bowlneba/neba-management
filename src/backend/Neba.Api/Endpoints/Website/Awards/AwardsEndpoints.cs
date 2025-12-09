@@ -1,6 +1,5 @@
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Awards;
-using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Contracts;
 using Neba.Contracts.Website.Awards;
 

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Awards;
-using Neba.Application.Bowlers.BowlerAwards;
 
 namespace Neba.Infrastructure.Database.Website.Repositories;
 

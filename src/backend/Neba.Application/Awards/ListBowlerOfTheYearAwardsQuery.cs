@@ -1,7 +1,6 @@
 using Neba.Application.Abstractions.Messaging;
-using Neba.Application.Awards;
 
-namespace Neba.Application.Bowlers.BowlerAwards;
+namespace Neba.Application.Awards;
 
 /// <summary>
 /// Represents a query to list all Bowler of the Year awards.

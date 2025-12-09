@@ -1,8 +1,7 @@
 using Neba.Application.Awards;
-using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Bowlers.BowlerAwards;
+namespace Neba.UnitTests.Awards;
 
 public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
 {

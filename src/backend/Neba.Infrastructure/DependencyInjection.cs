@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Awards;
 using Neba.Application.Bowlers;
-using Neba.Application.Bowlers.BowlerAwards;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
