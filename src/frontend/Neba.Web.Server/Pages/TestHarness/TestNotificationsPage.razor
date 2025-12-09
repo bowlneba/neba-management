@@ -23,21 +23,7 @@
         <NebaLoadingIndicator IsVisible="@_showLoadingFullScreen" Text="Loading, please wait..." Scope="LoadingIndicatorScope.FullScreen" OnOverlayClick="HideLoadingFullScreen" />
         <NebaLoadingIndicator IsVisible="@_showLoadingPage" Text="Loading, please wait..." Scope="LoadingIndicatorScope.Page" OnOverlayClick="HideLoadingPage" />
     </section>
-    @code {
-        private bool _showLoadingFullScreen;
-        private bool _showLoadingPage;
 
-        private void ShowLoadingFullScreen() => _showLoadingFullScreen = true;
-        private void HideLoadingFullScreen() => _showLoadingFullScreen = false;
-
-        private void ShowLoadingPage() => _showLoadingPage = true;
-        private void HideLoadingPage() => _showLoadingPage = false;
-
-        // Error Boundary demo state
-        private bool triggerBasicError = false;
-        private bool triggerDetailedError = false;
-        private bool triggerCustomMessageError = false;
-    }
     <section>
         <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Toast Notifications</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -103,11 +89,11 @@
             <div class="neba-panel">
                 <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Basic Error Boundary</h3>
                 <p class="text-sm text-gray-600 mb-3">Shows a simple error message with recovery option.</p>
-                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerBasicError = !triggerBasicError" data-testid="toggle-basic-error-btn">
-                    @(triggerBasicError ? "Hide" : "Show") Basic Error
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => _triggerBasicError = !_triggerBasicError" data-testid="toggle-basic-error-btn">
+                    @(_triggerBasicError ? "Hide" : "Show") Basic Error
                 </button>
 
-                @if (triggerBasicError)
+                @if (_triggerBasicError)
                 {
                     <NebaErrorBoundary>
                         <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="This is a basic error for demonstration." />
@@ -119,11 +105,11 @@
             <div class="neba-panel">
                 <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Error Boundary with Details</h3>
                 <p class="text-sm text-gray-600 mb-3">Shows detailed error information including stack trace (for development).</p>
-                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerDetailedError = !triggerDetailedError" data-testid="toggle-detailed-error-btn">
-                    @(triggerDetailedError ? "Hide" : "Show") Detailed Error
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => _triggerDetailedError = !_triggerDetailedError" data-testid="toggle-detailed-error-btn">
+                    @(_triggerDetailedError ? "Hide" : "Show") Detailed Error
                 </button>
 
-                @if (triggerDetailedError)
+                @if (_triggerDetailedError)
                 {
                     <NebaErrorBoundary ShowDetails="true">
                         <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="This error shows detailed information with stack trace." />
@@ -135,11 +121,11 @@
             <div class="neba-panel">
                 <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Error Boundary with Custom Message</h3>
                 <p class="text-sm text-gray-600 mb-3">Shows a custom user-friendly message instead of the technical exception message.</p>
-                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerCustomMessageError = !triggerCustomMessageError" data-testid="toggle-custom-message-error-btn">
-                    @(triggerCustomMessageError ? "Hide" : "Show") Custom Message Error
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => _triggerCustomMessageError = !_triggerCustomMessageError" data-testid="toggle-custom-message-error-btn">
+                    @(_triggerCustomMessageError ? "Hide" : "Show") Custom Message Error
                 </button>
 
-                @if (triggerCustomMessageError)
+                @if (_triggerCustomMessageError)
                 {
                     <NebaErrorBoundary CustomMessage="Oops! We couldn't load your bowling data. Please check your connection and try again.">
                         <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="Underlying technical error that user doesn't see" />
@@ -149,3 +135,89 @@
         </div>
     </section>
 </div>
+
+@code {
+    [Inject]
+    private INotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    private IWebHostEnvironment HostEnv { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private bool IsTestEnvironment =>
+        HostEnv.EnvironmentName == "Development" ||
+        HostEnv.EnvironmentName == "Test";
+
+    private bool _showLoadingFullScreen;
+    private bool _showLoadingPage;
+    private bool _triggerBasicError;
+    private bool _triggerDetailedError;
+    private bool _triggerCustomMessageError;
+
+    private void ShowLoadingFullScreen() => _showLoadingFullScreen = true;
+    private void HideLoadingFullScreen() => _showLoadingFullScreen = false;
+    private void ShowLoadingPage() => _showLoadingPage = true;
+    private void HideLoadingPage() => _showLoadingPage = false;
+
+    private void TriggerErrorToast()
+    {
+        NotificationService.Error("This is a test error toast message");
+    }
+
+    private void TriggerWarningToast()
+    {
+        NotificationService.Warning("This is a test warning toast message");
+    }
+
+    private void TriggerSuccessToast()
+    {
+        NotificationService.Success("This is a test success toast message");
+    }
+
+    private void TriggerInfoToast()
+    {
+        NotificationService.Info("This is a test info toast message");
+    }
+
+    private void TriggerNormalToast()
+    {
+        NotificationService.Normal("This is a test normal toast message");
+    }
+
+    private void TriggerErrorAlert()
+    {
+        NotificationService.Error("This is a test error alert", "Error", NotifyBehavior.AlertOnly);
+    }
+
+    private void TriggerWarningAlert()
+    {
+        NotificationService.Warning("This is a test warning alert", "Warning", NotifyBehavior.AlertOnly);
+    }
+
+    private void TriggerSuccessAlert()
+    {
+        NotificationService.Success("This is a test success alert", "Success", NotifyBehavior.AlertOnly);
+    }
+
+    private void TriggerInfoAlert()
+    {
+        NotificationService.Info("This is a test info alert", "Information", NotifyBehavior.AlertOnly);
+    }
+
+    private void TriggerNormalAlert()
+    {
+        NotificationService.Normal("This is a test normal alert", "Notice", NotifyBehavior.AlertOnly);
+    }
+
+    private void TriggerValidationFailure()
+    {
+        NotificationService.ValidationFailure("Email is required. Password must be at least 8 characters.");
+    }
+
+    private void TriggerCustomAlertAndToast()
+    {
+        NotificationService.Warning("This message appears as both an alert and a toast", "Combined Notification", NotifyBehavior.AlertAndToast);
+    }
+}
