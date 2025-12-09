@@ -8,7 +8,7 @@ namespace Neba.Domain.Awards;
 public sealed class SeasonAwardType
     : SmartEnum<SeasonAwardType>
 {
-    internal static readonly SeasonAwardType s_default = new(string.Empty, 0);
+    internal static readonly SeasonAwardType s_default = new("default", 0);
 
     /// <summary>
     /// Awarded to the bowler with the best overall performance during the season.
