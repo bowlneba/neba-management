@@ -32,6 +32,11 @@
 
         private void ShowLoadingPage() => _showLoadingPage = true;
         private void HideLoadingPage() => _showLoadingPage = false;
+
+        // Error Boundary demo state
+        private bool triggerBasicError = false;
+        private bool triggerDetailedError = false;
+        private bool triggerCustomMessageError = false;
     }
     <section>
         <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Toast Notifications</h2>
@@ -84,6 +89,63 @@
             <button class="neba-btn neba-btn-primary" @onclick="TriggerCustomAlertAndToast" data-testid="custom-alert-toast-btn">
                 Custom Alert + Toast
             </button>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4 text-[var(--neba-text)]">Error Boundary</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            The Error Boundary component catches and handles exceptions that occur within its child components.
+        </p>
+
+        <div class="space-y-6">
+            <!-- Basic Error Boundary Demo -->
+            <div class="neba-panel">
+                <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Basic Error Boundary</h3>
+                <p class="text-sm text-gray-600 mb-3">Shows a simple error message with recovery option.</p>
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerBasicError = !triggerBasicError" data-testid="toggle-basic-error-btn">
+                    @(triggerBasicError ? "Hide" : "Show") Basic Error
+                </button>
+
+                @if (triggerBasicError)
+                {
+                    <NebaErrorBoundary>
+                        <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="This is a basic error for demonstration." />
+                    </NebaErrorBoundary>
+                }
+            </div>
+
+            <!-- Error Boundary with Details -->
+            <div class="neba-panel">
+                <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Error Boundary with Details</h3>
+                <p class="text-sm text-gray-600 mb-3">Shows detailed error information including stack trace (for development).</p>
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerDetailedError = !triggerDetailedError" data-testid="toggle-detailed-error-btn">
+                    @(triggerDetailedError ? "Hide" : "Show") Detailed Error
+                </button>
+
+                @if (triggerDetailedError)
+                {
+                    <NebaErrorBoundary ShowDetails="true">
+                        <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="This error shows detailed information with stack trace." />
+                    </NebaErrorBoundary>
+                }
+            </div>
+
+            <!-- Error Boundary with Custom Message -->
+            <div class="neba-panel">
+                <h3 class="text-lg font-medium mb-3 text-[var(--neba-text)]">Error Boundary with Custom Message</h3>
+                <p class="text-sm text-gray-600 mb-3">Shows a custom user-friendly message instead of the technical exception message.</p>
+                <button class="neba-btn neba-btn-primary mb-4" @onclick="() => triggerCustomMessageError = !triggerCustomMessageError" data-testid="toggle-custom-message-error-btn">
+                    @(triggerCustomMessageError ? "Hide" : "Show") Custom Message Error
+                </button>
+
+                @if (triggerCustomMessageError)
+                {
+                    <NebaErrorBoundary CustomMessage="Oops! We couldn't load your bowling data. Please check your connection and try again.">
+                        <ErrorThrowingTestComponent ThrowError="true" ErrorMessage="Underlying technical error that user doesn't see" />
+                    </NebaErrorBoundary>
+                }
+            </div>
         </div>
     </section>
 </div>
