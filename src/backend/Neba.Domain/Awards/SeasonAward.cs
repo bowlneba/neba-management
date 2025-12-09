@@ -49,12 +49,19 @@ public sealed class SeasonAward
     public int? HighBlockScore { get; init; }
 
     /// <summary>
-    /// The total number of pins scored by the bowler in the season, if applicable.
+    /// The average score of the bowler in the season, if applicable.
     /// </summary>
-    public int? SeasonTotalPins { get; init; }
+    /// <value></value>
+    public decimal? Average { get; init; }
 
     /// <summary>
     /// The total number of games played by the bowler in the season, if applicable.
     /// </summary>
     public int? SeasonTotalGames { get; init; }
+
+    /// <summary>
+    /// The total number of tournaments participated in by the bowler in the season, if applicable.
+    /// </summary>
+    /// <value></value>
+    public int? Tournaments { get; init; }
 }
