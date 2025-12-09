@@ -199,7 +199,7 @@ Wrap components that might fail with error boundaries:
 ```razor
 <!-- Section loading (preferred for independent content) -->
 <div class="relative min-h-[400px]">
-    <NebaSectionLoadingIndicator IsVisible="@isLoading" Text="Loading data..." />
+    <NebaLoadingIndicator IsVisible="@isLoading" Text="Loading data..." Scope="LoadingIndicatorScope.Section" />
     @if (data != null) { /* content */ }
 </div>
 
