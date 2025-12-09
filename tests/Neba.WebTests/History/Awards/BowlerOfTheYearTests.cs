@@ -183,8 +183,8 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
         // Assert - Component should render and include the loading indicator component
         cut.ShouldNotBeNull();
 
-        // Verify that the NebaSectionLoadingIndicator component is present in the rendered output
-        var loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaSectionLoadingIndicator>();
+        // Verify that the NebaLoadingIndicator component is present in the rendered output
+        var loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaLoadingIndicator>();
         loadingIndicator.ShouldNotBeNull();
     }
 

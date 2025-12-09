@@ -39,7 +39,7 @@ internal sealed class SeasonAwardConfiguration
         builder.Property(seasonAward => seasonAward.HighBlockScore);
 
         builder.Property(seasonAward => seasonAward.Average)
-            .HasPrecision(5,2);
+            .HasPrecision(5, 2);
 
         builder.Property(seasonAward => seasonAward.SeasonTotalGames);
 

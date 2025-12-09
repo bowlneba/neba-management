@@ -66,9 +66,12 @@
     private CancellationTokenSource? _delayCancellation;
     private CancellationTokenSource? _minimumDisplayCancellation;
 
-    private string OverlayCssClass => Scope == LoadingIndicatorScope.FullScreen
-        ? "neba-loading-overlay neba-loading-overlay-fullscreen"
-        : "neba-loading-overlay neba-loading-overlay-page";
+    private string OverlayCssClass => Scope switch
+    {
+        LoadingIndicatorScope.FullScreen => "neba-loading-overlay neba-loading-overlay-fullscreen",
+        LoadingIndicatorScope.Section => "neba-loading-overlay-section",
+        _ => "neba-loading-overlay neba-loading-overlay-page"
+    };
 
     protected override void OnParametersSet()
     {

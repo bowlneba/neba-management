@@ -1,14 +1,14 @@
 @* iOS-style segmented control component *@
 
 <div role="tablist"
-     class="inline-flex bg-gray-100 rounded-lg p-1 gap-1 @CssClass"
+     class="inline-flex neba-segmented-control @CssClass"
      @onkeydown="HandleKeyDown">
     @foreach (var option in Options)
     {
         var isSelected = option.Value == SelectedValue;
         var buttonClass = isSelected
-            ? "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-white shadow-sm text-[var(--neba-blue-700)] font-semibold"
-            : "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-600 hover:text-gray-900";
+            ? "neba-segment-button neba-segment-selected"
+            : "neba-segment-button";
 
         <button type="button"
                 role="tab"

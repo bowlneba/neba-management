@@ -3,6 +3,12 @@
 @using Neba.Web.Server.Services
 @inject NebaApiService ApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Bowler of the Year Awards - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="View NEBA Bowler of the Year award winners by season. Includes the George Chikar Bowler of the Year, Rookie of the Year, Senior, Women's, Super Senior, and Youth divisions since their inception." />
+</HeadContent>
+
 <div>
     <h1 class="text-3xl font-bold text-gray-900 mb-2">Bowler of the Year</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -37,8 +43,11 @@
     <!-- Awards Section with Loading Overlay -->
     <div class="relative min-h-[400px] mt-6">
         <!-- Loading Indicator (scoped to this section) -->
-        <NebaSectionLoadingIndicator IsVisible="@isLoading"
-                                     Text="Loading..." />
+        <NebaLoadingIndicator IsVisible="@isLoading"
+                              Text="Loading..."
+                              Scope="LoadingIndicatorScope.Section"
+                              DelayMs="0"
+                              MinimumDisplayMs="0" />
 
         <!-- Awards Grid -->
         @if (awardsByYear.Count > 0)

@@ -1,0 +1,88 @@
+@* Skeleton loader for showing loading placeholders *@
+@namespace Neba.Web.Server.Components
+
+@if (Type == SkeletonType.Card)
+{
+    <div class="neba-card">
+        <div class="neba-skeleton h-4 w-3/4 mb-3"></div>
+        <div class="neba-skeleton h-3 w-full mb-2"></div>
+        <div class="neba-skeleton h-3 w-5/6"></div>
+    </div>
+}
+else if (Type == SkeletonType.Table)
+{
+    <div class="space-y-3">
+        @for (int i = 0; i < Rows; i++)
+        {
+            <div class="flex gap-4">
+                <div class="neba-skeleton h-4 flex-1"></div>
+                <div class="neba-skeleton h-4 flex-1"></div>
+                <div class="neba-skeleton h-4 flex-1"></div>
+            </div>
+        }
+    </div>
+}
+else if (Type == SkeletonType.Text)
+{
+    <div class="space-y-2">
+        @for (int i = 0; i < Rows; i++)
+        {
+            <div class="neba-skeleton h-4 @(i == Rows - 1 ? "w-4/5" : "w-full")"></div>
+        }
+    </div>
+}
+else if (Type == SkeletonType.Avatar)
+{
+    <div class="flex items-center gap-4">
+        <div class="neba-skeleton rounded-full" style="width: @(Size)px; height: @(Size)px;"></div>
+        @if (ShowText)
+        {
+            <div class="flex-1 space-y-2">
+                <div class="neba-skeleton h-4 w-1/2"></div>
+                <div class="neba-skeleton h-3 w-1/3"></div>
+            </div>
+        }
+    </div>
+}
+else if (Type == SkeletonType.Custom)
+{
+    <div class="neba-skeleton" style="width: @Width; height: @Height;"></div>
+}
+
+@code {
+    /// <summary>
+    /// The type of skeleton to display.
+    /// </summary>
+    [Parameter]
+    public SkeletonType Type { get; set; } = SkeletonType.Text;
+
+    /// <summary>
+    /// Number of rows to display (for Table and Text types).
+    /// </summary>
+    [Parameter]
+    public int Rows { get; set; } = 3;
+
+    /// <summary>
+    /// Size of the avatar in pixels (for Avatar type).
+    /// </summary>
+    [Parameter]
+    public int Size { get; set; } = 48;
+
+    /// <summary>
+    /// Show text lines next to avatar (for Avatar type).
+    /// </summary>
+    [Parameter]
+    public bool ShowText { get; set; } = true;
+
+    /// <summary>
+    /// Custom width (for Custom type). Examples: "100px", "50%", "20rem"
+    /// </summary>
+    [Parameter]
+    public string Width { get; set; } = "100%";
+
+    /// <summary>
+    /// Custom height (for Custom type). Examples: "20px", "2rem"
+    /// </summary>
+    [Parameter]
+    public string Height { get; set; } = "1rem";
+}

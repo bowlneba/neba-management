@@ -1,31 +1,26 @@
-/* Champions Card Grid - Tier Styling */
-
-/* Collapse/Expand Animation */
-.tier-collapse-container {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out;
-    opacity: 1;
-    margin-top: 1rem;
-}
-
-.tier-collapse-container.tier-collapsed {
-    grid-template-rows: 0fr;
-    opacity: 0;
-    margin-top: 0;
-}
-
-.tier-collapse-container > * {
-    overflow: hidden;
-}
-
+/* Tier sections */
 /* Elite Tier (20+ titles) - Gold/Amber */
 .tier-elite-section {
-    background: transparent;
+    background: linear-gradient(to bottom right, rgb(254 252 232 / 0.5), rgb(254 249 195 / 0.5));
     border-radius: 0.75rem;
     padding: 1.5rem;
 }
 
+/* Mid Tier (10-19 titles) - Blue */
+.tier-mid-section {
+    background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(238 242 255 / 0.5));
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+/* Standard Tier (1-9 titles) - Light NEBA Blue */
+.tier-standard-section {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+/* Tier headers */
 .tier-elite-header {
     background: linear-gradient(to right, rgb(254 243 199), rgb(254 249 195));
     border: 1px solid rgb(252 211 77);
@@ -39,22 +34,6 @@
 
 .tier-elite-header-subtext {
     color: rgb(161 98 7);
-}
-
-.tier-elite-card {
-    border-color: rgb(252 211 77);
-}
-
-.tier-elite-card:hover {
-    border-color: rgb(245 158 11);
-    box-shadow: 0 10px 15px -3px rgb(254 243 199 / 0.5), 0 4px 6px -4px rgb(254 243 199 / 0.5);
-}
-
-/* Mid Tier (10-19 titles) - Blue */
-.tier-mid-section {
-    background: transparent;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
 }
 
 .tier-mid-header {
@@ -72,21 +51,6 @@
     color: rgb(29 78 216);
 }
 
-.tier-mid-card {
-    border-color: rgb(147 197 253);
-}
-
-.tier-mid-card:hover {
-    border-color: var(--neba-blue-700);
-}
-
-/* Standard Tier (1-9 titles) - Light NEBA Blue */
-.tier-standard-section {
-    background: transparent;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-}
-
 .tier-standard-header {
     background: linear-gradient(to right, var(--neba-blue-100), rgb(224 231 255));
     border: 1px solid var(--neba-blue-300);
@@ -102,10 +66,56 @@
     color: var(--neba-blue-600);
 }
 
+/* Tier cards */
+.tier-elite-card {
+    border-color: rgb(252 211 77);
+    transition: all 0.2s ease;
+}
+
+.tier-elite-card:hover {
+    border-color: rgb(245 158 11);
+    box-shadow: 0 10px 15px -3px rgb(254 243 199 / 0.5), 0 4px 6px -4px rgb(254 243 199 / 0.5);
+}
+
+.tier-mid-card {
+    border-color: rgb(147 197 253);
+    transition: all 0.2s ease;
+}
+
+.tier-mid-card:hover {
+    border-color: var(--neba-blue-700);
+}
+
 .tier-standard-card {
     border-color: rgb(229 231 235);
+    transition: all 0.2s ease;
 }
 
 .tier-standard-card:hover {
     border-color: var(--neba-blue-700);
+}
+
+/* Collapse/expand animations */
+.tier-collapse-container {
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.tier-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.tier-expanded {
+    max-height: 5000px;
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .tier-elite-section,
+    .tier-mid-section,
+    .tier-standard-section {
+        padding: 1rem;
+    }
 }
