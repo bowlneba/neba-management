@@ -67,13 +67,13 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 {
 	DataTable websiteChampionsTable = await QueryStatsDatabaseAsync("select Id, FName, LName from dbo.champions");
 	DataTable softwareBowlersTable = await QuerySoftwareDatabaseAsync("select Id, FirstName, MiddleInitial, LastName, Suffix, Champion from dbo.Bowlers");
-	
+
 	var websiteBowlers = websiteChampionsTable.AsEnumerable().Select(row => new
 	{
 		Id = row.Field<int>("Id"),
 		Name = new NameParser.HumanName($"{row.Field<string>("FName")} {row.Field<string>("LName")}")
 	}).ToList();
-	
+
 	int initialWebsiteBowlerCount = websiteBowlers.Count;
 
 	foreach (var websiteBowler in websiteBowlers)
@@ -87,14 +87,14 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 		Champion = row.Field<bool>("Champion"),
 		Name = new NameParser.HumanName($"{row.Field<string>("FirstName")} {row.Field<string>("MiddleInitial")} {row.Field<string>("LastName")} {row.Field<string>("Suffix")}")
 	}).ToList();
-	
+
 	int championCount = softwareBowlers.Count(b => b.Champion);
 
 	//if (initialWebsiteBowlerCount != championCount)
 	//{
 	//	throw new InvalidOperationException($"Champions missing (or extra) in software.  Website: {initialWebsiteBowlerCount} / Software: {championCount}");
 	//}
-	
+
 	var mergedBowlers = new List<(Guid bowlerId, int? websiteId, int? softwareId, HumanName? softwareName, HumanName? websiteName)>();
 
 	foreach (var manualMatch in s_manualMatch)
@@ -111,7 +111,7 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 		{
 			throw new InvalidOperationException($"Software Non Champion has a website id: {websiteBowler.Id} {websiteBowler.Name.First} {websiteBowler.Name.Last}");
 		}
-		
+
 		mergedBowlers.Add(new(Guid.NewGuid(), manualMatch.websiteId, manualMatch.softwareId, softwareBowler.Name, websiteBowler?.Name));
 		softwareBowlers.Remove(softwareBowler);
 
@@ -122,12 +122,12 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 	}
 
 	foreach (var softwareBowler in softwareBowlers)
-	{		
+	{
 		softwareBowler.Name.Normalize();
-		
-		var websiteBowler = websiteBowlers.SingleOrDefault(b => b.Name.First == softwareBowler.Name.First 
+
+		var websiteBowler = websiteBowlers.SingleOrDefault(b => b.Name.First == softwareBowler.Name.First
 			&& b.Name.Last == softwareBowler.Name.Last
-			&& b.Name.Suffix.Replace(".","") == softwareBowler.Name.Suffix.Replace(".",""));
+			&& b.Name.Suffix.Replace(".", "") == softwareBowler.Name.Suffix.Replace(".", ""));
 
 		if (websiteBowler is not null)
 		{
@@ -135,13 +135,13 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 			{
 				throw new InvalidOperationException($"Bowler not listed as champion but on website.  Verify Match / Champion status for {softwareBowler.Name.FullName} / softwareId: {softwareBowler.Id}");
 			}
-			
-			(Guid bowlerId, int? websiteId, int softwareId, HumanName softwareName, HumanName websiteName) mergedBowler 
+
+			(Guid bowlerId, int? websiteId, int softwareId, HumanName softwareName, HumanName websiteName) mergedBowler
 				= new(Guid.NewGuid(), websiteBowler.Id, softwareBowler.Id, softwareBowler.Name, websiteBowler.Name);
 			websiteBowlers.Remove(websiteBowler);
-			
+
 			mergedBowlers.Add(mergedBowler);
-			
+
 			continue;
 		}
 
@@ -151,12 +151,12 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 		{
 			new { Software = softwareBowler, Website = lastNameMatch.OrderBy(x => x.Name.First) }.Dump();
 		}
-		if (lastNameMatch.Count == 1 )
+		if (lastNameMatch.Count == 1)
 		{
 			var matchedName = lastNameMatch.Single();
 			new { Software = softwareBowler, Website = matchedName }.Dump();
 		}
-		
+
 		// no website match
 		mergedBowlers.Add(new(Guid.NewGuid(), null, softwareBowler.Id, softwareBowler.Name, null));
 	}
@@ -165,8 +165,8 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 	{
 		mergedBowlers.Add(new(Guid.NewGuid(), websiteBowler.Id, null, null, websiteBowler.Name));
 	}
-	
-	
+
+
 	//todo: do we care about all middle initials / suffixes having period at the end?  do we auto format upon saving?
 	var mappedBowlers = mergedBowlers.Select(mergedBowler => new Bowlers
 	{
@@ -176,29 +176,29 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 		FirstName = mergedBowler.softwareName?.First ?? mergedBowler.websiteName?.First ?? throw new InvalidOperationException($"No First Name for {mergedBowler.softwareId ?? mergedBowler.websiteId}"),
 		MiddleName = !string.IsNullOrWhiteSpace(mergedBowler.softwareName?.Middle) ? mergedBowler.softwareName.Middle : !string.IsNullOrWhiteSpace(mergedBowler.websiteName?.Middle) ? mergedBowler.websiteName?.Middle : null,
 		LastName = mergedBowler.softwareName?.Last ?? mergedBowler.websiteName?.Last ?? throw new InvalidOperationException($"No Last Name for {mergedBowler.softwareId ?? mergedBowler.websiteId}"),
-		Suffix = !string.IsNullOrWhiteSpace(mergedBowler.softwareName?.Suffix) ? mergedBowler.softwareName.Suffix.Replace(".","").Trim() : !string.IsNullOrWhiteSpace(mergedBowler.websiteName?.Suffix) ? mergedBowler.websiteName?.Suffix.Replace(".","").Trim() : null,
+		Suffix = !string.IsNullOrWhiteSpace(mergedBowler.softwareName?.Suffix) ? mergedBowler.softwareName.Suffix.Replace(".", "").Trim() : !string.IsNullOrWhiteSpace(mergedBowler.websiteName?.Suffix) ? mergedBowler.websiteName?.Suffix.Replace(".", "").Trim() : null,
 		Nickname = !string.IsNullOrWhiteSpace(mergedBowler.softwareName?.Nickname) ? mergedBowler.softwareName.Nickname : !string.IsNullOrWhiteSpace(mergedBowler.websiteName?.Nickname) ? mergedBowler.websiteName?.Nickname : null,
 	}).ToList();
-	
+
 	//manual name fixes -----------------------------------------------------
 	var johnPaulBordage = mappedBowlers.Single(b => b.ApplicationId == 21);
 	johnPaulBordage.FirstName = "John Paul";
 	johnPaulBordage.MiddleName = null;
-	
+
 	var michelleScherrer = mappedBowlers.Single(b => b.ApplicationId == 1185);
 	michelleScherrer.LastName = "Scherrer";
-	
+
 	var chrisDosSantos = mappedBowlers.Single(b => b.ApplicationId == 2070);
 	chrisDosSantos.MiddleName = "D";
 	chrisDosSantos.LastName = "Dos Santos";
-	
+
 	var nicoleCalca = mappedBowlers.Single(b => b.ApplicationId == 2942);
 	nicoleCalca.LastName = "Calca";
-	
+
 	var rjBurlone = mappedBowlers.Single(b => b.ApplicationId == 4653);
 	rjBurlone.FirstName = "RJ";
 	rjBurlone.MiddleName = null;
-	
+
 	var laJones = mappedBowlers.Single(b => b.ApplicationId == 1188);
 	laJones.FirstName = "L.A.";
 
@@ -209,36 +209,216 @@ public async Task<IEnumerable<(Guid bowlerId, int? websiteId, int? softwareId, H
 	//	Bowlers.Add(bowler);
 	//	await SaveChangesAsync();
 	//}
-	
+
 	Bowlers.AddRange(mappedBowlers);
 
 	await SaveChangesAsync();
-	
+
 	"Bowlers Migrated".Dump();
 
 	return mergedBowlers;
 }
 
-public async Task<DataTable> QueryStatsDatabaseAsync(string query)
-	=> await QueryDatabaseAsync(Util.GetPassword("nebastatsdb.connectionstring"), query);
-	
-public async Task<DataTable> QuerySoftwareDatabaseAsync(string query)
-	=> await QueryDatabaseAsync(Util.GetPassword("nebamgmtv3.connectionstring"), query);
-
-private async Task<DataTable> QueryDatabaseAsync(string connectionString, string query)
+public async Task MigrateTitlesAsync(Dictionary<int, Guid> bowlerIdByWebsiteId)
 {
-	using SqlConnection websiteConnection = new(connectionString);
+	var titlesTable = await QueryStatsDatabaseAsync("select * from dbo.Titles");
 
-	await websiteConnection.OpenAsync();
+	var titles = titlesTable.AsEnumerable()
+	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
+	.Select(row => new Titles
+	{
+		Id = Guid.NewGuid(),
+		BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")],
+		Month = row.Field<DateTime>("TitleDate").Month,
+		Year = row.Field<DateTime>("TitleDate").Year,
+		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
+	}).ToList();
 
-	using SqlCommand command = new(query, websiteConnection);
-	SqlDataAdapter sqlDataAdapter = new(command);
+	Titles.AddRange(titles);
 
-	DataTable dataTable = new();
-	await Task.Run(() => sqlDataAdapter.Fill(dataTable));
+	await SaveChangesAsync();
 
-	return dataTable;
+	"Titles Migrated".Dump();
 }
+
+public async Task MigrateBowlerOfTheYears(
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+{
+	var bowlerOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/bowler-of-the-year/");
+	var womanOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/woman-bowler-of-the-year/");
+	var seniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/senior-bowler-of-the-year/");
+	var superSeniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/super-senior-bowler-of-the-year/");
+	var rookieOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/rookie-of-the-year/");
+	var youthOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/youth-bowler-of-the-year/");
+
+	await Task.WhenAll(
+		bowlerOfTheYearsTask,
+		womanOfTheYearsTask,
+		seniorOfTheYearsTask,
+		superSeniorOfTheYearsTask,
+		rookieOfTheYearsTask,
+		youthOfTheYearsTask);
+
+	var bowlerOfTheYears = await bowlerOfTheYearsTask;
+	var womanOfTheYears = await womanOfTheYearsTask;
+	var seniorOfTheYears = await seniorOfTheYearsTask;
+	var superSeniorOfTheYears = await superSeniorOfTheYearsTask;
+	var rookieOfTheYears = await rookieOfTheYearsTask;
+	var youthOfTheYears = await youthOfTheYearsTask;
+
+	foreach (var bowlerOfTheYear in bowlerOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Open, bowlerOfTheYear.year, bowlerOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Bowler of the Year Migrated".Dump();
+
+	foreach (var womanOfTheYear in womanOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Woman, womanOfTheYear.year, womanOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Woman Bowler of the Year Migrated".Dump();
+
+	foreach (var seniorOfTheYear in seniorOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Senior, seniorOfTheYear.year, seniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Senior Bowler of the Year Migrated".Dump();
+
+	foreach (var superSeniorOfTheYear in superSeniorOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.SuperSenior, superSeniorOfTheYear.year, superSeniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Super Senior Bowler of the Year Migrated".Dump();
+
+	foreach (var rookieOfTheYear in rookieOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Rookie, rookieOfTheYear.year, rookieOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Rookie Bowler of the Year Migrated".Dump();
+
+	foreach (var youthOfTheYear in youthOfTheYears)
+	{
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Youth, youthOfTheYear.year, youthOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	}
+
+	"Youth Bowler of the Year Migrated".Dump();
+
+	await SaveChangesAsync();
+}
+
+public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, string year, string bowlerName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName, IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+{
+	var websiteBowlers = bowlerIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+	var softwareBowlers = bowlerIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase)); ;
+
+	if (websiteBowlers.Any())
+	{
+		if (websiteBowlers.Count() > 1)
+		{
+			websiteBowlers.Dump($"Multiple Website People for {bowlerName}");
+		}
+		else
+		{
+			var bowler = websiteBowlers.Single();
+			var record = new SeasonAwards
+			{
+				Id = Guid.NewGuid(),
+				AwardType = SeasonAwardType.BowlerOfTheYear,
+				BowlerId = bowler.Value,
+				BowlerOfTheYearCategory = category,
+				Season = year.StartsWith("2020") ? "2020-2021" : year
+			};
+
+			SeasonAwards.Add(record);
+		}
+	}
+	else if (softwareBowlers.Any())
+	{
+		if (softwareBowlers.Count() > 1)
+		{
+			softwareBowlers.Dump($"Multiple Software People for {bowlerName}");
+		}
+		else
+		{
+			var bowler = softwareBowlers.Single();
+			var record = new SeasonAwards
+			{
+				Id = Guid.NewGuid(),
+				AwardType = SeasonAwardType.BowlerOfTheYear,
+				BowlerId = bowler.Value,
+				BowlerOfTheYearCategory = category,
+				Season = year.StartsWith("2020") ? "2020-2021" : year
+			};
+
+			SeasonAwards.Add(record);
+		}
+	}
+	else //Not on website or software
+	{
+		if (bowlerName.Contains("Brust") || bowlerName.Contains("Bissmann"))
+		{
+			var manualBowler = bowlerIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
+
+			var manualRecord = new SeasonAwards
+			{
+				Id = Guid.NewGuid(),
+				AwardType = SeasonAwardType.BowlerOfTheYear,
+				BowlerId = manualBowler.Value,
+				BowlerOfTheYearCategory = category,
+				Season = year
+			};
+
+			SeasonAwards.Add(manualRecord);
+
+			return;
+		}
+
+		$"------ {bowlerName} is not a champion nor in the software, creating new ------".Dump();
+
+		var newBowlerName = new HumanName(bowlerName);
+		var newBowler = new Bowlers
+		{
+			Id = Guid.NewGuid(),
+			FirstName = newBowlerName.First,
+			MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
+			LastName = newBowlerName.Last,
+			Suffix = string.IsNullOrWhiteSpace(newBowlerName.Suffix) ? null : newBowlerName.Suffix.Replace(".", ""),
+			Nickname = string.IsNullOrWhiteSpace(newBowlerName.Nickname) ? null : newBowlerName.Nickname,
+			ApplicationId = null,
+			WebsiteId = null
+		};
+
+		Bowlers.Add(newBowler);
+
+		var record = new SeasonAwards
+		{
+			Id = Guid.NewGuid(),
+			AwardType = SeasonAwardType.BowlerOfTheYear,
+			BowlerId = newBowler.Id,
+			BowlerOfTheYearCategory = category,
+			Season = year.StartsWith("2020") ? "2020-2021" : year
+		};
+
+		SeasonAwards.Add(record);
+	}
+}
+
+
+public void MigrateHighBlock()
+{
+
+}
+
+#region Enumerations
 
 public sealed class Month : SmartEnum<Month>
 {
@@ -335,7 +515,7 @@ public sealed class TournamentType
 	/// <summary>
 	/// Singles tournament (1 player per team).
 	/// </summary>
-	public static readonly TournamentType Singles = new("Singles", 10, 1,13);
+	public static readonly TournamentType Singles = new("Singles", 10, 1, 13);
 
 	/// <summary>
 	/// Doubles tournament (2 players per team).
@@ -350,12 +530,12 @@ public sealed class TournamentType
 	/// <summary>
 	/// Non-Champions tournament.
 	/// </summary>
-	public static readonly TournamentType NonChampions = new("Non-Champs", 11, 1,8);
+	public static readonly TournamentType NonChampions = new("Non-Champs", 11, 1, 8);
 
 	/// <summary>
 	/// Tournament of Champions event.
 	/// </summary>
-	public static readonly TournamentType TournamentOfChampions = new("T of C", 12, 1,7);
+	public static readonly TournamentType TournamentOfChampions = new("T of C", 12, 1, 7);
 
 	/// <summary>
 	/// Invitational tournament.
@@ -365,7 +545,7 @@ public sealed class TournamentType
 	/// <summary>
 	/// Masters tournament.
 	/// </summary>
-	public static readonly TournamentType Masters = new("Masters", 14, 1,12);
+	public static readonly TournamentType Masters = new("Masters", 14, 1, 12);
 
 	/// <summary>
 	/// High Roller tournament.
@@ -380,27 +560,27 @@ public sealed class TournamentType
 	/// <summary>
 	/// Women tournament.
 	/// </summary>
-	public static readonly TournamentType Women = new("Women's", 17, 1,15);
+	public static readonly TournamentType Women = new("Women's", 17, 1, 15);
 
 	/// <summary>
 	/// Over 40 tournament.
 	/// </summary>
-	public static readonly TournamentType OverForty = new("Over 40", 18, 1,6);
+	public static readonly TournamentType OverForty = new("Over 40", 18, 1, 6);
 
 	/// <summary>
 	/// 40-49 age group tournament.
 	/// </summary>
-	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1,5);
+	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1, 5);
 
 	/// <summary>
 	/// Over/Under 50 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2,14);
+	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2, 14);
 
 	/// <summary>
 	/// Over/Under 40 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 22, 2,9);
+	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 22, 2, 9);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TournamentType"/> class.
@@ -428,203 +608,134 @@ public sealed class TournamentType
 	public int TeamSize { get; }
 
 	public int WebsiteId { get; }
-	
+
 	public static TournamentType FromWebsiteId(int websiteId)
 		=> List.Single(tournamentType => tournamentType.WebsiteId == websiteId);
 }
 
-public async Task MigrateTitlesAsync(Dictionary<int ,Guid> bowlerIdByWebsiteId)
-{
-	var titlesTable = await QueryStatsDatabaseAsync("select * from dbo.Titles");
 
-	var titles = titlesTable.AsEnumerable()
-	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
-	.Select(row => new Titles
-	{
-		Id = Guid.NewGuid(),
-		BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")],
-		Month = row.Field<DateTime>("TitleDate").Month,
-		Year = row.Field<DateTime>("TitleDate").Year,
-		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
-	}).ToList();
-	
-	Titles.AddRange(titles);
-	
-	await SaveChangesAsync();
-	
-	"Titles Migrated".Dump();
+/// <summary>
+/// Represents a category for the Bowler of the Year award, using a smart enum pattern.
+/// </summary>
+public sealed class BowlerOfTheYearCategory
+	: SmartEnum<BowlerOfTheYearCategory>
+{
+	/// <summary>
+	/// Open category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Open = new("Bowler of the Year", 1);
+
+	/// <summary>
+	/// Woman category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Woman = new("Woman Bowler of the Year", 2);
+
+	/// <summary>
+	/// Senior category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Senior = new("Senior Bowler of the Year", 50);
+
+	/// <summary>
+	/// Super Senior category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory SuperSenior = new("Super Senior Bowler of the Year", 60);
+
+	/// <summary>
+	/// Rookie of the Year category.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Rookie = new("Rookie of the Year", 10);
+
+	/// <summary>
+	/// Youth category for Bowler of the Year.
+	/// </summary>
+	public static readonly BowlerOfTheYearCategory Youth = new("Youth Bowler of the Year", 20);
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="BowlerOfTheYearCategory"/> class with the specified name and value.
+	/// </summary>
+	/// <param name="name">The name of the category.</param>
+	/// <param name="value">The integer value of the category.</param>
+	private BowlerOfTheYearCategory(string name, int value)
+		: base(name, value)
+	{ }
+
+	/// <summary>
+	/// Private parameterless constructor for serialization or ORM support.
+	/// </summary>
+	private BowlerOfTheYearCategory()
+		: this(string.Empty, 0)
+	{ }
 }
 
-public async Task MigrateBowlerOfTheYears(
-	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+/// <summary>
+/// Represents the types of season awards that can be given in NEBA, using a SmartEnum pattern for extensibility.
+/// </summary>
+public sealed class SeasonAwardType
+	: SmartEnum<SeasonAwardType>
 {
-	var bowlerOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/bowler-of-the-year/");	
-	var womanOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/woman-bowler-of-the-year/");
-	var seniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/senior-bowler-of-the-year/");	
-	var superSeniorOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/super-senior-bowler-of-the-year/");			 
-	var rookieOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/rookie-of-the-year/");
-	var youthOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/youth-bowler-of-the-year/");
-	
-	await Task.WhenAll(
-		bowlerOfTheYearsTask,
-		womanOfTheYearsTask,
-		seniorOfTheYearsTask, 
-		superSeniorOfTheYearsTask,
-		rookieOfTheYearsTask,
-		youthOfTheYearsTask);
-	
-	var bowlerOfTheYears = await bowlerOfTheYearsTask;
-	var womanOfTheYears = await womanOfTheYearsTask;
-	var seniorOfTheYears = await seniorOfTheYearsTask;
-	var superSeniorOfTheYears = await superSeniorOfTheYearsTask;
-	var rookieOfTheYears = await rookieOfTheYearsTask;
-	var youthOfTheYears = await youthOfTheYearsTask;
+	internal static readonly SeasonAwardType s_default = new("Default", 0);
 
-	foreach (var bowlerOfTheYear in bowlerOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Open, bowlerOfTheYear.year, bowlerOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName); 
-	}
-	
-	"Bowler of the Year Migrated".Dump();
+	/// <summary>
+	/// Awarded to the bowler with the best overall performance during the season.
+	/// </summary>
+	public static readonly SeasonAwardType BowlerOfTheYear = new("Bowler of the Year", 1);
 
-	foreach (var womanOfTheYear in womanOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Woman, womanOfTheYear.year, womanOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
-	}	
-	
-	"Woman Bowler of the Year Migrated".Dump();
+	/// <summary>
+	/// Awarded for achieving the highest average during the season.
+	/// </summary>
+	public static readonly SeasonAwardType HighAverage = new("High Average", 2);
 
-	foreach (var seniorOfTheYear in seniorOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Senior, seniorOfTheYear.year, seniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
-	}
+	/// <summary>
+	/// Awarded for the highest 5-game block score in a single event or season.
+	/// </summary>
+	public static readonly SeasonAwardType High5GameBlock = new("High 5-Game Block", 3);
 
-	"Senior Bowler of the Year Migrated".Dump();
+	/// <summary>
+	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with the specified name and value.
+	/// </summary>
+	/// <param name="name">The display name of the award type.</param>
+	/// <param name="value">The unique value of the award type.</param>
+	private SeasonAwardType(string name, int value)
+		: base(name, value)
+	{ }
 
-	foreach (var superSeniorOfTheYear in superSeniorOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.SuperSenior, superSeniorOfTheYear.year, superSeniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
-	}
-
-	"Super Senior Bowler of the Year Migrated".Dump();
-
-	foreach (var rookieOfTheYear in rookieOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Rookie, rookieOfTheYear.year, rookieOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
-	}
-
-	"Rookie Bowler of the Year Migrated".Dump();
-
-	foreach (var youthOfTheYear in youthOfTheYears)
-	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Youth, youthOfTheYear.year, youthOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
-	}
-
-	"Youth Bowler of the Year Migrated".Dump();
-	
-	await SaveChangesAsync();
+	/// <summary>
+	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with default values.
+	/// </summary>
+	private SeasonAwardType()
+		: this(string.Empty, 0)
+	{ }
 }
 
-public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, string year, string bowlerName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName, IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+#endregion
+
+#region Database Queries
+
+public async Task<DataTable> QueryStatsDatabaseAsync(string query)
+	=> await QueryDatabaseAsync(Util.GetPassword("nebastatsdb.connectionstring"), query);
+
+public async Task<DataTable> QuerySoftwareDatabaseAsync(string query)
+	=> await QueryDatabaseAsync(Util.GetPassword("nebamgmtv3.connectionstring"), query);
+
+private async Task<DataTable> QueryDatabaseAsync(string connectionString, string query)
 {
-	var websiteBowlers = bowlerIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
-			&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
-	var softwareBowlers = bowlerIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
-		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase)); ;
+	using SqlConnection websiteConnection = new(connectionString);
 
-	if (websiteBowlers.Any())
-	{
-		if (websiteBowlers.Count() > 1)
-		{
-			websiteBowlers.Dump($"Multiple Website People for {bowlerName}");
-		}
-		else
-		{
-			var bowler = websiteBowlers.Single();
-			var record = new SeasonAwards
-			{
-				Id = Guid.NewGuid(),
-				AwardType = SeasonAwardType.BowlerOfTheYear,
-				BowlerId = bowler.Value,
-				BowlerOfTheYearCategory = category,
-				Season = year.StartsWith("2020") ? "2020-2021" : year
-			};
+	await websiteConnection.OpenAsync();
 
-			SeasonAwards.Add(record);
-		}
-	}
-	else if (softwareBowlers.Any())
-	{
-		if (softwareBowlers.Count() > 1)
-		{
-			softwareBowlers.Dump($"Multiple Software People for {bowlerName}");
-		}
-		else
-		{
-			var bowler = softwareBowlers.Single();
-			var record = new SeasonAwards
-			{
-				Id = Guid.NewGuid(),
-				AwardType = SeasonAwardType.BowlerOfTheYear,
-				BowlerId = bowler.Value,
-				BowlerOfTheYearCategory = category,
-				Season = year.StartsWith("2020") ? "2020-2021" : year
-			};
+	using SqlCommand command = new(query, websiteConnection);
+	SqlDataAdapter sqlDataAdapter = new(command);
 
-			SeasonAwards.Add(record);
-		}
-	}
-	else //Not on website or software
-	{	
-		if (bowlerName.Contains("Brust") || bowlerName.Contains("Bissmann"))
-		{
-			var manualBowler = bowlerIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
+	DataTable dataTable = new();
+	await Task.Run(() => sqlDataAdapter.Fill(dataTable));
 
-			var manualRecord = new SeasonAwards
-			{
-				Id = Guid.NewGuid(),
-				AwardType = SeasonAwardType.BowlerOfTheYear,
-				BowlerId = manualBowler.Value,
-				BowlerOfTheYearCategory = category,
-				Season = year
-			};
-			
-			SeasonAwards.Add(manualRecord);
-			
-			return;
-		}
-		
-		$"------ {bowlerName} is not a champion nor in the software, creating new ------".Dump();
-
-		var newBowlerName = new HumanName(bowlerName);
-		var newBowler = new Bowlers
-		{
-			Id = Guid.NewGuid(),
-			FirstName = newBowlerName.First,
-			MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
-			LastName = newBowlerName.Last,
-			Suffix = string.IsNullOrWhiteSpace(newBowlerName.Suffix) ? null : newBowlerName.Suffix.Replace(".", ""),
-			Nickname = string.IsNullOrWhiteSpace(newBowlerName.Nickname) ? null : newBowlerName.Nickname,
-			ApplicationId = null,
-			WebsiteId = null
-		};
-
-		Bowlers.Add(newBowler);
-
-		var record = new SeasonAwards
-		{
-			Id = Guid.NewGuid(),
-			AwardType = SeasonAwardType.BowlerOfTheYear,
-			BowlerId = newBowler.Id,
-			BowlerOfTheYearCategory = category,
-			Season = year.StartsWith("2020") ? "2020-2021" : year
-		};
-
-		SeasonAwards.Add(record);
-	}
+	return dataTable;
 }
+
+
+#endregion
+
+#region Website Scrapers
 
 public static class WebScraperHelper
 {
@@ -858,105 +969,9 @@ public static class HighBlockScraper
 	}
 }
 
-/// <summary>
-/// Represents a category for the Bowler of the Year award, using a smart enum pattern.
-/// </summary>
-public sealed class BowlerOfTheYearCategory
-	: SmartEnum<BowlerOfTheYearCategory>
-{
-	/// <summary>
-	/// Open category for Bowler of the Year.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory Open = new("Bowler of the Year", 1);
+#endregion
 
-	/// <summary>
-	/// Woman category for Bowler of the Year.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory Woman = new("Woman Bowler of the Year", 2);
-
-	/// <summary>
-	/// Senior category for Bowler of the Year.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory Senior = new("Senior Bowler of the Year", 50);
-
-	/// <summary>
-	/// Super Senior category for Bowler of the Year.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory SuperSenior = new("Super Senior Bowler of the Year", 60);
-
-	/// <summary>
-	/// Rookie of the Year category.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory Rookie = new("Rookie of the Year", 10);
-
-	/// <summary>
-	/// Youth category for Bowler of the Year.
-	/// </summary>
-	public static readonly BowlerOfTheYearCategory Youth = new("Youth Bowler of the Year", 20);
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="BowlerOfTheYearCategory"/> class with the specified name and value.
-	/// </summary>
-	/// <param name="name">The name of the category.</param>
-	/// <param name="value">The integer value of the category.</param>
-	private BowlerOfTheYearCategory(string name, int value)
-		: base(name, value)
-	{ }
-
-	/// <summary>
-	/// Private parameterless constructor for serialization or ORM support.
-	/// </summary>
-	private BowlerOfTheYearCategory()
-		: this(string.Empty, 0)
-	{ }
-}
-
-public void MigrateHighBlock()
-{
-	
-}
-
-/// <summary>
-/// Represents the types of season awards that can be given in NEBA, using a SmartEnum pattern for extensibility.
-/// </summary>
-public sealed class SeasonAwardType
-	: SmartEnum<SeasonAwardType>
-{
-	internal static readonly SeasonAwardType s_default = new("Default", 0);
-
-	/// <summary>
-	/// Awarded to the bowler with the best overall performance during the season.
-	/// </summary>
-	public static readonly SeasonAwardType BowlerOfTheYear = new("Bowler of the Year", 1);
-
-	/// <summary>
-	/// Awarded for achieving the highest average during the season.
-	/// </summary>
-	public static readonly SeasonAwardType HighAverage = new("High Average", 2);
-
-	/// <summary>
-	/// Awarded for the highest 5-game block score in a single event or season.
-	/// </summary>
-	public static readonly SeasonAwardType High5GameBlock = new("High 5-Game Block", 3);
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with the specified name and value.
-	/// </summary>
-	/// <param name="name">The display name of the award type.</param>
-	/// <param name="value">The unique value of the award type.</param>
-	private SeasonAwardType(string name, int value)
-		: base(name, value)
-	{ }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="SeasonAwardType"/> class with default values.
-	/// </summary>
-	private SeasonAwardType()
-		: this(string.Empty, 0)
-	{ }
-}
-
-
+#region Manual Bowler Match
 
 static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 {
@@ -1294,3 +1309,5 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(null, 4993),  // Gavin Brown
 	new(null, 5014),  // Thomas H Brown II
 };
+
+#endregion
