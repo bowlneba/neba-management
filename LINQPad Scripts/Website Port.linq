@@ -422,14 +422,14 @@ public async Task MigrateHighBlockAsync(
 
 	foreach (var highBlock in highBlocks)
 	{
-		var websiteBowlers = bowlerIdsByWebsiteName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var websiteBowlerMatches = bowlerIdsByWebsiteName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
-		var softwareBowlers = bowlerIdsBySoftwareName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var softwareBowlerMatches = bowlerIdsBySoftwareName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 
-		if (websiteBowlers.Any())
+		if (websiteBowlerMatches.Any())
 		{
-			if (websiteBowlers.Count() > 1)
+			if (websiteBowlerMatches.Count() > 1)
 			{
 				if (highBlock.name == "Steve Hardy")
 				{
@@ -458,11 +458,11 @@ public async Task MigrateHighBlockAsync(
 					continue;
 				}
 				
-				websiteBowlers.Dump($"Multiple Website People for {highBlock.name}");
+				websiteBowlerMatches.Dump($"Multiple Website People for {highBlock.name}");
 			}
 			else
 			{
-				var bowler = websiteBowlers.Single();
+				var bowler = websiteBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
 					Id = Guid.NewGuid(),
@@ -475,15 +475,15 @@ public async Task MigrateHighBlockAsync(
 				SeasonAwards.Add(record);
 			}
 		}
-		else if (softwareBowlers.Any())
+		else if (softwareBowlerMatches.Any())
 		{	
-			if (softwareBowlers.Count() > 1)
+			if (softwareBowlerMatches.Count() > 1)
 			{
-				softwareBowlers.Dump($"Multiple Software People for {highBlock.name}");
+				softwareBowlerMatches.Dump($"Multiple Software People for {highBlock.name}");
 			}
 			else
 			{
-				var bowler = softwareBowlers.Single();
+				var bowler = softwareBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
 					Id = Guid.NewGuid(),
@@ -498,6 +498,22 @@ public async Task MigrateHighBlockAsync(
 		}
 		else //Not on website or software
 		{
+			if (highBlock.name.Contains("Michaue")) //typo on website
+			{
+				var bowlerId = bowlerIdsBySoftwareName.Single(b => b.Key.First == "Russ" && b.Key.Last == "Michaud").Value;
+				
+				SeasonAwards.Add(new()
+				{
+					Id = Guid.NewGuid(),
+					AwardType = SeasonAwardType.High5GameBlock,
+					BowlerId = bowlerId,
+					Season = highBlock.year,
+					HighBlockScore = highBlock.score
+				});	
+				
+				continue;
+			}
+			
 			$"------ {highBlock.name} is not a champion nor in the software, creating new ------".Dump();
 
 			var newBowlerName = new HumanName(highBlock.name);
@@ -1464,6 +1480,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(null, 4943),  // Jay Hayes
 	new(null, 4993),  // Gavin Brown
 	new(null, 5014),  // Thomas H Brown II
+	new(null, 733),   // Dennis J Hamm
 };
 
 #endregion
