@@ -599,7 +599,7 @@ Use GPU-accelerated properties:
 
         <!-- Content with loading state -->
         <div class="relative min-h-[400px]">
-            <NebaSectionLoadingIndicator IsVisible="@isLoading" Text="Loading..." />
+            <NebaLoadingIndicator Scope="LoadingIndicatorScope.Section" IsVisible="@isLoading" Text="Loading..." />
 
             @if (data != null)
             {
