@@ -1,5 +1,6 @@
 using Neba.Api.Endpoints.Website.Bowlers;
 using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Application.Tournaments;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
 using Neba.Domain.Bowlers;
