@@ -401,7 +401,7 @@ try {
 | `NebaSkeletonLoader` | Loading placeholders | [NebaSkeletonLoader.razor](../../src/frontend/Neba.Web.Server/Components/NebaSkeletonLoader.razor) |
 | `NebaErrorBoundary` | Error handling | [NebaErrorBoundary.razor](../../src/frontend/Neba.Web.Server/Components/NebaErrorBoundary.razor) |
 | `NebaAlert` | Persistent alerts | [NOTIFICATIONS.md](../../src/frontend/NOTIFICATIONS.md) |
-| `NebaToast` | Ephemeral toasts | [NOTIFICATIONS.md](../../src/frontend/NOTIFICATIONS.MD) |
+| `NebaToast` | Ephemeral toasts | [NOTIFICATIONS.md](../../src/frontend/NOTIFICATIONS.md) |
 
 ---
 
