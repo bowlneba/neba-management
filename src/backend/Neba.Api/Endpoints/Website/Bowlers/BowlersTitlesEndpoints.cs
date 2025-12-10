@@ -27,7 +27,7 @@ internal static class BowlersTitlesEndpoints
         private IEndpointRouteBuilder MapGetBowlerTitlesEndpoint()
         {
             app.MapGet(
-                "/{bowlerId:guid}/titles",
+                "/{bowlerId}/titles",
                 async (
                     IQueryHandler<BowlerTitlesQuery, ErrorOr<BowlerTitlesDto>> queryHandler,
                     BowlerId bowlerId,
