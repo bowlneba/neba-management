@@ -27,26 +27,26 @@
     </div>
 
     <!-- Error Alert -->
-    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <NebaAlert Severity="NotifySeverity.Error"
                    Title="Error Loading Awards"
-                   Message="@errorMessage"
+                   Message="@_errorMessage"
                    Dismissible="true"
-                   OnDismiss="@(() => errorMessage = null)" />
+                   OnDismiss="@(() => _errorMessage = null)" />
     }
 
     <!-- Awards Table Section with Loading Overlay -->
     <div class="relative min-h-[400px] mt-6">
         <!-- Loading Indicator (scoped to this section) -->
-        <NebaLoadingIndicator IsVisible="@isLoading"
+        <NebaLoadingIndicator IsVisible="@_isLoading"
                               Text="Loading..."
                               Scope="LoadingIndicatorScope.Section"
                               DelayMs="0"
                               MinimumDisplayMs="0" />
 
         <!-- Awards Table -->
-        @if (awards.Count > 0)
+        @if (_awards.Count > 0)
         {
             <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm max-w-4xl mx-auto">
                 <table class="w-full">
@@ -58,7 +58,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach (var award in awards)
+                        @foreach (var award in _awards)
                         {
                             var hasTie = award.Bowlers.Count() > 1;
                             var rowClass = hasTie
@@ -87,7 +87,7 @@
                 </table>
             </div>
         }
-        else if (!isLoading)
+        else if (!_isLoading)
         {
             <div class="text-center py-12 text-gray-500">
                 <p>No high block awards data available.</p>
@@ -97,25 +97,25 @@
 </div>
 
 @code {
-    private List<HighBlockViewModel> awards = new();
-    private string? errorMessage;
-    private bool isLoading = true;
+    private List<HighBlockViewModel> _awards = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    async protected override Task OnInitializedAsync()
     {
         try
         {
             // Using dummy data - wire up API call later
             await Task.Delay(500); // Simulate API call
-            awards = GetDummyData();
+            _awards = GetDummyData();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Failed to load high block awards: {ex.Message}";
+            _errorMessage = $"Failed to load high block awards: {ex.Message}";
         }
         finally
         {
-            isLoading = false;
+            _isLoading = false;
         }
     }
 

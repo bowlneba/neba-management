@@ -31,7 +31,7 @@ else
         @foreach (var yearGroup in TitlesByYear.OrderByDescending(g => g.Year))
         {
             var sectionId = $"year-{yearGroup.Year}";
-            var isExpanded = expandedSections.Contains(sectionId);
+            var isExpanded = _expandedSections.Contains(sectionId);
 
             <div>
                 <button type="button"
@@ -77,7 +77,7 @@ else
                                                     </span>
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
-                                                    @for (int i = 0; i < champions.Count; i++)
+                                                    @for (var i = 0; i < champions.Count; i++)
                                                     {
                                                         var champion = champions[i];
                                                         <button type="button"
@@ -118,26 +118,26 @@ else
     [Parameter]
     public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
 
-    private readonly HashSet<string> expandedSections = new();
-    private string? previousDataHash;
+    private readonly HashSet<string> _expandedSections = new();
+    private string? _previousDataHash;
 
     protected override void OnParametersSet()
     {
         if (TitlesByYear != null)
         {
             var currentDataHash = ComputeDataHash(TitlesByYear);
-            if (currentDataHash != previousDataHash)
+            if (currentDataHash != _previousDataHash)
             {
                 // Data has changed, reset expanded sections
-                expandedSections.Clear();
+                _expandedSections.Clear();
 
                 // Expand all sections by default when data is loaded or refreshed
                 foreach (var yearGroup in TitlesByYear)
                 {
-                    expandedSections.Add($"year-{yearGroup.Year}");
+                    _expandedSections.Add($"year-{yearGroup.Year}");
                 }
 
-                previousDataHash = currentDataHash;
+                _previousDataHash = currentDataHash;
             }
         }
     }
@@ -159,13 +159,13 @@ else
 
     private void ToggleSection(string sectionId)
     {
-        if (expandedSections.Contains(sectionId))
+        if (_expandedSections.Contains(sectionId))
         {
-            expandedSections.Remove(sectionId);
+            _expandedSections.Remove(sectionId);
         }
         else
         {
-            expandedSections.Add(sectionId);
+            _expandedSections.Add(sectionId);
         }
     }
 
@@ -190,7 +190,7 @@ else
             10 => "October",
             11 => "November",
             12 => "December",
-            _ => "Unknown"
+            var _ => "Unknown"
         };
     }
 }

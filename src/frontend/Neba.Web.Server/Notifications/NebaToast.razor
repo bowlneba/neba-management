@@ -1,6 +1,6 @@
 @using Neba.Web.Server.Services
 @implements IAsyncDisposable
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 
 @if (!ShouldHide)
 {
@@ -69,12 +69,12 @@
         ? "assertive"
         : "polite";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    async protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !Payload.Persist)
         {
             _dotNetRef = DotNetObjectReference.Create(this);
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Notifications/NebaToast.razor.js");
+            _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Notifications/NebaToast.razor.js");
             _timer = await _module.InvokeAsync<IJSObjectReference>("createTimer", _dotNetRef, (int)Duration.TotalMilliseconds);
         }
     }

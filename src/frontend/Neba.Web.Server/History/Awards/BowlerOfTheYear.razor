@@ -31,29 +31,29 @@
     </div>
 
     <!-- Error Alert -->
-    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <NebaAlert Severity="NotifySeverity.Error"
                    Title="Error Loading Awards"
-                   Message="@errorMessage"
+                   Message="@_errorMessage"
                    Dismissible="true"
-                   OnDismiss="@(() => errorMessage = null)" />
+                   OnDismiss="@(() => _errorMessage = null)" />
     }
 
     <!-- Awards Section with Loading Overlay -->
     <div class="relative min-h-[400px] mt-6">
         <!-- Loading Indicator (scoped to this section) -->
-        <NebaLoadingIndicator IsVisible="@isLoading"
+        <NebaLoadingIndicator IsVisible="@_isLoading"
                               Text="Loading..."
                               Scope="LoadingIndicatorScope.Section"
                               DelayMs="0"
                               MinimumDisplayMs="0" />
 
         <!-- Awards Grid -->
-        @if (awardsByYear.Count > 0)
+        @if (_awardsByYear.Count > 0)
         {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach (var yearData in awardsByYear)
+                @foreach (var yearData in _awardsByYear)
                 {
                     <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
                         <!-- Year Header -->
@@ -79,7 +79,7 @@
                 }
             </div>
         }
-        else if (!isLoading)
+        else if (!_isLoading)
         {
             <div class="text-center py-12 text-gray-500">
                 <p>No awards data available.</p>
@@ -89,11 +89,11 @@
 </div>
 
 @code {
-    private List<BowlerOfTheYearByYearViewModel> awardsByYear = new();
-    private string? errorMessage;
-    private bool isLoading = true;
+    private List<BowlerOfTheYearByYearViewModel> _awardsByYear = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    async protected override Task OnInitializedAsync()
     {
         try
         {
@@ -102,19 +102,19 @@
             if (result.IsError)
             {
                 var error = result.FirstError;
-                errorMessage = $"Failed to load awards data: {error.Description}";
+                _errorMessage = $"Failed to load awards data: {error.Description}";
                 return;
             }
 
-            awardsByYear = result.Value.ToList();
+            _awardsByYear = result.Value.ToList();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Failed to load awards data: {ex.Message}";
+            _errorMessage = $"Failed to load awards data: {ex.Message}";
         }
         finally
         {
-            isLoading = false;
+            _isLoading = false;
         }
     }
 }

@@ -160,7 +160,7 @@
 
     bool IsActive(string path)
     {
-        string current = Nav.ToBaseRelativePath(Nav.Uri);
+        var current = Nav.ToBaseRelativePath(Nav.Uri);
 
         if (string.IsNullOrEmpty(current))
         {

@@ -1,6 +1,6 @@
 @* Modal component with backdrop blur and centered content *@
 @implements IAsyncDisposable
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
 
 @if (IsOpen)
 {
@@ -97,11 +97,11 @@
     [Parameter]
     public string? CssClass { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    async protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/nebaModal.js");
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/nebaModal.js");
         }
 
         if (_module != null)

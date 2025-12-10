@@ -4,7 +4,7 @@
 @implements IDisposable
 @implements IAsyncDisposable
 @inject INotificationService NotificationService
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 @rendermode InteractiveServer
 
 @if (_currentToast is not null)
@@ -47,11 +47,11 @@
             });
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    async protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Notifications/ToastManager.razor.js");
+            _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Notifications/ToastManager.razor.js");
             _isMobile = await _module.InvokeAsync<bool>("isMobile");
             _effectiveDuration = _isMobile
                 ? TimeSpan.FromMilliseconds(ToastDefaults.MobileDurationMs)
@@ -128,7 +128,7 @@
         }
     }
 
-    protected virtual async ValueTask DisposeAsyncCore()
+    async protected virtual ValueTask DisposeAsyncCore()
     {
         if (_module is not null)
         {

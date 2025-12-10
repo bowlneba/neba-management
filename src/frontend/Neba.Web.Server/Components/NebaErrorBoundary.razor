@@ -22,12 +22,12 @@
             @if (ShowDetails && !string.IsNullOrWhiteSpace(CurrentException.StackTrace))
             {
                 <button class="neba-btn neba-btn-secondary" @onclick="ToggleDetails">
-                    @(showDetails ? "Hide" : "Show") Details
+                    @(_showDetails ? "Hide" : "Show") Details
                 </button>
             }
         </div>
 
-        @if (ShowDetails && showDetails && CurrentException.StackTrace is not null)
+        @if (ShowDetails && _showDetails && CurrentException.StackTrace is not null)
         {
             <div class="mt-4 p-4 bg-[var(--neba-gray-050)] border border-[var(--neba-border)] rounded-lg overflow-x-auto">
                 <h4 class="font-semibold mb-2 text-sm text-[var(--neba-text)]">Stack Trace:</h4>
@@ -42,7 +42,7 @@ else
 }
 
 @code {
-    private bool showDetails = false;
+    private bool _showDetails = false;
 
     /// <summary>
     /// Whether to show detailed error information (stack trace).
@@ -74,19 +74,19 @@ else
 
     private void ToggleDetails()
     {
-        showDetails = !showDetails;
+        _showDetails = !_showDetails;
     }
 
-    protected override async Task OnErrorAsync(Exception exception)
+    async protected override Task OnErrorAsync(Exception exception)
     {
         // Log the error (you can inject ILogger here if needed)
         await base.OnErrorAsync(exception);
-        showDetails = false; // Reset details view
+        _showDetails = false; // Reset details view
     }
 
     private new void Recover()
     {
-        showDetails = false;
+        _showDetails = false;
         base.Recover();
     }
 }

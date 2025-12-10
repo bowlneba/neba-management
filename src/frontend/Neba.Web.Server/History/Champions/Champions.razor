@@ -14,80 +14,80 @@
     </div>
 
     <!-- Error Alert -->
-    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <NebaAlert Severity="NotifySeverity.Error"
                    Title="Error Loading Champions"
-                   Message="@errorMessage"
+                   Message="@_errorMessage"
                    Dismissible="true"
-                   OnDismiss="@(() => errorMessage = null)" />
+                   OnDismiss="@(() => _errorMessage = null)" />
     }
 
     <!-- Loading Indicator -->
-    <NebaLoadingIndicator IsVisible="@isLoading"
+    <NebaLoadingIndicator IsVisible="@_isLoading"
                           Text="Loading champions..."
                           Scope="LoadingIndicatorScope.Page" />
 
     <!-- View Toggle Segmented Control -->
-    @if (!isLoading && champions.Count > 0)
+    @if (!_isLoading && _champions.Count > 0)
     {
         <div class="flex justify-start">
-            <NebaSegmentedControl Options="viewOptions"
-                                  SelectedValue="@selectedView.ToString()"
+            <NebaSegmentedControl Options="_viewOptions"
+                                  SelectedValue="@_selectedView.ToString()"
                                   OnValueChanged="HandleViewChanged" />
         </div>
     }
 
     <!-- View Content -->
-    @if (champions.Count > 0)
+    @if (_champions.Count > 0)
     {
-        @if (selectedView == ChampionsView.TitleCount)
+        @if (_selectedView == ChampionsView.TitleCount)
         {
-            <TitleCountView Champions="champions" OnChampionClick="HandleChampionClick" />
+            <TitleCountView Champions="_champions" OnChampionClick="HandleChampionClick" />
         }
         else
         {
-            <YearView TitlesByYear="@titlesByYear"
-                      IsLoading="@isYearViewLoading"
-                      ErrorMessage="@yearViewErrorMessage"
-                      OnErrorDismiss="() => yearViewErrorMessage = null"
+            <YearView TitlesByYear="@_titlesByYear"
+                      IsLoading="@_isYearViewLoading"
+                      ErrorMessage="@_yearViewErrorMessage"
+                      OnErrorDismiss="() => _yearViewErrorMessage = null"
                       OnChampionClick="HandleYearViewChampionClick" />
         }
     }
 </div>
 
 <!-- Bowler Titles Modal -->
-<BowlerTitlesModal IsOpen="@isModalOpen"
-                   OnClose="@(() => isModalOpen = false)"
-                   BowlerId="@selectedBowlerId"
-                   BowlerName="@selectedBowlerName"
-                   HallOfFame="@selectedBowlerHallOfFame" />
+<BowlerTitlesModal IsOpen="@_isModalOpen"
+                   OnClose="@(() => _isModalOpen = false)"
+                   BowlerId="@_selectedBowlerId"
+                   BowlerName="@_selectedBowlerName"
+                   HallOfFame="@_selectedBowlerHallOfFame" />
 
 @code {
-    private List<BowlerTitleSummaryViewModel> champions = new();
-    private string? errorMessage;
-    private bool isLoading = true;
-    private ChampionsView selectedView = ChampionsView.TitleCount;
+    private List<BowlerTitleSummaryViewModel> _champions = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+    private ChampionsView _selectedView = ChampionsView.TitleCount;
 
     // Year view data
-    private List<TitlesByYearViewModel>? titlesByYear;
-    private bool isYearViewLoading = false;
-    private string? yearViewErrorMessage;
+    private List<TitlesByYearViewModel>? _titlesByYear;
+    private bool _isYearViewLoading = false;
+    private string? _yearViewErrorMessage;
 
     // Modal state
-    private bool isModalOpen = false;
-    private Guid? selectedBowlerId;
-    private string? selectedBowlerName;
-    private bool selectedBowlerHallOfFame;
+    private bool _isModalOpen = false;
+    private Guid? _selectedBowlerId;
+    private string? _selectedBowlerName;
+    private bool _selectedBowlerHallOfFame;
 
     // Segmented control options
-    private readonly List<SegmentedControlOption> viewOptions = new()
+    private readonly List<SegmentedControlOption> _viewOptions = new()
     {
         new() { Label = "By Titles", Value = nameof(ChampionsView.TitleCount) },
         new() { Label = "By Year", Value = nameof(ChampionsView.Year) }
     };
 
-    protected override async Task OnInitializedAsync()
+    async protected override Task OnInitializedAsync()
     {
         try
         {
@@ -96,26 +96,26 @@
             if (result.IsError)
             {
                 var error = result.FirstError;
-                errorMessage = $"Failed to load champions data: {error.Description}";
+                _errorMessage = $"Failed to load champions data: {error.Description}";
                 return;
             }
 
-            champions = result.Value.ToList();
+            _champions = result.Value.ToList();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Failed to load champions data: {ex.Message}";
+            _errorMessage = $"Failed to load champions data: {ex.Message}";
         }
         finally
         {
-            isLoading = false;
+            _isLoading = false;
         }
     }
 
     private async Task LoadTitlesByYearAsync()
     {
-        isYearViewLoading = true;
-        yearViewErrorMessage = null;
+        _isYearViewLoading = true;
+        _yearViewErrorMessage = null;
 
         try
         {
@@ -124,45 +124,45 @@
             if (result.IsError)
             {
                 var error = result.FirstError;
-                yearViewErrorMessage = $"Failed to load titles: {error.Description}";
+                _yearViewErrorMessage = $"Failed to load titles: {error.Description}";
                 return;
             }
 
-            titlesByYear = result.Value.ToList();
+            _titlesByYear = result.Value.ToList();
         }
         catch (Exception ex)
         {
-            yearViewErrorMessage = $"Failed to load titles: {ex.Message}";
+            _yearViewErrorMessage = $"Failed to load titles: {ex.Message}";
         }
         finally
         {
-            isYearViewLoading = false;
+            _isYearViewLoading = false;
         }
     }
 
     private async Task HandleViewChanged(string viewValue)
     {
         var newView = Enum.Parse<ChampionsView>(viewValue);
-        if (newView == ChampionsView.Year && titlesByYear == null)
+        if (newView == ChampionsView.Year && _titlesByYear == null)
         {
             await LoadTitlesByYearAsync();
         }
-        selectedView = newView;
+        _selectedView = newView;
     }
 
     private void HandleChampionClick(BowlerTitleSummaryViewModel champion)
     {
-        selectedBowlerId = champion.BowlerId;
-        selectedBowlerName = champion.BowlerName;
-        selectedBowlerHallOfFame = champion.HallOfFame;
-        isModalOpen = true;
+        _selectedBowlerId = champion.BowlerId;
+        _selectedBowlerName = champion.BowlerName;
+        _selectedBowlerHallOfFame = champion.HallOfFame;
+        _isModalOpen = true;
     }
 
     private void HandleYearViewChampionClick(BowlerTitleViewModel title)
     {
-        selectedBowlerId = title.BowlerId;
-        selectedBowlerName = title.BowlerName;
-        selectedBowlerHallOfFame = title.HallOfFame;
-        isModalOpen = true;
+        _selectedBowlerId = title.BowlerId;
+        _selectedBowlerName = title.BowlerName;
+        _selectedBowlerHallOfFame = title.HallOfFame;
+        _isModalOpen = true;
     }
 }
