@@ -42,6 +42,7 @@ public static class BowlerFactory
                     ApplicationId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
                     Titles = TitleFactory.Bogus(bowlerId, f.Random.Int(0, 10), seed),
                     SeasonAwards = SeasonAwardFactory.BogusBowlerOfTheYear(bowlerId, f.Random.Int(0, 5), seed)
+                        .Union(SeasonAwardFactory.BogusHighBlockAward(bowlerId, f.Random.Int(0, 5), seed)).ToList().AsReadOnly()
                 };
             });
 
