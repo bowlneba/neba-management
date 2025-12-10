@@ -1,7 +1,8 @@
 namespace Neba.Web.Server.History.Awards;
 
 /// <summary>
-/// View model representing a high block award for a bowler in a given season.
+/// View model representing a high block award for a season.
+/// Supports multiple bowlers in case of ties.
 /// </summary>
 public sealed record HighBlockViewModel
 {
@@ -11,12 +12,13 @@ public sealed record HighBlockViewModel
     public required string Season { get; init; }
 
     /// <summary>
-    /// The name of the bowler who achieved the high block score.
+    /// The name(s) of the bowler(s) who achieved the high block score.
+    /// Will contain multiple entries if there was a tie.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required IEnumerable<string> Bowlers { get; init; }
 
     /// <summary>
-    /// The high block score achieved by the bowler.
+    /// The high block score achieved by the bowler(s).
     /// </summary>
     public required int Score { get; init; }
 }

@@ -1,0 +1,150 @@
+@page "/history/high-block"
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Services
+@inject NebaApiService ApiService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>High Block Award - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="View NEBA High Block award winners by season. Recognizing the highest five-game block scores achieved by bowlers throughout NEBA's history." />
+</HeadContent>
+
+<div>
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">High Block</h1>
+        <div class="grid grid-cols-1 gap-6">
+            <div class="col-span-1">
+            <div class="text-base text-gray-700 leading-relaxed bg-white/80 rounded-lg shadow-sm p-4 border border-gray-100">
+                <p class="mb-2">
+                    The <span class="font-semibold text-[var(--neba-blue-700)]">High Block</span> award recognizes the highest five-game block score achieved in a single season, representing exceptional sustained performance across five consecutive games.
+                </p>
+                <p>
+                    This prestigious achievement showcases a bowler's ability to maintain elite-level play throughout an extended series, demonstrating consistency, mental fortitude, and technical mastery.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Awards"
+                   Message="@errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => errorMessage = null)" />
+    }
+
+    <!-- Awards Table Section with Loading Overlay -->
+    <div class="relative min-h-[400px] mt-6">
+        <!-- Loading Indicator (scoped to this section) -->
+        <NebaLoadingIndicator IsVisible="@isLoading"
+                              Text="Loading..."
+                              Scope="LoadingIndicatorScope.Section"
+                              DelayMs="0"
+                              MinimumDisplayMs="0" />
+
+        <!-- Awards Table -->
+        @if (awards.Count > 0)
+        {
+            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm max-w-4xl mx-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b-2 border-[var(--neba-accent-red)]">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700 w-24">Year</th>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700">Bowler(s)</th>
+                            <th class="px-6 py-3 text-right text-sm font-bold text-gray-700 w-32">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var award in awards)
+                        {
+                            var hasTie = award.Bowlers.Count() > 1;
+                            var rowClass = hasTie
+                                ? "bg-blue-50 hover:bg-blue-100 border-l-4 border-[var(--neba-blue-700)]"
+                                : "hover:bg-gray-50";
+
+                            <tr class="@rowClass">
+                                <td class="px-6 py-4 text-gray-900 font-semibold">@award.Season</td>
+                                <td class="px-6 py-4">
+                                    @if (hasTie)
+                                    {
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-[var(--neba-blue-700)] bg-white px-2 py-0.5 rounded">TIE</span>
+                                            <span class="text-gray-900">@string.Join(", ", award.Bowlers)</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-900">@award.Bowlers.First()</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-gray-900 font-bold text-right">@award.Score</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (!isLoading)
+        {
+            <div class="text-center py-12 text-gray-500">
+                <p>No high block awards data available.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<HighBlockViewModel> awards = new();
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Using dummy data - wire up API call later
+            await Task.Delay(500); // Simulate API call
+            awards = GetDummyData();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load high block awards: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private List<HighBlockViewModel> GetDummyData()
+    {
+        return new List<HighBlockViewModel>
+        {
+            new() { Season = "2025", Bowlers = new[] { "John Doe" }, Score = 1350 },
+            new() { Season = "2024", Bowlers = new[] { "Jane Smith" }, Score = 1335 },
+            new() { Season = "2023", Bowlers = new[] { "Mike Johnson", "Tom Williams" }, Score = 1342 },
+            new() { Season = "2022", Bowlers = new[] { "Bob Brown" }, Score = 1318 },
+            new() { Season = "1983", Bowlers = new[] { "Jim MacCay" }, Score = 1329 },
+            new() { Season = "1982", Bowlers = new[] { "John Bekish" }, Score = 1320 },
+            new() { Season = "1981", Bowlers = new[] { "Bob Glenn", "Tom Smith" }, Score = 1202 },
+            new() { Season = "1980", Bowlers = new[] { "John Campo" }, Score = 1261 },
+            new() { Season = "1979", Bowlers = new[] { "Willie Willis" }, Score = 1299 },
+            new() { Season = "1978", Bowlers = new[] { "Ernie Hoesterey" }, Score = 1308 },
+            new() { Season = "1977", Bowlers = new[] { "Russ Michaue" }, Score = 1229 },
+            new() { Season = "1976", Bowlers = new[] { "Tom McMann" }, Score = 1199 },
+            new() { Season = "1975", Bowlers = new[] { "Gary Grant" }, Score = 1298 },
+            new() { Season = "1974", Bowlers = new[] { "Pete Couture" }, Score = 1199 },
+            new() { Season = "1973", Bowlers = new[] { "Pete Couture" }, Score = 1244 },
+            new() { Season = "1972", Bowlers = new[] { "Tony Spelas" }, Score = 1210 },
+            new() { Season = "1971", Bowlers = new[] { "Joe Picanza" }, Score = 1165 },
+            new() { Season = "1970", Bowlers = new[] { "Joe Cawlina" }, Score = 1153 },
+            new() { Season = "1969", Bowlers = new[] { "Paul Moser" }, Score = 1193 },
+            new() { Season = "1968", Bowlers = new[] { "John Dudra" }, Score = 1195 },
+            new() { Season = "1967", Bowlers = new[] { "Bob Hayn" }, Score = 1159 },
+            new() { Season = "1966", Bowlers = new[] { "Randy Bubar" }, Score = 1168 },
+        };
+    }
+}
