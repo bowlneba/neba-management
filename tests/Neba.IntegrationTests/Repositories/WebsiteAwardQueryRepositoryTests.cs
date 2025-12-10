@@ -51,4 +51,31 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
         // Assert
         result.Count.ShouldBe(bowlerOfTheYearAwardCount);
     }
+
+    [Fact]
+    public async Task ListHigh5GameBlockAwardsAsync_ShouldReturnAllAwards()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1970);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+
+        await websiteDbContext.SaveChangesAsync();
+
+        int highBlockAwardCount = await websiteDbContext.SeasonAwards
+            .CountAsync(award => award.AwardType == Domain.Awards.SeasonAwardType.High5GameBlock, TestContext.Current.CancellationToken);
+
+        WebsiteAwardQueryRepository repository = new(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<HighBlockAwardDto> result
+            = await repository.ListHigh5GameBlockAwardsAsync(CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(highBlockAwardCount);
+    }
 }

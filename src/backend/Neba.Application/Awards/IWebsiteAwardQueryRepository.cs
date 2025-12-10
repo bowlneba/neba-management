@@ -12,4 +12,11 @@ public interface IWebsiteAwardQueryRepository
     /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerOfTheYearDto"/>.</returns>
     Task<IReadOnlyCollection<BowlerOfTheYearDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Asynchronously retrieves a collection of all High Block awards.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="HighBlockAwardDto"/>.</returns>
+    Task<IReadOnlyCollection<HighBlockAwardDto>> ListHigh5GameBlockAwardsAsync(CancellationToken cancellationToken);
+
 }
