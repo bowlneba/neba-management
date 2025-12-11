@@ -1,22 +1,36 @@
 namespace Neba.Contracts.Website.Titles;
 
 /// <summary>
-/// Represents a summary response containing a bowler's unique identifier, name, and total title count.
+/// Represents a summary of a bowler's title achievements, including their identity and total title count.
 /// </summary>
+/// <remarks>
+/// This response is typically used in list views or leaderboards where only aggregate title information is needed,
+/// without the full details of each individual title.
+/// </remarks>
+/// <example>
+/// {
+///   "bowlerId": "123e4567-e89b-12d3-a456-426614174000",
+///   "bowlerName": "John Doe",
+///   "titleCount": 5
+/// }
+/// </example>
 public sealed record TitleSummaryResponse
 {
     /// <summary>
-    /// The unique identifier of the bowler.
+    /// Gets the unique identifier of the bowler.
     /// </summary>
+    /// <example>123e4567-e89b-12d3-a456-426614174000</example>
     public required Guid BowlerId { get; init; }
 
     /// <summary>
-    /// The full name of the bowler.
+    /// Gets the full display name of the bowler.
     /// </summary>
+    /// <example>John Doe</example>
     public required string BowlerName { get; init; }
 
     /// <summary>
-    /// The total number of titles won by the bowler.
+    /// Gets the total number of titles won by the bowler across all tournaments and years.
     /// </summary>
+    /// <example>5</example>
     public required int TitleCount { get; init; }
 }
