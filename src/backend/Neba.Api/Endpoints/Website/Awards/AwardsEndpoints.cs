@@ -17,7 +17,8 @@ internal static class AwardsEndpoints
         public IEndpointRouteBuilder MapAwardsEndpoints()
         {
             app
-                .MapGetBowlerOfTheYearWinnersEndpoint();
+                .MapGetBowlerOfTheYearWinnersEndpoint()
+                .MapHighBlockAwardWinnersEndpoint();
 
             return app;
         }
@@ -45,6 +46,34 @@ internal static class AwardsEndpoints
                 .WithSummary("Get all NEBA Bowler of the Year winners.")
                 .WithDescription("Retrieves a list of all Bowler of the Year awards, including bowler and award details. Results are returned as a collection of award records.")
                 .Produces<CollectionResponse<BowlerOfTheYearResponse>>(StatusCodes.Status200OK, ContentTypes.ApplicationJson)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, ContentTypes.ApplicationProblemJson)
+                .WithTags(s_tags);
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapHighBlockAwardWinnersEndpoint()
+        {
+            app.MapGet(
+                "/awards/high-block",
+                async (
+                    IQueryHandler<ListHighBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>> queryHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var query = new ListHighBlockAwardsQuery();
+
+                    IReadOnlyCollection<HighBlockAwardDto> result = await queryHandler.HandleAsync(query, cancellationToken);
+
+                    IReadOnlyCollection<HighBlockAwardResponse> response = result
+                        .OrderBy(hb => hb.Season)
+                        .Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetHighBlockAwards")
+                .WithSummary("Get all NEBA High Block winners.")
+                .WithDescription("Retrieves a list of all High Block awards, including bowler and award details. Results are returned as a collection of award records.")
+                .Produces<CollectionResponse<HighBlockAwardResponse>>(StatusCodes.Status200OK, ContentTypes.ApplicationJson)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, ContentTypes.ApplicationProblemJson)
                 .WithTags(s_tags);
 

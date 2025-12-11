@@ -25,6 +25,7 @@
     "npgsql",
     "onclick",
     "parameterless",
+    "pinfall",
     "Respawn",
     "Respawner",
     "Roslynator",

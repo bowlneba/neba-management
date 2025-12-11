@@ -24,12 +24,6 @@ public sealed record HighBlockAwardResponse
     public required Guid Id { get; init; }
 
     /// <summary>
-    /// Gets the unique identifier of the bowler who received the award.
-    /// </summary>
-    /// <example>a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d</example>
-    public required Guid BowlerId { get; init; }
-
-    /// <summary>
     /// Gets the full display name of the bowler who received the award.
     /// </summary>
     /// <remarks>
@@ -46,4 +40,14 @@ public sealed record HighBlockAwardResponse
     /// </remarks>
     /// <example>2024/2025</example>
     public required string Season { get; set; }
+
+
+    /// <summary>
+    /// Gets the total pinfall score achieved by the bowler in the high block.
+    /// </summary>
+    /// <remarks>
+    /// This score represents the sum of pins knocked down by the bowler during the block of games for which the award was given.
+    /// </remarks>
+    /// <example>1123</example>
+    public required int Score { get; init; }
 }

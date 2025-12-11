@@ -53,4 +53,18 @@ internal static class AwardsMappingExtensions
             };
         }
     }
+
+    extension(HighBlockAwardDto dto)
+    {
+        public HighBlockAwardResponse ToResponseModel()
+        {
+            return new HighBlockAwardResponse
+            {
+                Id = dto.Id.Value,
+                BowlerName = dto.BowlerName,
+                Season = dto.Season,
+                Score = dto.Score
+            };
+        }
+    }
 }
