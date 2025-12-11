@@ -11,14 +11,15 @@ This document defines the design principles, component patterns, and best practi
 ## Table of Contents
 
 1. [Design Principles](#design-principles)
-2. [CSS Architecture](#css-architecture)
-3. [Component Patterns](#component-patterns)
-4. [Responsive Design](#responsive-design)
-5. [Accessibility](#accessibility)
-6. [Performance](#performance)
-7. [Component Library](#component-library)
-8. [Page Patterns](#page-patterns)
-9. [Common Pitfalls](#common-pitfalls)
+2. [Layout Architecture](#layout-architecture)
+3. [CSS Architecture](#css-architecture)
+4. [Component Patterns](#component-patterns)
+5. [Responsive Design](#responsive-design)
+6. [Accessibility](#accessibility)
+7. [Performance](#performance)
+8. [Component Library](#component-library)
+9. [Page Patterns](#page-patterns)
+10. [Common Pitfalls](#common-pitfalls)
 
 ---
 
@@ -37,11 +38,22 @@ This document defines the design principles, component patterns, and best practi
 - Add JavaScript for enhancement only
 - Ensure core functionality works without JavaScript
 
-### 3. Mobile-First Responsive
+### 3. Audience-Driven Responsive Design
 
+**Public-Facing (Mobile-First)**
+- Public website content (viewing stats, history, news)
 - Design for mobile viewports first (320px+)
 - Enhance for tablet (768px+) and desktop (1024px+)
-- Test at all breakpoints
+- Optimize for content consumption on any device
+
+**Management/Admin (Desktop-First)**
+- Tournament management software
+- Content management system
+- Design for desktop/tablet first (1024px+)
+- Optimize for data entry, complex forms, and workflow operations
+- Mobile support is secondary for these workflows
+
+**Test at all breakpoints for both audiences**
 
 ### 4. Accessible by Default
 
@@ -56,6 +68,194 @@ This document defines the design principles, component patterns, and best practi
 - Use skeleton loaders for async content
 - Optimize animations (transform, opacity)
 - Lazy load images and heavy components
+
+---
+
+## Layout Architecture
+
+### Application Audiences
+
+The NEBA application serves two distinct audiences with different needs:
+
+#### 1. Public-Facing Website (Mobile-First)
+
+**Primary Users**: Bowlers, fans, general public
+**Primary Use Cases**: Viewing stats, history, news, tournament information
+**Layout**: `MainLayout.razor` (current)
+
+**Design Approach**:
+
+- Mobile-first responsive design
+- Content consumption optimized
+- Simple navigation
+- Fast page loads
+- Optimized for reading/browsing
+
+**Routes**:
+
+- `/` - Home
+- `/tournaments` - Tournament listings
+- `/stats` - Statistics
+- `/history/*` - Historical records
+- `/hall-of-fame` - Hall of Fame
+- `/news` - News articles
+- `/about`, `/sponsors`, `/centers` - Information pages
+
+#### 2. Management Application (Desktop-First)
+
+**Primary Users**: NEBA administrators, tournament directors
+**Primary Use Cases**: Tournament management, scoring, content management, data entry
+**Layout**: To be created (options discussed below)
+
+**Design Approach**:
+
+- Desktop/tablet-first design
+- Workflow and form optimization
+- Data entry and management focus
+- Complex interactions (drag-drop, multi-step wizards)
+- Dense information display
+- Mobile support is secondary
+
+**Anticipated Route Prefixes**:
+
+- `/manage/*` or `/admin/*` - Tournament management, scoring
+- `/cms/*` - Content management (news, sponsors, etc.)
+
+#### 3. Future: Authenticated User Portal (Mobile-First)
+
+**Primary Users**: Registered bowlers
+**Primary Use Cases**: Update personal info, tournament registration, view personal stats
+**Layout**: `MainLayout.razor` (public-facing) or dedicated portal layout
+
+**Design Approach**:
+
+- Mobile-first (bowlers on-the-go)
+- Simple forms and profile management
+- Personal dashboard
+
+**Note**: This is planned for future development
+
+### Layout Strategy Options
+
+#### Option A: Single Admin Layout
+
+Create one unified admin layout for all management tasks.
+
+**Pros**:
+
+- Single source of truth for admin UI
+- Consistent experience across all management tasks
+- Simpler to maintain
+- Natural grouping of administrative functions
+
+**Cons**:
+
+- Tournament management and CMS might have different workflows
+- Could become cluttered if trying to serve multiple purposes
+
+**Recommended Structure**:
+
+```text
+/Layout/
+  MainLayout.razor          # Public-facing
+  AdminLayout.razor         # All management tasks
+```
+
+#### Option B: Separate Admin Layouts
+
+Split into tournament management and content management layouts.
+
+**Pros**:
+
+- Tournament software can have specialized UI (timers, live scoring display)
+- CMS can be simpler, focused on content editing
+- Clear separation of concerns
+- Each layout optimized for its specific workflows
+
+**Cons**:
+
+- More layouts to maintain
+- Potential for inconsistency
+- Users switching between tournament and CMS tasks see different UIs
+
+**Recommended Structure**:
+
+```text
+/Layout/
+  MainLayout.razor              # Public-facing
+  TournamentLayout.razor        # Tournament management (replaces WinForms app)
+  ContentManagementLayout.razor # CMS for website content
+```
+
+#### Option C: Unified Admin with Contextual Sidebars
+
+Single admin layout with different sidebar navigation based on section.
+
+**Pros**:
+
+- Single layout maintains consistency
+- Contextual navigation adapts to current section
+- Shared header/footer for admin identity
+- Easy to add new admin sections
+
+**Cons**:
+
+- More complex layout logic
+- Sidebar navigation switching might confuse users
+
+**Recommended Structure**:
+
+```text
+/Layout/
+  MainLayout.razor          # Public-facing
+  AdminLayout.razor         # Base admin layout with dynamic sidebar
+/Components/Admin/
+  TournamentSidebar.razor   # Sidebar for /admin/tournaments/*
+  ContentSidebar.razor      # Sidebar for /admin/cms/*
+```
+
+### Recommended Approach: Option A (Single Admin Layout)
+
+**Rationale**:
+
+- Start simple, can always split later if needed
+- Tournament management and CMS users are likely the same people
+- Unified admin experience is less confusing
+- Easier to maintain design consistency
+- Route-based navigation can still separate concerns within the layout
+
+**Implementation Plan**:
+
+1. Keep `MainLayout.razor` for public website
+2. Create `AdminLayout.razor` for all management functions
+3. Use route prefixes to organize admin sections:
+   - `/admin/tournaments/*` - Tournament management
+   - `/admin/scoring/*` - Live scoring entry
+   - `/admin/content/*` - CMS for news, sponsors, etc.
+   - `/admin/bowlers/*` - Bowler management
+   - `/admin/settings/*` - System settings
+4. Admin layout includes:
+   - Desktop-optimized navigation (sidebar or top nav)
+   - User authentication indicator
+   - Quick actions/toolbar
+   - Breadcrumbs for deep navigation
+   - Admin-specific notifications
+
+### Layout Routing Configuration
+
+Use Blazor's `@layout` directive to assign layouts:
+
+```razor
+@* Public pages use MainLayout (default) *@
+@page "/tournaments"
+@* Uses MainLayout.razor *@
+
+@* Admin pages explicitly use AdminLayout *@
+@page "/admin/tournaments"
+@layout AdminLayout
+```
+
+Or configure in `App.razor` / routing configuration for automatic layout assignment based on route prefixes.
 
 ---
 
