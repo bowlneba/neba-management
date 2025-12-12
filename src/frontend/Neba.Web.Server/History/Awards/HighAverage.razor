@@ -60,10 +60,27 @@
                     <tbody class="divide-y divide-gray-200">
                         @foreach (var award in _awards)
                         {
-                            <tr class="hover:bg-gray-50">
+                            var isRecord = award.Average == _recordAverage;
+                            var rowClass = isRecord
+                                ? "bg-amber-50 hover:bg-gray-50 border-l-4 border-amber-500"
+                                : "hover:bg-gray-50";
+
+                            <tr class="@rowClass">
                                 <td class="px-6 py-4 text-gray-900 font-semibold">@award.Season</td>
-                                <td class="px-6 py-4 text-gray-900">@award.BowlerName</td>
-                                <td class="px-6 py-4 text-gray-900 font-bold text-right">@FormatAverage(award.Average)</td>
+                                <td class="px-6 py-4">
+                                    @if (isRecord)
+                                    {
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-amber-600 bg-white px-2 py-0.5 rounded border border-amber-300" title="All-time record">🏆 RECORD</span>
+                                            <span class="text-gray-900">@award.BowlerName</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-900">@award.BowlerName</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-gray-900 font-bold @(isRecord ? "text-lg" : "") text-right">@FormatAverage(award.Average)</td>
                                 <td class="px-6 py-4 text-center hidden sm:table-cell">
                                     @if (award.GamesBowled.HasValue)
                                     {
@@ -103,6 +120,7 @@
     private List<HighAverageViewModel> _awards = new();
     private string? _errorMessage;
     private bool _isLoading = true;
+    private decimal _recordAverage;
 
     async protected override Task OnInitializedAsync()
     {
@@ -155,6 +173,9 @@
                     TournamentsBowled = null
                 }
             };
+
+            // Calculate the record (highest average)
+            _recordAverage = _awards.Any() ? _awards.Max(a => a.Average) : 0;
         }
         catch (Exception ex)
         {

@@ -61,26 +61,47 @@
                         @foreach (var award in _awards)
                         {
                             var hasTie = award.Bowlers.Count() > 1;
-                            var rowClass = hasTie
-                                ? "bg-blue-50 hover:bg-blue-100 border-l-4 border-[var(--neba-blue-700)]"
-                                : "hover:bg-gray-50";
+                            var isRecord = award.Score == _recordScore;
+
+                            string rowClass;
+                            if (isRecord)
+                            {
+                                rowClass = "bg-amber-50 hover:bg-gray-50 border-l-4 border-amber-500";
+                            }
+                            else if (hasTie)
+                            {
+                                rowClass = "bg-blue-50 hover:bg-blue-100 border-l-4 border-[var(--neba-blue-700)]";
+                            }
+                            else
+                            {
+                                rowClass = "hover:bg-gray-50";
+                            }
 
                             <tr class="@rowClass">
                                 <td class="px-6 py-4 text-gray-900 font-semibold">@award.Season</td>
                                 <td class="px-6 py-4">
-                                    @if (hasTie)
-                                    {
-                                        <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-2">
+                                        @if (isRecord)
+                                        {
+                                            <span class="text-xs font-bold text-amber-600 bg-white px-2 py-0.5 rounded border border-amber-300" title="All-time record">🏆 RECORD</span>
+                                        }
+                                        @if (hasTie)
+                                        {
                                             <span class="text-xs font-bold text-[var(--neba-blue-700)] bg-white px-2 py-0.5 rounded">TIE</span>
-                                            <span class="text-gray-900">@string.Join(", ", award.Bowlers)</span>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-gray-900">@award.Bowlers.First()</span>
-                                    }
+                                        }
+                                        <span class="text-gray-900">
+                                            @if (hasTie)
+                                            {
+                                                @string.Join(", ", award.Bowlers)
+                                            }
+                                            else
+                                            {
+                                                @award.Bowlers.First()
+                                            }
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 text-gray-900 font-bold text-right">@award.Score</td>
+                                <td class="px-6 py-4 text-gray-900 font-bold text-right @(isRecord ? "text-lg" : "")">@award.Score</td>
                             </tr>
                         }
                     </tbody>
@@ -100,6 +121,7 @@
     private List<HighBlockAwardViewModel> _awards = new();
     private string? _errorMessage;
     private bool _isLoading = true;
+    private int _recordScore;
 
     async protected override Task OnInitializedAsync()
     {
@@ -114,6 +136,8 @@
             else
             {
                 _awards = result.Value.ToList();
+                // Calculate the record (highest score)
+                _recordScore = _awards.Any() ? _awards.Max(a => a.Score) : 0;
             }
         }
         catch (Exception ex)
