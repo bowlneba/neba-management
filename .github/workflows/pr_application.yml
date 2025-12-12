@@ -155,7 +155,16 @@ jobs:
           path: "**/TestResults/**/*.trx"
           retention-days: 30
 
-      Run when frontend changes or manually triggered
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-${{ matrix.test-name }}
+          path: "**/TestResults/**/coverage.opencover.xml"
+          retention-days: 30
+
+  browser-tests:
+    # Run when frontend changes or manually triggered
     if: |
       needs.changes.outputs.frontend == 'true' ||
       github.event_name == 'workflow_dispatch'
@@ -172,15 +181,6 @@ jobs:
             browser: chromium
           - project: webkit
             browser: webkit
-    timeout-minutes: 20
-    name: Playwright E2E Tests
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - project: chromium
-            browser: chromium
           - project: 'Mobile Chrome'
             browser: chromium
           - project: 'Mobile Safari'
@@ -216,10 +216,6 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-      - name: Run tests with coverage
-        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-
-      - name: Restore dependencies
 
       - name: Restore dependencies
         run: dotnet restore
@@ -228,7 +224,11 @@ jobs:
         run: dotnet build --configuration Debug --no-restore
 
       - name: Run Playwright E2E tests
-        run: npx playwright test *.e2e.spec.ts
+        run: npx playwright test *.e2e.spec.ts --project="${{ matrix.project }}"
+        working-directory: tests/browser
+
+      - name: Upload Playwright report
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: playwright-report-${{ matrix.project }}
