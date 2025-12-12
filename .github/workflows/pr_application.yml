@@ -14,6 +14,30 @@ on:
       - '.github/workflows/pr_application.yml'
 
 jobs:
+  # Detect which parts of the codebase changed
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'src/backend/**'
+              - 'src/shared-kernel/**'
+              - 'tests/Neba.UnitTests/**'
+              - 'tests/Neba.IntegrationTests/**'
+            frontend:
+              - 'src/frontend/**'
+              - 'tests/browser/**'
+              - 'tests/Neba.WebTests/**'
+
   code-quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -71,7 +95,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
   test:
-    needs: build
+    needs: [build, changes]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -79,13 +103,22 @@ jobs:
         include:
           - test-project: tests/Neba.UnitTests/Neba.UnitTests.csproj
             test-name: Unit Tests
+            run-when: backend
           - test-project: tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj
             test-name: Integration Tests
+            run-when: backend
           - test-project: tests/Neba.WebTests/Neba.WebTests.csproj
-            test-name: Blazor Tests
+            test-name: Blazor Tests (bUnit)
+            run-when: frontend
       fail-fast: false
 
     name: ${{ matrix.test-name }}
+
+    # Run backend tests only when backend changes, frontend tests only when frontend changes
+    if: |
+      (matrix.run-when == 'backend' && needs.changes.outputs.backend == 'true') ||
+      (matrix.run-when == 'frontend' && needs.changes.outputs.frontend == 'true') ||
+      github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v5
@@ -111,8 +144,8 @@ jobs:
       - name: Build projects
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-build
+      - name: Run tests with coverage
+        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Upload test results
         if: always()
@@ -122,27 +155,23 @@ jobs:
           path: "**/TestResults/**/*.trx"
           retention-days: 30
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: test-results-${{ matrix.test-name }}
-          path: "**/TestResults/**/*.trx"
-          retention-days: 30
-
-      - name: Upload coverage reports
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: coverage-${{ matrix.test-name }}
-          path: "**/TestResults/**/coverage.opencover.xml"
-          retention-days: 30
-
-  browser-tests:
-    # Disabled for PRs - run manually with workflow_dispatch or in nightly builds
-    if: github.event_name == 'workflow_dispatch'
-    needs: build
+      Run when frontend changes or manually triggered
+    if: |
+      needs.changes.outputs.frontend == 'true' ||
+      github.event_name == 'workflow_dispatch'
+    needs: [build, changes]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    name: Playwright E2E Tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            browser: chromium
+          - project: webkit
+            browser: webkit
     timeout-minutes: 20
     name: Playwright E2E Tests
 
@@ -191,17 +220,15 @@ jobs:
         run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Restore dependencies
+
+      - name: Restore dependencies
         run: dotnet restore
 
       - name: Build projects
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Debug --no-restore
 
-      - name: Run Playwright tests
-        run: npx playwright test --project="${{ matrix.project }}"
-        working-directory: tests/browser
-
-      - name: Upload Playwright report
-        if: always()
+      - name: Run Playwright E2E tests
+        run: npx playwright test *.e2e.spec.ts
         uses: actions/upload-artifact@v5
         with:
           name: playwright-report-${{ matrix.project }}
