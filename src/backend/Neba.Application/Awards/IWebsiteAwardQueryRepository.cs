@@ -1,3 +1,7 @@
+using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighAverage;
+using Neba.Application.Awards.HighBlock;
+
 namespace Neba.Application.Awards;
 
 /// <summary>
@@ -9,8 +13,8 @@ public interface IWebsiteAwardQueryRepository
     /// Asynchronously retrieves a collection of all Bowler of the Year awards.
     /// </summary>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerOfTheYearDto"/>.</returns>
-    Task<IReadOnlyCollection<BowlerOfTheYearDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken);
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="BowlerOfTheYearAwardDto"/>.</returns>
+    Task<IReadOnlyCollection<BowlerOfTheYearAwardDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously retrieves a collection of all High Block awards.

@@ -1,6 +1,6 @@
 using System.Globalization;
 using Bogus;
-using Neba.Application.Awards;
+using Neba.Application.Awards.HighAverage;
 using Neba.Domain.Awards;
 
 namespace Neba.Tests;

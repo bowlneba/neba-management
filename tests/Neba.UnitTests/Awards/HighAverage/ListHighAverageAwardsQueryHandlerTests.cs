@@ -1,7 +1,8 @@
 using Neba.Application.Awards;
+using Neba.Application.Awards.HighAverage;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Awards;
+namespace Neba.UnitTests.Awards.High;
 
 public sealed class ListHighAverageAwardsQueryHandlerTests
 {

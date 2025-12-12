@@ -1,7 +1,8 @@
 using Neba.Application.Awards;
+using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Awards;
+namespace Neba.UnitTests.Awards.BowlerOfTheYear;
 
 public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
 {
@@ -21,14 +22,14 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
     public async Task HandleAsync_ShouldReturnAwardsList()
     {
         // Arrange
-        IReadOnlyCollection<BowlerOfTheYearDto> expectedAwards = BowlerOfTheYearDtoFactory.Bogus(50);
+        IReadOnlyCollection<BowlerOfTheYearAwardDto> expectedAwards = BowlerOfTheYearAwardDtoFactory.Bogus(50);
 
         _websiteAwardQueryRepositoryMock
             .Setup(repo => repo.ListBowlerOfTheYearAwardsAsync(TestContext.Current.CancellationToken))
             .ReturnsAsync(expectedAwards);
 
         // Act
-        IReadOnlyCollection<BowlerOfTheYearDto> awards = await _handler.HandleAsync(new ListBowlerOfTheYearAwardsQuery(), TestContext.Current.CancellationToken);
+        IReadOnlyCollection<BowlerOfTheYearAwardDto> awards = await _handler.HandleAsync(new ListBowlerOfTheYearAwardsQuery(), TestContext.Current.CancellationToken);
 
         // Assert
         awards.ShouldBeEquivalentTo(expectedAwards);

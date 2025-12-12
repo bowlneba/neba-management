@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Neba.Application.Awards;
+using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighAverage;
+using Neba.Application.Awards.HighBlock;
 using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website;
@@ -47,7 +49,7 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
         WebsiteAwardQueryRepository repository = new(websiteDbContext);
 
         // Act
-        IReadOnlyCollection<BowlerOfTheYearDto> result
+        IReadOnlyCollection<BowlerOfTheYearAwardDto> result
             = await repository.ListBowlerOfTheYearAwardsAsync(CancellationToken.None);
 
         // Assert

@@ -1,7 +1,8 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Abstractions.Messaging;
-using Neba.Application.Awards;
+using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighBlock;
 using Neba.Application.Bowlers.BowlerTitles;
 
 namespace Neba.Application;
@@ -41,7 +42,7 @@ public static class ApplicationDependencyInjection
 
         private IServiceCollection AddAwardsUseCases()
         {
-            services.AddScoped<IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearDto>>, ListBowlerOfTheYearAwardsQueryHandler>();
+            services.AddScoped<IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearAwardDto>>, ListBowlerOfTheYearAwardsQueryHandler>();
             services.AddScoped<IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>, ListHigh5GameBlockAwardsQueryHandler>();
 
             return services;

@@ -1,5 +1,6 @@
 using Neba.Application.Abstractions.Messaging;
-using Neba.Application.Awards;
+using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighBlock;
 using Neba.Contracts;
 using Neba.Contracts.Website.Awards;
 
@@ -28,12 +29,12 @@ internal static class AwardsEndpoints
             app.MapGet(
                 "/awards/bowler-of-the-year",
                 async (
-                    IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearDto>> queryHandler,
+                    IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearAwardDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
                     var query = new ListBowlerOfTheYearAwardsQuery();
 
-                    IReadOnlyCollection<BowlerOfTheYearDto> result = await queryHandler.HandleAsync(query, cancellationToken);
+                    IReadOnlyCollection<BowlerOfTheYearAwardDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 
                     IReadOnlyCollection<BowlerOfTheYearResponse> response = result
                         .OrderBy(boy => boy.Season)

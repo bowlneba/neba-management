@@ -1,6 +1,6 @@
 using Neba.Domain.Awards;
 
-namespace Neba.Application.Awards;
+namespace Neba.Application.Awards.HighAverage;
 
 /// <summary>
 /// Data transfer object representing a high-average award for a bowler in a specific season.

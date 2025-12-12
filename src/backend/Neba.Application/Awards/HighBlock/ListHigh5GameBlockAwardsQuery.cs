@@ -1,6 +1,6 @@
 using Neba.Application.Abstractions.Messaging;
 
-namespace Neba.Application.Awards;
+namespace Neba.Application.Awards.HighBlock;
 
 /// <summary>
 /// Query to retrieve a read-only collection of <see cref="HighBlockAwardDto"/> objects.

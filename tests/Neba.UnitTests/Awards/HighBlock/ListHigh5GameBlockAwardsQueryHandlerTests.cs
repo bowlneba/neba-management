@@ -1,15 +1,16 @@
 using Neba.Application.Awards;
+using Neba.Application.Awards.HighBlock;
 using Neba.Tests;
 
-namespace Neba.UnitTests.Awards;
+namespace Neba.UnitTests.Awards.HighBlock;
 
-public sealed class ListHighBlockAwardsQueryHandlerTests
+public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
 {
     private readonly Mock<IWebsiteAwardQueryRepository> _mockRepository;
 
     private readonly ListHigh5GameBlockAwardsQueryHandler _handler;
 
-    public ListHighBlockAwardsQueryHandlerTests()
+    public ListHigh5GameBlockAwardsQueryHandlerTests()
     {
         _mockRepository = new Mock<IWebsiteAwardQueryRepository>(MockBehavior.Strict);
 

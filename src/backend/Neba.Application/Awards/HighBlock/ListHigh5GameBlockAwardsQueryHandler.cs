@@ -1,6 +1,6 @@
 using Neba.Application.Abstractions.Messaging;
 
-namespace Neba.Application.Awards;
+namespace Neba.Application.Awards.HighBlock;
 
 internal sealed class ListHigh5GameBlockAwardsQueryHandler(IWebsiteAwardQueryRepository repository)
         : IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>

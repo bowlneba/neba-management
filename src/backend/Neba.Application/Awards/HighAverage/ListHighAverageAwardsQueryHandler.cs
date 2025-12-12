@@ -1,6 +1,6 @@
 using Neba.Application.Abstractions.Messaging;
 
-namespace Neba.Application.Awards;
+namespace Neba.Application.Awards.HighAverage;
 
 internal sealed class ListHighAverageAwardsQueryHandler(IWebsiteAwardQueryRepository repository)
         : IQueryHandler<ListHighAverageAwardsQuery, IReadOnlyCollection<HighAverageAwardDto>>

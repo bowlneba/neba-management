@@ -1,4 +1,5 @@
-﻿using Neba.Application.Awards;
+﻿using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighBlock;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.Website.Awards;
 using Neba.Contracts.Website.Bowlers;
@@ -10,7 +11,7 @@ namespace Neba.Api.Endpoints.Website.Awards;
 
 internal static class AwardsMappingExtensions
 {
-    extension(BowlerOfTheYearDto dto)
+    extension(BowlerOfTheYearAwardDto dto)
     {
         public BowlerOfTheYearResponse ToResponseModel()
         {
