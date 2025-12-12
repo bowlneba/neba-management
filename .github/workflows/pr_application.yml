@@ -114,23 +114,31 @@ jobs:
 
     name: ${{ matrix.test-name }}
 
-    # Run backend tests only when backend changes, frontend tests only when frontend changes
-    if: |
-      (matrix.run-when == 'backend' && needs.changes.outputs.backend == 'true') ||
-      (matrix.run-when == 'frontend' && needs.changes.outputs.frontend == 'true') ||
-      github.event_name == 'workflow_dispatch'
-
     steps:
+      # Skip tests that don't match the changed code area
+      - name: Check if tests should run
+        id: should-run
+        run: |
+          if [[ "${{ matrix.run-when }}" == "backend" && "${{ needs.changes.outputs.backend }}" == "true" ]] || \
+             [[ "${{ matrix.run-when }}" == "frontend" && "${{ needs.changes.outputs.frontend }}" == "true" ]] || \
+             [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
       - uses: actions/checkout@v5
+        if: steps.should-run.outputs.run == 'true'
         with:
           fetch-depth: 1
 
       - name: Setup .Net
+        if: steps.should-run.outputs.run == 'true'
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
+        if: steps.should-run.outputs.run == 'true'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -139,16 +147,19 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
+        if: steps.should-run.outputs.run == 'true'
         run: dotnet restore
 
       - name: Build projects
+        if: steps.should-run.outputs.run == 'true'
         run: dotnet build --configuration Release --no-restore
 
       - name: Run tests with coverage
+        if: steps.should-run.outputs.run == 'true'
         run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Upload test results
-        if: always()
+        if: always() && steps.should-run.outputs.run == 'true'
         uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ matrix.test-name }}
@@ -156,7 +167,7 @@ jobs:
           retention-days: 30
 
       - name: Upload coverage reports
-        if: always()
+        if: always() && steps.should-run.outputs.run == 'true'
         uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.test-name }}
@@ -224,7 +235,7 @@ jobs:
         run: dotnet build --configuration Debug --no-restore
 
       - name: Run Playwright E2E tests
-        run: npx playwright test *.e2e.spec.ts --project="${{ matrix.project }}"
+        run: npx playwright test --project="${{ matrix.project }}"
         working-directory: tests/browser
 
       - name: Upload Playwright report
