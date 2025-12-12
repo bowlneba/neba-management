@@ -1,0 +1,173 @@
+@page "/history/high-average"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>High Average Award - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="View NEBA High Average award winners by season. Recognizing the highest bowling averages achieved by bowlers throughout NEBA's history." />
+</HeadContent>
+
+<div>
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">High Average</h1>
+        <div class="grid grid-cols-1 gap-6">
+            <div class="col-span-1">
+            <div class="text-base text-gray-700 leading-relaxed bg-white/80 rounded-lg shadow-sm p-4 border border-gray-100">
+                <p class="mb-2">
+                    The <span class="font-semibold text-[var(--neba-blue-700)]">High Average</span> award recognizes the highest season-long average achieved by a bowler, demonstrating sustained excellence across an entire competitive season.
+                </p>
+                <p>
+                    This prestigious achievement showcases a bowler's ability to maintain consistently high scores throughout the season, representing the pinnacle of competitive performance and technical mastery.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Awards"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Awards Table Section with Loading Overlay -->
+    <div class="relative min-h-[400px] mt-6">
+        <!-- Loading Indicator (scoped to this section) -->
+        <NebaLoadingIndicator IsVisible="@_isLoading"
+                              Text="Loading..."
+                              Scope="LoadingIndicatorScope.Section"
+                              DelayMs="0"
+                              MinimumDisplayMs="0" />
+
+        <!-- Awards Table -->
+        @if (_awards.Count > 0)
+        {
+            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm max-w-6xl mx-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b-2 border-[var(--neba-accent-red)]">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700 w-24">Year</th>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700">Bowler</th>
+                            <th class="px-6 py-3 text-right text-sm font-bold text-gray-700 w-24">Avg.</th>
+                            <th class="px-6 py-3 text-center text-sm font-bold text-gray-700 w-24 hidden sm:table-cell">Games</th>
+                            <th class="px-6 py-3 text-center text-sm font-bold text-gray-700 w-24 hidden sm:table-cell">Tournaments</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var award in _awards)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 text-gray-900 font-semibold">@award.Season</td>
+                                <td class="px-6 py-4 text-gray-900">@award.BowlerName</td>
+                                <td class="px-6 py-4 text-gray-900 font-bold text-right">@FormatAverage(award.Average)</td>
+                                <td class="px-6 py-4 text-center hidden sm:table-cell">
+                                    @if (award.GamesBowled.HasValue)
+                                    {
+                                        <span class="text-gray-900">@award.GamesBowled.Value</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">—</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-center hidden sm:table-cell">
+                                    @if (award.TournamentsBowled.HasValue)
+                                    {
+                                        <span class="text-gray-900">@award.TournamentsBowled.Value</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (!_isLoading)
+        {
+            <div class="text-center py-12 text-gray-500">
+                <p>No high average awards data available.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<HighAverageViewModel> _awards = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    async protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            // Simulate API call with 1.5 second delay
+            await Task.Delay(1500);
+
+            // Dummy data for testing
+            _awards = new List<HighAverageViewModel>
+            {
+                new()
+                {
+                    Season = "2024/2025",
+                    BowlerName = "Dave Forcier",
+                    Average = 223.0m,
+                    GamesBowled = 130,
+                    TournamentsBowled = 17
+                },
+                new()
+                {
+                    Season = "2023/2024",
+                    BowlerName = "Mike Lichstein",
+                    Average = 224.4m,
+                    GamesBowled = null,
+                    TournamentsBowled = null
+                },
+                new()
+                {
+                    Season = "2022/2023",
+                    BowlerName = "Brian Boghosian",
+                    Average = 217.3m,
+                    GamesBowled = 100,
+                    TournamentsBowled = null
+                },
+                new()
+                {
+                    Season = "2021/2022",
+                    BowlerName = "Jane Doe",
+                    Average = 221.4m,
+                    GamesBowled = 42,
+                    TournamentsBowled = 6
+                },
+                new()
+                {
+                    Season = "2020/2021",
+                    BowlerName = "John Smith",
+                    Average = 219.8m,
+                    GamesBowled = null,
+                    TournamentsBowled = null
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load high average awards: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatAverage(decimal average)
+    {
+        return average.ToString("F2");
+    }
+}
