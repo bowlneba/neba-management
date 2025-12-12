@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Awards;
+using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
@@ -40,7 +41,8 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
 
         await websiteDbContext.SaveChangesAsync();
 
-        int bowlerOfTheYearAwardCount = await websiteDbContext.SeasonAwards.CountAsync(TestContext.Current.CancellationToken);
+        int bowlerOfTheYearAwardCount = await websiteDbContext.SeasonAwards
+            .CountAsync(award => award.AwardType == SeasonAwardType.BowlerOfTheYear, TestContext.Current.CancellationToken);
 
         WebsiteAwardQueryRepository repository = new(websiteDbContext);
 

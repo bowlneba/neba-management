@@ -26,6 +26,8 @@
     "onclick",
     "parameterless",
     "pinfall",
+    "prerender",
+    "rendermode",
     "Respawn",
     "Respawner",
     "Roslynator",

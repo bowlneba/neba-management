@@ -439,6 +439,278 @@ public sealed class NebaApiServiceTests
 
     #endregion
 
+    #region GetHighBlockAwardsAsync Tests
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_SuccessfulResponse_ReturnsGroupedAwards()
+    {
+        // Arrange - Create awards for multiple seasons with different scores
+        var awards = new List<HighBlockAwardResponse>
+        {
+            HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", score: 1180),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2022", score: 1150)
+        };
+
+        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        {
+            Items = awards,
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(3); // Three seasons
+
+        var awardsList = result.Value.ToList();
+
+        // Verify 2024 award (should be first due to OrderByDescending)
+        awardsList[0].Season.ShouldBe("2024");
+        awardsList[0].Score.ShouldBe(1200);
+        awardsList[0].Bowlers.Count().ShouldBe(1);
+        awardsList[0].Bowlers.First().ShouldBe("John Doe");
+
+        // Verify 2023 award
+        awardsList[1].Season.ShouldBe("2023");
+        awardsList[1].Score.ShouldBe(1180);
+        awardsList[1].Bowlers.First().ShouldBe("Jane Smith");
+
+        // Verify 2022 award
+        awardsList[2].Season.ShouldBe("2022");
+        awardsList[2].Score.ShouldBe(1150);
+        awardsList[2].Bowlers.First().ShouldBe("Bob Johnson");
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_TiedScores_GroupsBowlersTogether()
+    {
+        // Arrange - Create awards with tied scores in same season
+        var awards = new List<HighBlockAwardResponse>
+        {
+            HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2024", score: 1200),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2023", score: 1180)
+        };
+
+        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        {
+            Items = awards,
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(2); // Two seasons
+
+        var awardsList = result.Value.ToList();
+
+        // Verify 2024 award has two bowlers (tie)
+        awardsList[0].Season.ShouldBe("2024");
+        awardsList[0].Score.ShouldBe(1200);
+        awardsList[0].Bowlers.Count().ShouldBe(2);
+        awardsList[0].Bowlers.ShouldContain("John Doe");
+        awardsList[0].Bowlers.ShouldContain("Jane Smith");
+
+        // Verify bowlers are ordered alphabetically
+        var bowlersList = awardsList[0].Bowlers.ToList();
+        bowlersList[0].ShouldBe("Jane Smith");
+        bowlersList[1].ShouldBe("John Doe");
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_EmptyResponse_ReturnsEmptyCollection()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        {
+            Items = new List<HighBlockAwardResponse>(),
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        {
+            Items = new List<HighBlockAwardResponse>(),
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<CollectionResponse<HighBlockAwardResponse>>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighBlockAwardsAsync_OrdersBySeasonDescending()
+    {
+        // Arrange - Create awards in non-sorted order
+        var awards = new List<HighBlockAwardResponse>
+        {
+            HighBlockAwardResponseFactory.Create(bowlerName: "Person A", season: "2020", score: 1100),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Person B", season: "2025", score: 1250),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Person C", season: "2022", score: 1175),
+            HighBlockAwardResponseFactory.Create(bowlerName: "Person D", season: "2024", score: 1200)
+        };
+
+        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        {
+            Items = awards,
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighBlockAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>> result = await _sut.GetHighBlockAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        var awardsList = result.Value.ToList();
+        awardsList[0].Season.ShouldBe("2025");
+        awardsList[1].Season.ShouldBe("2024");
+        awardsList[2].Season.ShouldBe("2022");
+        awardsList[3].Season.ShouldBe("2020");
+    }
+
+    #endregion
+
     #region GetTitlesByYearAsync Tests
 
     [Fact]

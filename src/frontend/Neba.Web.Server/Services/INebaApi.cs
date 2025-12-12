@@ -18,5 +18,8 @@ internal interface INebaApi
     Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
 
     [Get("/awards/bowler-of-the-year")]
-    Task<Refit.ApiResponse<Contracts.CollectionResponse<BowlerOfTheYearResponse>>> GetBowlerOfTheYearAwardsAsync();
+    Task<Refit.ApiResponse<CollectionResponse<BowlerOfTheYearResponse>>> GetBowlerOfTheYearAwardsAsync();
+
+    [Get("/awards/high-block")]
+    Task<Refit.ApiResponse<CollectionResponse<HighBlockAwardResponse>>> GetHighBlockAwardsAsync();
 }

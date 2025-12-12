@@ -74,9 +74,9 @@ public sealed class ChampionsTests : TestContextWrapper
         var instance = cut.Instance;
 
         // Get private fields via reflection
-        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
+        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(selectedViewField);
-        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
+        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(titlesByYearField);
 
         // Assert initial state

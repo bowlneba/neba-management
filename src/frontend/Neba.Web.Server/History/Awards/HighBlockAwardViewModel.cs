@@ -4,7 +4,7 @@ namespace Neba.Web.Server.History.Awards;
 /// View model representing a high block award for a season.
 /// Supports multiple bowlers in case of ties.
 /// </summary>
-public sealed record HighBlockViewModel
+public sealed record HighBlockAwardViewModel
 {
     /// <summary>
     /// The season (e.g., "2025") in which the high block was achieved.

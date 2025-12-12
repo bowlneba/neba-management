@@ -97,7 +97,7 @@
 </div>
 
 @code {
-    private List<HighBlockViewModel> _awards = new();
+    private List<HighBlockAwardViewModel> _awards = new();
     private string? _errorMessage;
     private bool _isLoading = true;
 
@@ -105,9 +105,16 @@
     {
         try
         {
-            // Using dummy data - wire up API call later
-            await Task.Delay(500); // Simulate API call
-            _awards = GetDummyData();
+            var result = await ApiService.GetHighBlockAwardsAsync();
+
+            if (result.IsError)
+            {
+                _errorMessage = result.FirstError.Description;
+            }
+            else
+            {
+                _awards = result.Value.ToList();
+            }
         }
         catch (Exception ex)
         {
@@ -117,34 +124,5 @@
         {
             _isLoading = false;
         }
-    }
-
-    private List<HighBlockViewModel> GetDummyData()
-    {
-        return new List<HighBlockViewModel>
-        {
-            new() { Season = "2025", Bowlers = new[] { "John Doe" }, Score = 1350 },
-            new() { Season = "2024", Bowlers = new[] { "Jane Smith" }, Score = 1335 },
-            new() { Season = "2023", Bowlers = new[] { "Mike Johnson", "Tom Williams" }, Score = 1342 },
-            new() { Season = "2022", Bowlers = new[] { "Bob Brown" }, Score = 1318 },
-            new() { Season = "1983", Bowlers = new[] { "Jim MacCay" }, Score = 1329 },
-            new() { Season = "1982", Bowlers = new[] { "John Bekish" }, Score = 1320 },
-            new() { Season = "1981", Bowlers = new[] { "Bob Glenn", "Tom Smith" }, Score = 1202 },
-            new() { Season = "1980", Bowlers = new[] { "John Campo" }, Score = 1261 },
-            new() { Season = "1979", Bowlers = new[] { "Willie Willis" }, Score = 1299 },
-            new() { Season = "1978", Bowlers = new[] { "Ernie Hoesterey" }, Score = 1308 },
-            new() { Season = "1977", Bowlers = new[] { "Russ Michaue" }, Score = 1229 },
-            new() { Season = "1976", Bowlers = new[] { "Tom McMann" }, Score = 1199 },
-            new() { Season = "1975", Bowlers = new[] { "Gary Grant" }, Score = 1298 },
-            new() { Season = "1974", Bowlers = new[] { "Pete Couture" }, Score = 1199 },
-            new() { Season = "1973", Bowlers = new[] { "Pete Couture" }, Score = 1244 },
-            new() { Season = "1972", Bowlers = new[] { "Tony Spelas" }, Score = 1210 },
-            new() { Season = "1971", Bowlers = new[] { "Joe Picanza" }, Score = 1165 },
-            new() { Season = "1970", Bowlers = new[] { "Joe Cawlina" }, Score = 1153 },
-            new() { Season = "1969", Bowlers = new[] { "Paul Moser" }, Score = 1193 },
-            new() { Season = "1968", Bowlers = new[] { "John Dudra" }, Score = 1195 },
-            new() { Season = "1967", Bowlers = new[] { "Bob Hayn" }, Score = 1159 },
-            new() { Season = "1966", Bowlers = new[] { "Randy Bubar" }, Score = 1168 },
-        };
     }
 }
