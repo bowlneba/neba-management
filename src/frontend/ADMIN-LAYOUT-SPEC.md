@@ -208,36 +208,38 @@ Create policies as needed when role-based access is too coarse.
 ```
 ≡ NEBA Admin
 
-📊 Dashboard
+[dashboard] Dashboard
   (visible to all admin roles)
 
-🎳 Tournaments
+[bowling-ball/sports] Tournaments
   (TournamentDirector, GlobalAdministrator)
   ├─ All Tournaments
   ├─ Create Tournament
   ├─ Live Scoring
   └─ Bowler Management
 
-✏️ Content
+[edit/pencil] Content
   (ContentEditor, WebMaster, GlobalAdministrator)
   ├─ News Articles
   ├─ Sponsors
   └─ Bowling Centers
 
-🏆 Awards
+[trophy/award] Awards
   (TournamentDirector, GlobalAdministrator)
   ├─ Season Awards
   └─ Hall of Fame
 
-⚙️ Settings
+[settings/cog] Settings
   (WebMaster, GlobalAdministrator)
   ├─ Site Settings
   └─ User Management (GlobalAdministrator only)
 
 ─────────────
 
-← Back to Public Site
+[arrow-left] Back to Public Site
 ```
+
+**Note**: Icon names shown in [brackets] are conceptual. Use outlined/line-style icons from chosen icon library (see Design Mockup Notes).
 
 **Visibility Rules**:
 - Items are **hidden** if user lacks required role(s)
@@ -251,16 +253,16 @@ Create policies as needed when role-based access is too coarse.
 ```
 ≡ NEBA Admin
 
-📊 Dashboard
+[dashboard] Dashboard
 
-✏️ Content
+[edit/pencil] Content
   ├─ News Articles
   ├─ Sponsors
   └─ Bowling Centers
 
 ─────────────
 
-← Back to Public Site
+[arrow-left] Back to Public Site
 ```
 
 
@@ -494,7 +496,10 @@ Configure in `App.razor`:
 @if (HasRole("TournamentDirector", "GlobalAdministrator"))
 {
     <div class="nav-section">
-        <h3>🎳 Tournaments</h3>
+        <h3>
+            <MudIcon Icon="@Icons.Material.Outlined.SportsBowling" /> @* or chosen icon library *@
+            Tournaments
+        </h3>
         <ul>
             <li><a href="/admin/tournaments">All Tournaments</a></li>
             <li><a href="/admin/tournaments/create">Create Tournament</a></li>
@@ -507,7 +512,10 @@ Configure in `App.razor`:
 @if (HasRole("ContentEditor", "WebMaster", "GlobalAdministrator"))
 {
     <div class="nav-section">
-        <h3>✏️ Content</h3>
+        <h3>
+            <MudIcon Icon="@Icons.Material.Outlined.Edit" /> @* or chosen icon library *@
+            Content
+        </h3>
         <ul>
             <li><a href="/admin/content/news">News Articles</a></li>
             <li><a href="/admin/content/sponsors">Sponsors</a></li>
@@ -515,6 +523,8 @@ Configure in `App.razor`:
         </ul>
     </div>
 }
+
+@* Note: Replace MudIcon with appropriate component from chosen icon library *@
 
 @code {
     private ClaimsPrincipal? user;
@@ -758,7 +768,12 @@ src/frontend/Neba.Web.Server/
 - **Background**: Slightly darker than main content (`--neba-gray-050` or custom admin gray)
 - **Active item**: NEBA blue (`--neba-blue-700`) left border + background tint
 - **Hover**: Subtle background change
-- **Icons**: Consistent icon set (consider using Heroicons or Bootstrap Icons)
+- **Icons**: Outlined/line-style icons (clean, minimal aesthetic)
+  - Prefer outlined style (e.g., Material Icons Outlined, Heroicons Outline, or similar)
+  - Consistent 20-24px size for navigation items
+  - Icon library TBD during implementation (options: MudBlazor icons, Heroicons, Material Icons, Bootstrap Icons)
+  - **Icon uniqueness**: Each navigation section should have a unique icon (avoid duplicates within the same navigation view)
+    - Exception: Action buttons that appear across multiple pages (e.g., "Capture Score", "Save", "Delete") may reuse icons consistently
 - **Typography**: Clear hierarchy, section headers in uppercase/small text
 
 ### Admin Top Bar
