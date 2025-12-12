@@ -61,6 +61,7 @@ async Task Main()
 	await MigrateTitlesAsync(bowlerIdsByWebsiteId);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
+	await MigrateHighAverageAsync(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName);
 }
 
 // You can define other methods, fields, classes and namespaces here
@@ -545,8 +546,106 @@ public async Task MigrateHighBlockAsync(
 	}
 	
 	await SaveChangesAsync();
-	
+
 	"High Block Migrated".Dump();
+}
+
+public async Task MigrateHighAverageAsync(
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Guid>> bowlerIdsBySoftwareName)
+{
+	var highAverages = await HighAverageScraper.ScrapeAsync(@"https://www.bowlneba.com/history/high-average/");
+
+	foreach (var highAverage in highAverages)
+	{
+		var websiteBowlerMatches = bowlerIdsByWebsiteName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& highAverage.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+		var softwareBowlerMatches = bowlerIdsBySoftwareName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+			&& highAverage.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
+
+		if (websiteBowlerMatches.Any())
+		{
+			if (websiteBowlerMatches.Count() > 1)
+			{
+				websiteBowlerMatches.Dump($"Multiple Website People for {highAverage.name}");
+			}
+			else
+			{
+				var bowler = websiteBowlerMatches.Single();
+				var record = new SeasonAwards
+				{
+					Id = Guid.NewGuid(),
+					AwardType = SeasonAwardType.HighAverage,
+					BowlerId = bowler.Value,
+					Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
+					Average = highAverage.average,
+					SeasonTotalGames = highAverage.games,
+					Tournaments = highAverage.tournaments
+				};
+
+				SeasonAwards.Add(record);
+			}
+		}
+		else if (softwareBowlerMatches.Any())
+		{
+			if (softwareBowlerMatches.Count() > 1)
+			{
+				softwareBowlerMatches.Dump($"Multiple Software People for {highAverage.name}");
+			}
+			else
+			{
+				var bowler = softwareBowlerMatches.Single();
+				var record = new SeasonAwards
+				{
+					Id = Guid.NewGuid(),
+					AwardType = SeasonAwardType.HighAverage,
+					BowlerId = bowler.Value,
+					Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
+					Average = highAverage.average,
+					SeasonTotalGames = highAverage.games,
+					Tournaments = highAverage.tournaments
+				};
+
+				SeasonAwards.Add(record);
+			}
+		}
+		else //Not on website or software
+		{
+			$"------ {highAverage.name} is not a champion nor in the software, creating new ------".Dump();
+
+			var newBowlerName = new HumanName(highAverage.name);
+			var newBowler = new Bowlers
+			{
+				Id = Guid.NewGuid(),
+				FirstName = newBowlerName.First,
+				MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
+				LastName = newBowlerName.Last,
+				Suffix = string.IsNullOrWhiteSpace(newBowlerName.Suffix) ? null : newBowlerName.Suffix.Replace(".", ""),
+				Nickname = string.IsNullOrWhiteSpace(newBowlerName.Nickname) ? null : newBowlerName.Nickname,
+				ApplicationId = null,
+				WebsiteId = null
+			};
+
+			Bowlers.Add(newBowler);
+
+			var record = new SeasonAwards
+			{
+				Id = Guid.NewGuid(),
+				AwardType = SeasonAwardType.HighAverage,
+				BowlerId = newBowler.Id,
+				Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
+				Average = highAverage.average,
+				SeasonTotalGames = highAverage.games,
+				Tournaments = highAverage.tournaments
+			};
+
+			SeasonAwards.Add(record);
+		}
+	}
+
+	await SaveChangesAsync();
+
+	"High Average Migrated".Dump();
 }
 
 #region Enumerations
@@ -1133,6 +1232,112 @@ public static class HighBlockScraper
 							}
 						}
 					}
+				}
+			}
+		}
+
+		return results.OrderBy(r => r.year).ToList();
+	}
+}
+
+public static class HighAverageScraper
+{
+	public static async Task<List<(string year, string name, decimal average, int? games, int? tournaments)>> ScrapeAsync(string url)
+	{
+		var results = new List<(string year, string name, decimal average, int? games, int? tournaments)>();
+
+		var htmlDoc = await WebScraperHelper.FetchHtmlDocumentAsync(url);
+
+		// Get all text content
+		var allText = htmlDoc.DocumentNode.InnerText;
+
+		// Decode HTML entities like &nbsp; and &copy;
+		allText = System.Web.HttpUtility.HtmlDecode(allText);
+
+		var lines = allText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+			.Select(l => l.Trim())
+			.Where(l => !string.IsNullOrWhiteSpace(l))
+			.ToList();
+
+		// Pattern to match a 4-digit year (or year range like 2020/21)
+		var yearPattern = new Regex(@"^\d{4}(?:/\d{2})?$");
+		var notAwardedPattern = new Regex(@"^Not\s+awarded$", RegexOptions.IgnoreCase);
+
+		for (int i = 0; i < lines.Count - 1; i++)
+		{
+			var currentLine = lines[i];
+
+			// Check if current line is a year
+			if (yearPattern.IsMatch(currentLine))
+			{
+				var year = currentLine;
+				var nextLine = lines[i + 1];
+
+				// Check if next line is "Not awarded"
+				if (notAwardedPattern.IsMatch(nextLine))
+				{
+					continue; // Skip this entry
+				}
+
+				// Next line should be the name
+				var nameEntry = nextLine;
+
+				// Filter out invalid entries
+				if (string.IsNullOrWhiteSpace(nameEntry) || nameEntry.Length <= 2)
+				{
+					continue;
+				}
+
+				// Skip entries that look like copyright, links, or other non-name content
+				if (nameEntry.Contains("©") ||
+					nameEntry.Contains("All Rights Reserved") ||
+					nameEntry.Contains("Copyright") ||
+					nameEntry.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+
+				// Look for average (decimal number, possibly with asterisk), games, and tournaments
+				decimal? average = null;
+				int? games = null;
+				int? tournaments = null;
+
+				// Check the next few lines for average, games, and tournaments
+				// We need to stop before hitting the next year
+				for (int j = i + 2; j < Math.Min(i + 6, lines.Count); j++)
+				{
+					var potentialValue = lines[j].Replace("*", "").Trim();
+
+					// Stop if we hit another year
+					if (yearPattern.IsMatch(potentialValue))
+					{
+						break;
+					}
+
+					// Try to parse as decimal for average
+					if (average == null && decimal.TryParse(potentialValue, out decimal avgValue))
+					{
+						average = avgValue;
+					}
+					// Try to parse as integer for games or tournaments (in that order)
+					else if (int.TryParse(potentialValue, out int intValue))
+					{
+						if (games == null)
+						{
+							games = intValue;
+						}
+						else if (tournaments == null)
+						{
+							tournaments = intValue;
+							break; // We have all the data we need
+						}
+					}
+				}
+
+				// Average is required, so only add if we have it
+				if (average.HasValue)
+				{
+					results.Add((year, nameEntry, average.Value, games, tournaments));
 				}
 			}
 		}
