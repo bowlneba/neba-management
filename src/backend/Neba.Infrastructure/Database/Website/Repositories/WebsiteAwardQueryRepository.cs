@@ -35,4 +35,26 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
                 Score = award.HighBlockScore ?? -1,
             })
             .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<HighAverageAwardDto>> ListHighAverageAwardsAsync(CancellationToken cancellationToken)
+    {
+        List<HighAverageAwardDto> awards = await _dbContext.SeasonAwards
+            .AsNoTracking()
+            .Where(award => award.AwardType == SeasonAwardType.HighAverage)
+            .Select(award => new HighAverageAwardDto
+            {
+                Id = award.Id,
+                BowlerName = award.Bowler.Name.ToDisplayName(),
+                Season = award.Season,
+                Average = award.Average ?? -1,
+            })
+            .ToListAsync(cancellationToken);
+
+        if (awards.Any(award => award.Average == -1))
+        {
+            throw new InvalidOperationException("High Average Awards with missing average score found.");
+        }
+
+        return awards;
+    }
 }

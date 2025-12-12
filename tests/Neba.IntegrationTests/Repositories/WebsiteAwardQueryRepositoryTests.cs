@@ -36,7 +36,7 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
                 .UseNpgsql(database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1970);
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1960);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
 
         await websiteDbContext.SaveChangesAsync();
@@ -79,5 +79,32 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
 
         // Assert
         result.Count.ShouldBe(highBlockAwardCount);
+    }
+
+    [Fact]
+    public async Task ListHighAverageAwardsAsync_ShouldReturnAllAwards()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+
+        await websiteDbContext.SaveChangesAsync();
+
+        int highAverageAwardCount = await websiteDbContext.SeasonAwards
+            .CountAsync(award => award.AwardType == SeasonAwardType.HighAverage, TestContext.Current.CancellationToken);
+
+        WebsiteAwardQueryRepository repository = new(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<HighAverageAwardDto> result
+            = await repository.ListHighAverageAwardsAsync(CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(highAverageAwardCount);
     }
 }

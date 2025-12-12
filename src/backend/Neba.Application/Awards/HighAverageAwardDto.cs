@@ -1,3 +1,5 @@
+using Neba.Domain.Awards;
+
 namespace Neba.Application.Awards;
 
 /// <summary>
@@ -5,6 +7,12 @@ namespace Neba.Application.Awards;
 /// </summary>
 public sealed record HighAverageAwardDto
 {
+    /// <summary>
+    /// The unique identifier for the season award.
+    /// </summary>
+    /// <value></value>
+    public required SeasonAwardId Id { get; init; }
+
     /// <summary>
     /// The season when the award was earned (for example, "2024/2025").
     /// </summary>
