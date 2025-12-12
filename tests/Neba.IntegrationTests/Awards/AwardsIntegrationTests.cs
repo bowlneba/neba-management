@@ -199,4 +199,98 @@ public sealed class AwardsIntegrationTests
             award.Score.ShouldBeGreaterThan(0);
         }
     }
+
+    [Fact]
+    public async Task ListHighAverageAwards_ShouldReturnExpectedResults()
+    {
+        // Arrange
+        await ResetDatabaseAsync();
+
+        await SeedAsync(async context =>
+        {
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+            context.Bowlers.AddRange(seedBowlers);
+            await context.SaveChangesAsync();
+        });
+
+        int totalHighAverageWins = await ExecuteAsync(async context
+            => await context.Bowlers.AsNoTracking()
+                .SelectMany(b => b.SeasonAwards)
+                .Where(sa => sa.AwardType == SeasonAwardType.HighAverage)
+                .CountAsync());
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-average", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<HighAverageAwardResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HighAverageAwardResponse>>();
+
+        result.ShouldNotBeNull();
+
+        result.Items.Count.ShouldBe(totalHighAverageWins);
+        result.TotalItems.ShouldBe(totalHighAverageWins);
+    }
+
+    [Fact]
+    public async Task ListHighAverageAwards_WithNoData_ShouldReturnEmptyCollection()
+    {
+        // Arrange
+        await ResetDatabaseAsync();
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-average", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<HighAverageAwardResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HighAverageAwardResponse>>();
+
+        result.ShouldNotBeNull();
+        result.Items.Count.ShouldBe(0);
+        result.TotalItems.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task ListHighAverageAwards_ShouldIncludeAllRequiredFields()
+    {
+        // Arrange
+        await ResetDatabaseAsync();
+
+        await SeedAsync(async context =>
+        {
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
+            context.Bowlers.AddRange(seedBowlers);
+            await context.SaveChangesAsync();
+        });
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-average", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<HighAverageAwardResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HighAverageAwardResponse>>();
+
+        result.ShouldNotBeNull();
+
+        // Verify each award has all required fields populated
+        foreach (var award in result.Items)
+        {
+            award.Id.ShouldNotBe(Guid.Empty);
+            award.BowlerName.ShouldNotBeNullOrWhiteSpace();
+            award.Season.ShouldNotBeNullOrWhiteSpace();
+            award.Average.ShouldBeGreaterThan(0);
+        }
+    }
 }

@@ -2,6 +2,7 @@ using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;
 using Neba.Application.Bowlers.BowlerTitles;
 
@@ -25,8 +26,8 @@ public static class ApplicationDependencyInjection
         public IServiceCollection AddApplication()
         {
             services
-            .AddBowlersUseCases()
-            .AddAwardsUseCases();
+                .AddBowlersUseCases()
+                .AddAwardsUseCases();
 
             return services;
         }
@@ -44,6 +45,7 @@ public static class ApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearAwardDto>>, ListBowlerOfTheYearAwardsQueryHandler>();
             services.AddScoped<IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>, ListHigh5GameBlockAwardsQueryHandler>();
+            services.AddScoped<IQueryHandler<ListHighAverageAwardsQuery, IReadOnlyCollection<HighAverageAwardDto>>, ListHighAverageAwardsQueryHandler>();
 
             return services;
         }

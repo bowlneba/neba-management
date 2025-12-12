@@ -1,4 +1,5 @@
 ﻿using Neba.Application.Awards.BowlerOfTheYear;
+using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts.Website.Awards;
@@ -65,6 +66,22 @@ internal static class AwardsMappingExtensions
                 BowlerName = dto.BowlerName,
                 Season = dto.Season,
                 Score = dto.Score
+            };
+        }
+    }
+
+    extension(HighAverageAwardDto dto)
+    {
+        public HighAverageAwardResponse ToResponseModel()
+        {
+            return new HighAverageAwardResponse
+            {
+                Id = dto.Id.Value,
+                BowlerName = dto.BowlerName,
+                Season = dto.Season,
+                Average = dto.Average,
+                Games = dto.Games,
+                Tournaments = dto.Tournaments
             };
         }
     }
