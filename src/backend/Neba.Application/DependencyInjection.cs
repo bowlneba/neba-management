@@ -42,7 +42,7 @@ public static class ApplicationDependencyInjection
         private IServiceCollection AddAwardsUseCases()
         {
             services.AddScoped<IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearDto>>, ListBowlerOfTheYearAwardsQueryHandler>();
-            services.AddScoped<IQueryHandler<ListHighBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>, ListHighBlockAwardsQueryHandler>();
+            services.AddScoped<IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>, ListHigh5GameBlockAwardsQueryHandler>();
 
             return services;
         }

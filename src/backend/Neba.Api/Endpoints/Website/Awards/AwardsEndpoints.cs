@@ -57,10 +57,10 @@ internal static class AwardsEndpoints
             app.MapGet(
                 "/awards/high-block",
                 async (
-                    IQueryHandler<ListHighBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>> queryHandler,
+                    IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new ListHighBlockAwardsQuery();
+                    var query = new ListHigh5GameBlockAwardsQuery();
 
                     IReadOnlyCollection<HighBlockAwardDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 

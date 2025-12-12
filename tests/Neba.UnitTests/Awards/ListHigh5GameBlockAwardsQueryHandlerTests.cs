@@ -7,13 +7,13 @@ public sealed class ListHighBlockAwardsQueryHandlerTests
 {
     private readonly Mock<IWebsiteAwardQueryRepository> _mockRepository;
 
-    private readonly ListHighBlockAwardsQueryHandler _handler;
+    private readonly ListHigh5GameBlockAwardsQueryHandler _handler;
 
     public ListHighBlockAwardsQueryHandlerTests()
     {
         _mockRepository = new Mock<IWebsiteAwardQueryRepository>(MockBehavior.Strict);
 
-        _handler = new ListHighBlockAwardsQueryHandler(_mockRepository.Object);
+        _handler = new ListHigh5GameBlockAwardsQueryHandler(_mockRepository.Object);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public sealed class ListHighBlockAwardsQueryHandlerTests
             .Setup(x => x.ListHigh5GameBlockAwardsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(highBlockAwardDto);
 
-        ListHighBlockAwardsQuery query = new();
+        ListHigh5GameBlockAwardsQuery query = new();
 
         // Act
         IReadOnlyCollection<HighBlockAwardDto> result = await _handler.HandleAsync(query, TestContext.Current.CancellationToken);
