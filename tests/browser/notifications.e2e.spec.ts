@@ -113,7 +113,7 @@ test.describe('Notifications - E2E User Experience', () => {
       // Verify toast is positioned on screen
       const boundingBox = await toast.boundingBox();
       expect(boundingBox).not.toBeNull();
-      expect(boundingBox!.x).toBeGreaterThanOrEqual(0);
+      expect(boundingBox?.x).toBeGreaterThanOrEqual(0);
 
       // User can dismiss
       await page.locator('button.neba-toast-dismiss').click();

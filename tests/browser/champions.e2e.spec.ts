@@ -72,8 +72,10 @@ test.describe('Champions Page - E2E User Journeys', () => {
     });
 
     await page.route('**/bowlers/*/titles', async route => {
-      const bowlerId = route.request().url().match(/bowlers\/([^/]+)\/titles/)?.[1];
-      const titleData = bowlerId ? mockBowlerTitles[bowlerId] : null;
+      const regex = /bowlers\/([^/]+)\/titles/;
+      const match = regex.exec(route.request().url());
+      const bowlerId = match?.[1];
+      const titleData = bowlerId ? mockBowlerTitles[bowlerId as keyof typeof mockBowlerTitles] : null;
 
       await route.fulfill({
         status: 200,
