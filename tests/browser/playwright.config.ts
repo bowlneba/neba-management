@@ -46,11 +46,6 @@ export default defineConfig({
     },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
@@ -65,6 +60,12 @@ export default defineConfig({
       use: { ...devices['iPhone 12'] },
     },
 
+    /* Browsers not currently needed for E2E testing */
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
     /* Test against branded browsers. */
     // {
     //   name: 'Microsoft Edge',
@@ -78,7 +79,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'ASPNETCORE_ENVIRONMENT=Development dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Release --no-build --urls http://localhost:5200',
+    command: 'ASPNETCORE_ENVIRONMENT=Development dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Debug --urls http://localhost:5200',
     url: 'http://localhost:5200',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
