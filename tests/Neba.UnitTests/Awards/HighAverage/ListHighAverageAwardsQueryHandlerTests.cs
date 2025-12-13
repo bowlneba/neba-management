@@ -21,7 +21,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
     public async Task Handle_ShouldReturnExpectedResult_WhenRepositoryReturnsData()
     {
         // Arrange
-        IReadOnlyCollection<HighAverageAwardDto> expected = HighAverageAwardDtoFactory.Bogus(50,1900);
+        IReadOnlyCollection<HighAverageAwardDto> expected = HighAverageAwardDtoFactory.Bogus(50, 1900);
 
         _mockRepository
             .Setup(repository => repository.ListHighAverageAwardsAsync(TestContext.Current.CancellationToken))
