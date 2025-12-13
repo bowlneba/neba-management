@@ -4,7 +4,7 @@ namespace Neba.Web.Server.History.Awards;
 /// <summary>
 /// Represents the high average award details for a bowler in a given season.
 /// </summary>
-public sealed record HighAverageViewModel
+public sealed record HighAverageAwardViewModel
 {
     /// <summary>
     /// The bowling season for which the high average was awarded, formatted as a year range.

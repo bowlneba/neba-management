@@ -10,7 +10,6 @@ public sealed record HighAverageAwardDto
     /// <summary>
     /// The unique identifier for the season award.
     /// </summary>
-    /// <value></value>
     public required SeasonAwardId Id { get; init; }
 
     /// <summary>

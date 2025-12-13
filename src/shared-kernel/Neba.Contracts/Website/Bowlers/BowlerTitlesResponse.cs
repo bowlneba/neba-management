@@ -30,13 +30,13 @@ public sealed record BowlerTitlesResponse
     /// <summary>
     /// Gets the unique identifier of the bowler.
     /// </summary>
-    /// <example>123e4567-e89b-12d3-a456-426614174000</example>
+    /// <example>"123e4567-e89b-12d3-a456-426614174000"</example>
     public required Guid BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full display name of the bowler.
     /// </summary>
-    /// <example>John Doe</example>
+    /// <example>"John Doe"</example>
     public required string BowlerName { get; init; }
 
     /// <summary>

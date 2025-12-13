@@ -43,8 +43,18 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
 
         await websiteDbContext.SaveChangesAsync();
 
-        int bowlerOfTheYearAwardCount = await websiteDbContext.SeasonAwards
-            .CountAsync(award => award.AwardType == SeasonAwardType.BowlerOfTheYear, TestContext.Current.CancellationToken);
+        var expectedAwards = await websiteDbContext.SeasonAwards
+            .AsNoTracking()
+            .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
+            .Select(award => new
+            {
+                award.Id,
+                award.BowlerId,
+                BowlerName = award.Bowler.Name.ToDisplayName(),
+                award.Season,
+                award.BowlerOfTheYearCategory
+            })
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         WebsiteAwardQueryRepository repository = new(websiteDbContext);
 
@@ -53,7 +63,18 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
             = await repository.ListBowlerOfTheYearAwardsAsync(CancellationToken.None);
 
         // Assert
-        result.Count.ShouldBe(bowlerOfTheYearAwardCount);
+        result.Count.ShouldBe(expectedAwards.Count);
+
+        foreach (var dto in result)
+        {
+            var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
+
+            dto.Id.ShouldBe(expectedAward.Id);
+            dto.BowlerId.ShouldBe(expectedAward.BowlerId);
+            dto.BowlerName.ShouldBe(expectedAward.BowlerName);
+            dto.Season.ShouldBe(expectedAward.Season);
+            dto.Category.ShouldBe(expectedAward.BowlerOfTheYearCategory);
+        }
     }
 
     [Fact]
@@ -70,8 +91,17 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
 
         await websiteDbContext.SaveChangesAsync();
 
-        int highBlockAwardCount = await websiteDbContext.SeasonAwards
-            .CountAsync(award => award.AwardType == Domain.Awards.SeasonAwardType.High5GameBlock, TestContext.Current.CancellationToken);
+        var expectedAwards = await websiteDbContext.SeasonAwards
+            .AsNoTracking()
+            .Where(award => award.AwardType == SeasonAwardType.High5GameBlock)
+            .Select(award => new
+            {
+                award.Id,
+                BowlerName = award.Bowler.Name.ToDisplayName(),
+                award.Season,
+                HighBlockScore = award.HighBlockScore ?? -1
+            })
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         WebsiteAwardQueryRepository repository = new(websiteDbContext);
 
@@ -80,7 +110,17 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
             = await repository.ListHigh5GameBlockAwardsAsync(CancellationToken.None);
 
         // Assert
-        result.Count.ShouldBe(highBlockAwardCount);
+        result.Count.ShouldBe(expectedAwards.Count);
+
+        foreach (var dto in result)
+        {
+            var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
+
+            dto.Id.ShouldBe(expectedAward.Id);
+            dto.BowlerName.ShouldBe(expectedAward.BowlerName);
+            dto.Season.ShouldBe(expectedAward.Season);
+            dto.Score.ShouldBe(expectedAward.HighBlockScore);
+        }
     }
 
     [Fact]
@@ -97,8 +137,19 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
 
         await websiteDbContext.SaveChangesAsync();
 
-        int highAverageAwardCount = await websiteDbContext.SeasonAwards
-            .CountAsync(award => award.AwardType == SeasonAwardType.HighAverage, TestContext.Current.CancellationToken);
+        var expectedAwards = await websiteDbContext.SeasonAwards
+            .AsNoTracking()
+            .Where(award => award.AwardType == SeasonAwardType.HighAverage)
+            .Select(award => new
+            {
+                award.Id,
+                BowlerName = award.Bowler.Name.ToDisplayName(),
+                award.Season,
+                Average = award.Average ?? -1,
+                Games = award.SeasonTotalGames,
+                Tournaments = award.Tournaments
+            })
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         WebsiteAwardQueryRepository repository = new(websiteDbContext);
 
@@ -107,6 +158,18 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
             = await repository.ListHighAverageAwardsAsync(CancellationToken.None);
 
         // Assert
-        result.Count.ShouldBe(highAverageAwardCount);
+        result.Count.ShouldBe(expectedAwards.Count);
+
+        foreach (var dto in result)
+        {
+            var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
+
+            dto.Id.ShouldBe(expectedAward.Id);
+            dto.BowlerName.ShouldBe(expectedAward.BowlerName);
+            dto.Season.ShouldBe(expectedAward.Season);
+            dto.Average.ShouldBe(expectedAward.Average);
+            dto.Games.ShouldBe(expectedAward.Games);
+            dto.Tournaments.ShouldBe(expectedAward.Tournaments);
+        }
     }
 }

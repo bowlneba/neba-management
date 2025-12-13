@@ -50,6 +50,8 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
                 Average = award.Average ?? -1,
+                Games = award.SeasonTotalGames,
+                Tournaments = award.Tournaments
             })
             .ToListAsync(cancellationToken);
 

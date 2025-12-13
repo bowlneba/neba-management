@@ -22,4 +22,7 @@ internal interface INebaApi
 
     [Get("/awards/high-block")]
     Task<Refit.ApiResponse<CollectionResponse<HighBlockAwardResponse>>> GetHighBlockAwardsAsync();
+
+    [Get("/awards/high-average")]
+    Task<Refit.ApiResponse<CollectionResponse<HighAverageAwardResponse>>> GetHighAverageAwardsAsync();
 }

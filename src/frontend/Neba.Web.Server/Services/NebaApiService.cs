@@ -116,6 +116,23 @@ internal class NebaApiService(INebaApi nebaApi)
             .AsReadOnly();
     }
 
+    public async Task<ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>>> GetHighAverageAwardsAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Awards.HighAverageAwardResponse>> result
+            = await ExecuteApiCallAsync(() => nebaApi.GetHighAverageAwardsAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .OrderByDescending(dto => dto.Season)
+            .Select(dto => dto.ToViewModel())
+            .ToList()
+            .AsReadOnly();
+    }
+
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
     {
         try

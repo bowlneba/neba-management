@@ -19,7 +19,7 @@ public sealed record BowlerOfTheYearResponse
     /// <summary>
     /// Gets the full display name of the bowler who received the award.
     /// </summary>
-    /// <example>John Doe</example>
+    /// <example>"John Doe"</example>
     public required string BowlerName { get; init; }
 
     /// <summary>
@@ -28,7 +28,7 @@ public sealed record BowlerOfTheYearResponse
     /// <remarks>
     /// The season format represents the bowling year which typically spans across two calendar years.
     /// </remarks>
-    /// <example>2024-2025</example>
+    /// <example>"2024-2025"</example>
     public required string Season { get; init; }
 
     /// <summary>
@@ -37,6 +37,6 @@ public sealed record BowlerOfTheYearResponse
     /// <remarks>
     /// Common categories include Open (unrestricted division), Woman (women's division), and Senior (senior division).
     /// </remarks>
-    /// <example>Open</example>
+    /// <example>"Open"</example>
     public required string Category { get; init; }
 }

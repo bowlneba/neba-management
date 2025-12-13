@@ -20,7 +20,7 @@ public sealed record HighBlockAwardResponse
     /// <summary>
     /// Gets the unique identifier of the High Block award record.
     /// </summary>
-    /// <example>d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f</example>
+    /// <example>"d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f"</example>
     public required Guid Id { get; init; }
 
     /// <summary>
@@ -29,7 +29,7 @@ public sealed record HighBlockAwardResponse
     /// <remarks>
     /// This name is suitable for public display on the website and in award listings.
     /// </remarks>
-    /// <example>Jane Doe</example>
+    /// <example>"Jane Doe"</example>
     public required string BowlerName { get; set; }
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed record HighBlockAwardResponse
     /// <remarks>
     /// The season format represents the bowling year which typically spans across two calendar years.
     /// </remarks>
-    /// <example>2024/2025</example>
+    /// <example>"2024/2025"</example>
     public required string Season { get; set; }
 
 

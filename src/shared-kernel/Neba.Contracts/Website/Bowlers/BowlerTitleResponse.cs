@@ -41,6 +41,6 @@ public sealed record BowlerTitleResponse
     /// <remarks>
     /// Common tournament types include Singles, Doubles, Team, All Events, etc.
     /// </remarks>
-    /// <example>Singles</example>
+    /// <example>"Singles"</example>
     public required string TournamentType { get; init; }
 }

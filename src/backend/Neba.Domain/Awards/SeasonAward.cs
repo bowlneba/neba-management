@@ -51,7 +51,6 @@ public sealed class SeasonAward
     /// <summary>
     /// The average score of the bowler in the season, if applicable.
     /// </summary>
-    /// <value></value>
     public decimal? Average { get; init; }
 
     /// <summary>
@@ -62,6 +61,5 @@ public sealed class SeasonAward
     /// <summary>
     /// The total number of tournaments participated in by the bowler in the season, if applicable.
     /// </summary>
-    /// <value></value>
     public int? Tournaments { get; init; }
 }

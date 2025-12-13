@@ -92,5 +92,9 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
             dto.Year.ShouldBe(expectedTitle.Year);
             dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
         }
+
+        result.Titles.ShouldAllBe(dto => dto.Month != null);
+        result.Titles.ShouldAllBe(dto => dto.Year > 0);
+        result.Titles.ShouldAllBe(dto => dto.TournamentType != null);
     }
 }

@@ -1,5 +1,6 @@
 @page "/history/high-average"
 @using Neba.Web.Server.Notifications
+@inject NebaApiService NebaApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>High Average Award - NEBA</PageTitle>
@@ -117,7 +118,7 @@
 </div>
 
 @code {
-    private List<HighAverageViewModel> _awards = new();
+    private List<HighAverageAwardViewModel> _awards = new();
     private string? _errorMessage;
     private bool _isLoading = true;
     private decimal _recordAverage;
@@ -126,53 +127,16 @@
     {
         try
         {
-            // Simulate API call with 1.5 second delay
-            await Task.Delay(1500);
+            var result =  await NebaApiService.GetHighAverageAwardsAsync();
 
-            // Dummy data for testing
-            _awards = new List<HighAverageViewModel>
+            if (result.IsError)
             {
-                new()
-                {
-                    Season = "2024/2025",
-                    BowlerName = "Dave Forcier",
-                    Average = 223.0m,
-                    GamesBowled = 130,
-                    TournamentsBowled = 17
-                },
-                new()
-                {
-                    Season = "2023/2024",
-                    BowlerName = "Mike Lichstein",
-                    Average = 224.4m,
-                    GamesBowled = null,
-                    TournamentsBowled = null
-                },
-                new()
-                {
-                    Season = "2022/2023",
-                    BowlerName = "Brian Boghosian",
-                    Average = 217.3m,
-                    GamesBowled = 100,
-                    TournamentsBowled = null
-                },
-                new()
-                {
-                    Season = "2021/2022",
-                    BowlerName = "Jane Doe",
-                    Average = 221.4m,
-                    GamesBowled = 42,
-                    TournamentsBowled = 6
-                },
-                new()
-                {
-                    Season = "2020/2021",
-                    BowlerName = "John Smith",
-                    Average = 219.8m,
-                    GamesBowled = null,
-                    TournamentsBowled = null
-                }
-            };
+                _errorMessage = result.FirstError.Description;
+
+                return;
+            }
+
+            _awards = result.Value.ToList();
 
             // Calculate the record (highest average)
             _recordAverage = _awards.Any() ? _awards.Max(a => a.Average) : 0;
