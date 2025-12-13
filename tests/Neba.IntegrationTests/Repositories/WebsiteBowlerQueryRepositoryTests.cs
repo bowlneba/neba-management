@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Application.Tournaments;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Website;
@@ -8,11 +9,9 @@ using Neba.Tests;
 
 namespace Neba.IntegrationTests.Repositories;
 
-/// <summary>
-/// Collection fixture to share a single WebsiteDatabase instance across all tests in this class.
-/// </summary>
 [CollectionDefinition(nameof(WebsiteBowlerQueryRepositoryTests))]
-public sealed class WebsiteBowlerQueryRepositoryTestsFixture : ICollectionFixture<WebsiteDatabase>;
+public sealed class WebsiteBowlerQueryRepositoryTestsFixture
+    : ICollectionFixture<WebsiteDatabase>;
 
 [Collection(nameof(WebsiteBowlerQueryRepositoryTests))]
 public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) : IAsyncLifetime
@@ -93,35 +92,9 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
             dto.Year.ShouldBe(expectedTitle.Year);
             dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
         }
-    }
 
-    [Fact]
-    public async Task GetAllBowlerTitlesAsync_ShouldReturnAllTitles()
-    {
-        // Arrange
-        await using var websiteDbContext = new WebsiteDbContext(
-            new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
-                .Options);
-
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
-        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
-        await websiteDbContext.SaveChangesAsync();
-
-        int expectedTitleCount = seedBowlers.Sum(bowler => bowler.Titles.Count);
-        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 0);
-
-        var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
-
-        // Act
-        IReadOnlyCollection<BowlerTitleDto> result
-            = await repository.ListBowlerTitlesAsync(CancellationToken.None);
-
-        // Assert
-        result.Count.ShouldBe(expectedTitleCount);
-
-        var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
-        seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
-        seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name.ToDisplayName());
+        result.Titles.ShouldAllBe(dto => dto.Month != null);
+        result.Titles.ShouldAllBe(dto => dto.Year > 0);
+        result.Titles.ShouldAllBe(dto => dto.TournamentType != null);
     }
 }

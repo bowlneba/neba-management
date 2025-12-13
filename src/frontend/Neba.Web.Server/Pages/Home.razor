@@ -1,22 +1,122 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Welcome to NEBA - New England Bowling Association</PageTitle>
+<HeadContent>
+    <meta name="description" content="Welcome to the New England Bowling Association (NEBA). Discover our rich history since 1963, view tournament schedules, stats, champions, and join New England's premier bowling community." />
+</HeadContent>
 
-<h1 class="text-3xl font-semibold mb-4 text-[var(--neba-text)]">Hello, world!</h1>
-
-<p class="text-[var(--neba-text)] mb-4">Welcome to your new app.</p>
-
-@for (int i = 1; i <= 50; i++)
-{
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold mb-2 text-[var(--neba-blue-700)]">Section @i</h2>
-        <p class="text-[var(--neba-text)] mb-2">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+<div class="neba-space-y-8">
+    <!-- Hero Section -->
+    <div class="text-center py-8 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-[var(--neba-blue-700)] mb-4">
+            New England Bowling Association
+        </h1>
+        <p class="text-xl md:text-2xl text-[var(--neba-text)] mb-2 font-medium">
+            Building Bowling Excellence Since 1963
         </p>
-        <p class="text-[var(--neba-text)]">
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <p class="text-base text-gray-600 max-w-2xl mx-auto">
+            Join New England's premier bowling tour and compete with the best bowlers in the region.
         </p>
     </div>
-}
+
+    <!-- Quick Stats Grid -->
+    <div class="neba-grid neba-grid-cols-1 md:neba-grid-cols-3">
+        <div class="neba-card text-center hover:shadow-xl transition-shadow">
+            <div class="text-5xl font-bold text-[var(--neba-blue-700)] mb-2">60+</div>
+            <div class="text-sm font-medium text-gray-600 uppercase tracking-wide">Years of History</div>
+        </div>
+        <div class="neba-card text-center hover:shadow-xl transition-shadow">
+            <div class="text-5xl font-bold text-[var(--neba-blue-700)] mb-2">1000+</div>
+            <div class="text-sm font-medium text-gray-600 uppercase tracking-wide">Tournaments Held</div>
+        </div>
+        <div class="neba-card text-center hover:shadow-xl transition-shadow">
+            <div class="text-5xl font-bold text-[var(--neba-blue-700)] mb-2">500+</div>
+            <div class="text-sm font-medium text-gray-600 uppercase tracking-wide">Active Bowlers</div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="neba-grid neba-grid-cols-1 md:neba-grid-cols-2 lg:neba-grid-cols-4">
+        <a href="/tournaments" class="neba-card group hover:border-[var(--neba-blue-500)] transition-all">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[var(--neba-blue-100)] flex items-center justify-center group-hover:bg-[var(--neba-blue-200)] transition-colors">
+                    <svg class="w-6 h-6 text-[var(--neba-blue-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-[var(--neba-text)] group-hover:text-[var(--neba-blue-700)] transition-colors">Tournaments</h3>
+                    <p class="text-sm text-gray-600">View schedule</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="/stats" class="neba-card group hover:border-[var(--neba-blue-500)] transition-all">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[var(--neba-blue-100)] flex items-center justify-center group-hover:bg-[var(--neba-blue-200)] transition-colors">
+                    <svg class="w-6 h-6 text-[var(--neba-blue-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-[var(--neba-text)] group-hover:text-[var(--neba-blue-700)] transition-colors">Stats</h3>
+                    <p class="text-sm text-gray-600">View statistics</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="/history/champions" class="neba-card group hover:border-[var(--neba-blue-500)] transition-all">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[var(--neba-blue-100)] flex items-center justify-center group-hover:bg-[var(--neba-blue-200)] transition-colors">
+                    <svg class="w-6 h-6 text-[var(--neba-blue-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-[var(--neba-text)] group-hover:text-[var(--neba-blue-700)] transition-colors">Champions</h3>
+                    <p class="text-sm text-gray-600">Title leaders</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="/hall-of-fame" class="neba-card group hover:border-[var(--neba-blue-500)] transition-all">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[var(--neba-blue-100)] flex items-center justify-center group-hover:bg-[var(--neba-blue-200)] transition-colors">
+                    <svg class="w-6 h-6 text-[var(--neba-blue-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-[var(--neba-text)] group-hover:text-[var(--neba-blue-700)] transition-colors">Hall of Fame</h3>
+                    <p class="text-sm text-gray-600">Legends</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- About Section -->
+    <div class="neba-panel">
+        <h2 class="text-2xl font-bold text-[var(--neba-blue-700)] mb-4">About NEBA</h2>
+        <div class="prose max-w-none">
+            <p class="text-[var(--neba-text)] mb-3">
+                The New England Bowling Association (NEBA) has been the premier bowling tour in the region since 1963.
+                We bring together the best bowlers from across New England to compete in challenging tournaments
+                at top-quality bowling centers throughout the year.
+            </p>
+            <p class="text-[var(--neba-text)] mb-3">
+                Our tour features multiple divisions and award categories, including Bowler of the Year,
+                Rookie of the Year, Senior Bowler of the Year, and more. We celebrate excellence through
+                our Hall of Fame and maintain comprehensive historical records of champions and achievements.
+            </p>
+            <p class="text-[var(--neba-text)]">
+                Whether you're a seasoned competitor or new to tournament bowling, NEBA offers opportunities
+                to test your skills, build lasting friendships, and be part of a rich bowling tradition.
+            </p>
+        </div>
+        <div class="mt-6">
+            <a href="/about" class="neba-btn neba-btn-primary">
+                Learn More About NEBA
+            </a>
+        </div>
+    </div>
+</div>

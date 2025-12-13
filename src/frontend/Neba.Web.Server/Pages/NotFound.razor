@@ -1,5 +1,88 @@
-﻿@page "/not-found"
+@page "/not-found"
 @layout MainLayout
 
-<h3 class="text-2xl font-semibold mb-3 text-[var(--neba-text)]">Not Found</h3>
-<p class="text-[var(--neba-text)]">Sorry, the content you are looking for does not exist.</p>
+<PageTitle>Page Not Found - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="The page you're looking for could not be found. Return to the NEBA homepage or browse our tournaments and champions." />
+</HeadContent>
+
+<div class="flex flex-col items-center justify-center py-16 px-4">
+    <div class="text-center max-w-2xl">
+        <!-- 404 Icon/Illustration -->
+        <div class="mb-8">
+            <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-[var(--neba-blue-100)] mb-4">
+                <svg class="w-16 h-16 text-[var(--neba-blue-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="text-8xl font-bold text-[var(--neba-blue-300)] mb-2">404</div>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-[var(--neba-text)] mb-4">
+            Page Not Found
+        </h1>
+
+        <p class="text-lg text-gray-600 mb-8">
+            Sorry, we couldn't find the page you're looking for.
+            It may have been moved, deleted, or never existed.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <a href="/" class="neba-btn neba-btn-primary">
+                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Return Home
+            </a>
+            <a href="/tournaments" class="neba-btn neba-btn-secondary">
+                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Browse Tournaments
+            </a>
+        </div>
+
+        <!-- Helpful Links -->
+        <div class="border-t border-[var(--neba-border)] pt-8">
+            <h2 class="text-lg font-semibold text-[var(--neba-text)] mb-4">You might be interested in:</h2>
+            <div class="neba-grid neba-grid-cols-1 sm:neba-grid-cols-2 lg:neba-grid-cols-3 text-left">
+                <a href="/history/champions" class="neba-link block p-3 rounded hover:bg-[var(--neba-nav-hover)] transition-colors">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[var(--neba-blue-700)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <div>
+                            <div class="font-medium text-[var(--neba-text)]">Champions</div>
+                            <div class="text-sm text-gray-600">View title leaders</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/stats" class="neba-link block p-3 rounded hover:bg-[var(--neba-nav-hover)] transition-colors">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[var(--neba-blue-700)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <div>
+                            <div class="font-medium text-[var(--neba-text)]">Statistics</div>
+                            <div class="text-sm text-gray-600">Browse stats</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/hall-of-fame" class="neba-link block p-3 rounded hover:bg-[var(--neba-nav-hover)] transition-colors">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[var(--neba-blue-700)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <div>
+                            <div class="font-medium text-[var(--neba-text)]">Hall of Fame</div>
+                            <div class="text-sm text-gray-600">NEBA legends</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

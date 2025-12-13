@@ -11,7 +11,7 @@ internal sealed class TitleConfiguration
 {
     public void Configure(EntityTypeBuilder<Title> builder)
     {
-        builder.ToTable("titles", "website");
+        builder.ToTable("titles", WebsiteDbContext.DefaultSchema);
         builder.HasKey(title => title.Id);
 
         builder.HasIndex(title => new { title.Year, title.Month });

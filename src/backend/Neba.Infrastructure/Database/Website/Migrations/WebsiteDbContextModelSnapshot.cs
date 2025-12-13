@@ -23,6 +23,59 @@ namespace Neba.Infrastructure.Database.Website.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Neba.Domain.Awards.SeasonAward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal?>("Average")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("average");
+
+                    b.Property<int>("AwardType")
+                        .HasColumnType("integer")
+                        .HasColumnName("award_type");
+
+                    b.Property<Guid>("BowlerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("bowler_id");
+
+                    b.Property<int?>("BowlerOfTheYearCategory")
+                        .HasColumnType("integer")
+                        .HasColumnName("bowler_of_the_year_category");
+
+                    b.Property<int?>("HighBlockScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("high_block_score");
+
+                    b.Property<string>("Season")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)")
+                        .HasColumnName("season");
+
+                    b.Property<int?>("SeasonTotalGames")
+                        .HasColumnType("integer")
+                        .HasColumnName("season_total_games");
+
+                    b.Property<int?>("Tournaments")
+                        .HasColumnType("integer")
+                        .HasColumnName("tournaments");
+
+                    b.HasKey("Id")
+                        .HasName("pk_season_awards");
+
+                    b.HasIndex("BowlerId")
+                        .HasDatabaseName("ix_season_awards_bowler_id");
+
+                    b.HasIndex("Season")
+                        .HasDatabaseName("ix_season_awards_season");
+
+                    b.ToTable("season_awards", "website");
+                });
+
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
                     b.Property<Guid>("Id")
@@ -75,6 +128,18 @@ namespace Neba.Infrastructure.Database.Website.Migrations
                         .HasDatabaseName("ix_titles_year_month");
 
                     b.ToTable("titles", "website");
+                });
+
+            modelBuilder.Entity("Neba.Domain.Awards.SeasonAward", b =>
+                {
+                    b.HasOne("Neba.Domain.Bowlers.Bowler", "Bowler")
+                        .WithMany("SeasonAwards")
+                        .HasForeignKey("BowlerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_season_awards_bowlers_bowler_id");
+
+                    b.Navigation("Bowler");
                 });
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
@@ -142,6 +207,8 @@ namespace Neba.Infrastructure.Database.Website.Migrations
 
             modelBuilder.Entity("Neba.Domain.Bowlers.Bowler", b =>
                 {
+                    b.Navigation("SeasonAwards");
+
                     b.Navigation("Titles");
                 });
 #pragma warning restore 612, 618

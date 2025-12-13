@@ -1,6 +1,8 @@
 using Neba.Api.Endpoints.Website.Bowlers;
 using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Application.Tournaments;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Neba.Domain.Bowlers;
 using Neba.Domain.Tournaments;
 using Neba.Tests;
@@ -17,7 +19,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerId: bowlerId);
 
         // Act
-        BowlerTitleResponse response = dto.ToResponseModel();
+        TitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerId.ShouldBe(bowlerId.Value);
@@ -31,7 +33,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
-        BowlerTitleResponse response = dto.ToResponseModel();
+        TitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerName.ShouldBe(bowlerName);
@@ -45,7 +47,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentMonth: tournamentMonth);
 
         // Act
-        BowlerTitleResponse response = dto.ToResponseModel();
+        TitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentMonth.ShouldBe(tournamentMonth);
@@ -59,7 +61,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentYear: tournamentYear);
 
         // Act
-        BowlerTitleResponse response = dto.ToResponseModel();
+        TitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentYear.ShouldBe(tournamentYear);
@@ -73,7 +75,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentType: tournamentType);
 
         // Act
-        BowlerTitleResponse response = dto.ToResponseModel();
+        TitleResponse response = dto.ToResponseModel();
 
         // Assert
         response.TournamentType.ShouldBe(tournamentType.Name);
@@ -141,7 +143,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(bowlerId: bowlerId);
 
         // Act
-        BowlerTitleSummaryResponse response = dto.ToResponseModel();
+        TitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerId.ShouldBe(bowlerId.Value);
@@ -155,7 +157,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(bowlerName: bowlerName);
 
         // Act
-        BowlerTitleSummaryResponse response = dto.ToResponseModel();
+        TitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.BowlerName.ShouldBe(bowlerName);
@@ -169,7 +171,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(titleCount: titleCount);
 
         // Act
-        BowlerTitleSummaryResponse response = dto.ToResponseModel();
+        TitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
         response.TitleCount.ShouldBe(titleCount);

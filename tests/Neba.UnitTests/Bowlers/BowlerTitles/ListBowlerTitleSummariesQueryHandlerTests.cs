@@ -1,5 +1,3 @@
-using ErrorOr;
-using Neba.Application.Bowlers;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Tests;
 
@@ -7,16 +5,16 @@ namespace Neba.UnitTests.Bowlers.BowlerTitles;
 
 public sealed class ListBowlerTitleSummariesQueryHandlerTests
 {
-    private readonly Mock<IWebsiteBowlerQueryRepository> _mockWebsiteBowlerQueryRepository;
+    private readonly Mock<IWebsiteTitleQueryRepository> _mockWebsiteTitleQueryRepository;
 
     private readonly ListBowlerTitleSummariesQueryHandler _queryHandler;
 
     public ListBowlerTitleSummariesQueryHandlerTests()
     {
-        _mockWebsiteBowlerQueryRepository = new Mock<IWebsiteBowlerQueryRepository>(MockBehavior.Strict);
+        _mockWebsiteTitleQueryRepository = new Mock<IWebsiteTitleQueryRepository>(MockBehavior.Strict);
 
         _queryHandler = new ListBowlerTitleSummariesQueryHandler(
-            _mockWebsiteBowlerQueryRepository.Object);
+            _mockWebsiteTitleQueryRepository.Object);
     }
 
     [Fact]
@@ -25,19 +23,16 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         // Arrange
         IReadOnlyCollection<BowlerTitleSummaryDto> seedSummaries = BowlerTitleSummaryDtoFactory.Bogus(50);
 
-        _mockWebsiteBowlerQueryRepository
-            .Setup(repository => repository.ListBowlerTitleSummariesAsync(TestContext.Current.CancellationToken))
+        _mockWebsiteTitleQueryRepository
+            .Setup(repository => repository.ListTitleSummariesAsync(TestContext.Current.CancellationToken))
             .ReturnsAsync(seedSummaries);
 
         ListBowlerTitleSummariesQuery query = new();
 
         // Act
-        ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>> result = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
+        IReadOnlyCollection<BowlerTitleSummaryDto> summaries = await _queryHandler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.IsError.ShouldBeFalse();
-
-        IReadOnlyCollection<BowlerTitleSummaryDto> summaries = result.Value;
         summaries.ShouldBeEquivalentTo(seedSummaries);
     }
 }

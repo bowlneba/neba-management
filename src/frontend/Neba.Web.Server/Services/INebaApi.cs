@@ -1,17 +1,28 @@
 using Neba.Contracts;
+using Neba.Contracts.Website.Awards;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Refit;
 
 namespace Neba.Web.Server.Services;
 
 internal interface INebaApi
 {
-    [Get("/bowlers/titles/summary")]
-    Task<Refit.ApiResponse<CollectionResponse<BowlerTitleSummaryResponse>>> GetBowlerTitlesSummaryAsync();
+    [Get("/titles")]
+    Task<Refit.ApiResponse<CollectionResponse<TitleResponse>>> GetAllTitlesAsync();
 
-    [Get("/bowlers/titles")]
-    Task<Refit.ApiResponse<CollectionResponse<BowlerTitleResponse>>> GetAllTitlesAsync();
+    [Get("/titles/summary")]
+    Task<Refit.ApiResponse<CollectionResponse<TitleSummaryResponse>>> GetTitlesSummaryAsync();
 
     [Get("/bowlers/{bowlerId}/titles")]
     Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(Guid bowlerId);
+
+    [Get("/awards/bowler-of-the-year")]
+    Task<Refit.ApiResponse<CollectionResponse<BowlerOfTheYearResponse>>> GetBowlerOfTheYearAwardsAsync();
+
+    [Get("/awards/high-block")]
+    Task<Refit.ApiResponse<CollectionResponse<HighBlockAwardResponse>>> GetHighBlockAwardsAsync();
+
+    [Get("/awards/high-average")]
+    Task<Refit.ApiResponse<CollectionResponse<HighAverageAwardResponse>>> GetHighAverageAwardsAsync();
 }

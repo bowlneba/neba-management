@@ -6,14 +6,14 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 
 ### Public Website
 
-- [ ] Champions (History)
-- [ ] Bowler of the Year
-  - [ ] Open
-  - [ ] Senior
-  - [ ] Super Senior
-  - [ ] Woman
-  - [ ] Youth
-  - [ ] Rookie
+- [x] Champions (History)
+- [x] Bowler of the Year
+  - [x] Open
+  - [x] Senior
+  - [x] Super Senior
+  - [x] Woman
+  - [x] Youth
+  - [x] Rookie
 - [ ] High Average
 - [ ] High Block
 - [ ] Hall of Fame (including HOF indicator for champions)

@@ -1,10 +1,13 @@
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 
 namespace Neba.Web.Server.History.Champions;
 
+#pragma warning disable S1144 // Remove unused constructor of private type.
+
 internal static class BowlerTitleMappingExtensions
 {
-    extension(BowlerTitleSummaryResponse response)
+    extension(TitleSummaryResponse response)
     {
         public BowlerTitleSummaryViewModel ToViewModel()
             => new()
@@ -15,7 +18,7 @@ internal static class BowlerTitleMappingExtensions
             };
     }
 
-    extension(BowlerTitleResponse response)
+    extension(TitleResponse response)
     {
         public BowlerTitleViewModel ToViewModel()
             => new()

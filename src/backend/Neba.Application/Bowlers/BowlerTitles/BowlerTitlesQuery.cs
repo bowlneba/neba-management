@@ -1,3 +1,4 @@
+using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
 using Neba.Domain.Bowlers;
 
@@ -7,7 +8,7 @@ namespace Neba.Application.Bowlers.BowlerTitles;
 /// Query to retrieve the detailed titles for a specific bowler.
 /// </summary>
 public sealed record BowlerTitlesQuery
-    : IQuery<BowlerTitlesDto?>
+    : IQuery<ErrorOr<BowlerTitlesDto>>
 {
     /// <summary>
     /// Gets the unique identifier of the bowler whose titles are being requested.

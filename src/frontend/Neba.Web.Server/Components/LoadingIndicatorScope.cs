@@ -13,5 +13,11 @@ public enum LoadingIndicatorScope
     /// <summary>
     /// Overlays the entire viewport including navigation and all UI elements.
     /// </summary>
-    FullScreen
+    FullScreen,
+
+    /// <summary>
+    /// Overlays a specific section/container with absolute positioning.
+    /// Parent container should have position: relative and min-height set.
+    /// </summary>
+    Section
 }

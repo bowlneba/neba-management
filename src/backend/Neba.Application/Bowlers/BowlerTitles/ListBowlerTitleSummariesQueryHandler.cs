@@ -1,17 +1,16 @@
-using ErrorOr;
 using Neba.Application.Abstractions.Messaging;
 
 namespace Neba.Application.Bowlers.BowlerTitles;
 
-internal sealed class ListBowlerTitleSummariesQueryHandler(IWebsiteBowlerQueryRepository websiteBowlerQueryRepository)
+internal sealed class ListBowlerTitleSummariesQueryHandler(IWebsiteTitleQueryRepository websiteTitleQueryRepository)
         : IQueryHandler<ListBowlerTitleSummariesQuery, IReadOnlyCollection<BowlerTitleSummaryDto>>
 {
-    private readonly IWebsiteBowlerQueryRepository _websiteBowlerQueryRepository = websiteBowlerQueryRepository;
+    private readonly IWebsiteTitleQueryRepository _websiteTitleQueryRepository = websiteTitleQueryRepository;
 
-    public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryDto>>> HandleAsync(ListBowlerTitleSummariesQuery query, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> HandleAsync(ListBowlerTitleSummariesQuery query, CancellationToken cancellationToken)
     {
-        IReadOnlyCollection<BowlerTitleSummaryDto> titlesSummary = await _websiteBowlerQueryRepository.ListBowlerTitleSummariesAsync(cancellationToken);
+        IReadOnlyCollection<BowlerTitleSummaryDto> titlesSummary = await _websiteTitleQueryRepository.ListTitleSummariesAsync(cancellationToken);
 
-        return titlesSummary.ToErrorOr();
+        return titlesSummary;
     }
 }

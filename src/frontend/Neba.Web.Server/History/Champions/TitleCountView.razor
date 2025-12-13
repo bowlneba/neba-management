@@ -21,7 +21,7 @@
         }
 
         var sectionId = $"tier-{group.Key}";
-        var isExpanded = expandedSections.Contains(sectionId);
+        var isExpanded = _expandedSections.Contains(sectionId);
 
         <div class="@tierPrefix-section space-y-4">
             <!-- Title Count Header -->
@@ -79,26 +79,26 @@
     [Parameter]
     public EventCallback<BowlerTitleSummaryViewModel> OnChampionClick { get; set; }
 
-    private readonly HashSet<string> expandedSections = new();
+    private readonly HashSet<string> _expandedSections = new();
 
     protected override void OnInitialized()
     {
         // Expand all sections by default
         foreach (var titleCount in Champions.Select(c => c.TitleCount).Distinct())
         {
-            expandedSections.Add($"tier-{titleCount}");
+            _expandedSections.Add($"tier-{titleCount}");
         }
     }
 
     private void ToggleSection(string sectionId)
     {
-        if (expandedSections.Contains(sectionId))
+        if (_expandedSections.Contains(sectionId))
         {
-            expandedSections.Remove(sectionId);
+            _expandedSections.Remove(sectionId);
         }
         else
         {
-            expandedSections.Add(sectionId);
+            _expandedSections.Add(sectionId);
         }
     }
 

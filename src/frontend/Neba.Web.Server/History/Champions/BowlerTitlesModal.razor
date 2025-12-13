@@ -13,10 +13,10 @@
             <h2 class="neba-modal-title">@GetModalTitle()</h2>
             <div class="flex items-center gap-3">
                 <!-- Landscape: Show count inline with header -->
-                @if (titles.Count > 0)
+                @if (_titles.Count > 0)
                 {
                     <div class="bowler-titles-header-stats flex items-center gap-2">
-                        <span class="text-sm font-medium text-[var(--neba-blue-700)]">@titles.Count Titles</span>
+                        <span class="text-sm font-medium text-[var(--neba-blue-700)]">@_titles.Count Titles</span>
                         @if (HallOfFame)
                         {
                             <img src="/neba-hof.jpg"
@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-    @if (isLoading)
+    @if (_isLoading)
     {
         <div class="neba-modal-body">
             <div class="flex justify-center items-center py-12">
@@ -46,17 +46,17 @@
             </div>
         </div>
     }
-    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    else if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <div class="neba-modal-body">
             <div class="py-6">
                 <NebaAlert Severity="NotifySeverity.Error"
                            Title="Error"
-                           Message="@errorMessage" />
+                           Message="@_errorMessage" />
             </div>
         </div>
     }
-    else if (titles.Count == 0)
+    else if (_titles.Count == 0)
     {
         <div class="neba-modal-body">
             <div class="text-center py-12 text-gray-500">
@@ -73,7 +73,7 @@
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <p class="text-xs sm:text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
-                            <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@titles.Count</p>
+                            <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@_titles.Count</p>
                         </div>
                         @if (HallOfFame)
                         {
@@ -109,9 +109,9 @@
                 <!-- Titles List - SCROLLABLE -->
                 <div class="bowler-titles-scrollable-list">
                     <div class="border-x border-b border-gray-200 rounded-b-lg bg-white">
-                        @for (int i = 0; i < titles.Count; i++)
+                        @for (var i = 0; i < _titles.Count; i++)
                         {
-                            var title = titles[i];
+                            var title = _titles[i];
                             var number = i + 1;
                             <div class="flex border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
                                 <div class="w-12 sm:w-16 px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500">
@@ -166,14 +166,14 @@
     [Parameter]
     public bool HallOfFame { get; set; }
 
-    private List<TitleViewModel> titles = new();
-    private string? errorMessage;
-    private bool isLoading = false;
+    private List<TitleViewModel> _titles = [];
+    private string? _errorMessage;
+    private bool _isLoading = false;
 
-    protected override async Task OnParametersSetAsync()
+    async protected override Task OnParametersSetAsync()
     {
         // When modal opens with a bowler ID, load their titles
-        if (IsOpen && BowlerId.HasValue && titles.Count == 0)
+        if (IsOpen && BowlerId.HasValue && _titles.Count == 0)
         {
             await LoadTitlesAsync();
         }
@@ -181,16 +181,16 @@
         // Reset state when modal closes
         if (!IsOpen)
         {
-            titles.Clear();
-            errorMessage = null;
-            isLoading = false;
+            _titles.Clear();
+            _errorMessage = null;
+            _isLoading = false;
         }
     }
 
     private async Task LoadTitlesAsync()
     {
-        isLoading = true;
-        errorMessage = null;
+        _isLoading = true;
+        _errorMessage = null;
 
         try
         {
@@ -199,26 +199,24 @@
             if (result.IsError)
             {
                 var error = result.FirstError;
-                errorMessage = $"Failed to load titles: {error.Description}";
+                _errorMessage = $"Failed to load titles: {error.Description}";
                 return;
             }
 
-            titles = result.Value.Titles.ToList();
+            _titles = result.Value.Titles.ToList();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Failed to load titles: {ex.Message}";
+            _errorMessage = $"Failed to load titles: {ex.Message}";
         }
         finally
         {
-            isLoading = false;
+            _isLoading = false;
         }
     }
 
     private string GetModalTitle()
-    {
-        return BowlerName ?? "Bowler Titles";
-    }
+        => BowlerName ?? "Bowler Titles";
 
     private async Task HandleClose()
     {

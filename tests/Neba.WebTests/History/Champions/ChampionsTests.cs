@@ -3,7 +3,7 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Neba.Contracts;
-using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
@@ -26,10 +26,10 @@ public sealed class ChampionsTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsChampions()
     {
         // Arrange - Set up successful API response
-        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
+        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(response.ApiResponse);
 
         // Act
@@ -45,7 +45,7 @@ public sealed class ChampionsTests : TestContextWrapper
     {
         // Arrange - Simulate API error during initialization
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ThrowsAsync(new InvalidOperationException("API Error"));
 
         // Act
@@ -60,11 +60,11 @@ public sealed class ChampionsTests : TestContextWrapper
     public async Task HandleViewChanged_ValidView_SwitchesView()
     {
         // Arrange - Set up mocks for both summary and titles data to simulate view switching scenario
-        using var summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
-        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleResponse> { Items = new List<BowlerTitleResponse> { BowlerTitleResponseFactory.Bogus() } });
+        using var summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
+        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleResponse> { Items = new List<TitleResponse> { TitleResponseFactory.Bogus() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(summaryResponse.ApiResponse);
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
@@ -74,9 +74,9 @@ public sealed class ChampionsTests : TestContextWrapper
         var instance = cut.Instance;
 
         // Get private fields via reflection
-        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
+        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(selectedViewField);
-        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
+        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(titlesByYearField);
 
         // Assert initial state
@@ -104,10 +104,10 @@ public sealed class ChampionsTests : TestContextWrapper
     public void Render_WithData_IncludesModal()
     {
         // Arrange - Set up successful API response with champion data
-        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<BowlerTitleSummaryResponse> { Items = new List<BowlerTitleSummaryResponse> { BowlerTitleSummaryResponseFactory.Create() } });
+        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
-            .Setup(x => x.GetBowlerTitlesSummaryAsync())
+            .Setup(x => x.GetTitlesSummaryAsync())
             .ReturnsAsync(response.ApiResponse);
 
         // Act

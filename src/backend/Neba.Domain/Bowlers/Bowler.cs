@@ -1,4 +1,5 @@
 using Neba.Domain.Abstractions;
+using Neba.Domain.Awards;
 using Neba.Domain.Tournaments;
 
 namespace Neba.Domain.Bowlers;
@@ -17,20 +18,21 @@ public sealed class Bowler
     /// <summary>
     /// Gets or sets the identifier for the bowler in the legacy website database.
     /// </summary>
-    /// <value></value>
     public int? WebsiteId { get; init; }
 
     /// <summary>
     /// Gets or sets the identifier for the bowler in the legacy application database.
     /// </summary>
-    /// <value></value>
     public int? ApplicationId { get; init; }
 
     internal Bowler()
         : base(BowlerId.New())
     {
         Titles = [];
+        SeasonAwards = [];
     }
 
     internal IReadOnlyCollection<Title> Titles { get; init; }
+
+    internal IReadOnlyCollection<SeasonAward> SeasonAwards { get; init; }
 }

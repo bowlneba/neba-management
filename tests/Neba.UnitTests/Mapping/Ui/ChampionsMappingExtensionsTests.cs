@@ -1,4 +1,5 @@
 using Neba.Contracts.Website.Bowlers;
+using Neba.Contracts.Website.Titles;
 using Neba.Domain.Bowlers;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
@@ -12,7 +13,7 @@ public sealed class ChampionsMappingExtensionsTests
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
-        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(bowlerId: bowlerId.Value, titleCount: 0);
+        TitleSummaryResponse response = TitleSummaryResponseFactory.Create(bowlerId: bowlerId.Value, titleCount: 0);
 
         // Act
         BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
@@ -26,7 +27,7 @@ public sealed class ChampionsMappingExtensionsTests
     {
         // Arrange
         const string bowlerName = "John Doe";
-        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(bowlerName: bowlerName, titleCount: 0);
+        TitleSummaryResponse response = TitleSummaryResponseFactory.Create(bowlerName: bowlerName, titleCount: 0);
 
         // Act
         BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
@@ -40,7 +41,7 @@ public sealed class ChampionsMappingExtensionsTests
     {
         // Arrange
         const int titleCount = 3;
-        BowlerTitleSummaryResponse response = BowlerTitleSummaryResponseFactory.Create(titleCount: titleCount);
+        TitleSummaryResponse response = TitleSummaryResponseFactory.Create(titleCount: titleCount);
 
         // Act
         BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
@@ -67,11 +68,11 @@ public sealed class ChampionsMappingExtensionsTests
     public void BowlerTitlesResponse_ToViewModel_ShouldMapTitlesInOrder()
     {
         // Arrange
-        IReadOnlyCollection<TitleResponse> titles = new[]
+        IReadOnlyCollection<Contracts.Website.Bowlers.BowlerTitleResponse> titles = new[]
         {
-            TitlesResponseFactory.Create(month: Month.March, year: 2020),
-            TitlesResponseFactory.Create(month: Month.January, year: 2019),
-            TitlesResponseFactory.Create(month: Month.February, year: 2020)
+            BowlerTitleResponseFactory.Create(month: Month.March, year: 2020),
+            BowlerTitleResponseFactory.Create(month: Month.January, year: 2019),
+            BowlerTitleResponseFactory.Create(month: Month.February, year: 2020)
         };
 
         BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(

@@ -19,13 +19,12 @@ internal static class ResultExtensions
                 detail: error.Description,
                 statusCode: GetStatusCode(error),
                 title: GetTitle(error),
-                type: GetType(error.Type),
+                type: GetErrorRfc(error.Type),
                 extensions: GetExtensions(error)
             );
 
             static string GetTitle(Error error)
-            {
-                return error.Type switch
+                => error.Type switch
                 {
                     ErrorType.Failure => error.Code,
                     ErrorType.Unexpected => "An unexpected error occurred.",
@@ -34,13 +33,11 @@ internal static class ResultExtensions
                     ErrorType.NotFound => error.Code,
                     ErrorType.Unauthorized => error.Code,
                     ErrorType.Forbidden => error.Code,
-                    _ => "An error occurred."
+                    var _ => "An error occurred."
                 };
-            }
 
-            static string GetType(ErrorType errorType)
-            {
-                return errorType switch
+            static string GetErrorRfc(ErrorType errorType)
+                => errorType switch
                 {
                     ErrorType.Failure => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                     ErrorType.Unexpected => "https://tools.ietf.org/html/rfc7231#section-6.6.1",
@@ -49,13 +46,11 @@ internal static class ResultExtensions
                     ErrorType.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
                     ErrorType.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
                     ErrorType.Forbidden => "https://tools.ietf.org/html/rfc7231#section-6.5.3",
-                    _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+                    var _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
                 };
-            }
 
             static int GetStatusCode(Error error)
-            {
-                return error.Type switch
+                => error.Type switch
                 {
                     ErrorType.Failure => StatusCodes.Status500InternalServerError,
                     ErrorType.Unexpected => StatusCodes.Status500InternalServerError,
@@ -64,9 +59,8 @@ internal static class ResultExtensions
                     ErrorType.NotFound => StatusCodes.Status404NotFound,
                     ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
                     ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-                    _ => StatusCodes.Status500InternalServerError
+                    var _ => StatusCodes.Status500InternalServerError
                 };
-            }
 
             static Dictionary<string, object?> GetExtensions(Error error)
             {

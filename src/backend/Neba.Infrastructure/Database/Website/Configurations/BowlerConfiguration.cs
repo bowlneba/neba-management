@@ -9,7 +9,7 @@ internal sealed class BowlerConfiguration
 {
     public void Configure(EntityTypeBuilder<Bowler> builder)
     {
-        builder.ToTable("bowlers", "website");
+        builder.ToTable("bowlers", WebsiteDbContext.DefaultSchema);
         builder.HasKey(bowler => bowler.Id);
 
         builder
@@ -60,6 +60,11 @@ internal sealed class BowlerConfiguration
         builder.HasMany(bowler => bowler.Titles)
             .WithOne(title => title.Bowler)
             .HasForeignKey(title => title.BowlerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(bowler => bowler.SeasonAwards)
+            .WithOne(seasonAward => seasonAward.Bowler)
+            .HasForeignKey(seasonAward => seasonAward.BowlerId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,0 +1,120 @@
+@page "/history/bowler-of-the-year"
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Services
+@inject NebaApiService ApiService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Bowler of the Year Awards - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="View NEBA Bowler of the Year award winners by season. Includes the George Chikar Bowler of the Year, Rookie of the Year, Senior, Women's, Super Senior, and Youth divisions since their inception." />
+</HeadContent>
+
+<div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Bowler of the Year</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
+            <div class="text-base text-gray-700 leading-relaxed bg-white/80 rounded-lg shadow-sm p-4 border border-gray-100">
+                <p class="mb-2">
+                    The Bowler of the Year honors represent the highest competitive distinction within NEBA, recognizing season-long excellence across all divisions.
+                </p>
+                <p class="mb-2">
+                    The <span class="font-semibold text-[var(--neba-blue-700)]">Bowler of the Year</span> award—NEBA’s original and most prestigious seasonal title—is named in honor of <span class="font-semibold">George Chikar</span>, NEBA’s biggest fan, whose support and dedication left a lasting mark on the organization.
+                </p>
+                <p class="mb-2">
+                    Additional divisions were added over time as the association expanded: <span class="font-semibold">Rookie of the Year</span> in 1994, <span class="font-semibold">Senior Bowler of the Year</span> in 2003, and in 2015 a trio of new categories debuted—<span class="font-semibold">Women’s Bowler of the Year</span>, <span class="font-semibold">Super Senior Bowler of the Year</span>, and <span class="font-semibold">Youth Bowler of the Year</span>.
+                </p>
+                <p>
+                    Together, these awards form the core of NEBA’s annual recognition of sustained performance, competitiveness, and impact on the tour.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Awards"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Awards Section with Loading Overlay -->
+    <div class="relative min-h-[400px] mt-6">
+        <!-- Loading Indicator (scoped to this section) -->
+        <NebaLoadingIndicator IsVisible="@_isLoading"
+                              Text="Loading..."
+                              Scope="LoadingIndicatorScope.Section"
+                              DelayMs="0"
+                              MinimumDisplayMs="0" />
+
+        <!-- Awards Grid -->
+        @if (_awardsByYear.Count > 0)
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var yearData in _awardsByYear)
+                {
+                    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                        <!-- Year Header -->
+                        <div class="text-3xl font-bold text-[var(--neba-blue-700)] mb-4 pb-3 border-b-2 border-[var(--neba-blue-300)]">
+                            @yearData.Season
+                        </div>
+
+                        <!-- Award Categories and Winners -->
+                        <div class="space-y-4">
+                            @foreach (var award in yearData.WinnersByCategory)
+                            {
+                                <div>
+                                    <div class="text-xs uppercase text-gray-500 font-semibold mb-1">
+                                        @award.Key
+                                    </div>
+                                    <div class="text-lg text-[var(--neba-blue-900)] font-medium">
+                                        @award.Value
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (!_isLoading)
+        {
+            <div class="text-center py-12 text-gray-500">
+                <p>No awards data available.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<BowlerOfTheYearByYearViewModel> _awardsByYear = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    async protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await ApiService.GetBowlerOfTheYearAwardsAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _errorMessage = $"Failed to load awards data: {error.Description}";
+                return;
+            }
+
+            _awardsByYear = result.Value.ToList();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load awards data: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}
