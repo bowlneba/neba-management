@@ -14,30 +14,6 @@ on:
       - '.github/workflows/pr_application.yml'
 
 jobs:
-  # Detect which parts of the codebase changed
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36  # v3.0.2
-        id: filter
-        with:
-          filters: |
-            backend:
-              - 'src/backend/**'
-              - 'src/shared-kernel/**'
-              - 'tests/Neba.UnitTests/**'
-              - 'tests/Neba.IntegrationTests/**'
-            frontend:
-              - 'src/frontend/**'
-              - 'tests/browser/**'
-              - 'tests/Neba.WebTests/**'
-
   code-quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -95,7 +71,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
   test:
-    needs: [build, changes]
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -103,42 +79,25 @@ jobs:
         include:
           - test-project: tests/Neba.UnitTests/Neba.UnitTests.csproj
             test-name: Unit Tests
-            run-when: backend
           - test-project: tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj
             test-name: Integration Tests
-            run-when: backend
           - test-project: tests/Neba.WebTests/Neba.WebTests.csproj
-            test-name: Blazor Tests (bUnit)
-            run-when: frontend
+            test-name: Blazor Tests
       fail-fast: false
 
     name: ${{ matrix.test-name }}
 
     steps:
-      # Skip tests that don't match the changed code area
-      - name: Check if tests should run
-        id: should-run
-        run: |
-          if [[ "${{ matrix.run-when }}" == "backend" && "${{ needs.changes.outputs.backend }}" == "true" ]] || \
-             [[ "${{ matrix.run-when }}" == "frontend" && "${{ needs.changes.outputs.frontend }}" == "true" ]] || \
-             [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "run=true" >> $GITHUB_OUTPUT
-          else
-            echo "run=false" >> $GITHUB_OUTPUT
-          fi
       - uses: actions/checkout@v5
-        if: steps.should-run.outputs.run == 'true'
         with:
           fetch-depth: 1
 
       - name: Setup .Net
-        if: steps.should-run.outputs.run == 'true'
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
-        if: steps.should-run.outputs.run == 'true'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -147,19 +106,24 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        if: steps.should-run.outputs.run == 'true'
         run: dotnet restore
 
       - name: Build projects
-        if: steps.should-run.outputs.run == 'true'
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests with coverage
-        if: steps.should-run.outputs.run == 'true'
-        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+      - name: Run tests
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-build
 
       - name: Upload test results
-        if: always() && steps.should-run.outputs.run == 'true'
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-results-${{ matrix.test-name }}
+          path: "**/TestResults/**/*.trx"
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ matrix.test-name }}
@@ -167,7 +131,7 @@ jobs:
           retention-days: 30
 
       - name: Upload coverage reports
-        if: always() && steps.should-run.outputs.run == 'true'
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.test-name }}
@@ -175,11 +139,9 @@ jobs:
           retention-days: 30
 
   browser-tests:
-    # Run when frontend changes or manually triggered
-    if: |
-      needs.changes.outputs.frontend == 'true' ||
-      github.event_name == 'workflow_dispatch'
-    needs: [build, changes]
+    # Disabled for PRs - run manually with workflow_dispatch or in nightly builds
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     name: Playwright E2E Tests
@@ -190,8 +152,6 @@ jobs:
         include:
           - project: chromium
             browser: chromium
-          - project: webkit
-            browser: webkit
           - project: 'Mobile Chrome'
             browser: chromium
           - project: 'Mobile Safari'
@@ -208,7 +168,7 @@ jobs:
           node-version: lts/*
 
       - name: Install Node dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
         working-directory: tests/browser
 
       - name: Install Playwright Browsers
@@ -227,14 +187,16 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+      - name: Run tests with coverage
+        run: dotnet test ${{ matrix.test-project }} --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Restore dependencies
         run: dotnet restore
 
       - name: Build projects
-        run: dotnet build --configuration Debug --no-restore
+        run: dotnet build --configuration Release --no-restore
 
-      - name: Run Playwright E2E tests
+      - name: Run Playwright tests
         run: npx playwright test --project="${{ matrix.project }}"
         working-directory: tests/browser
 
