@@ -14,8 +14,10 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
   - [x] Woman
   - [x] Youth
   - [x] Rookie
-- [ ] High Average
-- [ ] High Block
+- [x] High Average
+- [x] High Block
+- [ ] Organization Bylaws
+- [ ] Tournament Rules
 - [ ] Hall of Fame (including HOF indicator for champions)
 - [ ] Bowling Centers
 - [ ] Tournaments
