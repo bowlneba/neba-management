@@ -24,7 +24,8 @@
       "Bash(dotnet list:*)",
       "Bash(code --list-extensions)",
       "Bash(dotnet clean:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

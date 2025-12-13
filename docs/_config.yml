@@ -1,0 +1,32 @@
+# GitHub Pages Configuration
+title: NEBA Documentation
+description: Technical documentation for the NEBA Management application
+baseurl: "/neba-management"
+url: "https://kippermand.github.io"
+
+# Theme
+theme: null
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Collections
+collections:
+  ubiquitous_language:
+    output: true
+    permalink: /ubiquitous-language/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+# Exclude from processing
+exclude:
+  - _mockups/
+  - README.md
+  - Gemfile
+  - Gemfile.lock
