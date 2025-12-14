@@ -91,6 +91,7 @@ public sealed class Month
     /// <returns>The three-letter abbreviated month name.</returns>
     public string ToShortString()
     {
-        return Name.Substring(0, 3);
+        // Defensive: using range operator to avoid exception if Name is shorter than 3 characters
+        return Name[..3];
     }
 }
