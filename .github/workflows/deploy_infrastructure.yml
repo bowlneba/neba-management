@@ -42,6 +42,8 @@ jobs:
           echo "✅ Bicep syntax validation passed"
 
       - name: Run What-If analysis
+        env:
+          DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
         run: |
           az deployment sub what-if \
             --location ${{ vars.AZURE_LOCATION }} \
@@ -57,7 +59,7 @@ jobs:
               databaseServerName='${{ vars.DATABASE_SERVER_NAME }}' \
               databaseName='${{ vars.DATABASE_NAME }}' \
               databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
-              databaseAdminPassword='${{ secrets.DATABASE_ADMIN_PASSWORD }}' \
+              databaseAdminPassword="$DATABASE_ADMIN_PASSWORD" \
               azurePostgresSku='${{ vars.AZURE_POSTGRES_SKU }}' \
               azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
@@ -82,6 +84,8 @@ jobs:
 
       - name: Deploy Infrastructure
         id: deploy
+        env:
+          DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
         run: |
           echo "🚀 Deploying infrastructure to ${{ vars.AZURE_ENVIRONMENT }} environment in ${{ vars.AZURE_LOCATION }}"
 
@@ -100,7 +104,7 @@ jobs:
               databaseServerName='${{ vars.DATABASE_SERVER_NAME }}' \
               databaseName='${{ vars.DATABASE_NAME }}' \
               databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
-              databaseAdminPassword='${{ secrets.DATABASE_ADMIN_PASSWORD }}' \
+              databaseAdminPassword="$DATABASE_ADMIN_PASSWORD" \
               azurePostgresSku='${{ vars.AZURE_POSTGRES_SKU }}' \
               azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
@@ -161,6 +165,8 @@ jobs:
           echo "**Database Access:** API Managed Identity configured" >> $GITHUB_STEP_SUMMARY
 
       - name: Add Secrets to Key Vault
+        env:
+          DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
         run: |
           echo "🔐 Adding secrets to Key Vault..."
 
@@ -196,7 +202,7 @@ jobs:
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "DatabaseAdminPassword" \
-            --value "${{ secrets.DATABASE_ADMIN_PASSWORD }}" \
+            --value "$DATABASE_ADMIN_PASSWORD" \
             --output none
 
           echo "✅ Secrets added to Key Vault"
