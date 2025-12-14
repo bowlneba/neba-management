@@ -1,6 +1,26 @@
-# Playwright Browser Tests
+# Playwright E2E Browser Tests
 
-This directory contains Playwright-based end-to-end tests for the NEBA Management System. These tests validate browser-driven behavior, responsive layouts, and full user workflows.
+This directory contains Playwright-based end-to-end tests for the NEBA Management System. These tests validate **critical user journeys** in real browsers with mocked APIs. They focus on browser behavior, responsive layouts, and multi-step user workflows.
+
+## Testing Philosophy
+
+Playwright tests sit at the **top of the testing pyramid** - we have fewer E2E tests (19 tests) and many more component tests (bUnit). All Playwright tests **mock the API** to ensure fast, reliable, and isolated browser testing.
+
+**What Belongs in Playwright:**
+
+- Critical user journeys (can user complete a task?)
+- Real browser timing and animations
+- Cross-browser compatibility
+- Mobile responsive behavior
+- Multi-step workflows
+
+**What Belongs in bUnit:**
+
+- Component rendering and props
+- CSS classes and styling
+- ARIA attributes and accessibility
+- Event callbacks and state changes
+- Conditional rendering logic
 
 ## Prerequisites
 
@@ -35,7 +55,13 @@ npx playwright test --headed
 ### Run specific test file
 
 ```bash
-npx playwright test notifications.spec.ts
+npx playwright test champions.e2e.spec.ts
+```
+
+### Run only E2E tests (recommended)
+
+```bash
+npx playwright test *.e2e.spec.ts
 ```
 
 ### Run tests in a specific browser
@@ -44,18 +70,30 @@ npx playwright test notifications.spec.ts
 # Chromium (default)
 npx playwright test --project=chromium
 
-# Firefox
-npx playwright test --project=firefox
-
 # WebKit (Safari engine)
 npx playwright test --project=webkit
+
+# Mobile Chrome
+npx playwright test --project="Mobile Chrome"
+
+# Mobile Safari
+npx playwright test --project="Mobile Safari"
 ```
 
 ### Run tests for all browsers
 
 ```bash
-npx playwright test --project=chromium --project=firefox --project=webkit
+npx playwright test *.e2e.spec.ts
 ```
+
+This runs all E2E tests across 4 browsers:
+
+- Desktop Chrome (Chromium)
+- Desktop Safari (WebKit)
+- Mobile Chrome (Pixel 5)
+- Mobile Safari (iPhone 12)
+
+Total: ~76 test executions (19 tests × 4 browsers)
 
 ### Run tests in debug mode
 
@@ -102,7 +140,7 @@ npx playwright show-trace test-results/<test-name>/trace.zip
 
 ## Test Organization
 
-```
+```file
 tests/browser/
 ├── notifications.spec.ts    # Notification component tests
 ├── playwright.config.ts     # Playwright configuration
@@ -115,6 +153,7 @@ tests/browser/
 ### Pull Request Testing (Fast)
 
 PRs run tests in:
+
 - **Browser**: Chromium only
 - **Viewport**: Desktop (1280x720)
 - **Purpose**: Fast feedback for common scenarios
@@ -128,6 +167,7 @@ npx playwright test --project=chromium
 ### Nightly Testing (Comprehensive)
 
 Nightly builds run tests in:
+
 - **Browsers**: Chromium, Firefox, WebKit
 - **Viewports**: Desktop + Mobile emulation
 - **Purpose**: Catch cross-browser and responsive issues
@@ -141,6 +181,7 @@ npx playwright test --project=chromium --project=firefox --project=webkit
 ### Artifacts on Failure
 
 When tests fail in CI:
+
 - **HTML Report**: Full test results with screenshots
 - **Trace Files**: Step-by-step execution trace with network logs
 - **Screenshots**: Visual evidence of failures
@@ -162,6 +203,7 @@ strategy:
 ```
 
 **Note**: This increases CI time and cost. Consider:
+
 - Using chromium for PRs
 - Using all browsers for nightly or release branches
 

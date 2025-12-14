@@ -1,0 +1,58 @@
+{
+  "dotnet.defaultSolution": "NebaManagement.slnx",
+  "testExplorer.useNativeTesting": true,
+  "dotnet-test-explorer.testProjectPath": "tests/**/*.csproj",
+  "dotnet.testWindow.useTestingPlatformProtocol": true,
+  "dotnet.codeLens.enableTestCodeLens": true,
+  "csharp.experimental.testCodeLens.enabled": true,
+  "dotnet.debug.sourceFileMap": {
+    ".": "${workspaceFolder}"
+  },
+  "cSpell.words": [
+    "Antiforgery",
+    "Ardalis",
+    "Blazor",
+    "BOTY",
+    "bowlneba",
+    "bunit",
+    "Chikar",
+    "cref",
+    "efcore",
+    "Famers",
+    "Instantiator",
+    "LINQ",
+    "Neba",
+    "nowrap",
+    "npgsql",
+    "onclick",
+    "parameterless",
+    "pinfall",
+    "prerender",
+    "rendermode",
+    "Respawn",
+    "Respawner",
+    "Roslynator",
+    "Shouldly",
+    "Testcontainers",
+    "uninstantiated",
+    "USBC",
+    "xunit"
+  ],
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 19630,
+      "driver": "PostgreSQL",
+      "name": "bowlneba",
+      "group": "localhost",
+      "database": "bowlneba",
+      "username": "neba"
+    }
+  ],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "bowlneba",
+    "projectKey": "bowlneba_neba-management"
+  }
+}

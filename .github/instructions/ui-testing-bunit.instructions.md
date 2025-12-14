@@ -152,10 +152,46 @@ Also avoid:
 ### 5.1 One Test Method = One Logical Behavior
 Do not pack multiple unrelated behaviors into a single test.
 
-### 5.2 Prefer Readable Setup Over Over-Mocking
+### 5.2 Use Factory Pattern for Test Data
+All DTOs and ViewModels used in tests must be created using factory methods from the `Neba.Tests` project.
+
+**Example:**
+```csharp
+// GOOD - Using factory
+var champion = BowlerTitleSummaryViewModelFactory.Create(titleCount: 10, hallOfFame: true);
+
+// BAD - Inline construction
+var champion = new BowlerTitleSummaryViewModel
+{
+    BowlerId = Guid.NewGuid(),
+    BowlerName = "Test",
+    TitleCount = 10,
+    HallOfFame = true
+};
+```
+
+**Factory Guidelines:**
+- Only specify parameters that are relevant to the test being performed
+- Use default values for properties that aren't being tested
+- Use the `Bogus()` method when you need random data without specific values
+- Avoid using seeds unless testing specific data scenarios
+
+**Example:**
+```csharp
+// Testing title count - only specify titleCount
+BowlerTitleSummaryViewModelFactory.Create(titleCount: 25);
+
+// Testing bowler name display - only specify bowlerName
+BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice Smith");
+
+// Need random data, don't care about specific values
+BowlerTitleSummaryViewModelFactory.Bogus(count: 5);
+```
+
+### 5.3 Prefer Readable Setup Over Over-Mocking
 Avoid complex fixture setups when verifying UI logic.
 
-### 5.3 Enforce Component Contracts
+### 5.4 Enforce Component Contracts
 Every reusable component should have tests that enforce:
 
 - states
@@ -163,10 +199,10 @@ Every reusable component should have tests that enforce:
 - required parameters
 - expected markup fragments
 
-### 5.4 Don't Mirror Playwright Coverage
+### 5.5 Don't Mirror Playwright Coverage
 bUnit should focus on permutations and internal logic, not scenarios.
 
-### 5.5 Keep Tests Fast and Deterministic
+### 5.6 Keep Tests Fast and Deterministic
 The entire bUnit suite should run in milliseconds.
 
 ---

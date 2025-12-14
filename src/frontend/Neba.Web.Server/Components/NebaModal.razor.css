@@ -1,0 +1,173 @@
+/* Modal Backdrop - Fixed overlay with blur effect */
+.neba-modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+/* Modal Container - Centered box */
+.neba-modal-container {
+    max-width: 42rem; /* 672px - default max width */
+    width: 100%;
+    height: 80vh; /* Fixed height */
+    display: flex !important;
+    flex-direction: column;
+    animation: slideIn 0.2s ease-out;
+    position: relative;
+    margin: auto;
+    cursor: default;
+    pointer-events: auto;
+}
+
+/* Modal Content - White background with shadow */
+.neba-modal-content {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill container height */
+    pointer-events: auto;
+}
+
+/* Modal Header */
+.neba-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgb(229 231 235);
+}
+
+.neba-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgb(17 24 39);
+    margin: 0;
+}
+
+.neba-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: rgb(107 114 128);
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+}
+
+.neba-modal-close:hover {
+    color: rgb(55 65 81);
+    background-color: rgb(243 244 246);
+}
+
+/* Modal Body */
+.neba-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal Footer */
+.neba-modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgb(229 231 235);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-1rem) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .neba-modal-backdrop {
+        padding: 0;
+    }
+
+    .neba-modal-container {
+        height: 100vh;
+        max-height: 100vh;
+    }
+
+    .neba-modal-content {
+        border-radius: 0;
+        height: 100%;
+    }
+
+    .neba-modal-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .neba-modal-title {
+        font-size: 1rem;
+    }
+
+    .neba-modal-body {
+        padding: 0.75rem 1rem;
+    }
+
+    .neba-modal-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Landscape mode on mobile - even more compact */
+@media (max-width: 900px) and (max-height: 500px) {
+    .neba-modal-header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .neba-modal-title {
+        font-size: 0.95rem;
+    }
+
+    .neba-modal-body {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .neba-modal-footer {
+        padding: 0.5rem 0.75rem;
+    }
+}

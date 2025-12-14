@@ -52,6 +52,8 @@ jobs:
 
       - name: Run What-If Analysis
         id: whatif
+        env:
+          DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
         run: |
           echo "### 📋 Infrastructure What-If Analysis" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -71,6 +73,11 @@ jobs:
               azureApiAppServiceName='${{ vars.AZURE_API_APP_SERVICE_NAME }}' \
               azureWebAppServiceName='${{ vars.AZURE_WEB_APP_SERVICE_NAME }}' \
               azureAppServicePlanSku='${{ vars.AZURE_APP_SERVICE_PLAN_SKU }}' \
+              databaseServerName='${{ vars.DATABASE_SERVER_NAME }}' \
+              databaseName='${{ vars.DATABASE_NAME }}' \
+              databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
+              databaseAdminPassword="$DATABASE_ADMIN_PASSWORD" \
+              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
             --result-format FullResourcePayloads 2>&1)
           WHATIF_EXIT_CODE=$?
           set -e  # Re-enable exit on error

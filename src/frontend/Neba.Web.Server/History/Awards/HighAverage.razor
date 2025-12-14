@@ -1,0 +1,158 @@
+@page "/history/high-average"
+@using Neba.Web.Server.Notifications
+@inject NebaApiService NebaApiService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>High Average Award - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="View NEBA High Average award winners by season. Recognizing the highest bowling averages achieved by bowlers throughout NEBA's history." />
+</HeadContent>
+
+<div>
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">High Average</h1>
+        <div class="grid grid-cols-1 gap-6">
+            <div class="col-span-1">
+            <div class="text-base text-gray-700 leading-relaxed bg-white/80 rounded-lg shadow-sm p-4 border border-gray-100">
+                <p class="mb-2">
+                    The <span class="font-semibold text-[var(--neba-blue-700)]">High Average</span> award recognizes the highest season-long average achieved by a bowler, demonstrating sustained excellence across an entire competitive season.
+                </p>
+                <p>
+                    This prestigious achievement showcases a bowler's ability to maintain consistently high scores throughout the season, representing the pinnacle of competitive performance.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Awards"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Awards Table Section with Loading Overlay -->
+    <div class="relative min-h-[400px] mt-6">
+        <!-- Loading Indicator (scoped to this section) -->
+        <NebaLoadingIndicator IsVisible="@_isLoading"
+                              Text="Loading..."
+                              Scope="LoadingIndicatorScope.Section"
+                              DelayMs="0"
+                              MinimumDisplayMs="0" />
+
+        <!-- Awards Table -->
+        @if (_awards.Count > 0)
+        {
+            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm max-w-6xl mx-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b-2 border-[var(--neba-accent-red)]">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700 w-24">Year</th>
+                            <th class="px-6 py-3 text-left text-sm font-bold text-gray-700">Bowler</th>
+                            <th class="px-6 py-3 text-right text-sm font-bold text-gray-700 w-24">Avg.</th>
+                            <th class="px-6 py-3 text-center text-sm font-bold text-gray-700 w-24 hidden sm:table-cell">Games</th>
+                            <th class="px-6 py-3 text-center text-sm font-bold text-gray-700 w-24 hidden sm:table-cell">Tournaments</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var award in _awards)
+                        {
+                            var isRecord = award.Average == _recordAverage;
+                            var rowClass = isRecord
+                                ? "bg-amber-50 hover:bg-gray-50 border-l-4 border-amber-500"
+                                : "hover:bg-gray-50";
+
+                            <tr class="@rowClass">
+                                <td class="px-6 py-4 text-gray-900 font-semibold">@award.Season</td>
+                                <td class="px-6 py-4">
+                                    @if (isRecord)
+                                    {
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-amber-600 bg-white px-2 py-0.5 rounded border border-amber-300" title="All-time record">🏆 RECORD</span>
+                                            <span class="text-gray-900">@award.BowlerName</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-900">@award.BowlerName</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-gray-900 font-bold @(isRecord ? "text-lg" : "") text-right">@FormatAverage(award.Average)</td>
+                                <td class="px-6 py-4 text-center hidden sm:table-cell">
+                                    @if (award.GamesBowled.HasValue)
+                                    {
+                                        <span class="text-gray-900">@award.GamesBowled.Value</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">—</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-center hidden sm:table-cell">
+                                    @if (award.TournamentsBowled.HasValue)
+                                    {
+                                        <span class="text-gray-900">@award.TournamentsBowled.Value</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (!_isLoading)
+        {
+            <div class="text-center py-12 text-gray-500">
+                <p>No high average awards data available.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<HighAverageAwardViewModel> _awards = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+    private decimal _recordAverage;
+
+    async protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            var result =  await NebaApiService.GetHighAverageAwardsAsync();
+
+            if (result.IsError)
+            {
+                _errorMessage = result.FirstError.Description;
+
+                return;
+            }
+
+            _awards = result.Value.ToList();
+
+            // Calculate the record (highest average)
+            _recordAverage = _awards.Any() ? _awards.Max(a => a.Average) : 0;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load high average awards: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatAverage(decimal average)
+    {
+        return average.ToString("F2");
+    }
+}

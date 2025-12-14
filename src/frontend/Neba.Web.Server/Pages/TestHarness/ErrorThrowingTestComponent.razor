@@ -1,0 +1,21 @@
+@* Helper component for testing error boundaries *@
+@if (!ThrowError)
+{
+    <p class="text-sm text-gray-600">Component loaded successfully. No error thrown.</p>
+}
+
+@code {
+    [Parameter]
+    public bool ThrowError { get; set; }
+
+    [Parameter]
+    public string ErrorMessage { get; set; } = "Test error";
+
+    protected override void OnInitialized()
+    {
+        if (ThrowError)
+        {
+            throw new InvalidOperationException(ErrorMessage);
+        }
+    }
+}

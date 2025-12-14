@@ -1,8 +1,22 @@
+using System.Text.Json;
+using Neba.Api.Endpoints.Website;
+using Neba.Api.HealthChecks;
+using Neba.Api.OpenApi;
+using Neba.Application;
+using Neba.Infrastructure;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.ConfigureOpenApi();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -21,11 +35,9 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app
+    .UseOpenApi()
+    .UseHealthChecks();
 
 app.UseHttpsRedirection();
 
@@ -33,5 +45,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 // Future API endpoints will be added here
+app.MapWebsiteEndpoints();
 
 await app.RunAsync();

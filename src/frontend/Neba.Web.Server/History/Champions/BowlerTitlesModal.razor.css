@@ -1,0 +1,114 @@
+/*
+ * Bowler Titles Modal Layout
+ * Structure: Modal has fixed header at top, then two sections below:
+ * 1. Summary section (fixed, portrait only)
+ * 2. Table section (header fixed, list scrolls)
+ *
+ * Note: Overflow overrides are in wwwroot/bowler-titles-modal.css (unscoped)
+ * to properly target the parent NebaModal component elements.
+ */
+
+/* Summary Section - Visible by default (portrait) */
+.bowler-titles-summary-section {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    display: block;
+}
+
+.bowler-titles-summary-card {
+    margin-bottom: 1rem;
+}
+
+/* Header stats in modal header - Visible by default, hidden only in tall portrait */
+.bowler-titles-header-stats {
+    display: flex;
+}
+
+/* Portrait mode: Hide header stats, show summary card */
+@media (min-height: 501px) and (max-width: 640px) {
+    .bowler-titles-header-stats {
+        display: none;
+    }
+
+    .bowler-titles-summary-section {
+        display: block;
+    }
+}
+
+/* Table Section - Contains fixed header and scrollable body */
+.bowler-titles-table-section {
+    display: flex;
+    flex-direction: column;
+    /* Use max-height instead of height to allow modal to shrink */
+    max-height: calc(90vh - 200px); /* Account for: header + summary card + margins */
+    flex: 1;
+    min-height: 0;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* Table Header - Fixed, doesn't scroll */
+.bowler-titles-table-header {
+    flex-shrink: 0;
+}
+
+/* Scrollable List - Takes remaining space and scrolls */
+.bowler-titles-scrollable-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent the list from growing beyond available space */
+    min-height: 0;
+}
+
+/* Landscape and Desktop: Hide summary card, show header stats */
+@media (min-width: 641px) {
+    .bowler-titles-summary-section {
+        display: none;
+    }
+
+    .bowler-titles-header-stats {
+        display: flex;
+    }
+
+    .bowler-titles-table-section {
+        /* Reduce bottom padding on desktop/landscape */
+        padding-bottom: 1rem;
+    }
+}
+
+/* Mobile landscape: Hide summary card, show header stats */
+@media (max-width: 640px) and (max-height: 500px) {
+    .bowler-titles-summary-section {
+        display: none;
+    }
+
+    .bowler-titles-header-stats {
+        display: flex;
+    }
+
+    .bowler-titles-table-section {
+        /* Use flex to fill all available space */
+        flex: 1;
+        min-height: 0;
+        padding: 0.25rem 0.75rem 0.25rem 0.75rem; /* Minimal padding all around */
+    }
+}
+
+/* Mobile portrait - full screen */
+@media (max-width: 640px) {
+    .bowler-titles-summary-section {
+        padding: 0.75rem 1rem 0 1rem;
+    }
+
+    .bowler-titles-table-section {
+        max-height: calc(90vh - 210px); /* Optimize for available space */
+        padding: 0 1rem 0.35rem 1rem; /* Minimal bottom padding */
+    }
+}
+
+/* Desktop and larger screens */
+@media (min-width: 641px) and (min-height: 501px) {
+    .bowler-titles-table-section {
+        /* Use max-height for flexibility */
+        max-height: calc(90vh - 200px);
+    }
+}

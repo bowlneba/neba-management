@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (web)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/backend/Neba.Api/bin/Debug/net10.0/Neba.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/backend/Neba.Api",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    },
+    {
+      "name": "Debug Unit Tests",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-tests",
+      "program": "dotnet",
+      "args": ["test", "${workspaceFolder}/tests/Neba.UnitTests/Neba.UnitTests.csproj", "--no-build"],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Debug Integration Tests",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-tests",
+      "program": "dotnet",
+      "args": ["test", "${workspaceFolder}/tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj", "--no-build"],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}

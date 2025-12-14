@@ -52,6 +52,9 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
   location: location
   tags: tags
   kind: 'app,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: appServicePlanId
     httpsOnly: true
@@ -95,3 +98,4 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
 output id string = appService.id
 output name string = appService.name
 output defaultHostName string = appService.properties.defaultHostName
+output principalId string = appService.identity.principalId

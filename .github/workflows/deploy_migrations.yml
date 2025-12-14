@@ -1,0 +1,82 @@
+name: Deploy Database Migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'Production'
+        type: string
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'Production'
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  deploy-website-migrations:
+    name: Deploy Website Database Migrations
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'Production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Apply Website database migrations
+        env:
+          ConnectionStrings__bowlneba: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
+        run: |
+          echo "🔄 Applying Website database migrations..."
+          dotnet ef database update \
+            --project src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj \
+            --context WebsiteDbContext \
+            --verbose
+          echo "✅ Website database migrations applied successfully"
+
+      - name: Generate migration summary
+        if: success()
+        run: |
+          echo "### 🎉 Migration Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Migrations applied successfully" >> $GITHUB_STEP_SUMMARY
+
+      - name: Handle migration failure
+        if: failure()
+        run: |
+          echo "### ❌ Migration Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ❌ Failed to apply migrations" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY

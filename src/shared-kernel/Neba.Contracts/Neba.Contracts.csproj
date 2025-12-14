@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <RootNamespace>Neba.Contracts</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Neba.SharedKernel\Neba.SharedKernel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" />
+    </ItemGroup>
+
+</Project>

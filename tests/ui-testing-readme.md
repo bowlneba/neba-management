@@ -10,9 +10,9 @@ This file acts as the entry point for understanding **what to test**, **where to
 
 The NEBA Management System follows Clean Architecture + DDD principles. UI testing is layered to match those boundaries:
 
-- **Playwright** → real browser UI testing  
-- **bUnit** → Blazor component logic testing  
-- **xUnit** → domain logic testing  
+- **Playwright** → real browser UI testing
+- **bUnit** → Blazor component logic testing
+- **xUnit** → domain logic testing
 
 Each layer tests different responsibilities. No single tool should perform all testing. This prevents duplication, flakiness, performance issues, and architectural violations.
 
@@ -42,7 +42,7 @@ This structure preserves boundaries and ensures long-term maintainability.
 
 # 3. What Each Tool Is Responsible For
 
-## 3.1 Playwright – Real Browser Testing
+## 3.1 Playwright – Real Browser Testing with Mocked APIs
 
 Playwright validates all behaviors requiring:
 
@@ -52,12 +52,19 @@ Playwright validates all behaviors requiring:
 - multi-step workflows
 - cross-browser correctness
 
+**All Playwright tests mock the API** using `page.route()` to ensure:
+- Fast, reliable test execution
+- Isolated browser behavior testing
+- No dependency on backend services
+- Predictable test data
+
 Examples include:
 
 - navbar collapse and overflow prevention
-- toast placement (desktop vs mobile)
-- score entry workflows
-- modal, drawer, and navigation interactions
+- toast auto-dismiss timing (real browser timing)
+- modal interaction flows
+- mobile responsive behavior
+- multi-step user journeys
 
 Playwright is the only tool that can test how the UI behaves **in a real browser**.
 
@@ -85,22 +92,22 @@ See `ui-testing-playwright.instructions.md`.
 
 bUnit validates component-level logic:
 
-- branching and conditional rendering  
-- input validation  
-- parameter handling  
-- EventCallback behavior  
-- internal component state transitions  
-- interactions with mocked services  
+- branching and conditional rendering
+- input validation
+- parameter handling
+- EventCallback behavior
+- internal component state transitions
+- interactions with mocked services
 
 Examples include:
 
-- button disabled → enabled transitions  
-- validation message rules  
-- correct markup fragments for component states  
+- button disabled → enabled transitions
+- validation message rules
+- correct markup fragments for component states
 
 bUnit does **not** evaluate CSS, layout, or browser behavior.
 
-Full details:  
+Full details:
 See `ui-testing-bunit.instructions.md`.
 
 ---
@@ -109,12 +116,12 @@ See `ui-testing-bunit.instructions.md`.
 
 xUnit covers logic inside the domain layer:
 
-- entities  
-- aggregates  
-- value objects  
-- validation rules  
-- factory behavior  
-- domain services  
+- entities
+- aggregates
+- value objects
+- validation rules
+- factory behavior
+- domain services
 
 No Blazor dependencies. No UI logic. Pure domain.
 
@@ -138,8 +145,8 @@ Use this chart:
 | Domain entity invariants | xUnit |
 | Domain validation rules | xUnit |
 
-If the behavior depends on **browser rendering**, it belongs to Playwright.  
-If it depends on **component logic**, it belongs to bUnit.  
+If the behavior depends on **browser rendering**, it belongs to Playwright.
+If it depends on **component logic**, it belongs to bUnit.
 If it depends on **domain rules**, it belongs to xUnit.
 
 ---
@@ -166,34 +173,34 @@ This ensures clarity and consistency across test layers.
 
 CI runs tests in the following order:
 
-1. **xUnit domain tests** – fastest feedback  
-2. **bUnit component tests** – fast and isolated  
-3. **Playwright browser tests** – slower, scenario-based  
+1. **xUnit domain tests** – fastest feedback
+2. **bUnit component tests** – fast and isolated
+3. **Playwright E2E tests** – slower, scenario-based
 
 PR pipeline:
-- Chromium + desktop viewport  
-- No mobile by default  
+- All 4 browsers: Chromium, WebKit, Mobile Chrome, Mobile Safari
+- Only E2E tests (*.e2e.spec.ts)
+- ~76 test executions (19 tests × 4 browsers)
+- ~42 seconds execution time
 
 Nightly pipeline:
-- Chromium  
-- Firefox  
-- WebKit  
-- Mobile emulation  
-- Full scenario suite  
+- Same browser configuration
+- Full E2E scenario suite
+- Extended timeout scenarios
 
 Playwright failures automatically generate:
-- traces  
-- videos  
-- console logs  
-- network logs  
+- traces
+- videos
+- console logs
+- network logs
 
 ---
 
 # 7. Additional Resources
 
-- `ui-testing.instructions.md`: Full strategy document  
-- `ui-testing-playwright.instructions.md`: Playwright-specific rules  
-- `ui-testing-bunit.instructions.md`: bUnit-specific rules  
+- `ui-testing.instructions.md`: Full strategy document
+- `ui-testing-playwright.instructions.md`: Playwright-specific rules
+- `ui-testing-bunit.instructions.md`: bUnit-specific rules
 
 ---
 

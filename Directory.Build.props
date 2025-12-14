@@ -12,7 +12,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    <!-- PathMap breaks debugger source file resolution, only use it for Release builds -->
+    <PathMap Condition="'$(Configuration)' == 'Release'">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
 
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>All</AnalysisMode>
@@ -26,7 +27,6 @@
 
   <ItemGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj'">
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all"/>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>

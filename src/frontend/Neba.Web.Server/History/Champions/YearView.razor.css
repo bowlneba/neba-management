@@ -1,0 +1,128 @@
+/* Year section headers */
+.year-header {
+    background: none;
+    border: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.year-header:hover {
+    background-color: rgba(62, 79, 217, 0.05);
+}
+
+/* Collapse/expand animations */
+.year-collapse-container {
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.year-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.year-expanded {
+    max-height: 10000px;
+    opacity: 1;
+}
+
+/* Champion name links */
+.champion-name {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--neba-blue-700);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+}
+
+.champion-name:hover {
+    color: var(--neba-blue-600);
+    text-decoration-color: var(--neba-blue-600);
+}
+
+/* Mobile responsive table */
+@media (max-width: 640px) {
+    /* Hide table headers on mobile */
+    .year-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+    
+    /* Stack table rows as cards */
+    .year-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--neba-border);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .year-table tbody tr:hover {
+        background-color: white;
+    }
+    
+    /* Format cells as rows */
+    .year-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--neba-gray-200);
+        text-align: right;
+    }
+    
+    .year-table tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Add labels before content */
+    .year-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--neba-gray-700);
+        text-align: left;
+        flex: 0 0 auto;
+        margin-right: 1rem;
+    }
+    
+    /* Adjust specific columns */
+    .year-table tbody td:nth-child(1)::before {
+        content: "Month:";
+    }
+    
+    .year-table tbody td:nth-child(2)::before {
+        content: "Type:";
+    }
+    
+    .year-table tbody td:nth-child(3)::before {
+        content: "Champions:";
+    }
+    
+    .year-table tbody td:nth-child(3) {
+        display: block;
+        text-align: left;
+        padding-top: 0.5rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .year-table {
+        font-size: 0.875rem;
+    }
+    
+    .year-table th,
+    .year-table td {
+        padding: 0.625rem;
+    }
+}

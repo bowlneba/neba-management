@@ -1,0 +1,196 @@
+@using Neba.Web.Server.Notifications
+
+@if (IsLoading)
+{
+    <div class="flex justify-center items-center py-12">
+        <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--neba-blue-700)]"></div>
+            <p class="mt-4 text-gray-600">Loading titles by year...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="py-6">
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Titles"
+                   Message="@ErrorMessage"
+                   Dismissible="true"
+                   OnDismiss="OnErrorDismiss" />
+    </div>
+}
+else if (TitlesByYear == null || TitlesByYear.Count == 0)
+{
+    <div class="text-center py-12 text-gray-500">
+        No titles found.
+    </div>
+}
+else
+{
+    <div class="space-y-4">
+        @foreach (var yearGroup in TitlesByYear.OrderByDescending(g => g.Year))
+        {
+            var sectionId = $"year-{yearGroup.Year}";
+            var isExpanded = _expandedSections.Contains(sectionId);
+
+            <div>
+                <button type="button"
+                        class="year-header w-full flex items-center justify-between"
+                        @onclick="() => ToggleSection(sectionId)">
+                    <h3 class="text-xl font-semibold text-blue-900">
+                        @yearGroup.Year
+                        <span class="text-sm text-blue-700 italic ml-2">@yearGroup.Titles.Count @(yearGroup.Titles.Count == 1 ? "title" : "titles")</span>
+                    </h3>
+                    <span class="text-blue-900 text-lg transition-transform @(isExpanded ? "rotate-90" : "")">
+                        ▶
+                    </span>
+                </button>
+
+                <div class="year-collapse-container @(isExpanded ? "year-expanded" : "year-collapsed")">
+                    <div class="mt-3">
+                        <div class="overflow-hidden rounded-lg border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                            Month
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
+                                            Tournament Type
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Champions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach (var monthGroup in yearGroup.Titles.GroupBy(t => t.TournamentMonth).OrderByDescending(g => g.Key))
+                                    {
+                                        @foreach (var typeGroup in monthGroup.GroupBy(t => t.TournamentType).OrderBy(g => g.Key))
+                                        {
+                                            var champions = typeGroup.ToList();
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3 text-sm text-gray-700 font-medium">@GetMonthName(monthGroup.Key)</td>
+                                                <td class="px-4 py-3">
+                                                    <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
+                                                        @typeGroup.Key
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    @for (var i = 0; i < champions.Count; i++)
+                                                    {
+                                                        var champion = champions[i];
+                                                        <button type="button"
+                                                                class="champion-name font-medium"
+                                                                @onclick="() => HandleChampionClick(champion)">
+                                                            @champion.BowlerName</button>@if (i < champions.Count - 1)
+                                                        {
+                                                            <text>, </text>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<TitlesByYearViewModel>? TitlesByYear { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback OnErrorDismiss { get; set; }
+
+    [Parameter]
+    public EventCallback<BowlerTitleViewModel> OnChampionClick { get; set; }
+
+    private readonly HashSet<string> _expandedSections = new();
+    private string? _previousDataHash;
+
+    protected override void OnParametersSet()
+    {
+        if (TitlesByYear != null)
+        {
+            var currentDataHash = ComputeDataHash(TitlesByYear);
+            if (currentDataHash != _previousDataHash)
+            {
+                // Data has changed, reset expanded sections
+                _expandedSections.Clear();
+
+                // Expand all sections by default when data is loaded or refreshed
+                foreach (var yearGroup in TitlesByYear)
+                {
+                    _expandedSections.Add($"year-{yearGroup.Year}");
+                }
+
+                _previousDataHash = currentDataHash;
+            }
+        }
+    }
+
+    private static string ComputeDataHash(List<TitlesByYearViewModel> data)
+    {
+        // Create a deterministic string representation for hashing
+        var dataString = string.Join("|",
+            data.OrderBy(d => d.Year)
+                .Select(yearGroup =>
+                    $"{yearGroup.Year}:{string.Join(",",
+                        yearGroup.Titles
+                            .OrderBy(t => t.BowlerId)
+                            .Select(t => $"{t.BowlerId}:{t.TournamentYear}:{t.TournamentMonth}:{t.TournamentType}:{t.HallOfFame}"))}"));
+
+        // Return the canonical string for reliable comparison
+        return dataString;
+    }
+
+    private void ToggleSection(string sectionId)
+    {
+        if (_expandedSections.Contains(sectionId))
+        {
+            _expandedSections.Remove(sectionId);
+        }
+        else
+        {
+            _expandedSections.Add(sectionId);
+        }
+    }
+
+    private async Task HandleChampionClick(BowlerTitleViewModel title)
+    {
+        await OnChampionClick.InvokeAsync(title);
+    }
+
+    private static string GetMonthName(int month)
+    {
+        return month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            var _ => "Unknown"
+        };
+    }
+}

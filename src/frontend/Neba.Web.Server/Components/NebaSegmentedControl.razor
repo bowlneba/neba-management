@@ -1,0 +1,72 @@
+@* iOS-style segmented control component *@
+
+<div role="tablist"
+     class="inline-flex neba-segmented-control @CssClass"
+     @onkeydown="HandleKeyDown">
+    @foreach (var option in Options)
+    {
+        var isSelected = option.Value == SelectedValue;
+        var buttonClass = isSelected
+            ? "neba-segment-button neba-segment-selected"
+            : "neba-segment-button";
+
+        <button type="button"
+                role="tab"
+                aria-selected="@isSelected"
+                class="@buttonClass"
+                @onclick="() => HandleSelection(option.Value)">
+            @option.Label
+        </button>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The list of options to display in the segmented control.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public List<SegmentedControlOption> Options { get; set; } = new();
+
+    /// <summary>
+    /// The currently selected option value.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string SelectedValue { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Callback invoked when the selected value changes.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<string> OnValueChanged { get; set; }
+
+    /// <summary>
+    /// Optional CSS class to apply to the container.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    private async Task HandleSelection(string value)
+    {
+        if (value != SelectedValue)
+        {
+            await OnValueChanged.InvokeAsync(value);
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        // Support arrow key navigation
+        if (e.Key == "ArrowLeft" || e.Key == "ArrowRight")
+        {
+            var currentIndex = Options.FindIndex(o => o.Value == SelectedValue);
+            var newIndex = e.Key == "ArrowLeft"
+                ? Math.Max(0, currentIndex - 1)
+                : Math.Min(Options.Count - 1, currentIndex + 1);
+
+            if (newIndex != currentIndex)
+            {
+                await HandleSelection(Options[newIndex].Value);
+            }
+        }
+    }
+}

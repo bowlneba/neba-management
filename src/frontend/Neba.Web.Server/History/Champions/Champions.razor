@@ -1,0 +1,168 @@
+@page "/history/champions"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inject NebaApiService NebaApiService
+
+<PageTitle>Champions - NEBA</PageTitle>
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Champions</h1>
+        <p class="mt-1 text-sm text-gray-600">NEBA tournament title leaders throughout history</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Champions"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading champions..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- View Toggle Segmented Control -->
+    @if (!_isLoading && _champions.Count > 0)
+    {
+        <div class="flex justify-start">
+            <NebaSegmentedControl Options="_viewOptions"
+                                  SelectedValue="@_selectedView.ToString()"
+                                  OnValueChanged="HandleViewChanged" />
+        </div>
+    }
+
+    <!-- View Content -->
+    @if (_champions.Count > 0)
+    {
+        @if (_selectedView == ChampionsView.TitleCount)
+        {
+            <TitleCountView Champions="_champions" OnChampionClick="HandleChampionClick" />
+        }
+        else
+        {
+            <YearView TitlesByYear="@_titlesByYear"
+                      IsLoading="@_isYearViewLoading"
+                      ErrorMessage="@_yearViewErrorMessage"
+                      OnErrorDismiss="() => _yearViewErrorMessage = null"
+                      OnChampionClick="HandleYearViewChampionClick" />
+        }
+    }
+</div>
+
+<!-- Bowler Titles Modal -->
+<BowlerTitlesModal IsOpen="@_isModalOpen"
+                   OnClose="@(() => _isModalOpen = false)"
+                   BowlerId="@_selectedBowlerId"
+                   BowlerName="@_selectedBowlerName"
+                   HallOfFame="@_selectedBowlerHallOfFame" />
+
+@code {
+    private List<BowlerTitleSummaryViewModel> _champions = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+    private ChampionsView _selectedView = ChampionsView.TitleCount;
+
+    // Year view data
+    private List<TitlesByYearViewModel>? _titlesByYear;
+    private bool _isYearViewLoading = false;
+    private string? _yearViewErrorMessage;
+
+    // Modal state
+    private bool _isModalOpen = false;
+    private Guid? _selectedBowlerId;
+    private string? _selectedBowlerName;
+    private bool _selectedBowlerHallOfFame;
+
+    // Segmented control options
+    private readonly List<SegmentedControlOption> _viewOptions = new()
+    {
+        new() { Label = "By Titles", Value = nameof(ChampionsView.TitleCount) },
+        new() { Label = "By Year", Value = nameof(ChampionsView.Year) }
+    };
+
+    async protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await NebaApiService.GetTitlesSummaryAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _errorMessage = $"Failed to load champions data: {error.Description}";
+                return;
+            }
+
+            _champions = result.Value.ToList();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load champions data: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadTitlesByYearAsync()
+    {
+        _isYearViewLoading = true;
+        _yearViewErrorMessage = null;
+
+        try
+        {
+            var result = await NebaApiService.GetTitlesByYearAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _yearViewErrorMessage = $"Failed to load titles: {error.Description}";
+                return;
+            }
+
+            _titlesByYear = result.Value.ToList();
+        }
+        catch (Exception ex)
+        {
+            _yearViewErrorMessage = $"Failed to load titles: {ex.Message}";
+        }
+        finally
+        {
+            _isYearViewLoading = false;
+        }
+    }
+
+    private async Task HandleViewChanged(string viewValue)
+    {
+        var newView = Enum.Parse<ChampionsView>(viewValue);
+        if (newView == ChampionsView.Year && _titlesByYear == null)
+        {
+            await LoadTitlesByYearAsync();
+        }
+        _selectedView = newView;
+    }
+
+    private void HandleChampionClick(BowlerTitleSummaryViewModel champion)
+    {
+        _selectedBowlerId = champion.BowlerId;
+        _selectedBowlerName = champion.BowlerName;
+        _selectedBowlerHallOfFame = champion.HallOfFame;
+        _isModalOpen = true;
+    }
+
+    private void HandleYearViewChampionClick(BowlerTitleViewModel title)
+    {
+        _selectedBowlerId = title.BowlerId;
+        _selectedBowlerName = title.BowlerName;
+        _selectedBowlerHallOfFame = title.HallOfFame;
+        _isModalOpen = true;
+    }
+}

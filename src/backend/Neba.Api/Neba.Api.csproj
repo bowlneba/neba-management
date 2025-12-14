@@ -2,10 +2,13 @@
 
   <PropertyGroup>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,7 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.UnitTests" />
   </ItemGroup>
 
 </Project>

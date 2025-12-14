@@ -1,3 +1,4 @@
+@using Neba.Web.Server.Notifications
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
 @inject IWebHostEnvironment HostEnv
@@ -81,11 +82,6 @@
                         <div class="neba-dropdown" role="menu">
                             <a href="/history/champions" class="neba-dropdown-link @(IsActive("history/champions") ? "active" : null)" aria-current="@(IsActive("history/champions") ? "page" : null)" role="menuitem">Champions</a>
                             <a href="/history/bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/bowler-of-the-year") ? "page" : null)" role="menuitem">Bowler of the Year</a>
-                            <a href="/history/rookie-of-the-year" class="neba-dropdown-link @(IsActive("history/rookie-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/rookie-of-the-year") ? "page" : null)" role="menuitem">Rookie of the Year</a>
-                            <a href="/history/senior-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/senior-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/senior-bowler-of-the-year") ? "page" : null)" role="menuitem">Senior Bowler of the Year</a>
-                            <a href="/history/woman-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/woman-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/woman-bowler-of-the-year") ? "page" : null)" role="menuitem">Woman Bowler of the Year</a>
-                            <a href="/history/super-senior-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/super-senior-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/super-senior-bowler-of-the-year") ? "page" : null)" role="menuitem">Super Senior Bowler of the Year</a>
-                            <a href="/history/youth-bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/youth-bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/youth-bowler-of-the-year") ? "page" : null)" role="menuitem">Youth Bowler of the Year</a>
                             <a href="/history/high-average" class="neba-dropdown-link @(IsActive("history/high-average") ? "active" : null)" aria-current="@(IsActive("history/high-average") ? "page" : null)" role="menuitem">High Average</a>
                             <a href="/history/high-block" class="neba-dropdown-link @(IsActive("history/high-block") ? "active" : null)" aria-current="@(IsActive("history/high-block") ? "page" : null)" role="menuitem">High Block</a>
                         </div>
@@ -109,6 +105,7 @@
                                onclick="event.preventDefault();">Testing</a>
                             <div class="neba-dropdown" role="menu">
                                 <a href="/testing/notifications" class="neba-dropdown-link @(IsActive("testing/notifications") ? "active" : null)" aria-current="@(IsActive("testing/notifications") ? "page" : null)" role="menuitem">Notifications</a>
+                                <a href="/testing/modals" class="neba-dropdown-link @(IsActive("testing/modals") ? "active" : null)" aria-current="@(IsActive("testing/modals") ? "page" : null)" role="menuitem">Modals</a>
                             </div>
                         </li>
                     }
@@ -118,7 +115,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 animate-fade-in relative" role="main" id="main-content">
+    <main class="flex-1" role="main" id="main-content">
         <article class="max-w-[1400px] mx-auto px-4 py-6 md:px-8">
             <AlertContainer DefaultVariant="AlertVariant.Filled"
                             DefaultShowIcon="true"
@@ -163,7 +160,7 @@
 
     bool IsActive(string path)
     {
-        string current = Nav.ToBaseRelativePath(Nav.Uri);
+        var current = Nav.ToBaseRelativePath(Nav.Uri);
 
         if (string.IsNullOrEmpty(current))
         {

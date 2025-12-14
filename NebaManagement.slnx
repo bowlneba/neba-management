@@ -18,6 +18,10 @@
     <Project Path="src/frontend/Neba.Web.Client/Neba.Web.Client.csproj" />
     <Project Path="src/frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
+  <Folder Name="/Shared Kernel/">
+    <Project Path="src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj" />
+    <Project Path="src/shared-kernel/Neba.SharedKernel/Neba.SharedKernel.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <File Path="tests/Directory.Build.props" />
     <Project Path="tests/Neba.IntegrationTests/Neba.IntegrationTests.csproj" />
