@@ -168,7 +168,7 @@ jobs:
           node-version: lts/*
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: tests/browser
 
       - name: Install Playwright Browsers
