@@ -5,52 +5,49 @@ using ErrorOr;
 namespace Neba.Domain.Bowlers;
 
 /// <summary>
-/// Represents a bowler's full legal and display name, including first name, last name, optional middle initial, suffix, and nickname, as defined in the NEBA domain ubiquitous language.
+/// A value object representing a bowler's complete name information, including legal name components
+/// and an optional nickname for informal display. Provides multiple formatting options for different
+/// contexts (legal documents, public display, formal communications).
 /// </summary>
-/// <value>Bowler's name value object</value>
 public sealed record Name
 {
     /// <summary>
-    /// The bowler's given first name, as used in official records and communications.
+    /// The bowler's given first name, used in official records.
     /// </summary>
-    /// <value>First name of the bowler</value>
     public required string FirstName { get; init; }
 
     /// <summary>
-    /// The bowler's family or surname, as used in official records and communications.
+    /// The bowler's family or surname, used in official records.
     /// </summary>
-    /// <value>Last name of the bowler</value>
     public required string LastName { get; init; }
 
     /// <summary>
-    /// The bowler's middle name, if provided, as used in legal or formal contexts.
+    /// The bowler's middle name (optional), used in legal or formal contexts.
     /// </summary>
-    /// <value>Middle name of the bowler</value>
     public string? MiddleName { get; init; }
 
     /// <summary>
-    /// The suffix for the bowler's name (e.g., Jr., Sr., III), if applicable, as used in official records.
+    /// Name suffix such as Jr., Sr., III, etc. (optional), used in official records.
     /// </summary>
-    /// <value>Suffix of the bowler's name</value>
     public string? Suffix { get; init; }
 
     /// <summary>
-    /// The bowler's preferred nickname, used for informal display or communications.
+    /// The bowler's preferred informal name (optional).
+    /// Can be traditional derivatives (e.g., "Dave" for David, "Mike" for Michael) or completely unrelated nicknames.
     /// </summary>
-    /// <value>Nickname of the bowler</value>
     public string? Nickname { get; init; }
 
     internal Name()
     { }
 
     /// <summary>
-    /// Creates a new <see cref="Name"/> value object after validating required fields according to NEBA domain rules.
+    /// Creates a new <see cref="Name"/> value object after validating required fields.
     /// </summary>
-    /// <param name="firstName">The bowler's first name (required).</param>
-    /// <param name="lastName">The bowler's last name (required).</param>
+    /// <param name="firstName">The bowler's first name (required - cannot be null or whitespace).</param>
+    /// <param name="lastName">The bowler's last name (required - cannot be null or whitespace).</param>
     /// <param name="middleName">The bowler's middle name (optional).</param>
     /// <param name="suffix">The bowler's name suffix (optional).</param>
-    /// <param name="nickname">The bowler's nickname (optional).</param>
+    /// <param name="nickname">The bowler's nickname (optional - no restrictions on content).</param>
     /// <returns>An <see cref="ErrorOr{T}"/> containing the created <see cref="Name"/> or validation errors.</returns>
     public static ErrorOr<Name> Create(
         string firstName,
@@ -88,9 +85,10 @@ public sealed record Name
     }
 
     /// <summary>
-    /// Returns the bowler's legal name in the format: FirstName [MiddleInitial.] LastName[, Suffix.]
+    /// Returns the bowler's legal name in the format: FirstName [MiddleName] LastName[, Suffix].
+    /// Use case: Official documents, 1099 tax reporting, legal records.
     /// </summary>
-    /// <returns>The legal name string for the bowler.</returns>
+    /// <returns>The legal name string (e.g., "David Michael Smith, Jr.").</returns>
     public string ToLegalName()
     {
         StringBuilder parts = new(FirstName);
@@ -111,18 +109,21 @@ public sealed record Name
     }
 
     /// <summary>
-    /// Returns the bowler's display name, using the nickname if available, otherwise the first and last name.
+    /// Returns the bowler's display name: [Nickname|FirstName] LastName.
+    /// Uses nickname if available, otherwise uses first name.
+    /// Use case: Public website display, tournament results, awards lists.
     /// </summary>
-    /// <returns>The display name string for the bowler.</returns>
+    /// <returns>The display name string (e.g., "Dave Smith" if nickname exists, otherwise "David Smith").</returns>
     public string ToDisplayName()
         => !string.IsNullOrWhiteSpace(Nickname)
             ? $"{Nickname} {LastName}"
             : $"{FirstName} {LastName}";
 
     /// <summary>
-    /// Returns the bowler's formal name in the format: FirstName LastName.
+    /// Returns the bowler's formal name in the format: FirstName LastName (ignoring nickname).
+    /// Use case: Formal communications where nicknames are inappropriate.
     /// </summary>
-    /// <returns>The formal name string for the bowler.</returns>
+    /// <returns>The formal name string (e.g., "David Smith").</returns>
     public string ToFormalName()
         => $"{FirstName} {LastName}";
 

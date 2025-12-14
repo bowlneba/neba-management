@@ -25,7 +25,10 @@
       "Bash(code --list-extensions)",
       "Bash(dotnet clean:*)",
       "Bash(xargs cat:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(cd /Users/kippermand/Projects/bowlneba/neba-management/docs && BUNDLE_FORCE_RUBY_PLATFORM=true bundle install:*)",
+      "Bash(bundle install:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

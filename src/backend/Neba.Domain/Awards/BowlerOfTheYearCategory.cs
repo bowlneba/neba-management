@@ -3,38 +3,46 @@ using Ardalis.SmartEnum;
 namespace Neba.Domain.Awards;
 
 /// <summary>
-/// Represents a category for the Bowler of the Year award, using a smart enum pattern.
+/// Categories used to group bowlers for Bowler of the Year awards, allowing recognition across different
+/// demographics and experience levels. Each category has specific eligibility criteria, and bowlers can
+/// compete in multiple categories simultaneously.
 /// </summary>
 public sealed class BowlerOfTheYearCategory
     : SmartEnum<BowlerOfTheYearCategory>
 {
     /// <summary>
-    /// Open category for Bowler of the Year.
+    /// Open category for Bowler of the Year - all NEBA members are eligible.
+    /// This is the most prestigious BOTY category with no restrictions.
     /// </summary>
     public static readonly BowlerOfTheYearCategory Open = new("Bowler of the Year", 1);
 
     /// <summary>
-    /// Woman category for Bowler of the Year.
+    /// Woman Bowler of the Year - female NEBA members competing in stat-eligible tournaments open to all women.
+    /// Women bowling in tournaments restricted to other categories do not earn Woman BOTY points for those events.
     /// </summary>
     public static readonly BowlerOfTheYearCategory Woman = new("Woman Bowler of the Year", 2);
 
     /// <summary>
-    /// Senior category for Bowler of the Year.
+    /// Senior Bowler of the Year - bowlers aged 50 or older (age determined as of each tournament date).
+    /// Example: A bowler turning 50 on June 30 can earn Senior BOTY points starting July 1.
     /// </summary>
     public static readonly BowlerOfTheYearCategory Senior = new("Senior Bowler of the Year", 50);
 
     /// <summary>
-    /// Super Senior category for Bowler of the Year.
+    /// Super Senior Bowler of the Year - bowlers aged 60 or older (age determined as of each tournament date).
+    /// Same age determination rules as Senior category.
     /// </summary>
     public static readonly BowlerOfTheYearCategory SuperSenior = new("Super Senior Bowler of the Year", 60);
 
     /// <summary>
-    /// Rookie of the Year category.
+    /// Rookie of the Year - bowlers in their first year of NEBA membership.
+    /// Eligibility is based on the season in which they purchased a "New Membership" (not a "Renewal Membership").
     /// </summary>
     public static readonly BowlerOfTheYearCategory Rookie = new("Rookie of the Year", 10);
 
     /// <summary>
-    /// Youth category for Bowler of the Year.
+    /// Youth Bowler of the Year - bowlers under age 18 (age determined as of each tournament date).
+    /// Example: A bowler turning 18 on June 30 can earn Youth BOTY points through June 29 only.
     /// </summary>
     public static readonly BowlerOfTheYearCategory Youth = new("Youth Bowler of the Year", 20);
 
