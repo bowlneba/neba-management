@@ -92,12 +92,4 @@ public sealed class TestApiResponse<T> : IDisposable
             _disposed = true;
         }
     }
-
-    /// <summary>
-    /// Finalizer for cleanup in case Dispose is not called.
-    /// </summary>
-    ~TestApiResponse()
-    {
-        Dispose(false);
-    }
 }
