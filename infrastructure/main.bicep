@@ -123,7 +123,6 @@ module apiAppService 'modules/appService.bicep' = {
     name: '${azureApiAppServiceName}-${azureLocation}'
     location: azureLocation
     appServicePlanId: appServicePlan.outputs.id
-    enableManagedIdentity: true
     tags: union(tags, { Component: 'API' })
     corsAllowedOrigins: [
       'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
