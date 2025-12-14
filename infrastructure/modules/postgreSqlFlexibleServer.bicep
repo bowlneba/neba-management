@@ -37,9 +37,6 @@ param highAvailability bool = false
 @description('Database name to create')
 param databaseName string
 
-@description('Enable system-assigned Managed Identity')
-param enableManagedIdentity bool = true
-
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -48,9 +45,9 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
   name: name
   location: location
   tags: tags
-  identity: enableManagedIdentity ? {
+  identity: {
     type: 'SystemAssigned'
-  } : null
+  }
   sku: {
     name: skuName
     tier: startsWith(skuName, 'B_') ? 'Burstable' : startsWith(skuName, 'GP_') ? 'GeneralPurpose' : 'MemoryOptimized'
@@ -102,4 +99,4 @@ output id string = postgreSqlServer.id
 output name string = postgreSqlServer.name
 output fqdn string = postgreSqlServer.properties.fullyQualifiedDomainName
 output databaseName string = database.name
-output principalId string = enableManagedIdentity ? postgreSqlServer.identity.principalId : ''
+output principalId string = postgreSqlServer.identity.principalId
