@@ -377,3 +377,11 @@ test:.cs
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Jekyll/GitHub Pages
+docs/vendor/
+docs/.bundle/
+docs/_site/
+docs/.jekyll-cache/
+docs/.sass-cache/
+docs/Gemfile.lock

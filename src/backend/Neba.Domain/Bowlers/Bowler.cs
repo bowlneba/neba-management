@@ -5,23 +5,29 @@ using Neba.Domain.Tournaments;
 namespace Neba.Domain.Bowlers;
 
 /// <summary>
-/// A bowler is a person who participates in NEBA Tournaments.
+/// A bowler represents a NEBA member who participates in tournaments. The Bowler entity serves as the
+/// aggregate root for tracking competitive achievements, including titles won and season awards earned.
 /// </summary>
+/// <remarks>
+/// Current implementation is minimal, focused on website display needs. Additional properties for member
+/// management (date of birth, gender, membership information, contact details) will be added when migrating
+/// from the organization management software.
+/// </remarks>
 public sealed class Bowler
     : Aggregate<BowlerId>
 {
     /// <summary>
-    /// Gets or sets the bowler's full name, including first name, last name, and optional middle initial, suffix, and nickname.
+    /// Gets the bowler's full name (value object containing first name, last name, middle name, suffix, and optional nickname).
     /// </summary>
     public required Name Name { get; init; }
 
     /// <summary>
-    /// Gets or sets the identifier for the bowler in the legacy website database.
+    /// Gets the legacy identifier from the existing NEBA website database (used for data migration; maintained for historical reference).
     /// </summary>
     public int? WebsiteId { get; init; }
 
     /// <summary>
-    /// Gets or sets the identifier for the bowler in the legacy application database.
+    /// Gets the legacy identifier from the existing organization management software (used for data migration; maintained for historical reference).
     /// </summary>
     public int? ApplicationId { get; init; }
 
@@ -32,7 +38,13 @@ public sealed class Bowler
         SeasonAwards = [];
     }
 
+    /// <summary>
+    /// Gets the read-only collection of championship titles won by the bowler.
+    /// </summary>
     internal IReadOnlyCollection<Title> Titles { get; init; }
 
+    /// <summary>
+    /// Gets the read-only collection of season awards earned by the bowler (BOTY, High Average, High Block).
+    /// </summary>
     internal IReadOnlyCollection<SeasonAward> SeasonAwards { get; init; }
 }

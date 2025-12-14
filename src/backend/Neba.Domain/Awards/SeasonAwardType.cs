@@ -3,7 +3,8 @@ using Ardalis.SmartEnum;
 namespace Neba.Domain.Awards;
 
 /// <summary>
-/// Represents the types of season awards that can be given in NEBA, using a SmartEnum pattern for extensibility.
+/// The types of season awards that can be earned by NEBA bowlers, each recognizing different aspects of competitive excellence.
+/// Uses SmartEnum pattern for extensibility.
 /// </summary>
 public sealed class SeasonAwardType
     : SmartEnum<SeasonAwardType>
@@ -11,17 +12,23 @@ public sealed class SeasonAwardType
     internal static readonly SeasonAwardType s_default = new("default", 0);
 
     /// <summary>
-    /// Awarded to the bowler with the best overall performance during the season.
+    /// Awarded to the bowler(s) with the best overall performance during the season, determined by a points system
+    /// based on tournament finishes. Points are earned through placement in stat-eligible tournaments, with additional
+    /// points awarded for being high qualifier. Different tournament types have different point structures.
     /// </summary>
     public static readonly SeasonAwardType BowlerOfTheYear = new("Bowler of the Year", 1);
 
     /// <summary>
-    /// Awarded for achieving the highest average during the season.
+    /// Awarded for achieving the highest average score during the season across stat-eligible tournaments.
+    /// Eligibility requires a minimum of 4.5 × (number of stat-eligible tournaments completed) games, with decimals dropped.
+    /// All games bowled in stat-eligible tournaments count toward the average (exception: baker team finals do not count).
     /// </summary>
     public static readonly SeasonAwardType HighAverage = new("High Average", 2);
 
     /// <summary>
-    /// Awarded for the highest 5-game block score in a single event or season.
+    /// Awarded for the highest total score across the first 5 qualifying games in a single tournament.
+    /// No minimum tournament requirement beyond the one tournament where the score was achieved.
+    /// The "5Game" designation preserves historical context; future changes would create new award types.
     /// </summary>
     public static readonly SeasonAwardType High5GameBlock = new("High 5-Game Block", 3);
 

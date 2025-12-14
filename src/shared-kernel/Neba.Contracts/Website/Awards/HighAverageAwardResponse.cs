@@ -1,20 +1,22 @@
 namespace Neba.Contracts.Website.Awards;
 
 /// <summary>
-/// Represents a High Average award given to a bowler for achieving the highest per-game average over a season.
+/// Represents a High Average season award given to the bowler with the highest average across stat-eligible tournaments.
 /// </summary>
 /// <remarks>
-/// The High Average award recognizes the bowler with the highest average pinfall per game across the specified season.
-/// This response contains award identification, bowler display name and summary statistics used for public website listings.
+/// The High Average award is given for achieving the highest average score during the season across stat-eligible tournaments.
+/// Eligibility requires a minimum of 4.5 × (number of stat-eligible tournaments completed) games, with decimals dropped.
+/// All games bowled in stat-eligible tournaments count toward the average (exception: baker team finals do not count).
+/// This response includes the award winner's statistics for public website display.
 /// </remarks>
 /// <example>
 /// {
 ///   "id": "d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f",
 ///   "bowlerName": "Jane Doe",
-///   "season": "2024/2025",
+///   "season": "2025",
 ///   "average": 188.75,
 ///   "games": 42,
-///   "tournaments": 3
+///   "tournaments": 9
 /// }
 /// </example>
 public sealed record HighAverageAwardResponse
@@ -35,39 +37,42 @@ public sealed record HighAverageAwardResponse
     public required string BowlerName { get; set; }
 
     /// <summary>
-    /// Gets the bowling season for which the award was given, formatted as a year range.
+    /// Gets the season for which the award was given (typically "YYYY" format, e.g., "2025").
     /// </summary>
     /// <remarks>
-    /// The season format represents the bowling year which typically spans across two calendar years.
+    /// Standard seasons run January 1 - December 31 (calendar year).
+    /// Exception: "2020/2021" was a combined season due to COVID-19 tournament cancellations.
     /// </remarks>
-    /// <example>"2024-2025"</example>
+    /// <example>"2025"</example>
     public required string Season { get; set; }
 
     /// <summary>
-    /// Gets the average pinfall per game for the award period.
+    /// Gets the bowler's average pinfall per game across all stat-eligible tournaments during the season.
     /// </summary>
     /// <remarks>
-    /// The average is calculated as total pinfall divided by games bowled and is typically presented with two decimal places.
-    /// Use <see cref="decimal"/> to preserve precision for averages.
+    /// The average is calculated as total pinfall divided by total games bowled in stat-eligible tournaments.
+    /// Uses decimal type to preserve precision for accurate average display.
     /// </remarks>
     /// <example>188.75</example>
     public required decimal Average { get; init; }
 
     /// <summary>
-    /// Gets the number of games included in the average calculation, if available.
+    /// Gets the total number of games bowled in stat-eligible tournaments during the season.
     /// </summary>
     /// <remarks>
-    /// This value is optional and may be null when the data source does not provide a games count.
+    /// Provides context for comparison between high average winners across different seasons.
+    /// Optional field - may be null for historical data where game counts were not tracked.
     /// </remarks>
     /// <example>42</example>
     public int? Games { get; init; }
 
     /// <summary>
-    /// Gets the number of tournaments included in the season summary, if available.
+    /// Gets the number of stat-eligible tournaments participated in during the season.
     /// </summary>
     /// <remarks>
-    /// This field is optional and helps consumers show context for the average (e.g., how many events contributed).
+    /// Provides context for the average and helps demonstrate consistent performance across multiple events.
+    /// Optional field - may be null for historical data where tournament counts were not tracked.
     /// </remarks>
-    /// <example>3</example>
+    /// <example>9</example>
     public int? Tournaments { get; init; }
 }

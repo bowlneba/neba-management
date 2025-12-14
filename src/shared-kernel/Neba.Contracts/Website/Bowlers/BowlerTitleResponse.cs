@@ -4,11 +4,13 @@ using Ardalis.SmartEnum.SystemTextJson;
 namespace Neba.Contracts.Website.Bowlers;
 
 /// <summary>
-/// Represents a single title achievement in a bowler's title history.
+/// Represents a single championship title in a bowler's title history.
 /// </summary>
 /// <remarks>
 /// This is a nested response object used within <see cref="BowlerTitlesResponse"/> to represent individual title wins.
 /// It contains tournament timing and categorization information but excludes bowler identity since that's provided by the parent response.
+/// Each title represents a championship win in a NEBA tournament event. For team tournaments (Doubles, Trios),
+/// each team member receives their own individual title record.
 /// </remarks>
 /// <example>
 /// {
@@ -20,7 +22,7 @@ namespace Neba.Contracts.Website.Bowlers;
 public sealed record BowlerTitleResponse
 {
     /// <summary>
-    /// Gets the month in which the title was won (1-12).
+    /// Gets the month in which the tournament was held (1-12).
     /// </summary>
     /// <remarks>
     /// This is serialized as a numeric value (1 for January through 12 for December) using the Month SmartEnum.
@@ -30,16 +32,17 @@ public sealed record BowlerTitleResponse
     public required Month Month { get; init; }
 
     /// <summary>
-    /// Gets the year in which the title was won.
+    /// Gets the year in which the tournament was held.
     /// </summary>
     /// <example>2024</example>
     public required int Year { get; init; }
 
     /// <summary>
-    /// Gets the type or category of tournament for which the title was awarded.
+    /// Gets the tournament type or event category in which the title was won.
     /// </summary>
     /// <remarks>
-    /// Common tournament types include Singles, Doubles, Team, All Events, etc.
+    /// Tournament types include individual events (Singles, All Events), team events (Doubles, Trios),
+    /// and special major tournaments (Tournament of Champions, Invitational, Masters).
     /// </remarks>
     /// <example>"Singles"</example>
     public required string TournamentType { get; init; }
