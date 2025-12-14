@@ -35,9 +35,9 @@ public sealed class EntityTests
     }
 }
 
-internal sealed class TestEntity(int id, string otherProperty)
+internal sealed class TestEntity(int id, string testProperty)
                 : Entity<int>(id)
 {
-    public string OtherProperty { get; }
-        = otherProperty;
+    public string TestProperty { get; }
+        = testProperty;
 }
