@@ -46,18 +46,15 @@ param startupCommand string = ''
 @description('Tags to apply to the resource')
 param tags object = {}
 
-@description('Enable system-assigned Managed Identity')
-param enableManagedIdentity bool = true
-
 // App Service resource
 resource appService 'Microsoft.Web/sites@2024-11-01' = {
   name: name
   location: location
   tags: tags
   kind: 'app,linux'
-  identity: enableManagedIdentity ? {
+  identity: {
     type: 'SystemAssigned'
-  } : null
+  }
   properties: {
     serverFarmId: appServicePlanId
     httpsOnly: true
@@ -101,4 +98,4 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
 output id string = appService.id
 output name string = appService.name
 output defaultHostName string = appService.properties.defaultHostName
-output principalId string = enableManagedIdentity ? appService.identity.principalId : ''
+output principalId string = appService.identity.principalId
