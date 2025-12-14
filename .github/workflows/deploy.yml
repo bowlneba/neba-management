@@ -27,7 +27,8 @@ jobs:
     uses: ./.github/workflows/deploy_infrastructure.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets: inherit
+    secrets:
+      DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
     permissions:
       id-token: write
       contents: read
@@ -39,7 +40,8 @@ jobs:
     uses: ./.github/workflows/deploy_migrations.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets: inherit
+    secrets:
+      BOWLNEBA_CONNECTION_STRING: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
     permissions:
       contents: read
 
@@ -50,7 +52,6 @@ jobs:
     uses: ./.github/workflows/deploy_api.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets: inherit
     permissions:
       id-token: write
       contents: read
@@ -61,7 +62,6 @@ jobs:
     uses: ./.github/workflows/deploy_web.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets: inherit
     permissions:
       id-token: write
       contents: read
