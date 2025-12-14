@@ -4,11 +4,13 @@ using Ardalis.SmartEnum.SystemTextJson;
 namespace Neba.Contracts.Website.Titles;
 
 /// <summary>
-/// Represents a single title won by a bowler, including detailed tournament and bowler information.
+/// Represents a championship title won by a bowler in a NEBA tournament event.
 /// </summary>
 /// <remarks>
-/// This response provides complete information about a specific title achievement, including the bowler's identity,
-/// the tournament details, and the type of competition. Used when displaying individual title records or detailed title histories.
+/// A title represents a championship win and serves as a permanent record of competitive achievement.
+/// For team tournaments (Doubles, Trios), each team member receives their own individual title record.
+/// Earning at least one title grants eligibility for the Tournament of Champions.
+/// This response provides complete information for displaying title records in listings and bowler histories.
 /// </remarks>
 /// <example>
 /// {
@@ -34,7 +36,7 @@ public sealed record TitleResponse
     public required string BowlerName { get; init; }
 
     /// <summary>
-    /// Gets the month in which the title was won (1-12).
+    /// Gets the month in which the tournament was held (1-12).
     /// </summary>
     /// <remarks>
     /// This is serialized as a numeric value (1 for January through 12 for December) using the Month SmartEnum.
@@ -44,16 +46,17 @@ public sealed record TitleResponse
     public required Month TournamentMonth { get; init; }
 
     /// <summary>
-    /// Gets the year in which the title was won.
+    /// Gets the year in which the tournament was held.
     /// </summary>
     /// <example>2024</example>
     public required int TournamentYear { get; init; }
 
     /// <summary>
-    /// Gets the type or category of tournament in which the title was won.
+    /// Gets the tournament type or event category in which the title was won.
     /// </summary>
     /// <remarks>
-    /// Common tournament types include Singles, Doubles, Team, All Events, etc.
+    /// Tournament types include individual events (Singles, All Events), team events (Doubles, Trios),
+    /// and special major tournaments (Tournament of Champions, Invitational, Masters).
     /// </remarks>
     /// <example>"Singles"</example>
     public required string TournamentType { get; init; }

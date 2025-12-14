@@ -1,24 +1,25 @@
 namespace Neba.Contracts.Website.Awards;
 
 /// <summary>
-/// Represents a High Block award given to a bowler for achieving the highest total pinfall in a block of games during a season.
+/// Represents a High 5-Game Block season award given to the bowler with the highest 5-game qualifying block score.
 /// </summary>
 /// <remarks>
-/// The High Block award recognizes exceptional performance across multiple consecutive games within a bowling season.
-/// This response includes both award identification and bowler information for public display on the website.
+/// The High 5-Game Block award is given for achieving the highest total pinfall in a 5-game qualifying block
+/// during a stat-eligible tournament within the season. The block must be from the qualification rounds before match play.
+/// This response includes the award winner's score for public website display.
 /// </remarks>
 /// <example>
 /// {
 ///   "id": "d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f",
-///   "bowlerId": "a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
 ///   "bowlerName": "Jane Doe",
-///   "season": "2024/2025"
+///   "season": "2025",
+///   "score": 1123
 /// }
 /// </example>
 public sealed record HighBlockAwardResponse
 {
     /// <summary>
-    /// Gets the unique identifier of the High Block award record.
+    /// Gets the unique identifier of the High 5-Game Block award record.
     /// </summary>
     /// <example>"d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f"</example>
     public required Guid Id { get; init; }
@@ -33,20 +34,22 @@ public sealed record HighBlockAwardResponse
     public required string BowlerName { get; set; }
 
     /// <summary>
-    /// Gets the bowling season for which the award was given, formatted as a year range.
+    /// Gets the season for which the award was given (typically "YYYY" format, e.g., "2025").
     /// </summary>
     /// <remarks>
-    /// The season format represents the bowling year which typically spans across two calendar years.
+    /// Standard seasons run January 1 - December 31 (calendar year).
+    /// Exception: "2020/2021" was a combined season due to COVID-19 tournament cancellations.
     /// </remarks>
-    /// <example>"2024/2025"</example>
+    /// <example>"2025"</example>
     public required string Season { get; set; }
 
 
     /// <summary>
-    /// Gets the total pinfall score achieved by the bowler in the high block.
+    /// Gets the total pinfall score achieved in the highest 5-game qualifying block during the season.
     /// </summary>
     /// <remarks>
-    /// This score represents the sum of pins knocked down by the bowler during the block of games for which the award was given.
+    /// This score represents the sum of pins knocked down across 5 consecutive games during a tournament
+    /// qualification round. Only qualifying blocks from stat-eligible tournaments are considered.
     /// </remarks>
     /// <example>1123</example>
     public required int Score { get; init; }
