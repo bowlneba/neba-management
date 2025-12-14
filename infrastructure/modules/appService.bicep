@@ -47,7 +47,7 @@ param startupCommand string = ''
 param tags object = {}
 
 @description('Enable system-assigned Managed Identity')
-param enableManagedIdentity bool = false
+param enableManagedIdentity bool = true
 
 // App Service resource
 resource appService 'Microsoft.Web/sites@2024-11-01' = {
