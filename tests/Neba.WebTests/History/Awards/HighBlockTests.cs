@@ -279,7 +279,7 @@ public sealed class HighBlockTests : TestContextWrapper
         // Assert - Verify descriptive text is present
         cut.Markup.ShouldContain("High Block");
         cut.Markup.ShouldContain("five-game block score");
-        cut.Markup.ShouldContain("exceptional sustained performance");
+        cut.Markup.ShouldContain("exceptional performance");
     }
 
     [Fact]
