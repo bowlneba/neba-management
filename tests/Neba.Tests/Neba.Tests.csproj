@@ -17,7 +17,8 @@
     <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
 
-  <PropertyGroup>
-  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
 
 </Project>
