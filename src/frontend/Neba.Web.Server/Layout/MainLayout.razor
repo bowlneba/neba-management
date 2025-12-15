@@ -61,8 +61,15 @@
                     </button>
                 </div>
                 <ul class="neba-nav-menu" id="main-menu">
-                    <li class="neba-nav-item">
-                        <a href="/tournaments" class="neba-nav-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)">Tournaments</a>
+                    <li class="neba-nav-item" data-action="toggle-dropdown">
+                        <a href="#"
+                           class="neba-nav-link"
+                           aria-haspopup="true"
+                           aria-expanded="false"
+                           onclick="event.preventDefault();">Tournaments</a>
+                        <div class="neba-dropdown" role="menu">
+                            <a href="/tournaments/rules" class="neba-dropdown-link @(IsActive("tournaments/rules") ? "active" : null)" aria-current="@(IsActive("tournaments/rules") ? "page" : null)" role="menuitem">Tournament Rules</a>
+                        </div>
                     </li>
                     <li class="neba-nav-item">
                         <a href="/stats" class="neba-nav-link @(IsActive("stats") ? "active" : null)" aria-current="@(IsActive("stats") ? "page" : null)">Stats</a>
@@ -73,12 +80,12 @@
                     <li class="neba-nav-item">
                         <a href="/news" class="neba-nav-link @(IsActive("news") ? "active" : null)" aria-current="@(IsActive("news") ? "page" : null)">News</a>
                     </li>
-                <li class="neba-nav-item" data-action="toggle-dropdown">
-                          <a href="#"
-                              class="neba-nav-link"
-                              aria-haspopup="true"
-                              aria-expanded="false"
-                              onclick="event.preventDefault();">History</a>
+                    <li class="neba-nav-item" data-action="toggle-dropdown">
+                        <a href="#"
+                           class="neba-nav-link"
+                           aria-haspopup="true"
+                           aria-expanded="false"
+                           onclick="event.preventDefault();">History</a>
                         <div class="neba-dropdown" role="menu">
                             <a href="/history/champions" class="neba-dropdown-link @(IsActive("history/champions") ? "active" : null)" aria-current="@(IsActive("history/champions") ? "page" : null)" role="menuitem">Champions</a>
                             <a href="/history/bowler-of-the-year" class="neba-dropdown-link @(IsActive("history/bowler-of-the-year") ? "active" : null)" aria-current="@(IsActive("history/bowler-of-the-year") ? "page" : null)" role="menuitem">Bowler of the Year</a>

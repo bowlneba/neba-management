@@ -25,4 +25,7 @@ internal interface INebaApi
 
     [Get("/awards/high-average")]
     Task<Refit.ApiResponse<CollectionResponse<HighAverageAwardResponse>>> GetHighAverageAwardsAsync();
+
+    [Get("/tournaments/rules")]
+    Task<Refit.ApiResponse<string>> GetTournamentRulesAsync();
 }

@@ -1,0 +1,74 @@
+@page "/tournaments/rules"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inject NebaApiService NebaApiService
+
+<PageTitle>Tournament Rules - NEBA</PageTitle>
+
+<link rel="stylesheet" href="/tournament-rules.css" />
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">NEBA Tournament Rules</h1>
+        <p class="mt-1 text-sm text-gray-600">Official rules and regulations for NEBA tournaments</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Tournament Rules"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading tournament rules..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Rules Content -->
+    @if (!_isLoading && _rulesHtml.HasValue)
+    {
+        <div class="neba-panel tournament-rules-content">
+            @_rulesHtml
+        </div>
+    }
+</div>
+
+@code {
+    private MarkupString? _rulesHtml;
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Add artificial 2000ms delay to simulate slower API
+            await Task.Delay(2000);
+
+            var result = await NebaApiService.GetTournamentRulesAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _errorMessage = $"Failed to load tournament rules: {error.Description}";
+                return;
+            }
+
+            _rulesHtml = result.Value;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load tournament rules: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

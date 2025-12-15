@@ -45,7 +45,8 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
 
                 if (element.Table != null)
                 {
-                    CloseAllLists(context.ListStack, html);
+                    CloseAllLists(context.ListStack, html, context.HasOpenListItem);
+                    context.HasOpenListItem = false;
                     context.PreviousListId = null;
                     context.PreviousLevel = null;
                     html.AppendLine(ConvertTableToHtml(element.Table));
@@ -69,7 +70,8 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
                     }
                     else
                     {
-                        CloseAllLists(context.ListStack, html);
+                        CloseAllLists(context.ListStack, html, context.HasOpenListItem);
+                        context.HasOpenListItem = false;
                         context.PreviousListId = null;
                         context.PreviousLevel = null;
                         html.AppendLine(ConvertParagraphToHtml(paragraph));
@@ -83,7 +85,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
             }
 
             // Close any remaining open lists
-            CloseAllLists(context.ListStack, html);
+            CloseAllLists(context.ListStack, html, context.HasOpenListItem);
         }
 
         return html.ToString();
@@ -95,6 +97,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         public Stack<(string ListId, int Level, bool IsOrdered, string? GlyphFormat)> ListStack { get; } = listStack;
         public string? PreviousListId { get; set; }
         public int? PreviousLevel { get; set; }
+        public bool HasOpenListItem { get; set; }
     }
 
     private int ProcessListItem(
@@ -131,16 +134,49 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
                            context.PreviousLevel != nestingLevel ||
                            context.ListStack.Count == 0;
 
+        // Check if next item is a nested list (deeper level with same listId)
+        bool hasNestedList = false;
+        if (currentIndex + 1 < document.Body.Content.Count)
+        {
+            var nextElement = document.Body.Content[currentIndex + 1];
+            if (nextElement.Paragraph?.Bullet != null)
+            {
+                var nextBullet = nextElement.Paragraph.Bullet;
+                int nextNestingLevel = nextBullet.NestingLevel ?? 0;
+                hasNestedList = nextBullet.ListId == listId && nextNestingLevel > nestingLevel;
+            }
+        }
+
         if (needsNewList)
         {
-            HandleNewList(context.Html, context.ListStack, listId, nestingLevel, isOrdered, glyphFormat);
+            HandleNewList(context.Html, context.ListStack, listId, nestingLevel, isOrdered, glyphFormat, context.HasOpenListItem);
+            context.HasOpenListItem = false;
         }
         else
         {
+            // Close previous list item if one is open
+            if (context.HasOpenListItem)
+            {
+                context.Html.AppendLine(ClosingListItem);
+                context.HasOpenListItem = false;
+            }
             _listCounters[listId][nestingLevel]++;
         }
 
-        context.Html.AppendLine(CultureInfo.InvariantCulture, $"{ListItem}{itemText}{ClosingListItem}");
+        // Write the list item opening and content
+        context.Html.Append(CultureInfo.InvariantCulture, $"{ListItem}{itemText}");
+
+        // Only close the list item if there's no nested list coming
+        if (!hasNestedList)
+        {
+            context.Html.AppendLine(ClosingListItem);
+            context.HasOpenListItem = false;
+        }
+        else
+        {
+            context.Html.AppendLine(); // Just add newline, keep <li> open
+            context.HasOpenListItem = true;
+        }
 
         context.PreviousListId = listId;
         context.PreviousLevel = nestingLevel;
@@ -172,7 +208,8 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         int nestingLevel,
         int currentIndex)
     {
-        CloseAllLists(context.ListStack, context.Html);
+        CloseAllLists(context.ListStack, context.Html, context.HasOpenListItem);
+        context.HasOpenListItem = false;
         context.PreviousListId = null;
         context.PreviousLevel = null;
 
@@ -217,7 +254,8 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         string listId,
         int nestingLevel,
         bool isOrdered,
-        string? glyphFormat)
+        string? glyphFormat,
+        bool hasOpenListItem)
     {
         // Close deeper or different lists
         while (listStack.Count > 0)
@@ -225,12 +263,20 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
             (string ListId, int Level, bool IsOrdered, string? GlyphFormat) peek = listStack.Peek();
             if (peek.ListId == listId && peek.Level < nestingLevel)
             {
-                // This is a parent list, keep it open
+                // This is a parent list, keep it open (nested list case)
                 break;
             }
 
+            // Close the list
             (string ListId, int Level, bool IsOrdered, string? GlyphFormat) item = listStack.Pop();
             html.AppendLine(item.IsOrdered ? ClosingOrderedList : ClosingUnorderedList);
+
+            // If there was an open list item from the parent level, close it now
+            if (hasOpenListItem && listStack.Count > 0)
+            {
+                html.AppendLine(ClosingListItem);
+                hasOpenListItem = false;
+            }
         }
 
         // Increment counter BEFORE opening the list
@@ -252,12 +298,31 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         listStack.Push((listId, nestingLevel, isOrdered, glyphFormat));
     }
 
-    private static void CloseAllLists(Stack<(string ListId, int Level, bool IsOrdered, string? GlyphFormat)> listStack, StringBuilder html)
+    private void CloseAllLists(Stack<(string ListId, int Level, bool IsOrdered, string? GlyphFormat)> listStack, StringBuilder html, bool hasOpenListItem)
     {
+        // First close any open list item
+        if (hasOpenListItem)
+        {
+            html.AppendLine(ClosingListItem);
+        }
+
+        // Collect unique listIds that are being closed
+        var closedListIds = new HashSet<string>();
+
+        // Then close all open lists
         while (listStack.Count > 0)
         {
             (string ListId, int Level, bool IsOrdered, string? GlyphFormat) item = listStack.Pop();
             html.AppendLine(item.IsOrdered ? ClosingOrderedList : ClosingUnorderedList);
+            closedListIds.Add(item.ListId);
+        }
+
+        // Reset counters for all levels of lists that were completely closed
+        // This ensures that if we encounter this list again later in the document,
+        // it starts from the beginning instead of continuing from where it left off
+        foreach (string listId in closedListIds)
+        {
+            _listCounters.Remove(listId);
         }
     }
 

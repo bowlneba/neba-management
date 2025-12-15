@@ -30,7 +30,7 @@ internal static class TournamentEndpoints
 
                 string htmlContent = await queryHandler.HandleAsync(query, CancellationToken.None);
 
-                return TypedResults.Ok(htmlContent);
+                return TypedResults.Content(htmlContent, ContentTypes.TextHtml);
             })
             .WithName("GetTournamentRules")
             .WithSummary("Get the tournament rules document.")

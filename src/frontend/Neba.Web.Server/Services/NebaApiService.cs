@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using ErrorOr;
+using Microsoft.AspNetCore.Components;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
 using Neba.Web.Server.History.Awards;
@@ -131,6 +132,18 @@ internal class NebaApiService(INebaApi nebaApi)
             .Select(dto => dto.ToViewModel())
             .ToList()
             .AsReadOnly();
+    }
+
+    public async Task<ErrorOr<MarkupString>> GetTournamentRulesAsync()
+    {
+        ErrorOr<string> result = await ExecuteApiCallAsync(() => nebaApi.GetTournamentRulesAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return new MarkupString(result.Value);
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
