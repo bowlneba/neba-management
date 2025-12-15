@@ -8,6 +8,7 @@ using Neba.Application.Bowlers;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
+using Neba.Infrastructure.Documents;
 
 namespace Neba.Infrastructure;
 
@@ -33,7 +34,8 @@ public static class InfrastructureDependencyInjection
 
             return services
                 .AddKeyVault(config)
-                .AddDatabase(config);
+                .AddDatabase(config)
+                .AddGoogleDocs(config);
         }
 
         internal IServiceCollection AddDatabase(IConfigurationManager config)
