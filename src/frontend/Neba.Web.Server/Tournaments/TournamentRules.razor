@@ -109,6 +109,9 @@
                 if (success)
                 {
                     _tocInitialized = true;
+
+                    // After successful initialization, scroll to hash if present
+                    await _module.InvokeVoidAsync("scrollToHash");
                     break;
                 }
                 await Task.Delay(200);

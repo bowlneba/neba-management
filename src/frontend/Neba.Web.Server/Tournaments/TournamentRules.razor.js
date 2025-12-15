@@ -62,15 +62,38 @@ export function initializeToc() {
     let currentActiveLink = null;
 
     function updateActiveLink() {
-        const scrollPosition = content.scrollTop + 50; // Offset for better visual alignment
+        const contentRect = content.getBoundingClientRect();
 
+        // Find the heading that's currently at the top of the viewport (with some offset)
         let activeHeading = null;
+        let minDistance = Infinity;
+
         headings.forEach(heading => {
-            const headingTop = heading.offsetTop;
-            if (scrollPosition >= headingTop - 100) {
-                activeHeading = heading;
+            const headingRect = heading.getBoundingClientRect();
+            // Calculate distance from heading to the top of the content container
+            const distanceFromTop = headingRect.top - contentRect.top;
+
+            // If heading is visible or just above the viewport, and closest to top
+            if (distanceFromTop <= 100 && distanceFromTop >= -headingRect.height) {
+                if (Math.abs(distanceFromTop) < minDistance) {
+                    minDistance = Math.abs(distanceFromTop);
+                    activeHeading = heading;
+                }
             }
         });
+
+        // If no heading found near top, use the first visible one
+        if (!activeHeading) {
+            headings.forEach(heading => {
+                const headingRect = heading.getBoundingClientRect();
+                const distanceFromTop = headingRect.top - contentRect.top;
+
+                if (distanceFromTop >= 0 && distanceFromTop < minDistance) {
+                    minDistance = distanceFromTop;
+                    activeHeading = heading;
+                }
+            });
+        }
 
         if (activeHeading) {
             const targetId = activeHeading.getAttribute('id');
@@ -86,6 +109,26 @@ export function initializeToc() {
                 }
             }
         }
+    }
+
+    // Helper function to scroll TOC to show active link
+    function scrollTocToActiveLink(link) {
+        const tocContainer = document.querySelector('.toc-sticky');
+        if (!tocContainer || !link) return;
+
+        const tocRect = tocContainer.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+
+        // Calculate the position of the link relative to the TOC container
+        const linkTop = linkRect.top - tocRect.top + tocContainer.scrollTop;
+
+        // Try to position the link near the top, but with some padding
+        const targetScroll = linkTop - 60; // 60px from the top to leave some context
+
+        tocContainer.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: 'smooth'
+        });
     }
 
     // Smooth scroll to section when clicking TOC links
@@ -109,6 +152,9 @@ export function initializeToc() {
                     top: scrollPosition,
                     behavior: 'smooth'
                 });
+
+                // Scroll the TOC to show the clicked link
+                scrollTocToActiveLink(link);
             }
         });
     });
@@ -130,4 +176,78 @@ export function initializeToc() {
 
     console.log('TOC initialized successfully');
     return true;
+}
+
+export function scrollToHash() {
+    // Check if there's a hash in the URL
+    const hash = window.location.hash;
+
+    if (!hash) {
+        console.log('[TOC] No hash in URL');
+        return;
+    }
+
+    // Remove the '#' from the hash to get the ID
+    const targetId = hash.substring(1);
+    console.log('[TOC] Found hash in URL:', targetId);
+
+    const content = document.getElementById('tournament-rules-content');
+    const targetElement = document.getElementById(targetId);
+
+    if (!content) {
+        console.error('[TOC] Content container not found');
+        return;
+    }
+
+    if (!targetElement) {
+        console.error('[TOC] Target element not found:', targetId);
+        return;
+    }
+
+    // Scroll to the target element
+    const contentRect = content.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
+    const currentScroll = content.scrollTop;
+
+    const offset = 20; // Small offset from the top of the container
+    const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+
+    console.log('[TOC] Scrolling to position:', scrollPosition);
+
+    content.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+    });
+
+    // Also update the active link in TOC
+    const tocList = document.getElementById('toc-list');
+    if (tocList) {
+        const activeLink = tocList.querySelector('.toc-link.active');
+        const newActiveLink = tocList.querySelector(`[data-target="${targetId}"]`);
+
+        if (activeLink) {
+            activeLink.classList.remove('active');
+        }
+        if (newActiveLink) {
+            newActiveLink.classList.add('active');
+
+            // Scroll TOC to show the active link
+            const tocContainer = document.querySelector('.toc-sticky');
+            if (tocContainer) {
+                const tocRect = tocContainer.getBoundingClientRect();
+                const linkRect = newActiveLink.getBoundingClientRect();
+
+                // Calculate the position of the link relative to the TOC container
+                const linkTop = linkRect.top - tocRect.top + tocContainer.scrollTop;
+
+                // Try to position the link near the top, but with some padding
+                const targetScroll = linkTop - 60; // 60px from the top to leave some context
+
+                tocContainer.scrollTo({
+                    top: Math.max(0, targetScroll),
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }
 }
