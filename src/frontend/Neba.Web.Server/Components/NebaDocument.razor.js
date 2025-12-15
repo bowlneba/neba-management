@@ -1,38 +1,34 @@
-export function initializeToc() {
-    console.log('[TOC] Initializing...');
-    console.log('[TOC] Looking for element: tournament-rules-content');
-    console.log('[TOC] Looking for element: toc-list');
+/**
+ * NebaDocument - Reusable component for displaying documents with table of contents
+ * Provides TOC generation, scroll spy, smooth scrolling, and hash navigation
+ */
 
-    const content = document.getElementById('tournament-rules-content');
-    const tocList = document.getElementById('toc-list');
+export function initializeToc(contentId, tocListId, headingLevels = 'h1, h2') {
+    console.log('[NebaDocument] Initializing TOC...');
+    console.log('[NebaDocument] Content ID:', contentId);
+    console.log('[NebaDocument] TOC List ID:', tocListId);
+    console.log('[NebaDocument] Heading Levels:', headingLevels);
 
-    console.log('[TOC] Content element:', content);
-    console.log('[TOC] TOC list element:', tocList);
+    const content = document.getElementById(contentId);
+    const tocList = document.getElementById(tocListId);
 
     if (!content) {
-        console.error('[TOC] Tournament rules content not found');
-        console.log('[TOC] All elements with tournament-rules:', document.querySelectorAll('[id*="tournament-rules"]'));
+        console.error('[NebaDocument] Content element not found:', contentId);
         return false;
     }
 
     if (!tocList) {
-        console.error('[TOC] TOC list not found');
-        console.log('[TOC] All elements with toc:', document.querySelectorAll('[id*="toc"]'));
+        console.error('[NebaDocument] TOC list element not found:', tocListId);
         return false;
     }
 
-    console.log('[TOC] Content HTML length:', content.innerHTML?.length || 0);
+    // Extract headings based on the provided levels
+    const headings = content.querySelectorAll(headingLevels);
 
-    // Extract all h1 and h2 headings
-    const headings = content.querySelectorAll('h1, h2');
-
-    console.log('[TOC] Found headings:', headings.length);
-    if (headings.length > 0) {
-        console.log('[TOC] First heading:', headings[0]);
-    }
+    console.log('[NebaDocument] Found headings:', headings.length);
 
     if (headings.length === 0) {
-        console.warn('[TOC] No headings found in content');
+        console.warn('[NebaDocument] No headings found in content');
         return false;
     }
 
@@ -47,7 +43,7 @@ export function initializeToc() {
 
         const level = heading.tagName.toLowerCase();
         const text = heading.textContent;
-        const className = level === 'h1' ? 'toc-item-h1' : 'toc-item-h2';
+        const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
 
         tocHtml += `<li class="${className}">
             <a href="#${id}" class="toc-link" data-target="${id}">${text}</a>
@@ -174,33 +170,33 @@ export function initializeToc() {
     // Initial update
     updateActiveLink();
 
-    console.log('TOC initialized successfully');
+    console.log('[NebaDocument] TOC initialized successfully');
     return true;
 }
 
-export function scrollToHash() {
+export function scrollToHash(contentId, tocListId) {
     // Check if there's a hash in the URL
     const hash = window.location.hash;
 
     if (!hash) {
-        console.log('[TOC] No hash in URL');
+        console.log('[NebaDocument] No hash in URL');
         return;
     }
 
     // Remove the '#' from the hash to get the ID
     const targetId = hash.substring(1);
-    console.log('[TOC] Found hash in URL:', targetId);
+    console.log('[NebaDocument] Found hash in URL:', targetId);
 
-    const content = document.getElementById('tournament-rules-content');
+    const content = document.getElementById(contentId);
     const targetElement = document.getElementById(targetId);
 
     if (!content) {
-        console.error('[TOC] Content container not found');
+        console.error('[NebaDocument] Content container not found:', contentId);
         return;
     }
 
     if (!targetElement) {
-        console.error('[TOC] Target element not found:', targetId);
+        console.error('[NebaDocument] Target element not found:', targetId);
         return;
     }
 
@@ -212,7 +208,7 @@ export function scrollToHash() {
     const offset = 20; // Small offset from the top of the container
     const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
 
-    console.log('[TOC] Scrolling to position:', scrollPosition);
+    console.log('[NebaDocument] Scrolling to position:', scrollPosition);
 
     content.scrollTo({
         top: scrollPosition,
@@ -220,7 +216,7 @@ export function scrollToHash() {
     });
 
     // Also update the active link in TOC
-    const tocList = document.getElementById('toc-list');
+    const tocList = document.getElementById(tocListId);
     if (tocList) {
         const activeLink = tocList.querySelector('.toc-link.active');
         const newActiveLink = tocList.querySelector(`[data-target="${targetId}"]`);

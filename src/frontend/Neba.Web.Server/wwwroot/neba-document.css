@@ -1,10 +1,10 @@
-/* Tournament Rules - Google Docs HTML Styling
+/* NebaDocument Component - Reusable Document with Table of Contents
  * Leverages NEBA theme variables from neba_theme.css
- * Styles common HTML elements from Google Docs exports
+ * Styles common HTML elements from Google Docs exports and other document sources
  */
 
 /* Layout Container */
-.tournament-rules-container {
+.neba-document-container {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 2rem;
@@ -18,7 +18,7 @@
 }
 
 /* Table of Contents */
-.tournament-rules-toc {
+.neba-document-toc {
   width: 280px;
   height: 100%;
   overflow: hidden;
@@ -72,12 +72,32 @@
 }
 
 .toc-item-h1,
-.toc-item-h2 {
+.toc-item-h2,
+.toc-item-h3,
+.toc-item-h4,
+.toc-item-h5,
+.toc-item-h6 {
   margin: 0;
 }
 
 .toc-item-h2 {
   padding-left: 1rem;
+}
+
+.toc-item-h3 {
+  padding-left: 2rem;
+}
+
+.toc-item-h4 {
+  padding-left: 3rem;
+}
+
+.toc-item-h5 {
+  padding-left: 4rem;
+}
+
+.toc-item-h6 {
+  padding-left: 5rem;
 }
 
 .toc-link {
@@ -104,6 +124,26 @@
   margin-left: -0.75rem;
 }
 
+.toc-item-h3 .toc-link {
+  padding-left: calc(2.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h4 .toc-link {
+  padding-left: calc(3.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h5 .toc-link {
+  padding-left: calc(4.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h6 .toc-link {
+  padding-left: calc(5.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
 .toc-link:hover {
   background-color: var(--neba-blue-050);
   color: var(--neba-blue-700);
@@ -118,7 +158,7 @@
 }
 
 /* Main Content */
-.tournament-rules-content {
+.neba-document-content {
   line-height: 1.8;
   color: var(--neba-text);
   min-width: 0; /* Prevent grid overflow */
@@ -131,30 +171,30 @@
   scrollbar-color: var(--neba-blue-300) transparent;
 }
 
-.tournament-rules-content::-webkit-scrollbar {
+.neba-document-content::-webkit-scrollbar {
   width: 8px;
 }
 
-.tournament-rules-content::-webkit-scrollbar-track {
+.neba-document-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.tournament-rules-content::-webkit-scrollbar-thumb {
+.neba-document-content::-webkit-scrollbar-thumb {
   background-color: var(--neba-blue-300);
   border-radius: 4px;
 }
 
-.tournament-rules-content::-webkit-scrollbar-thumb:hover {
+.neba-document-content::-webkit-scrollbar-thumb:hover {
   background-color: var(--neba-blue-500);
 }
 
 /* Headings */
-.tournament-rules-content h1,
-.tournament-rules-content h2,
-.tournament-rules-content h3,
-.tournament-rules-content h4,
-.tournament-rules-content h5,
-.tournament-rules-content h6 {
+.neba-document-content h1,
+.neba-document-content h2,
+.neba-document-content h3,
+.neba-document-content h4,
+.neba-document-content h5,
+.neba-document-content h6 {
   font-weight: 600;
   color: var(--neba-gray-800);
   margin-top: 1.5rem;
@@ -162,113 +202,113 @@
   line-height: 1.3;
 }
 
-.tournament-rules-content h1 {
+.neba-document-content h1 {
   font-size: 2rem;
   border-bottom: 2px solid var(--neba-blue-600);
   padding-bottom: 0.5rem;
   margin-top: 0;
 }
 
-.tournament-rules-content h2 {
+.neba-document-content h2 {
   font-size: 1.5rem;
   color: var(--neba-blue-700);
 }
 
-.tournament-rules-content h3 {
+.neba-document-content h3 {
   font-size: 1.25rem;
   color: var(--neba-blue-700);
 }
 
-.tournament-rules-content h4 {
+.neba-document-content h4 {
   font-size: 1.125rem;
 }
 
-.tournament-rules-content h5 {
+.neba-document-content h5 {
   font-size: 1rem;
 }
 
-.tournament-rules-content h6 {
+.neba-document-content h6 {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 /* Paragraphs */
-.tournament-rules-content p {
+.neba-document-content p {
   margin-bottom: 1rem;
   color: var(--neba-text);
 }
 
-.tournament-rules-content p:last-child {
+.neba-document-content p:last-child {
   margin-bottom: 0;
 }
 
 /* Lists */
-.tournament-rules-content ul,
-.tournament-rules-content ol {
+.neba-document-content ul,
+.neba-document-content ol {
   margin-bottom: 1rem;
   padding-left: 2rem;
 }
 
-.tournament-rules-content ul {
+.neba-document-content ul {
   list-style-type: disc;
 }
 
 /* Respect HTML type attribute for ordered lists */
-.tournament-rules-content ol {
+.neba-document-content ol {
   /* Default to decimal, but allow HTML type attribute to override */
   list-style-type: decimal;
 }
 
-.tournament-rules-content ol[type='1'] {
+.neba-document-content ol[type='1'] {
   list-style-type: decimal;
 }
 
-.tournament-rules-content ol[type='a'] {
+.neba-document-content ol[type='a'] {
   list-style-type: lower-alpha;
 }
 
-.tournament-rules-content ol[type='A'] {
+.neba-document-content ol[type='A'] {
   list-style-type: upper-alpha;
 }
 
-.tournament-rules-content ol[type='i'] {
+.neba-document-content ol[type='i'] {
   list-style-type: lower-roman;
 }
 
-.tournament-rules-content ol[type='I'] {
+.neba-document-content ol[type='I'] {
   list-style-type: upper-roman;
 }
 
-.tournament-rules-content li {
+.neba-document-content li {
   margin-bottom: 0.5rem;
   color: var(--neba-text);
 }
 
-.tournament-rules-content li::marker {
+.neba-document-content li::marker {
   color: var(--neba-blue-600);
   font-weight: 600;
 }
 
 /* Nested lists */
-.tournament-rules-content ul ul,
-.tournament-rules-content ol ol,
-.tournament-rules-content ul ol,
-.tournament-rules-content ol ul {
+.neba-document-content ul ul,
+.neba-document-content ol ol,
+.neba-document-content ul ol,
+.neba-document-content ol ul {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-.tournament-rules-content ul ul {
+.neba-document-content ul ul {
   list-style-type: circle;
 }
 
-.tournament-rules-content ul ul ul {
+.neba-document-content ul ul ul {
   list-style-type: square;
 }
 
 /* Links */
-.tournament-rules-content a {
+.neba-document-content a {
   color: var(--neba-blue-700);
   text-decoration: underline;
   text-decoration-color: var(--neba-blue-300);
@@ -276,32 +316,32 @@
   transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-.tournament-rules-content a:hover {
+.neba-document-content a:hover {
   color: var(--neba-blue-600);
   text-decoration-color: var(--neba-blue-600);
 }
 
-.tournament-rules-content a:focus-visible {
+.neba-document-content a:focus-visible {
   outline: 2px solid var(--neba-blue-500);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
 /* Strong/Bold text */
-.tournament-rules-content strong,
-.tournament-rules-content b {
+.neba-document-content strong,
+.neba-document-content b {
   font-weight: 700;
   color: var(--neba-gray-800);
 }
 
 /* Emphasis/Italic text */
-.tournament-rules-content em,
-.tournament-rules-content i {
+.neba-document-content em,
+.neba-document-content i {
   font-style: italic;
 }
 
 /* Code and pre-formatted text */
-.tournament-rules-content code {
+.neba-document-content code {
   background-color: var(--neba-gray-100);
   color: var(--neba-accent-red);
   padding: 0.125rem 0.375rem;
@@ -310,7 +350,7 @@
   font-size: 0.875em;
 }
 
-.tournament-rules-content pre {
+.neba-document-content pre {
   background-color: var(--neba-gray-100);
   padding: 1rem;
   border-radius: var(--neba-radius);
@@ -319,14 +359,14 @@
   border-left: 3px solid var(--neba-blue-600);
 }
 
-.tournament-rules-content pre code {
+.neba-document-content pre code {
   background-color: transparent;
   padding: 0;
   color: var(--neba-text);
 }
 
 /* Blockquotes */
-.tournament-rules-content blockquote {
+.neba-document-content blockquote {
   border-left: 4px solid var(--neba-blue-600);
   margin-left: 0;
   margin-bottom: 1rem;
@@ -338,14 +378,14 @@
 }
 
 /* Horizontal rules */
-.tournament-rules-content hr {
+.neba-document-content hr {
   border: none;
   border-top: 2px solid var(--neba-border);
   margin: 2rem 0;
 }
 
 /* Tables */
-.tournament-rules-content table {
+.neba-document-content table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.5rem;
@@ -355,11 +395,11 @@
   overflow: hidden;
 }
 
-.tournament-rules-content thead {
+.neba-document-content thead {
   background-color: var(--neba-blue-100);
 }
 
-.tournament-rules-content thead th {
+.neba-document-content thead th {
   padding: 0.75rem;
   text-align: left;
   font-weight: 600;
@@ -367,21 +407,21 @@
   border-bottom: 2px solid var(--neba-blue-600);
 }
 
-.tournament-rules-content tbody td {
+.neba-document-content tbody td {
   padding: 0.75rem;
   border-bottom: 1px solid var(--neba-border);
 }
 
-.tournament-rules-content tbody tr:last-child td {
+.neba-document-content tbody tr:last-child td {
   border-bottom: none;
 }
 
-.tournament-rules-content tbody tr:hover {
+.neba-document-content tbody tr:hover {
   background-color: var(--neba-gray-050);
 }
 
 /* Images */
-.tournament-rules-content img {
+.neba-document-content img {
   max-width: 100%;
   height: auto;
   border-radius: var(--neba-radius);
@@ -390,11 +430,11 @@
 }
 
 /* Figure and figcaption */
-.tournament-rules-content figure {
+.neba-document-content figure {
   margin: 1.5rem 0;
 }
 
-.tournament-rules-content figcaption {
+.neba-document-content figcaption {
   font-size: 0.875rem;
   color: var(--neba-gray-700);
   font-style: italic;
@@ -403,55 +443,55 @@
 }
 
 /* Definition lists */
-.tournament-rules-content dl {
+.neba-document-content dl {
   margin-bottom: 1rem;
 }
 
-.tournament-rules-content dt {
+.neba-document-content dt {
   font-weight: 600;
   color: var(--neba-gray-800);
   margin-top: 0.75rem;
 }
 
-.tournament-rules-content dd {
+.neba-document-content dd {
   margin-left: 2rem;
   margin-bottom: 0.5rem;
   color: var(--neba-text);
 }
 
 /* Subscript and superscript */
-.tournament-rules-content sub,
-.tournament-rules-content sup {
+.neba-document-content sub,
+.neba-document-content sup {
   font-size: 0.75em;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-.tournament-rules-content sup {
+.neba-document-content sup {
   top: -0.5em;
 }
 
-.tournament-rules-content sub {
+.neba-document-content sub {
   bottom: -0.25em;
 }
 
 /* Mark/Highlight */
-.tournament-rules-content mark {
+.neba-document-content mark {
   background-color: #fff59d;
   padding: 0.125rem 0.25rem;
   border-radius: 2px;
 }
 
 /* Abbreviation */
-.tournament-rules-content abbr[title] {
+.neba-document-content abbr[title] {
   text-decoration: underline dotted;
   cursor: help;
   border-bottom: 1px dotted var(--neba-gray-400);
 }
 
 /* Address */
-.tournament-rules-content address {
+.neba-document-content address {
   font-style: normal;
   margin-bottom: 1rem;
   padding: 1rem;
@@ -461,18 +501,18 @@
 }
 
 /* Small text */
-.tournament-rules-content small {
+.neba-document-content small {
   font-size: 0.875em;
   color: var(--neba-gray-700);
 }
 
 /* Deleted and inserted text */
-.tournament-rules-content del {
+.neba-document-content del {
   text-decoration: line-through;
   color: var(--neba-accent-red);
 }
 
-.tournament-rules-content ins {
+.neba-document-content ins {
   text-decoration: none;
   background-color: rgba(22, 163, 74, 0.1);
   border-bottom: 2px solid var(--neba-success);
@@ -480,48 +520,48 @@
 }
 
 /* Google Docs specific classes (common export patterns) */
-.tournament-rules-content .c0,
-.tournament-rules-content .c1,
-.tournament-rules-content .c2,
-.tournament-rules-content .c3,
-.tournament-rules-content .c4,
-.tournament-rules-content .c5 {
+.neba-document-content .c0,
+.neba-document-content .c1,
+.neba-document-content .c2,
+.neba-document-content .c3,
+.neba-document-content .c4,
+.neba-document-content .c5 {
   /* Reset any inline styles that might come from Google Docs */
   font-family: var(--neba-font-base) !important;
 }
 
 /* Dark mode support */
-.dark .tournament-rules-content h1,
-.dark .tournament-rules-content h2,
-.dark .tournament-rules-content h3,
-.dark .tournament-rules-content strong,
-.dark .tournament-rules-content b,
-.dark .tournament-rules-content dt {
+.dark .neba-document-content h1,
+.dark .neba-document-content h2,
+.dark .neba-document-content h3,
+.dark .neba-document-content strong,
+.dark .neba-document-content b,
+.dark .neba-document-content dt {
   color: var(--neba-text);
 }
 
-.dark .tournament-rules-content blockquote {
+.dark .neba-document-content blockquote {
   background-color: rgba(62, 79, 217, 0.1);
   color: var(--neba-text);
 }
 
-.dark .tournament-rules-content code {
+.dark .neba-document-content code {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.dark .tournament-rules-content pre {
+.dark .neba-document-content pre {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.dark .tournament-rules-content thead {
+.dark .neba-document-content thead {
   background-color: rgba(62, 79, 217, 0.15);
 }
 
-.dark .tournament-rules-content tbody tr:hover {
+.dark .neba-document-content tbody tr:hover {
   background-color: rgba(62, 79, 217, 0.08);
 }
 
-.dark .tournament-rules-content address {
+.dark .neba-document-content address {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -555,18 +595,18 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .tournament-rules-container {
+  .neba-document-container {
     grid-template-columns: 1fr;
     /* Remove fixed height on mobile - allow natural scrolling */
     height: auto;
     overflow: visible;
   }
 
-  .tournament-rules-toc {
+  .neba-document-toc {
     display: none;
   }
 
-  .tournament-rules-content {
+  .neba-document-content {
     /* Remove fixed height on mobile - allow natural scrolling */
     height: auto;
     overflow: visible;
@@ -574,24 +614,24 @@
 }
 
 @media (max-width: 767px) {
-  .tournament-rules-content h1 {
+  .neba-document-content h1 {
     font-size: 1.75rem;
   }
 
-  .tournament-rules-content h2 {
+  .neba-document-content h2 {
     font-size: 1.375rem;
   }
 
-  .tournament-rules-content h3 {
+  .neba-document-content h3 {
     font-size: 1.125rem;
   }
 
-  .tournament-rules-content table {
+  .neba-document-content table {
     font-size: 0.875rem;
   }
 
-  .tournament-rules-content thead th,
-  .tournament-rules-content tbody td {
+  .neba-document-content thead th,
+  .neba-document-content tbody td {
     padding: 0.5rem;
   }
 }
