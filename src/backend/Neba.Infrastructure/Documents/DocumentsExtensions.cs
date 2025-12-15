@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Neba.Application.Documents;
 
 namespace Neba.Infrastructure.Documents;
 
@@ -27,7 +28,18 @@ internal static class DocumentsExtensions
                     "GoogleDocs:Credentials:ClientX509CertUrl must be provided.")
                 .ValidateOnStart();
 
-            services.AddSingleton(sp => sp.GetRequiredService<IOptions<GoogleDocsSettings>>().Value);
+            services.AddSingleton(sp =>
+            {
+                GoogleDocsSettings settings = sp.GetRequiredService<IOptions<GoogleDocsSettings>>().Value;
+
+                settings.Credentials.PrivateKey = settings.Credentials.PrivateKey?
+                    .Replace("\\n", "\n", StringComparison.OrdinalIgnoreCase);
+
+                return settings;
+            });
+
+            services.AddSingleton<DocumentMapper>();
+            services.AddSingleton<IDocumentsService, GoogleDocsService>();
 
             return services;
         }

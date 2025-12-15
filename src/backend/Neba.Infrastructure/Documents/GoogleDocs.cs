@@ -21,7 +21,7 @@ internal sealed record GoogleDocsCredentials
     public string? PrivateKeyId { get; init; }
 
     [JsonPropertyName("private_key")]
-    public string? PrivateKey { get; init; }
+    public string? PrivateKey { get; set; }
 
     [JsonPropertyName("client_email")]
     public string? ClientEmail { get; init; }
@@ -50,4 +50,6 @@ internal sealed record GoogleDocument
     public required string Name { get; init; }
 
     public required string DocumentId { get; init; }
+
+    public required string Route { get; init; }
 }

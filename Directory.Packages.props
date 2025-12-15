@@ -15,6 +15,7 @@
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0-rc.2" />
     <PackageVersion Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="8.1.3" />
     <PackageVersion Include="ErrorOr" Version="2.0.1" />
+    <PackageVersion Include="Google.Apis.Docs.v1" Version="1.73.0.3980" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
