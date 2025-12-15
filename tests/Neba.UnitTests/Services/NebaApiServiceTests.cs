@@ -1,5 +1,6 @@
 using System.Net;
 using ErrorOr;
+using Microsoft.AspNetCore.Components;
 using Neba.Contracts;
 using Neba.Contracts.Website.Awards;
 using Neba.Contracts.Website.Bowlers;
@@ -707,6 +708,427 @@ public sealed class NebaApiServiceTests
         awardsList[1].Season.ShouldBe("2024");
         awardsList[2].Season.ShouldBe("2022");
         awardsList[3].Season.ShouldBe("2020");
+    }
+
+    #endregion
+
+    #region GetHighAverageAwardsAsync Tests
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_SuccessfulResponse_ReturnsAwardsOrderedBySeasonDescending()
+    {
+        // Arrange
+        var awards = new List<HighAverageAwardResponse>
+        {
+            HighAverageAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", average: 215.50m, games: 42, tournaments: 9),
+            HighAverageAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", average: 210.75m, games: 40, tournaments: 8),
+            HighAverageAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2022", average: 208.25m, games: 38, tournaments: 7)
+        };
+
+        var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
+        {
+            Items = awards,
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(3);
+
+        var awardsList = result.Value.ToList();
+
+        // Verify ordering by season descending
+        awardsList[0].Season.ShouldBe("2024");
+        awardsList[0].BowlerName.ShouldBe("John Doe");
+        awardsList[0].Average.ShouldBe(215.50m);
+        awardsList[0].GamesBowled.ShouldBe(42);
+        awardsList[0].TournamentsBowled.ShouldBe(9);
+
+        awardsList[1].Season.ShouldBe("2023");
+        awardsList[1].BowlerName.ShouldBe("Jane Smith");
+
+        awardsList[2].Season.ShouldBe("2022");
+        awardsList[2].BowlerName.ShouldBe("Bob Johnson");
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_EmptyResponse_ReturnsEmptyCollection()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
+        {
+            Items = new List<HighAverageAwardResponse>(),
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
+        {
+            Items = new List<HighAverageAwardResponse>(),
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<CollectionResponse<HighAverageAwardResponse>>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetHighAverageAwardsAsync_OrdersBySeasonDescending()
+    {
+        // Arrange - Create awards in non-sorted order
+        var awards = new List<HighAverageAwardResponse>
+        {
+            HighAverageAwardResponseFactory.Create(bowlerName: "Person A", season: "2020", average: 200.5m),
+            HighAverageAwardResponseFactory.Create(bowlerName: "Person B", season: "2025", average: 220.0m),
+            HighAverageAwardResponseFactory.Create(bowlerName: "Person C", season: "2022", average: 210.25m),
+            HighAverageAwardResponseFactory.Create(bowlerName: "Person D", season: "2024", average: 215.75m)
+        };
+
+        var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
+        {
+            Items = awards,
+
+        };
+
+        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetHighAverageAwardsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>> result = await _sut.GetHighAverageAwardsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        var awardsList = result.Value.ToList();
+        awardsList[0].Season.ShouldBe("2025");
+        awardsList[1].Season.ShouldBe("2024");
+        awardsList[2].Season.ShouldBe("2022");
+        awardsList[3].Season.ShouldBe("2020");
+    }
+
+    #endregion
+
+    #region GetTournamentRulesAsync Tests
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_SuccessfulResponse_ReturnsMarkupString()
+    {
+        // Arrange
+        const string htmlContent = "<h1>Tournament Rules</h1><p>These are the rules.</p>";
+
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<string>(
+            httpResponse,
+            htmlContent,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Value.ShouldBe(htmlContent);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_EmptyContent_ReturnsEmptyMarkupString()
+    {
+        // Arrange
+        const string htmlContent = "";
+
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<string>(
+            httpResponse,
+            htmlContent,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Value.ShouldBe(string.Empty);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError) { ReasonPhrase = "Server Error" };
+        using var apiResponse = new Refit.ApiResponse<string>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<string>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetTournamentRulesAsync_ComplexHtmlContent_ReturnsCorrectMarkupString()
+    {
+        // Arrange
+        const string htmlContent = @"
+            <div class='rules-container'>
+                <h1>NEBA Tournament Rules</h1>
+                <ol>
+                    <li><strong>Registration:</strong> All participants must register before the tournament.</li>
+                    <li><strong>Equipment:</strong> Only approved equipment is allowed.</li>
+                    <li><strong>Scoring:</strong> Standard bowling scoring rules apply.</li>
+                </ol>
+                <p>For more information, contact the tournament director.</p>
+            </div>";
+
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<string>(
+            httpResponse,
+            htmlContent,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentRulesAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Value.ShouldBe(htmlContent);
     }
 
     #endregion
