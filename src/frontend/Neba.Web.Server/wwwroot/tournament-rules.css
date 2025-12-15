@@ -3,9 +3,149 @@
  * Styles common HTML elements from Google Docs exports
  */
 
+/* Layout Container */
+.tournament-rules-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+  /* Fixed height calculated to fit in viewport without causing page scroll */
+  /* Account for: Banner (~100px) + Navbar (~64px) + Page header (~100px) + Footer (~60px) + Padding (~76px) = ~400px */
+  height: calc(100vh - 400px);
+  max-height: calc(100vh - 400px);
+  min-height: 400px; /* Ensure minimum usable height */
+  overflow: hidden;
+}
+
+/* Table of Contents */
+.tournament-rules-toc {
+  width: 280px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.toc-sticky {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.25rem;
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.toc-sticky::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc-sticky::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-sticky::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 3px;
+}
+
+.toc-sticky::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+.toc-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neba-gray-800);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item-h1,
+.toc-item-h2 {
+  margin: 0;
+}
+
+.toc-item-h2 {
+  padding-left: 1rem;
+}
+
+.toc-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--neba-gray-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  border-radius: var(--neba-radius);
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  margin-left: -0.75rem;
+  padding-left: calc(0.75rem - 3px);
+}
+
+.toc-item-h1 .toc-link {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+}
+
+.toc-item-h2 .toc-link {
+  padding-left: calc(1.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-link:hover {
+  background-color: var(--neba-blue-050);
+  color: var(--neba-blue-700);
+  border-left-color: var(--neba-blue-300);
+}
+
+.toc-link.active {
+  background-color: var(--neba-blue-100);
+  color: var(--neba-blue-700);
+  font-weight: 600;
+  border-left-color: var(--neba-blue-600);
+}
+
+/* Main Content */
 .tournament-rules-content {
   line-height: 1.8;
   color: var(--neba-text);
+  min-width: 0; /* Prevent grid overflow */
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.tournament-rules-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tournament-rules-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tournament-rules-content::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 4px;
+}
+
+.tournament-rules-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
 }
 
 /* Headings */
@@ -188,7 +328,6 @@
 /* Blockquotes */
 .tournament-rules-content blockquote {
   border-left: 4px solid var(--neba-blue-600);
-  padding-left: 1rem;
   margin-left: 0;
   margin-bottom: 1rem;
   font-style: italic;
@@ -386,7 +525,54 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Dark mode support for TOC */
+.dark .toc-sticky {
+  background-color: var(--neba-bg-panel);
+  border-color: var(--neba-border);
+}
+
+.dark .toc-title {
+  color: var(--neba-text);
+}
+
+.dark .toc-item-h1 .toc-link {
+  color: var(--neba-text);
+}
+
+.dark .toc-link {
+  color: var(--neba-gray-400);
+}
+
+.dark .toc-link:hover {
+  background-color: rgba(62, 79, 217, 0.1);
+  color: var(--neba-blue-300);
+}
+
+.dark .toc-link.active {
+  background-color: rgba(62, 79, 217, 0.2);
+  color: var(--neba-blue-300);
+}
+
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+  .tournament-rules-container {
+    grid-template-columns: 1fr;
+    /* Remove fixed height on mobile - allow natural scrolling */
+    height: auto;
+    overflow: visible;
+  }
+
+  .tournament-rules-toc {
+    display: none;
+  }
+
+  .tournament-rules-content {
+    /* Remove fixed height on mobile - allow natural scrolling */
+    height: auto;
+    overflow: visible;
+  }
+}
+
 @media (max-width: 767px) {
   .tournament-rules-content h1 {
     font-size: 1.75rem;
