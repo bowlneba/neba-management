@@ -6,9 +6,11 @@ namespace Neba.Application.Documents;
 public interface IDocumentsService
 {
     /// <summary>
-    /// Retrieves the specified document as an HTML string.
+    /// Retrieves the specified document as an HTML string by its logical name.
     /// </summary>
-    /// <param name="documentId">The unique identifier of the document to retrieve.</param>
+    /// <param name="documentName">The logical name of the document to retrieve (e.g., "tournament-rules"). This name is mapped to the actual document source in the infrastructure layer.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the HTML representation of the document.</returns>
-    Task<string> GetDocumentAsHtmlAsync(string documentId);
+    /// <exception cref="ArgumentException">Thrown when the document name is not found in the configuration.</exception>
+    Task<string> GetDocumentAsHtmlAsync(string documentName, CancellationToken cancellationToken);
 }

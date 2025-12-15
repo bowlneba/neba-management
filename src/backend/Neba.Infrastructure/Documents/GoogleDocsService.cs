@@ -10,9 +10,10 @@ internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDoc
     : IDocumentsService
 {
     private readonly GoogleDocsCredentials _credentials = settings.Credentials;
+    private readonly IReadOnlyCollection<GoogleDocument> _documents = settings.Documents;
     private readonly DocumentMapper _documentMapper = documentMapper;
 
-    public async Task<string> GetDocumentAsHtmlAsync(string documentId)
+    public async Task<string> GetDocumentAsHtmlAsync(string documentName, CancellationToken cancellationToken)
     {
         GoogleCredential googleCredential = null!;
 
@@ -28,8 +29,11 @@ internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDoc
             ApplicationName = "Neba Api"
         });
 
+        string documentId = _documents.SingleOrDefault(doc => doc.Name == documentName)?.DocumentId
+            ?? throw new InvalidOperationException($"Google Document with name '{documentName}' not found in configuration.");
+
         DocumentsResource.GetRequest request = service.Documents.Get(documentId);
-        Document document = await request.ExecuteAsync();
+        Document document = await request.ExecuteAsync(cancellationToken);
 
         return _documentMapper.ConvertToHtml(document);
     }
