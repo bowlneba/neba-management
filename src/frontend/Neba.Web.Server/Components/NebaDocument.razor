@@ -25,12 +25,39 @@
     <div class="neba-document-container" id="@ContainerId">
         @if (ShowTableOfContents)
         {
+            <!-- Mobile TOC Button -->
+            <button class="neba-document-toc-mobile-btn" id="@TocMobileButtonId" aria-label="Open table of contents">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                <span>Contents</span>
+            </button>
+
+            <!-- Desktop TOC -->
             <nav class="neba-document-toc" id="@TocId" aria-label="Table of Contents">
                 <div class="toc-sticky">
                     <h2 class="toc-title">@TableOfContentsTitle</h2>
                     <div id="@TocListId"></div>
                 </div>
             </nav>
+
+            <!-- Mobile TOC Modal -->
+            <div class="neba-document-toc-modal" id="@TocModalId" role="dialog" aria-modal="true" aria-labelledby="@TocModalTitleId">
+                <div class="neba-document-toc-modal-overlay" id="@TocModalOverlayId"></div>
+                <div class="neba-document-toc-modal-content">
+                    <div class="neba-document-toc-modal-header">
+                        <h2 id="@TocModalTitleId" class="toc-title">@TableOfContentsTitle</h2>
+                        <button class="neba-document-toc-modal-close" id="@TocModalCloseId" aria-label="Close table of contents">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="neba-document-toc-modal-body">
+                        <div id="@TocMobileListId"></div>
+                    </div>
+                </div>
+            </div>
         }
 
         <div class="neba-panel neba-document-content" id="@ContentId">
@@ -111,6 +138,12 @@
     private string ContentId => $"neba-document-content-{_instanceId}";
     private string TocId => $"neba-document-toc-{_instanceId}";
     private string TocListId => $"neba-document-toc-list-{_instanceId}";
+    private string TocMobileButtonId => $"neba-document-toc-mobile-btn-{_instanceId}";
+    private string TocModalId => $"neba-document-toc-modal-{_instanceId}";
+    private string TocModalOverlayId => $"neba-document-toc-modal-overlay-{_instanceId}";
+    private string TocModalCloseId => $"neba-document-toc-modal-close-{_instanceId}";
+    private string TocModalTitleId => $"neba-document-toc-modal-title-{_instanceId}";
+    private string TocMobileListId => $"neba-document-toc-mobile-list-{_instanceId}";
 
     protected override void OnInitialized()
     {
@@ -136,7 +169,15 @@
             // Try to initialize TOC up to 5 times
             for (int i = 0; i < 5; i++)
             {
-                var success = await _module.InvokeAsync<bool>("initializeToc", ContentId, TocListId, HeadingLevels);
+                var success = await _module.InvokeAsync<bool>("initializeToc",
+                    ContentId,
+                    TocListId,
+                    TocMobileListId,
+                    TocMobileButtonId,
+                    TocModalId,
+                    TocModalOverlayId,
+                    TocModalCloseId,
+                    HeadingLevels);
                 if (success)
                 {
                     _tocInitialized = true;

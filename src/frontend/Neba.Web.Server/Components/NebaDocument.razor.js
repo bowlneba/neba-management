@@ -3,14 +3,29 @@
  * Provides TOC generation, scroll spy, smooth scrolling, and hash navigation
  */
 
-export function initializeToc(contentId, tocListId, headingLevels = 'h1, h2') {
+export function initializeToc(
+    contentId,
+    tocListId,
+    tocMobileListId,
+    tocMobileButtonId,
+    tocModalId,
+    tocModalOverlayId,
+    tocModalCloseId,
+    headingLevels = 'h1, h2'
+) {
     console.log('[NebaDocument] Initializing TOC...');
     console.log('[NebaDocument] Content ID:', contentId);
     console.log('[NebaDocument] TOC List ID:', tocListId);
+    console.log('[NebaDocument] Mobile TOC List ID:', tocMobileListId);
     console.log('[NebaDocument] Heading Levels:', headingLevels);
 
     const content = document.getElementById(contentId);
     const tocList = document.getElementById(tocListId);
+    const tocMobileList = document.getElementById(tocMobileListId);
+    const tocMobileButton = document.getElementById(tocMobileButtonId);
+    const tocModal = document.getElementById(tocModalId);
+    const tocModalOverlay = document.getElementById(tocModalOverlayId);
+    const tocModalClose = document.getElementById(tocModalCloseId);
 
     if (!content) {
         console.error('[NebaDocument] Content element not found:', contentId);
@@ -52,6 +67,67 @@ export function initializeToc(contentId, tocListId, headingLevels = 'h1, h2') {
 
     tocHtml += '</ul>';
     tocList.innerHTML = tocHtml;
+
+    // Also populate the mobile TOC
+    if (tocMobileList) {
+        tocMobileList.innerHTML = tocHtml;
+    }
+
+    // Mobile modal functionality
+    if (tocMobileButton && tocModal && tocModalOverlay && tocModalClose) {
+        // Open modal
+        tocMobileButton.addEventListener('click', () => {
+            tocModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        });
+
+        // Close modal functions
+        const closeModal = () => {
+            tocModal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        };
+
+        tocModalClose.addEventListener('click', closeModal);
+        tocModalOverlay.addEventListener('click', closeModal);
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tocModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Close modal when clicking a TOC link in mobile
+        if (tocMobileList) {
+            const mobileTocLinks = tocMobileList.querySelectorAll('.toc-link');
+            mobileTocLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        // Close the modal first
+                        closeModal();
+
+                        // Scroll to the target element on the page (using window scroll on mobile)
+                        setTimeout(() => {
+                            // Get the position of the element
+                            const elementPosition = targetElement.getBoundingClientRect().top;
+                            // Account for sticky navbar height (~72px) plus some padding
+                            const navbarHeight = 80;
+                            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }, 300); // Small delay to allow modal to close
+                    }
+                });
+            });
+        }
+    }
 
     // Add scroll spy functionality
     const tocLinks = tocList.querySelectorAll('.toc-link');
@@ -102,6 +178,9 @@ export function initializeToc(contentId, tocListId, headingLevels = 'h1, h2') {
                 if (newActiveLink) {
                     newActiveLink.classList.add('active');
                     currentActiveLink = newActiveLink;
+
+                    // Auto-scroll the TOC to show the active link
+                    scrollTocToActiveLink(newActiveLink);
                 }
             }
         }
