@@ -13,7 +13,7 @@ public static class HighAverageAwardResponseFactory
     public const int Tournaments = 9;
 
     public static HighAverageAwardResponse Create(
-        Guid? id = null,
+        Ulid? id = null,
         string? bowlerName = null,
         string? season = null,
         decimal? average = null,
@@ -21,7 +21,7 @@ public static class HighAverageAwardResponseFactory
         int? tournaments = null)
         => new()
         {
-            Id = id ?? Guid.NewGuid(),
+            Id = id ?? Ulid.NewUlid(),
             BowlerName = bowlerName ?? BowlerName,
             Season = season ?? Season,
             Average = average ?? Average,
@@ -37,7 +37,7 @@ public static class HighAverageAwardResponseFactory
         int? seed = null)
     {
         Faker<HighAverageAwardResponse> faker = new Faker<HighAverageAwardResponse>()
-            .RuleFor(b => b.Id, f => f.Random.Guid())
+            .RuleFor(b => b.Id, f => Ulid.NewUlid())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
             .RuleFor(b => b.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture))
             .RuleFor(b => b.Average, f => f.Random.Decimal(150, 250))
