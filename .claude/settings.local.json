@@ -35,7 +35,14 @@
       "Bash(dotnet publish:*)",
       "Bash(dotnet --list-sdks:*)",
       "Bash(az webapp list-runtimes:*)",
-      "Bash(az webapp deployment:*)"
+      "Bash(az webapp deployment:*)",
+      "Bash(az webapp log tail:*)",
+      "Bash(az webapp log:*)",
+      "Bash(unzip:*)",
+      "Bash(python3:*)",
+      "Bash(az webapp config set:*)",
+      "Bash(az webapp config appsettings list:*)",
+      "Bash(az webapp config appsettings delete:*)"
     ],
     "deny": [],
     "ask": []
