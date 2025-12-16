@@ -18,6 +18,8 @@ internal sealed class SeasonAwardConfiguration
 
         builder.Property(seasonAward => seasonAward.Id)
             .ValueGeneratedNever()
+            .HasMaxLength(26)
+            .IsFixedLength()
             .HasConversion<SeasonAwardId.EfCoreValueConverter>();
 
         builder.Property(seasonAward => seasonAward.AwardType)

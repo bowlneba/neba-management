@@ -19,6 +19,8 @@ internal sealed class TitleConfiguration
         builder
             .Property(title => title.Id)
             .ValueGeneratedNever()
+            .HasMaxLength(26)
+            .IsFixedLength()
             .HasConversion<TitleId.EfCoreValueConverter>();
 
         builder
