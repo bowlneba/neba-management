@@ -99,11 +99,22 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Create deployment package
+        run: |
+          cd ./publish
+          zip -r ../deploy.zip .
+          cd ..
+          echo "Created deployment package: deploy.zip"
+          echo "Package size: $(du -h deploy.zip | cut -f1)"
+
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}
-          package: ./publish
+        run: |
+          az webapp deployment source config-zip \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --name ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --src deploy.zip \
+            --timeout 600
+          echo "✅ Deployment completed"
 
       - name: Verify deployment
         run: |

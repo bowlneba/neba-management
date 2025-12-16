@@ -31,7 +31,11 @@
       "Bash(chmod:*)",
       "Bash(grep:*)",
       "Bash(exit)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(dotnet publish:*)",
+      "Bash(dotnet --list-sdks:*)",
+      "Bash(az webapp list-runtimes:*)",
+      "Bash(az webapp deployment:*)"
     ],
     "deny": [],
     "ask": []
