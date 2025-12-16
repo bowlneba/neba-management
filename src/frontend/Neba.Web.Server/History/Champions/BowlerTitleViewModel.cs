@@ -8,7 +8,7 @@ public sealed record BowlerTitleViewModel
     /// <summary>
     /// Gets the unique identifier for the bowler.
     /// </summary>
-    public required Guid BowlerId { get; init; }
+    public required Ulid BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full name of the bowler.

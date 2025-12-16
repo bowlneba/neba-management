@@ -8,6 +8,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AdditionalFiles Include="ulid-full.typedid" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="Neba.Infrastructure" />
     <InternalsVisibleTo Include="Neba.Tests" />
     <InternalsVisibleTo Include="Neba.IntegrationTests" />

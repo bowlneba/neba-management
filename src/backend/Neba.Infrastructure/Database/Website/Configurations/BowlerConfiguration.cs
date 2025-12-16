@@ -15,6 +15,8 @@ internal sealed class BowlerConfiguration
         builder
             .Property(bowler => bowler.Id)
             .ValueGeneratedNever()
+            .HasMaxLength(26)
+            .IsFixedLength()
             .HasConversion<BowlerId.EfCoreValueConverter>();
 
         builder
@@ -54,8 +56,16 @@ internal sealed class BowlerConfiguration
         builder.Property(bowler => bowler.WebsiteId)
             .ValueGeneratedNever();
 
+        builder.HasIndex(bowler => bowler.WebsiteId)
+            .IsUnique()
+            .HasFilter("\"website_id\" IS NOT NULL");
+
         builder.Property(bowler => bowler.ApplicationId)
             .ValueGeneratedNever();
+
+        builder.HasIndex(bowler => bowler.ApplicationId)
+            .IsUnique()
+            .HasFilter("\"application_id\" IS NOT NULL");
 
         builder.HasMany(bowler => bowler.Titles)
             .WithOne(title => title.Bowler)

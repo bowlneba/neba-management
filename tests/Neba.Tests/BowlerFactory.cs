@@ -30,16 +30,37 @@ public static class BowlerFactory
         int count,
         int? seed = null)
     {
+#pragma warning disable CA5394 // Random is acceptable here - used only for test data generation, not security
+        Random random = seed.HasValue ? new Random(seed.Value) : new Random();
+        var shuffledWebsiteIds = Enumerable.Range(1, 100000).OrderBy(_ => random.Next()).ToList();
+        var shuffledApplicationIds = Enumerable.Range(1, 100000).OrderBy(_ => random.Next()).ToList();
+#pragma warning restore CA5394
+        int websiteIdIndex = 0;
+        int applicationIdIndex = 0;
+
         Bogus.Faker<Bowler> faker = new Bogus.Faker<Bowler>()
             .CustomInstantiator(f =>
             {
                 var bowlerId = BowlerId.New();
+
+                int? websiteId = null;
+                if (f.Random.Bool(0.5f))
+                {
+                    websiteId = shuffledWebsiteIds[websiteIdIndex++];
+                }
+
+                int? applicationId = null;
+                if (f.Random.Bool(0.5f))
+                {
+                    applicationId = shuffledApplicationIds[applicationIdIndex++];
+                }
+
                 return new Bowler
                 {
                     Id = bowlerId,
                     Name = NameFactory.Bogus(),
-                    WebsiteId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
-                    ApplicationId = f.Random.Bool(0.5f) ? f.Random.Int(1, 1000) : null,
+                    WebsiteId = websiteId,
+                    ApplicationId = applicationId,
                     Titles = TitleFactory.Bogus(bowlerId, f.Random.Int(0, 10), seed),
                     SeasonAwards = SeasonAwardFactory
                         .BogusBowlerOfTheYear(bowlerId, f.Random.Int(0, 5), seed)

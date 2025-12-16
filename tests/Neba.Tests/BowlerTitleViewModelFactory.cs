@@ -11,7 +11,7 @@ public static class BowlerTitleViewModelFactory
     public const string DefaultTournamentType = "Singles";
 
     public static BowlerTitleViewModel Create(
-        Guid? bowlerId = null,
+        Ulid? bowlerId = null,
         string? bowlerName = null,
         int? tournamentMonth = null,
         int? tournamentYear = null,
@@ -19,7 +19,7 @@ public static class BowlerTitleViewModelFactory
         bool? hallOfFame = null)
         => new()
         {
-            BowlerId = bowlerId ?? Guid.NewGuid(),
+            BowlerId = bowlerId ?? Ulid.NewUlid(),
             BowlerName = bowlerName ?? DefaultBowlerName,
             TournamentMonth = tournamentMonth ?? DefaultTournamentMonth,
             TournamentYear = tournamentYear ?? DefaultTournamentYear,
@@ -35,7 +35,7 @@ public static class BowlerTitleViewModelFactory
         int? seed = null)
     {
         Faker<BowlerTitleViewModel> faker = new Faker<BowlerTitleViewModel>()
-            .RuleFor(vm => vm.BowlerId, _ => Guid.NewGuid())
+            .RuleFor(vm => vm.BowlerId, _ => Ulid.NewUlid())
             .RuleFor(vm => vm.BowlerName, f => f.Name.FullName())
             .RuleFor(vm => vm.TournamentMonth, f => f.Random.Int(1, 12))
             .RuleFor(vm => vm.TournamentYear, f => f.Date.Past(70).Year)

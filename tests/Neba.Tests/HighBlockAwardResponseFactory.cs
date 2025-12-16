@@ -11,13 +11,13 @@ public static class HighBlockAwardResponseFactory
     public const int Score = 1150;
 
     public static HighBlockAwardResponse Create(
-        Guid? id = null,
+        Ulid? id = null,
         string? bowlerName = null,
         string? season = null,
         int? score = null)
         => new()
         {
-            Id = id ?? Guid.NewGuid(),
+            Id = id ?? Ulid.NewUlid(),
             BowlerName = bowlerName ?? BowlerName,
             Season = season ?? Season,
             Score = score ?? Score
@@ -31,7 +31,7 @@ public static class HighBlockAwardResponseFactory
         int? seed = null)
     {
         Faker<HighBlockAwardResponse> faker = new Faker<HighBlockAwardResponse>()
-            .RuleFor(b => b.Id, f => f.Random.Guid())
+            .RuleFor(b => b.Id, _ => Ulid.NewUlid())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
             .RuleFor(b => b.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture))
             .RuleFor(b => b.Score, f => f.Random.Int(900, 1300));

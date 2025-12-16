@@ -353,7 +353,7 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlerTitlesAsync_SuccessfulResponse_ReturnsBowlerTitles()
     {
         // Arrange
-        var bowlerId = Guid.NewGuid();
+        var bowlerId = Ulid.NewUlid();
         var bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, bowlerName: "John Doe", titleCount: 5);
 
         var apiResponseData = new Neba.Contracts.ApiResponse<BowlerTitlesResponse>
@@ -380,7 +380,7 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlerTitlesAsync_ApiError_ReturnsError()
     {
         // Arrange
-        var bowlerId = Guid.NewGuid();
+        var bowlerId = Ulid.NewUlid();
         var apiResponseData = new Neba.Contracts.ApiResponse<BowlerTitlesResponse>
         {
             Data = BowlerTitlesResponseFactory.Create(titleCount: 1)
@@ -403,7 +403,7 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlerTitlesAsync_NullContent_ReturnsError()
     {
         // Arrange
-        var bowlerId = Guid.NewGuid();
+        var bowlerId = Ulid.NewUlid();
         using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
         using var apiResponse = new Refit.ApiResponse<Neba.Contracts.ApiResponse<BowlerTitlesResponse>>(
             httpResponse,
@@ -425,7 +425,7 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlerTitlesAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
-        var bowlerId = Guid.NewGuid();
+        var bowlerId = Ulid.NewUlid();
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesAsync(bowlerId))
             .ThrowsAsync(new HttpRequestException("Network error"));
