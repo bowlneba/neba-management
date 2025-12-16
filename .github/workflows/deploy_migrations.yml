@@ -113,7 +113,7 @@ jobs:
           echo "✅ Website database migrations applied successfully"
 
       - name: Remove temporary firewall rule
-        if: always()
+        if: steps.add-firewall-rule.outcome == 'success'
         run: |
           echo "🔒 Removing temporary firewall rule..."
           az postgres flexible-server firewall-rule delete \
