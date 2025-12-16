@@ -45,12 +45,9 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
   name: name
   location: location
   tags: tags
-  identity: {
-    type: 'SystemAssigned'
-  }
   sku: {
     name: skuName
-    tier: startsWith(skuName, 'B_') ? 'Burstable' : startsWith(skuName, 'GP_') ? 'GeneralPurpose' : 'MemoryOptimized'
+    tier: startsWith(skuName, 'Standard_B') ? 'Burstable' : startsWith(skuName, 'Standard_D') || startsWith(skuName, 'Standard_E') ? 'MemoryOptimized' : 'GeneralPurpose'
   }
   properties: {
     administratorLogin: administratorLogin
@@ -66,10 +63,6 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     }
     highAvailability: {
       mode: highAvailability ? 'ZoneRedundant' : 'Disabled'
-    }
-    authConfig: {
-      activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Enabled'
     }
   }
 }
