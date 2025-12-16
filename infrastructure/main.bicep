@@ -137,7 +137,7 @@ module apiAppService 'modules/appService.bicep' = {
         value: 'http://+:8080'
       }
       {
-        name: 'KeyVaultUri'
+        name: 'KeyVault__VaultUrl'
         value: keyVault.outputs.uri
       }
     ]
