@@ -60,7 +60,9 @@
       "Bash(az postgres flexible-server update:*)",
       "Bash(az account get-access-token:*)",
       "Bash(brew install:*)",
-      "Bash(az postgres flexible-server parameter set:*)"
+      "Bash(az postgres flexible-server parameter set:*)",
+      "Bash(az keyvault list:*)",
+      "Bash(az keyvault secret set:*)"
     ],
     "deny": [],
     "ask": []
