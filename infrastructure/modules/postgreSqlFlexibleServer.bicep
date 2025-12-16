@@ -55,7 +55,6 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     version: version
     storage: {
       storageSizeGB: storageSizeGB
-      autoGrow: 'Enabled'
     }
     backup: {
       backupRetentionDays: backupRetentionDays
