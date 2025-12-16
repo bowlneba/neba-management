@@ -118,6 +118,9 @@ jobs:
           echo "Starting health checks (max $MAX_ATTEMPTS attempts, up to ~6 minutes)..."
           while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "✅ API is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
+              break
             fi
             echo "⏳ Waiting for API to be ready (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)..."
             sleep $DELAY
