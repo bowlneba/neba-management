@@ -3,6 +3,17 @@
  * Provides TOC generation, scroll spy, smooth scrolling, and hash navigation
  */
 
+/**
+ * Escapes HTML special characters to prevent XSS attacks
+ * @param {string} text - The text to escape
+ * @returns {string} The escaped text safe for HTML insertion
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 export function initializeToc(
     contentId,
     tocListId,
@@ -62,7 +73,7 @@ export function initializeToc(
         }
 
         const level = heading.tagName.toLowerCase();
-        const text = heading.textContent;
+        const text = escapeHtml(heading.textContent);
         const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
 
         tocHtml += `<li class="${className}">
@@ -454,6 +465,8 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
         slideoverTitle.textContent = pageTitle;
 
         // Set the content
+        // WARNING: This sets HTML from an API response. Ensure the API returns properly sanitized HTML
+        // or the source documents are trusted. Consider using DOMPurify if the content is user-generated.
         slideoverContent.innerHTML = html;
 
         // If there's a hash in the URL, scroll to it
@@ -478,7 +491,7 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
         slideoverContent.innerHTML = `
             <div style="padding: 2rem; text-align: center;">
                 <p style="color: var(--neba-accent-red); margin-bottom: 1rem;">Failed to load document</p>
-                <p style="color: var(--neba-gray-600); font-size: 0.875rem;">${error.message}</p>
+                <p style="color: var(--neba-gray-600); font-size: 0.875rem;">${escapeHtml(error.message)}</p>
             </div>
         `;
     }
