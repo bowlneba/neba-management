@@ -74,8 +74,15 @@
                     <li class="neba-nav-item">
                         <a href="/stats" class="neba-nav-link @(IsActive("stats") ? "active" : null)" aria-current="@(IsActive("stats") ? "page" : null)">Stats</a>
                     </li>
-                    <li class="neba-nav-item">
-                        <a href="/about" class="neba-nav-link @(IsActive("about") ? "active" : null)" aria-current="@(IsActive("about") ? "page" : null)">About</a>
+                    <li class="neba-nav-item" data-action="toggle-dropdown">
+                        <a href="#"
+                           class="neba-nav-link"
+                           aria-haspopup="true"
+                           aria-expanded="false"
+                           onclick="event.preventDefault();">About</a>
+                        <div class="neba-dropdown" role="menu">
+                            <a href="/bylaws" class="neba-dropdown-link @(IsActive("bylaws") ? "active" : null)" aria-current="@(IsActive("bylaws") ? "page" : null)" role="menuitem">Bylaws</a>
+                        </div>
                     </li>
                     <li class="neba-nav-item">
                         <a href="/news" class="neba-nav-link @(IsActive("news") ? "active" : null)" aria-current="@(IsActive("news") ? "page" : null)">News</a>
