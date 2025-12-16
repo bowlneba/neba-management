@@ -249,8 +249,62 @@ export function initializeToc(
     // Initial update
     updateActiveLink();
 
+    // Handle internal anchor links in content (same-page section navigation)
+    setupInternalLinkNavigation(content);
+
     console.log('[NebaDocument] TOC initialized successfully');
     return true;
+}
+
+/**
+ * Sets up smooth scrolling for internal anchor links within the document content
+ * @param {HTMLElement} content - The document content container
+ */
+function setupInternalLinkNavigation(content) {
+    // Find all links within the content
+    const contentLinks = content.querySelectorAll('a[href^="#"]');
+
+    console.log('[NebaDocument] Setting up internal link navigation for', contentLinks.length, 'links');
+
+    contentLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+
+            // Skip if it's just "#" with no target
+            if (!href || href === '#') {
+                return;
+            }
+
+            e.preventDefault();
+
+            // Extract the target ID (remove the '#')
+            const targetId = href.substring(1);
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                // Get the position of the target relative to the scrollable content
+                const contentRect = content.getBoundingClientRect();
+                const targetRect = targetElement.getBoundingClientRect();
+                const currentScroll = content.scrollTop;
+
+                // Calculate the scroll position
+                const offset = 20; // Small offset from the top of the container
+                const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+
+                console.log('[NebaDocument] Scrolling to internal link target:', targetId);
+
+                content.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+
+                // Update URL hash without jumping
+                history.pushState(null, '', `#${targetId}`);
+            } else {
+                console.warn('[NebaDocument] Internal link target not found:', targetId);
+            }
+        });
+    });
 }
 
 export function scrollToHash(contentId, tocListId) {
