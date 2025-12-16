@@ -599,6 +599,8 @@
     grid-template-columns: 1fr;
     /* Remove fixed height on mobile - allow natural scrolling */
     height: auto;
+    max-height: none;
+    min-height: 0;
     overflow: visible;
   }
 
