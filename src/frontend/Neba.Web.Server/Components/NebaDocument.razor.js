@@ -473,8 +473,8 @@ function getPageTitle(pathname) {
     // Return the mapped title or create a title from the pathname
     return titleMap[pathname] || pathname
         .split('/')
-        .map(part => part.replace(/-/g, ' '))
-        .map(part => part.replace(/\b\w/g, l => l.toUpperCase()))
+        .map(part => part.replaceAll(/-/g, ' '))
+        .map(part => part.replaceAll(/\b\w/g, l => l.toUpperCase()))
         .join(' - ');
 }
 
