@@ -99,4 +99,4 @@ output id string = postgreSqlServer.id
 output name string = postgreSqlServer.name
 output fqdn string = postgreSqlServer.properties.fullyQualifiedDomainName
 output databaseName string = database.name
-output principalId string = postgreSqlServer.identity!.principalId
+output principalId string = postgreSqlServer.identity.principalId
