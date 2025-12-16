@@ -30,8 +30,13 @@ public static class BowlerFactory
         int count,
         int? seed = null)
     {
-        var usedWebsiteIds = new HashSet<int>();
-        var usedApplicationIds = new HashSet<int>();
+#pragma warning disable CA5394 // Random is acceptable here - used only for test data generation, not security
+        Random random = seed.HasValue ? new Random(seed.Value) : new Random();
+        var shuffledWebsiteIds = Enumerable.Range(1, 100000).OrderBy(_ => random.Next()).ToList();
+        var shuffledApplicationIds = Enumerable.Range(1, 100000).OrderBy(_ => random.Next()).ToList();
+#pragma warning restore CA5394
+        int websiteIdIndex = 0;
+        int applicationIdIndex = 0;
 
         Bogus.Faker<Bowler> faker = new Bogus.Faker<Bowler>()
             .CustomInstantiator(f =>
@@ -41,23 +46,13 @@ public static class BowlerFactory
                 int? websiteId = null;
                 if (f.Random.Bool(0.5f))
                 {
-                    int candidateId;
-                    do
-                    {
-                        candidateId = f.Random.Int(1, 10000);
-                    } while (!usedWebsiteIds.Add(candidateId));
-                    websiteId = candidateId;
+                    websiteId = shuffledWebsiteIds[websiteIdIndex++];
                 }
 
                 int? applicationId = null;
                 if (f.Random.Bool(0.5f))
                 {
-                    int candidateId;
-                    do
-                    {
-                        candidateId = f.Random.Int(1, 10000);
-                    } while (!usedApplicationIds.Add(candidateId));
-                    applicationId = candidateId;
+                    applicationId = shuffledApplicationIds[applicationIdIndex++];
                 }
 
                 return new Bowler
