@@ -130,9 +130,9 @@ export function initializeToc(configOrContentId) {
     let tocHtml = '<ul class="toc-list">';
 
     headings.forEach((heading, index) => {
-        const id = heading.getAttribute('id') || `heading-${index}`;
-        if (!heading.getAttribute('id')) {
-            heading.setAttribute('id', id);
+        const id = heading.id || `heading-${index}`;
+        if (!heading.id) {
+            heading.id = id;
         }
 
         const level = heading.tagName.toLowerCase();
@@ -179,10 +179,10 @@ export function initializeToc(configOrContentId) {
         // Close modal when clicking a TOC link in mobile
         if (tocMobileList) {
             const mobileTocLinks = tocMobileList.querySelectorAll('.toc-link');
-            mobileTocLinks.forEach(link => {
+                mobileTocLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
+                    const targetId = link.dataset.target;
                     const targetElement = document.getElementById(targetId);
 
                     if (targetElement) {
@@ -195,9 +195,9 @@ export function initializeToc(configOrContentId) {
                             const elementPosition = targetElement.getBoundingClientRect().top;
                             // Account for sticky navbar height (~72px) plus some padding
                             const navbarHeight = 80;
-                            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                            const offsetPosition = elementPosition + globalThis.pageYOffset - navbarHeight;
 
-                            window.scrollTo({
+                            globalThis.scrollTo({
                                 top: offsetPosition,
                                 behavior: 'smooth'
                             });
@@ -247,7 +247,7 @@ export function initializeToc(configOrContentId) {
         }
 
         if (activeHeading) {
-            const targetId = activeHeading.getAttribute('id');
+            const targetId = activeHeading.id;
             const newActiveLink = tocList.querySelector(`[data-target="${targetId}"]`);
 
             if (newActiveLink !== currentActiveLink) {
@@ -289,7 +289,7 @@ export function initializeToc(configOrContentId) {
     tocLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetId = link.getAttribute('data-target');
+            const targetId = link.dataset.target;
             const targetElement = document.getElementById(targetId);
 
             if (targetElement) {
@@ -317,7 +317,7 @@ export function initializeToc(configOrContentId) {
     let ticking = false;
     content.addEventListener('scroll', () => {
         if (!ticking) {
-            window.requestAnimationFrame(() => {
+            globalThis.requestAnimationFrame(() => {
                 updateActiveLink();
                 ticking = false;
             });
@@ -404,7 +404,7 @@ function setupInternalLinkNavigation(content, slideoverId, slideoverOverlayId, s
 
             // Check if it's an internal link (same origin)
             try {
-                const linkUrl = new URL(href, window.location.href);
+                const linkUrl = new URL(href, globalThis.location.href);
                 const isInternal = linkUrl.origin === window.location.origin;
                 const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
 
@@ -596,7 +596,7 @@ function setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, 
 
             // Handle internal page links - replace slide-over content
             try {
-                const linkUrl = new URL(href, window.location.href);
+                const linkUrl = new URL(href, globalThis.location.href);
                 const isInternal = linkUrl.origin === window.location.origin;
                 const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
 
