@@ -119,7 +119,6 @@ jobs:
           while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
             if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-              echo "✅ API is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
               break
             fi
             echo "⏳ Waiting for API to be ready (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)..."
@@ -128,9 +127,6 @@ jobs:
             DELAY=$((DELAY * 2))
             if [ $DELAY -gt 40 ]; then DELAY=40; fi
           done
-
-          # Check health endpoint (final status after retries)
-          # HTTP_STATUS already set above
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
             echo "✅ API is responding with status code: $HTTP_STATUS"
