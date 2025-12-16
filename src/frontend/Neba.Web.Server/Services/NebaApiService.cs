@@ -146,6 +146,18 @@ internal class NebaApiService(INebaApi nebaApi)
         return new MarkupString(result.Value);
     }
 
+    public async Task<ErrorOr<MarkupString>> GetBylawsAsync()
+    {
+        ErrorOr<string> result = await ExecuteApiCallAsync(() => nebaApi.GetBylawsAsync());
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return new MarkupString(result.Value);
+    }
+
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
     {
         try

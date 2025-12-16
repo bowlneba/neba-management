@@ -28,4 +28,7 @@ internal interface INebaApi
 
     [Get("/tournaments/rules")]
     Task<Refit.ApiResponse<string>> GetTournamentRulesAsync();
+
+    [Get("/bylaws")]
+    Task<Refit.ApiResponse<string>> GetBylawsAsync();
 }
