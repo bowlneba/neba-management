@@ -24,7 +24,7 @@ internal class NebaApiService(INebaApi nebaApi)
         return result.Value.Items.Select(dto => dto.ToViewModel()).ToList().AsReadOnly();
     }
 
-    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Guid bowlerId)
+    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Ulid bowlerId)
     {
         ErrorOr<Contracts.ApiResponse<BowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 

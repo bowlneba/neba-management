@@ -193,7 +193,7 @@ public sealed class AwardsIntegrationTests
         // Verify each award has all required fields populated
         foreach (var award in result.Items)
         {
-            award.Id.ShouldNotBe(Guid.Empty);
+            award.Id.ShouldNotBe(Ulid.Empty);
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();
             award.Score.ShouldBeGreaterThan(0);
@@ -287,7 +287,7 @@ public sealed class AwardsIntegrationTests
         // Verify each award has all required fields populated
         foreach (var award in result.Items)
         {
-            award.Id.ShouldNotBe(Guid.Empty);
+            award.Id.ShouldNotBe(Ulid.Empty);
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();
             award.Average.ShouldBeGreaterThan(0);

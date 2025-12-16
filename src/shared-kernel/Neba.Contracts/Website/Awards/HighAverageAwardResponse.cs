@@ -25,7 +25,7 @@ public sealed record HighAverageAwardResponse
     /// Gets the unique identifier of the High Average award record.
     /// </summary>
     /// <example>"d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f"</example>
-    public required Guid Id { get; init; }
+    public required Ulid Id { get; init; }
 
     /// <summary>
     /// Gets the full display name of the bowler who received the award.

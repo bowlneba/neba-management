@@ -31,7 +31,7 @@ public sealed record BowlerTitlesResponse
     /// Gets the unique identifier of the bowler.
     /// </summary>
     /// <example>"123e4567-e89b-12d3-a456-426614174000"</example>
-    public required Guid BowlerId { get; init; }
+    public required Ulid BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full display name of the bowler.
