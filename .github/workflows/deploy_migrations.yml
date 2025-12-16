@@ -15,6 +15,10 @@ on:
         required: false
         default: 'Production'
         type: string
+    secrets:
+      BOWLNEBA_CONNECTION_STRING:
+        description: 'PostgreSQL connection string for the Neba database'
+        required: true
 
 permissions:
   contents: read

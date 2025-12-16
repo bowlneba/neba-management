@@ -15,6 +15,10 @@ on:
         required: false
         default: 'Production'
         type: string
+    secrets:
+      DATABASE_ADMIN_PASSWORD:
+        description: 'PostgreSQL database admin password'
+        required: true
 
 permissions:
   id-token: write  # Required for OIDC authentication
