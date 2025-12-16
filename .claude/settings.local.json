@@ -42,7 +42,17 @@
       "Bash(python3:*)",
       "Bash(az webapp config set:*)",
       "Bash(az webapp config appsettings list:*)",
-      "Bash(az webapp config appsettings delete:*)"
+      "Bash(az webapp config appsettings delete:*)",
+      "Bash(az group list:*)",
+      "Bash(az webapp list:*)",
+      "Bash(az postgres flexible-server list:*)",
+      "Bash(az postgres flexible-server db list:*)",
+      "Bash(az postgres flexible-server show:*)",
+      "Bash(az keyvault secret list:*)",
+      "Bash(az webapp identity show:*)",
+      "Bash(az webapp config appsettings set:*)",
+      "Bash(az webapp restart:*)",
+      "Bash(timeout 30 az webapp log:*)"
     ],
     "deny": [],
     "ask": []
