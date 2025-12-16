@@ -19,6 +19,21 @@ on:
       DATABASE_ADMIN_PASSWORD:
         description: 'PostgreSQL database admin password'
         required: true
+      GOOGLE_DOCS_CLIENT_EMAIL:
+        description: 'Google Docs service account client email'
+        required: false
+      GOOGLE_DOCS_CLIENT_ID:
+        description: 'Google Docs service account client ID'
+        required: false
+      GOOGLE_DOCS_CLIENT_X509_CERT_URL:
+        description: 'Google Docs service account certificate URL'
+        required: false
+      GOOGLE_DOCS_PRIVATE_KEY:
+        description: 'Google Docs service account private key'
+        required: false
+      GOOGLE_DOCS_PRIVATE_KEY_ID:
+        description: 'Google Docs service account private key ID'
+        required: false
 
 permissions:
   id-token: write  # Required for OIDC authentication
@@ -281,6 +296,7 @@ jobs:
           CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }};"
 
           # Add connection string to Key Vault
+          echo "Adding ConnectionStrings--bowlneba..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "ConnectionStrings--bowlneba" \
@@ -288,6 +304,7 @@ jobs:
             --output none
 
           # Add database admin password to Key Vault for manual access
+          echo "Adding DatabaseAdminPassword..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "DatabaseAdminPassword" \
@@ -295,30 +312,35 @@ jobs:
             --output none
 
           # Add Google Docs credentials to Key Vault
+          echo "Adding GoogleDocs--Credentials--ClientEmail..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "GoogleDocs--Credentials--ClientEmail" \
             --value "$GOOGLE_DOCS_CLIENT_EMAIL" \
             --output none
 
+          echo "Adding GoogleDocs--Credentials--ClientId..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "GoogleDocs--Credentials--ClientId" \
             --value "$GOOGLE_DOCS_CLIENT_ID" \
             --output none
 
+          echo "Adding GoogleDocs--Credentials--ClientX509CertUrl..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "GoogleDocs--Credentials--ClientX509CertUrl" \
             --value "$GOOGLE_DOCS_CLIENT_X509_CERT_URL" \
             --output none
 
+          echo "Adding GoogleDocs--Credentials--PrivateKey..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "GoogleDocs--Credentials--PrivateKey" \
             --value "$GOOGLE_DOCS_PRIVATE_KEY" \
             --output none
 
+          echo "Adding GoogleDocs--Credentials--PrivateKeyId..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
             --name "GoogleDocs--Credentials--PrivateKeyId" \

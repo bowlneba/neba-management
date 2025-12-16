@@ -29,6 +29,11 @@ jobs:
       environment: ${{ inputs.environment }}
     secrets:
       DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
+      GOOGLE_DOCS_CLIENT_EMAIL: ${{ secrets.GOOGLE_DOCS_CLIENT_EMAIL }}
+      GOOGLE_DOCS_CLIENT_ID: ${{ secrets.GOOGLE_DOCS_CLIENT_ID }}
+      GOOGLE_DOCS_CLIENT_X509_CERT_URL: ${{ secrets.GOOGLE_DOCS_CLIENT_X509_CERT_URL }}
+      GOOGLE_DOCS_PRIVATE_KEY: ${{ secrets.GOOGLE_DOCS_PRIVATE_KEY }}
+      GOOGLE_DOCS_PRIVATE_KEY_ID: ${{ secrets.GOOGLE_DOCS_PRIVATE_KEY_ID }}
     permissions:
       id-token: write
       contents: read
