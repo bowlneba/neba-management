@@ -5,6 +5,7 @@ using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;
 using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Application.Documents.Bylaws;
 using Neba.Application.Tournaments.GetTournamentRules;
 
 namespace Neba.Application;
@@ -29,7 +30,8 @@ public static class ApplicationDependencyInjection
             services
                 .AddBowlersUseCases()
                 .AddAwardsUseCases()
-                .AddTournamentsUseCases();
+                .AddTournamentsUseCases()
+                .AddDocumentsUseCases();
 
             return services;
         }
@@ -55,6 +57,13 @@ public static class ApplicationDependencyInjection
         private IServiceCollection AddTournamentsUseCases()
         {
             services.AddScoped<IQueryHandler<GetTournamentRulesQuery, string>, GetTournamentRulesQueryHandler>();
+
+            return services;
+        }
+
+        private IServiceCollection AddDocumentsUseCases()
+        {
+            services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
 
             return services;
         }
