@@ -32,7 +32,7 @@ internal sealed class WebsiteDbContextFactory
                 .AddJsonFile("appsettings.development.json", optional: true)
                 .Build();
 
-            connectionString = configuration.GetConnectionString("Website");
+            connectionString = configuration.GetConnectionString("bowlneba");
         }
 
         // Fallback to hardcoded local connection string
