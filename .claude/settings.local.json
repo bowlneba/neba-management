@@ -30,7 +30,8 @@
       "Bash(bundle install:*)",
       "Bash(chmod:*)",
       "Bash(grep:*)",
-      "Bash(exit)"
+      "Bash(exit)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

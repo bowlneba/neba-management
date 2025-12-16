@@ -1,0 +1,12 @@
+{
+  "name": "neba-web-server",
+  "version": "1.0.0",
+  "description": "Neba Management Web Application",
+  "scripts": {
+    "build:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --minify",
+    "watch:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}
