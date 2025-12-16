@@ -94,9 +94,15 @@ public static class InfrastructureDependencyInjection
             string[] keyVaultTags = ["keyvault", "azure"];
             services.AddHealthChecks()
                 .AddAzureKeyVault(vaultUri, defaultAzureCredential,
-                    _ =>
+                    options =>
                     {
-                        // This is where specific secret/key checks would go
+                        options.AddSecret("ConnectionStrings--bowlneba");
+
+                        options.AddSecret("GoogleDocs--Credentials--ClientEmail");
+                        options.AddSecret("GoogleDocs--Credentials--ClientId");
+                        options.AddSecret("GoogleDocs--Credentials--PrivateKeyId");
+                        options.AddSecret("GoogleDocs--Credentials--PrivateKey");
+                        options.AddSecret("GoogleDocs--Credentials--ClientX509CertUrl");
                     },
                     name: "Azure Key Vault",
                     tags: keyVaultTags);
