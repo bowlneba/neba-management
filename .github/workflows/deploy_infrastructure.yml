@@ -249,7 +249,12 @@ jobs:
           DB_NAME="${{ steps.outputs.outputs.db-name }}"
 
           # Get the currently authenticated service principal's object ID
-          SP_OBJECT_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || az account show --query user.name -o tsv | xargs az ad sp show --id --query id -o tsv)
+          # For OIDC, az account show returns the client/app ID, we need to get the object ID
+          SP_CLIENT_ID=$(az account show --query user.name -o tsv)
+          SP_OBJECT_ID=$(az ad sp show --id "$SP_CLIENT_ID" --query id -o tsv)
+          
+          echo "Service Principal Client ID: $SP_CLIENT_ID"
+          echo "Service Principal Object ID: $SP_OBJECT_ID"
 
           # Grant temporary Key Vault Secrets Officer access to current service principal
           az role assignment create \
