@@ -62,7 +62,16 @@
       "Bash(brew install:*)",
       "Bash(az postgres flexible-server parameter set:*)",
       "Bash(az keyvault list:*)",
-      "Bash(az keyvault secret set:*)"
+      "Bash(az keyvault secret set:*)",
+      "Bash(RESOURCE_GROUP=\"rg-bowlneba\":*)",
+      "Bash(POSTGRES_SERVER_NAME=\"nebamgmt-eastus2\":*)",
+      "Bash(API_APP_NAME=\"app-bowlneba-api-eastus2\":*)",
+      "Bash(AD_ADMIN_EMAIL=\"kippermand@gmail.com\":*)",
+      "Bash(AD_ADMIN_OBJECT_ID=\"b8f0f6a4-3140-41a9-ba0d-c8daa1c0ed6d\":*)",
+      "Bash(DATABASE_NAME=\"bowlneba\":*)",
+      "Bash(bash setup-postgres-managed-identity.sh:*)",
+      "Bash(export PATH=\"/opt/homebrew/opt/postgresql@17/bin:$PATH\")",
+      "Bash(zip:*)"
     ],
     "deny": [],
     "ask": []
