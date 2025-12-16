@@ -92,9 +92,22 @@ jobs:
           DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
         run: |
           echo "🚀 Deploying infrastructure to ${{ vars.AZURE_ENVIRONMENT }} environment in ${{ vars.AZURE_LOCATION }}"
+          echo "📦 Resources to be deployed:"
+          echo "  - Resource Group: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}"
+          echo "  - App Service Plan: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}"
+          echo "  - API App Service: ${{ vars.AZURE_API_APP_SERVICE_NAME }}"
+          echo "  - Web App Service: ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}"
+          echo "  - PostgreSQL Server: ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }}"
+          echo "  - Key Vault: ${{ vars.AZURE_KEY_VAULT_NAME }}-${{ vars.AZURE_LOCATION }}"
+          echo ""
+          echo "⏱️  Expected deployment time: 15-25 minutes (PostgreSQL takes 8-15 minutes)"
+          echo ""
 
+          DEPLOYMENT_NAME="infrastructure-${{ vars.AZURE_ENVIRONMENT }}-$(date +%Y%m%d-%H%M%S)"
+          
+          # Start deployment in background
           az deployment sub create \
-            --name "infrastructure-${{ vars.AZURE_ENVIRONMENT }}-$(date +%Y%m%d-%H%M%S)" \
+            --name "$DEPLOYMENT_NAME" \
             --location ${{ vars.AZURE_LOCATION }} \
             --template-file infrastructure/main.bicep \
             --parameters \
@@ -114,7 +127,59 @@ jobs:
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
-            --output json > deployment-output.json
+            --no-wait
+
+          echo ""
+          echo "📊 Monitoring deployment progress..."
+          echo ""
+          
+          # Monitor deployment with progress updates
+          while true; do
+            STATE=$(az deployment sub show --name "$DEPLOYMENT_NAME" --query 'properties.provisioningState' -o tsv 2>/dev/null || echo "NotFound")
+            
+            if [ "$STATE" = "Succeeded" ]; then
+              echo "✅ Deployment completed successfully!"
+              break
+            elif [ "$STATE" = "Failed" ]; then
+              echo "❌ Deployment failed"
+              az deployment sub show --name "$DEPLOYMENT_NAME" --query 'properties.error' -o json
+              exit 1
+            elif [ "$STATE" = "Canceled" ]; then
+              echo "⚠️  Deployment was canceled"
+              exit 1
+            fi
+            
+            # Show active operations
+            OPERATIONS=$(az deployment sub show --name "$DEPLOYMENT_NAME" --query "properties.dependencies[].{resource:resourceType, state:dependsOn[0].resourceName}" -o tsv 2>/dev/null || echo "")
+            TIMESTAMP=$(date '+%H:%M:%S')
+            echo "[$TIMESTAMP] Deployment status: $STATE"
+            
+            # Check resource group deployment status
+            if az group show --name '${{ vars.AZURE_RESOURCE_GROUP_NAME }}' &>/dev/null; then
+              echo "  ✓ Resource Group created"
+              
+              # Check individual resources
+              RESOURCES=$(az resource list --resource-group '${{ vars.AZURE_RESOURCE_GROUP_NAME }}' --query '[].{Type:type, Name:name, State:provisioningState}' -o tsv 2>/dev/null)
+              if [ -n "$RESOURCES" ]; then
+                echo "$RESOURCES" | while IFS=$'\t' read -r type name state; do
+                  case "$type" in
+                    *"Microsoft.Web/serverfarms"*) echo "  ⏳ App Service Plan: $state" ;;
+                    *"Microsoft.Web/sites"*) echo "  ⏳ App Service ($name): $state" ;;
+                    *"Microsoft.DBforPostgreSQL/flexibleServers"*) echo "  ⏳ PostgreSQL Server: $state (this takes 8-15 min)" ;;
+                    *"Microsoft.KeyVault/vaults"*) echo "  ⏳ Key Vault: $state" ;;
+                  esac
+                done
+              fi
+            else
+              echo "  ⏳ Creating resource group..."
+            fi
+            
+            echo ""
+            sleep 30
+          done
+
+          # Get final output
+          az deployment sub show --name "$DEPLOYMENT_NAME" --query 'properties.outputs' -o json > deployment-output.json
 
           echo "✅ Infrastructure deployment completed"
 
