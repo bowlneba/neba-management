@@ -9,7 +9,7 @@ namespace Neba.Contracts.Website.Bowlers;
 /// </remarks>
 /// <example>
 /// {
-///   "bowlerId": "123e4567-e89b-12d3-a456-426614174000",
+///   "bowlerId": "01JEFQH5Y9KM7N3P5Q6R8S9T0W",
 ///   "bowlerName": "John Doe",
 ///   "titles": [
 ///     {
@@ -30,7 +30,7 @@ public sealed record BowlerTitlesResponse
     /// <summary>
     /// Gets the unique identifier of the bowler.
     /// </summary>
-    /// <example>"123e4567-e89b-12d3-a456-426614174000"</example>
+    /// <example>"01JEFQH5Y9KM7N3P5Q6R8S9T0W"</example>
     public required Ulid BowlerId { get; init; }
 
     /// <summary>

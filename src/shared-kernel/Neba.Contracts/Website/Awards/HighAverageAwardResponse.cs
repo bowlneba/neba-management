@@ -11,7 +11,7 @@ namespace Neba.Contracts.Website.Awards;
 /// </remarks>
 /// <example>
 /// {
-///   "id": "d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f",
+///   "id": "01JEFQH3X8KZ9M2N4P5Q7R8T9V",
 ///   "bowlerName": "Jane Doe",
 ///   "season": "2025",
 ///   "average": 188.75,
@@ -24,7 +24,7 @@ public sealed record HighAverageAwardResponse
     /// <summary>
     /// Gets the unique identifier of the High Average award record.
     /// </summary>
-    /// <example>"d2f1e8a5-3b9a-4c6b-8f2a-1a2b3c4d5e6f"</example>
+    /// <example>"01JEFQH3X8KZ9M2N4P5Q7R8T9V"</example>
     public required Ulid Id { get; init; }
 
     /// <summary>
