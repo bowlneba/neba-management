@@ -30,6 +30,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all"/>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
+
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

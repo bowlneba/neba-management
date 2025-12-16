@@ -5,7 +5,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="StronglyTypedId" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="StronglyTypedId.Templates" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Ulid" />
   </ItemGroup>
 
   <ItemGroup>
