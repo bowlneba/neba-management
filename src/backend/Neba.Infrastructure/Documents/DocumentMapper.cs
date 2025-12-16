@@ -243,7 +243,20 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         }
 
         context.Html.AppendLine(ConvertTabularListToTable(tableRows, nestingLevel));
-        _listCounters[listId][nestingLevel] += tableRows.Count;
+
+        // Ensure counter is initialized before incrementing
+        if (!_listCounters.TryGetValue(listId, out Dictionary<int, int>? levelCounters))
+        {
+            levelCounters = [];
+            _listCounters[listId] = levelCounters;
+        }
+        if (!levelCounters.ContainsKey(nestingLevel))
+        {
+            int? startNumber = GetListItemStartNumber(document, listId, nestingLevel);
+            levelCounters[nestingLevel] = (startNumber ?? 1) - 1;
+        }
+
+        levelCounters[nestingLevel] += tableRows.Count;
 
         return elementsToSkip;
     }

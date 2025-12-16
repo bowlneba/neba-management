@@ -12,7 +12,7 @@ internal static class TournamentEndpoints
     {
         public IEndpointRouteBuilder MapTournamentEndpoints()
         {
-            var tournamentGroup = app
+            RouteGroupBuilder tournamentGroup = app
                 .MapGroup("/tournaments")
                 .WithTags("tournaments", "website")
                 .AllowAnonymous();
@@ -36,7 +36,8 @@ internal static class TournamentEndpoints
             .WithSummary("Get the tournament rules document.")
             .WithDescription("Retrieves the tournament rules document as an HTML string.")
             .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextHtml)
-            .ProducesProblem(StatusCodes.Status500InternalServerError, ContentTypes.ApplicationProblemJson);
+            .ProducesProblem(StatusCodes.Status500InternalServerError, ContentTypes.ApplicationProblemJson)
+            .WithTags("tournaments", "website", "documents");
 
             return app;
         }

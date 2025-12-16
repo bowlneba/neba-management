@@ -1,5 +1,6 @@
 using Neba.Api.Endpoints.Website.Awards;
 using Neba.Api.Endpoints.Website.Bowlers;
+using Neba.Api.Endpoints.Website.Documents;
 using Neba.Api.Endpoints.Website.Titles;
 using Neba.Api.Endpoints.Website.Tournaments;
 
@@ -19,7 +20,8 @@ internal static class WebsiteEndpoints
                 .MapBowlersEndpoints()
                 .MapTitlesEndpoints()
                 .MapAwardsEndpoints()
-                .MapTournamentEndpoints();
+                .MapTournamentEndpoints()
+                .MapDocumentEndpoints();
 
             return app;
         }
