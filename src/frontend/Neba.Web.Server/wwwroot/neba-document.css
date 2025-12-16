@@ -708,6 +708,345 @@
   background-color: var(--neba-blue-500);
 }
 
+/* Slide-over Panel for Internal Links */
+.neba-document-slideover {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000; /* Higher than mobile TOC modal */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.neba-document-slideover.active {
+  display: block;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.neba-document-slideover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.neba-document-slideover-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  max-width: 800px;
+  min-width: 400px;
+  background-color: var(--neba-bg-panel);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.neba-document-slideover.active .neba-document-slideover-panel {
+  transform: translateX(0);
+}
+
+.neba-document-slideover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  background-color: var(--neba-bg-panel);
+  flex-shrink: 0;
+}
+
+.neba-document-slideover-title {
+  margin: 0;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  flex: 1;
+  padding-right: 1rem;
+}
+
+.neba-document-slideover-close {
+  background: none;
+  border: none;
+  color: var(--neba-gray-600);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--neba-radius);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.neba-document-slideover-close:hover {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-gray-800);
+}
+
+.neba-document-slideover-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+  line-height: 1.8;
+  color: var(--neba-text);
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 4px;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+/* Apply document content styles to slide-over content */
+.neba-document-slideover-content h1,
+.neba-document-slideover-content h2,
+.neba-document-slideover-content h3,
+.neba-document-slideover-content h4,
+.neba-document-slideover-content h5,
+.neba-document-slideover-content h6 {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.neba-document-slideover-content h1 {
+  font-size: 2rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.neba-document-slideover-content h2 {
+  font-size: 1.5rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-slideover-content h3 {
+  font-size: 1.25rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-slideover-content p {
+  margin-bottom: 1rem;
+  color: var(--neba-text);
+}
+
+.neba-document-slideover-content a {
+  color: var(--neba-blue-700);
+  text-decoration: underline;
+  text-decoration-color: var(--neba-blue-300);
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.neba-document-slideover-content a:hover {
+  color: var(--neba-blue-600);
+  text-decoration-color: var(--neba-blue-600);
+}
+
+.neba-document-slideover-content ul,
+.neba-document-slideover-content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.neba-document-slideover-content ul {
+  list-style-type: disc;
+}
+
+.neba-document-slideover-content ol {
+  list-style-type: decimal;
+}
+
+.neba-document-slideover-content ol[type='1'] {
+  list-style-type: decimal;
+}
+
+.neba-document-slideover-content ol[type='a'] {
+  list-style-type: lower-alpha;
+}
+
+.neba-document-slideover-content ol[type='A'] {
+  list-style-type: upper-alpha;
+}
+
+.neba-document-slideover-content ol[type='i'] {
+  list-style-type: lower-roman;
+}
+
+.neba-document-slideover-content ol[type='I'] {
+  list-style-type: upper-roman;
+}
+
+.neba-document-slideover-content li {
+  margin-bottom: 0.5rem;
+  color: var(--neba-text);
+}
+
+.neba-document-slideover-content li::marker {
+  color: var(--neba-blue-600);
+  font-weight: 600;
+}
+
+.neba-document-slideover-content ul ul,
+.neba-document-slideover-content ol ol,
+.neba-document-slideover-content ul ol,
+.neba-document-slideover-content ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.neba-document-slideover-content ul ul {
+  list-style-type: circle;
+}
+
+.neba-document-slideover-content ul ul ul {
+  list-style-type: square;
+}
+
+/* Tables in slide-over */
+.neba-document-slideover-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius);
+  overflow: hidden;
+}
+
+.neba-document-slideover-content thead {
+  background-color: var(--neba-blue-100);
+}
+
+.neba-document-slideover-content thead th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--neba-blue-700);
+  border-bottom: 2px solid var(--neba-blue-600);
+}
+
+.neba-document-slideover-content tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--neba-border);
+}
+
+.neba-document-slideover-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.neba-document-slideover-content tbody tr:hover {
+  background-color: var(--neba-gray-050);
+}
+
+/* Additional content styles for slide-over */
+.neba-document-slideover-content strong,
+.neba-document-slideover-content b {
+  font-weight: 700;
+  color: var(--neba-gray-800);
+}
+
+.neba-document-slideover-content em,
+.neba-document-slideover-content i {
+  font-style: italic;
+}
+
+.neba-document-slideover-content code {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-accent-red);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--neba-radius);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875em;
+}
+
+.neba-document-slideover-content blockquote {
+  border-left: 4px solid var(--neba-blue-600);
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: var(--neba-gray-700);
+  background-color: var(--neba-blue-100);
+  padding: 1rem;
+  border-radius: var(--neba-radius);
+}
+
+.neba-document-slideover-content hr {
+  border: none;
+  border-top: 2px solid var(--neba-border);
+  margin: 2rem 0;
+}
+
+/* Dark mode support for slide-over */
+.dark .neba-document-slideover-panel {
+  background-color: var(--neba-bg-panel);
+}
+
+.dark .neba-document-slideover-title {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content h1,
+.dark .neba-document-slideover-content h2,
+.dark .neba-document-slideover-content h3 {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content strong,
+.dark .neba-document-slideover-content b {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content blockquote {
+  background-color: rgba(62, 79, 217, 0.1);
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content code {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .neba-document-slideover-content thead {
+  background-color: rgba(62, 79, 217, 0.15);
+}
+
+.dark .neba-document-slideover-content tbody tr:hover {
+  background-color: rgba(62, 79, 217, 0.08);
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .neba-document-container {
@@ -765,6 +1104,13 @@
     height: auto;
     overflow: visible;
   }
+
+  /* Slide-over adjustments for tablet and mobile */
+  .neba-document-slideover-panel {
+    width: 85%;
+    max-width: 600px;
+    min-width: 0;
+  }
 }
 
 @media (max-width: 767px) {
@@ -787,5 +1133,23 @@
   .neba-document-content thead th,
   .neba-document-content tbody td {
     padding: 0.5rem;
+  }
+
+  /* Slide-over adjustments for mobile */
+  .neba-document-slideover-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .neba-document-slideover-header {
+    padding: 1rem;
+  }
+
+  .neba-document-slideover-title {
+    font-size: 1.125rem;
+  }
+
+  .neba-document-slideover-content {
+    padding: 1.5rem;
   }
 }

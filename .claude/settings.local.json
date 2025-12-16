@@ -29,7 +29,8 @@
       "Bash(cd /Users/kippermand/Projects/bowlneba/neba-management/docs && BUNDLE_FORCE_RUBY_PLATFORM=true bundle install:*)",
       "Bash(bundle install:*)",
       "Bash(chmod:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(exit)"
     ],
     "deny": [],
     "ask": []

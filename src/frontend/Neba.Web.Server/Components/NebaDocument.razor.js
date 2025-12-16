@@ -11,7 +11,12 @@ export function initializeToc(
     tocModalId,
     tocModalOverlayId,
     tocModalCloseId,
-    headingLevels = 'h1, h2'
+    headingLevels = 'h1, h2',
+    slideoverId = null,
+    slideoverOverlayId = null,
+    slideoverCloseId = null,
+    slideoverTitleId = null,
+    slideoverContentId = null
 ) {
     console.log('[NebaDocument] Initializing TOC...');
     console.log('[NebaDocument] Content ID:', contentId);
@@ -249,59 +254,283 @@ export function initializeToc(
     // Initial update
     updateActiveLink();
 
-    // Handle internal anchor links in content (same-page section navigation)
-    setupInternalLinkNavigation(content);
+    // Handle internal links in content (both anchor navigation and page links)
+    if (slideoverId && slideoverOverlayId && slideoverCloseId && slideoverTitleId && slideoverContentId) {
+        setupInternalLinkNavigation(content, slideoverId, slideoverOverlayId, slideoverCloseId, slideoverTitleId, slideoverContentId);
+    } else {
+        // Fallback to simple anchor navigation if slide-over not available
+        setupInternalLinkNavigation(content);
+    }
 
     console.log('[NebaDocument] TOC initialized successfully');
     return true;
 }
 
 /**
- * Sets up smooth scrolling for internal anchor links within the document content
+ * Sets up navigation for internal links within the document content
+ * Handles both anchor links (same-page) and internal page links (slide-over)
  * @param {HTMLElement} content - The document content container
+ * @param {string} slideoverId - ID of the slide-over container (optional)
+ * @param {string} slideoverOverlayId - ID of the slide-over overlay (optional)
+ * @param {string} slideoverCloseId - ID of the slide-over close button (optional)
+ * @param {string} slideoverTitleId - ID of the slide-over title element (optional)
+ * @param {string} slideoverContentId - ID of the slide-over content element (optional)
  */
-function setupInternalLinkNavigation(content) {
+function setupInternalLinkNavigation(content, slideoverId, slideoverOverlayId, slideoverCloseId, slideoverTitleId, slideoverContentId) {
     // Find all links within the content
-    const contentLinks = content.querySelectorAll('a[href^="#"]');
+    const contentLinks = content.querySelectorAll('a[href]');
 
     console.log('[NebaDocument] Setting up internal link navigation for', contentLinks.length, 'links');
+
+    // Get slide-over elements if IDs are provided
+    const slideover = slideoverId ? document.getElementById(slideoverId) : null;
+    const slideoverOverlay = slideoverOverlayId ? document.getElementById(slideoverOverlayId) : null;
+    const slideoverClose = slideoverCloseId ? document.getElementById(slideoverCloseId) : null;
+    const slideoverTitle = slideoverTitleId ? document.getElementById(slideoverTitleId) : null;
+    const slideoverContent = slideoverContentId ? document.getElementById(slideoverContentId) : null;
+
+    // Set up slide-over close handlers if elements exist
+    if (slideover && slideoverOverlay && slideoverClose) {
+        const closeSlideover = () => {
+            slideover.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        };
+
+        slideoverClose.addEventListener('click', closeSlideover);
+        slideoverOverlay.addEventListener('click', closeSlideover);
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && slideover.classList.contains('active')) {
+                closeSlideover();
+            }
+        });
+    }
 
     contentLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
 
-            // Skip if it's just "#" with no target
+            // Skip if no href
             if (!href || href === '#') {
                 return;
             }
 
-            e.preventDefault();
+            // Allow Ctrl/Cmd+Click to open in new tab (browser default)
+            if (e.ctrlKey || e.metaKey) {
+                return;
+            }
 
-            // Extract the target ID (remove the '#')
-            const targetId = href.substring(1);
-            const targetElement = document.getElementById(targetId);
+            // Check if it's a hash link (anchor navigation)
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                handleAnchorNavigation(content, href);
+                return;
+            }
 
-            if (targetElement) {
-                // Get the position of the target relative to the scrollable content
-                const contentRect = content.getBoundingClientRect();
-                const targetRect = targetElement.getBoundingClientRect();
-                const currentScroll = content.scrollTop;
+            // Check if it's an internal link (same origin)
+            try {
+                const linkUrl = new URL(href, window.location.href);
+                const isInternal = linkUrl.origin === window.location.origin;
+                const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
 
-                // Calculate the scroll position
-                const offset = 20; // Small offset from the top of the container
-                const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+                if (isInternal && !isExternalProtocol && slideover && slideoverContent && slideoverTitle) {
+                    // Internal link - open in slide-over
+                    e.preventDefault();
+                    console.log('[NebaDocument] Opening internal link in slide-over:', href);
+                    openInSlideover(linkUrl, slideover, slideoverContent, slideoverTitle, content);
+                }
+                // Otherwise, let the link work normally (external links, downloads, etc.)
+            } catch (err) {
+                console.error('[NebaDocument] Error parsing link URL:', href, err);
+            }
+        });
+    });
+}
 
-                console.log('[NebaDocument] Scrolling to internal link target:', targetId);
+/**
+ * Handles anchor navigation within the current document
+ * @param {HTMLElement} content - The document content container
+ * @param {string} href - The hash href (e.g., "#section-1")
+ */
+function handleAnchorNavigation(content, href) {
+    // Extract the target ID (remove the '#')
+    const targetId = href.substring(1);
+    const targetElement = document.getElementById(targetId);
 
-                content.scrollTo({
-                    top: scrollPosition,
-                    behavior: 'smooth'
-                });
+    if (targetElement) {
+        // Get the position of the target relative to the scrollable content
+        const contentRect = content.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+        const currentScroll = content.scrollTop;
 
-                // Update URL hash without jumping
-                history.pushState(null, '', `#${targetId}`);
-            } else {
-                console.warn('[NebaDocument] Internal link target not found:', targetId);
+        // Calculate the scroll position
+        const offset = 20; // Small offset from the top of the container
+        const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+
+        console.log('[NebaDocument] Scrolling to internal link target:', targetId);
+
+        content.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
+
+        // Update URL hash without jumping
+        history.pushState(null, '', `#${targetId}`);
+    } else {
+        console.warn('[NebaDocument] Internal link target not found:', targetId);
+    }
+}
+
+/**
+ * Maps route paths to friendly page titles
+ * @param {string} pathname - The route pathname (e.g., "bylaws", "tournaments/rules")
+ * @returns {string} The friendly page title
+ */
+function getPageTitle(pathname) {
+    // Map of routes to page titles
+    const titleMap = {
+        'bylaws': 'NEBA Bylaws',
+        'tournaments/rules': 'NEBA Tournament Rules',
+        'rules': 'NEBA Rules',
+        // Add more mappings as needed
+    };
+
+    // Return the mapped title or create a title from the pathname
+    return titleMap[pathname] || pathname
+        .split('/')
+        .map(part => part.replace(/-/g, ' '))
+        .map(part => part.replace(/\b\w/g, l => l.toUpperCase()))
+        .join(' - ');
+}
+
+/**
+ * Opens an internal link in the slide-over panel
+ * @param {URL} url - The URL to open
+ * @param {HTMLElement} slideover - The slide-over container
+ * @param {HTMLElement} slideoverContent - The slide-over content container
+ * @param {HTMLElement} slideoverTitle - The slide-over title element
+ * @param {HTMLElement} originalContent - The original document content (for context)
+ */
+async function openInSlideover(url, slideover, slideoverContent, slideoverTitle, originalContent) {
+    // Show loading state
+    slideoverTitle.textContent = 'Loading...';
+    slideoverContent.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--neba-gray-600);">Loading document...</div>';
+    slideover.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+    try {
+        // Convert page route to API endpoint
+        // e.g., /bylaws -> /api/documents/bylaws
+        const pathname = url.pathname.replace(/^\//, ''); // Remove leading slash
+        const apiUrl = `/api/documents/${pathname}`;
+
+        console.log('[NebaDocument] Fetching document from API:', apiUrl);
+
+        // Fetch the document content from the API
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to load: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // The API should return an object with an 'html' property
+        const html = data.html || data.content || data;
+
+        if (!html) {
+            throw new Error('No content returned from API');
+        }
+
+        // Get the page title from the route name
+        // This will show "NEBA Bylaws" instead of "NEBA Board of Directors"
+        const pageTitle = getPageTitle(pathname);
+
+        slideoverTitle.textContent = pageTitle;
+
+        // Set the content
+        slideoverContent.innerHTML = html;
+
+        // If there's a hash in the URL, scroll to it
+        if (url.hash) {
+            setTimeout(() => {
+                const targetId = url.hash.substring(1);
+                const targetElement = slideoverContent.querySelector(`#${targetId}`);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        } else {
+            // Scroll to top of slide-over content
+            slideoverContent.scrollTop = 0;
+        }
+
+        // Set up nested link navigation within the slide-over
+        setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, originalContent);
+    } catch (error) {
+        console.error('[NebaDocument] Error loading slide-over content:', error);
+        slideoverTitle.textContent = 'Error Loading Document';
+        slideoverContent.innerHTML = `
+            <div style="padding: 2rem; text-align: center;">
+                <p style="color: var(--neba-accent-red); margin-bottom: 1rem;">Failed to load document</p>
+                <p style="color: var(--neba-gray-600); font-size: 0.875rem;">${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Sets up link navigation within the slide-over content
+ * @param {HTMLElement} slideoverContent - The slide-over content container
+ * @param {HTMLElement} slideover - The slide-over container
+ * @param {HTMLElement} slideoverTitle - The slide-over title element
+ * @param {HTMLElement} originalContent - The original document content
+ */
+function setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, originalContent) {
+    const links = slideoverContent.querySelectorAll('a[href]');
+
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+
+            if (!href || href === '#') {
+                return;
+            }
+
+            // Allow Ctrl/Cmd+Click to open in new tab
+            if (e.ctrlKey || e.metaKey) {
+                return;
+            }
+
+            // Handle hash links within the slide-over
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href.substring(1);
+                const targetElement = slideoverContent.querySelector(`#${targetId}`);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                return;
+            }
+
+            // Handle internal page links - replace slide-over content
+            try {
+                const linkUrl = new URL(href, window.location.href);
+                const isInternal = linkUrl.origin === window.location.origin;
+                const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
+
+                if (isInternal && !isExternalProtocol) {
+                    e.preventDefault();
+                    console.log('[NebaDocument] Opening nested internal link in slide-over:', href);
+                    openInSlideover(linkUrl, slideover, slideoverContent, slideoverTitle, originalContent);
+                }
+            } catch (err) {
+                console.error('[NebaDocument] Error parsing nested link URL:', href, err);
             }
         });
     });

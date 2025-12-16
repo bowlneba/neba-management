@@ -63,6 +63,24 @@
         <div class="neba-panel neba-document-content" id="@ContentId">
             @Content
         </div>
+
+        <!-- Slide-over Panel for Internal Links -->
+        <div class="neba-document-slideover" id="@SlideoverId" role="dialog" aria-modal="true" aria-labelledby="@SlideoverTitleId">
+            <div class="neba-document-slideover-overlay" id="@SlideoverOverlayId"></div>
+            <div class="neba-document-slideover-panel">
+                <div class="neba-document-slideover-header">
+                    <h2 id="@SlideoverTitleId" class="neba-document-slideover-title">Loading...</h2>
+                    <button class="neba-document-slideover-close" id="@SlideoverCloseId" aria-label="Close document">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="neba-document-slideover-content" id="@SlideoverContentId">
+                    <!-- Content will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -144,6 +162,11 @@
     private string TocModalCloseId => $"neba-document-toc-modal-close-{_instanceId}";
     private string TocModalTitleId => $"neba-document-toc-modal-title-{_instanceId}";
     private string TocMobileListId => $"neba-document-toc-mobile-list-{_instanceId}";
+    private string SlideoverId => $"neba-document-slideover-{_instanceId}";
+    private string SlideoverOverlayId => $"neba-document-slideover-overlay-{_instanceId}";
+    private string SlideoverCloseId => $"neba-document-slideover-close-{_instanceId}";
+    private string SlideoverTitleId => $"neba-document-slideover-title-{_instanceId}";
+    private string SlideoverContentId => $"neba-document-slideover-content-{_instanceId}";
 
     protected override void OnInitialized()
     {
@@ -177,7 +200,12 @@
                     TocModalId,
                     TocModalOverlayId,
                     TocModalCloseId,
-                    HeadingLevels);
+                    HeadingLevels,
+                    SlideoverId,
+                    SlideoverOverlayId,
+                    SlideoverCloseId,
+                    SlideoverTitleId,
+                    SlideoverContentId);
                 if (success)
                 {
                     _tocInitialized = true;
