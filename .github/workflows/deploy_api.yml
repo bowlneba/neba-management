@@ -88,35 +88,41 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
+          echo "🚀 Starting deployment (this may take 10-15 minutes for large apps)..."
           az webapp deployment source config-zip \
             --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
             --name ${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }} \
             --src deploy.zip \
-            --timeout 600
+            --timeout 1200
           echo "✅ Deployment completed"
 
       - name: Verify deployment
         run: |
           APP_URL="https://${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net"
+          HEALTH_URL="$APP_URL/health"
           echo "🔍 Verifying API deployment at: $APP_URL"
+          echo "📊 Health check endpoint: $HEALTH_URL"
+          
+          # Azure App Service needs time to extract zip, restart, and initialize
+          echo "⏳ Waiting 60 seconds for Azure App Service to restart after deployment..."
+          sleep 60
 
           # Wait for app to be ready using exponential backoff
-          MAX_ATTEMPTS=10
-          INITIAL_DELAY=2
+          MAX_ATTEMPTS=15
+          INITIAL_DELAY=5
           ATTEMPT=1
           DELAY=$INITIAL_DELAY
           HTTP_STATUS="000"
+          
+          echo "Starting health checks (max $MAX_ATTEMPTS attempts, up to ~6 minutes)..."
           while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
-            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-              echo "✅ API is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
-              break
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
             fi
-            echo "Waiting for API to be ready (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)..."
+            echo "⏳ Waiting for API to be ready (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)..."
             sleep $DELAY
             ATTEMPT=$((ATTEMPT + 1))
             DELAY=$((DELAY * 2))
-            if [ $DELAY -gt 30 ]; then DELAY=30; fi
+            if [ $DELAY -gt 40 ]; then DELAY=40; fi
           done
 
           # Check health endpoint (final status after retries)
@@ -127,12 +133,14 @@ jobs:
             echo "### 🎉 API Deployment Successful" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**API URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
+            echo "**Health Endpoint:** $HEALTH_URL" >> $GITHUB_STEP_SUMMARY
             echo "**Status:** Healthy ($HTTP_STATUS)" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ API returned status code: $HTTP_STATUS"
             echo "### ⚠️ API Deployment Warning" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**API URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
+            echo "**Health Endpoint:** $HEALTH_URL" >> $GITHUB_STEP_SUMMARY
             echo "**Status:** Unhealthy ($HTTP_STATUS)" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
