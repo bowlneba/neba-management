@@ -45,9 +45,8 @@ jobs:
     uses: ./.github/workflows/deploy_migrations.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets:
-      BOWLNEBA_CONNECTION_STRING: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
     permissions:
+      id-token: write
       contents: read
 
   # Step 3: Deploy API and Web in parallel after migrations complete

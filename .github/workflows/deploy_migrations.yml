@@ -15,12 +15,9 @@ on:
         required: false
         default: 'Production'
         type: string
-    secrets:
-      BOWLNEBA_CONNECTION_STRING:
-        description: 'PostgreSQL connection string for the Neba database'
-        required: true
 
 permissions:
+  id-token: write  # Required for OIDC authentication to read from Key Vault
   contents: read
 
 env:
@@ -54,9 +51,27 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get connection string from Key Vault
+        id: get-connection-string
+        run: |
+          echo "🔑 Reading connection string from Key Vault..."
+          CONNECTION_STRING=$(az keyvault secret show \
+            --vault-name ${{ vars.AZURE_KEY_VAULT_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --name ConnectionStrings--bowlneba \
+            --query value -o tsv)
+          echo "::add-mask::$CONNECTION_STRING"
+          echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_OUTPUT
+
       - name: Apply Website database migrations
         env:
-          ConnectionStrings__bowlneba: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
+          ConnectionStrings__bowlneba: ${{ steps.get-connection-string.outputs.CONNECTION_STRING }}
         run: |
           echo "🔄 Applying Website database migrations..."
           dotnet ef database update \
