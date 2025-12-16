@@ -189,7 +189,7 @@ export function initializeToc(configOrContentId) {
                         // Close the modal first
                         closeModal();
 
-                        // Scroll to the target element on the page (using window scroll on mobile)
+                        // Scroll to the target element on the page (using globalThis scroll on mobile)
                         setTimeout(() => {
                             // Get the position of the element
                             const elementPosition = targetElement.getBoundingClientRect().top;
@@ -405,7 +405,7 @@ function setupInternalLinkNavigation(content, slideoverId, slideoverOverlayId, s
             // Check if it's an internal link (same origin)
             try {
                 const linkUrl = new URL(href, globalThis.location.href);
-                const isInternal = linkUrl.origin === window.location.origin;
+                const isInternal = linkUrl.origin === globalThis.location.origin;
                 const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
 
                 if (isInternal && !isExternalProtocol && slideover && slideoverContent && slideoverTitle) {
@@ -473,7 +473,7 @@ function getPageTitle(pathname) {
     // Return the mapped title or create a title from the pathname
     return titleMap[pathname] || pathname
         .split('/')
-        .map(part => part.replaceAll(/-/g, ' '))
+        .map(part => part.replaceAll('-', ' '))
         .map(part => part.replaceAll(/\b\w/g, l => l.toUpperCase()))
         .join(' - ');
 }
@@ -597,7 +597,7 @@ function setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, 
             // Handle internal page links - replace slide-over content
             try {
                 const linkUrl = new URL(href, globalThis.location.href);
-                const isInternal = linkUrl.origin === window.location.origin;
+                const isInternal = linkUrl.origin === globalThis.location.origin;
                 const isExternalProtocol = linkUrl.protocol === 'mailto:' || linkUrl.protocol === 'tel:';
 
                 if (isInternal && !isExternalProtocol) {
@@ -614,7 +614,7 @@ function setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, 
 
 export function scrollToHash(contentId, tocListId) {
     // Check if there's a hash in the URL
-    const hash = window.location.hash;
+    const hash = globalThis.location.hash;
 
     if (!hash) {
         console.log('[NebaDocument] No hash in URL');
