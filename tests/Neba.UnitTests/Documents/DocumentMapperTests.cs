@@ -155,8 +155,8 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_Table_RendersTableRowsAndCells()
     {
         // Arrange
-        string[] tableData1 = new[] {"A1", "B1"};
-        string[] tableData2 = new[] {"A2", "B2"};
+        string[] tableData1 = new[] { "A1", "B1" };
+        string[] tableData2 = new[] { "A2", "B2" };
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);

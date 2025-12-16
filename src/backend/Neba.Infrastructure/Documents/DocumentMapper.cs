@@ -20,7 +20,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
     private const string TableCell = "    <td>";
     private const string ClosingTableCell = "</td>";
     private const string HeadingPrefix = "HEADING_";
-    
+
     private readonly Dictionary<string, Dictionary<int, int>> _listCounters = [];
     private readonly Dictionary<string, string> _headingIds = [];
     private readonly Dictionary<string, string> _documentRouteMap
@@ -458,7 +458,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         }
     }
 
-    #pragma warning disable CA1308 // Normalize to lowercase for IDs
+#pragma warning disable CA1308 // Normalize to lowercase for IDs
     private static string CreateHeadingId(string headingText)
     {
         // Convert to lowercase and replace spaces/special chars with hyphens
@@ -480,7 +480,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         return id.Trim('-');
     }
 
-    #pragma warning disable S3267 // Loops should be simplified with "LINQ" expressions
+#pragma warning disable S3267 // Loops should be simplified with "LINQ" expressions
     private static string GetPlainTextFromParagraph(Paragraph paragraph)
     {
         var text = new StringBuilder();
