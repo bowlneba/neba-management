@@ -1,0 +1,53 @@
+@page "/bylaws"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inject NebaApiService NebaApiService
+
+<PageTitle>Bylaws - NEBA</PageTitle>
+
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">NEBA Bylaws</h1>
+    <p class="mt-1 text-sm text-gray-600">Official bylaws and organizational guidelines</p>
+</div>
+
+<NebaDocument Content="@_bylawsHtml"
+              IsLoading="@_isLoading"
+              ErrorMessage="@_errorMessage"
+              LoadingText="Loading bylaws..."
+              ErrorTitle="Error Loading Bylaws"
+              ShowTableOfContents="true"
+              TableOfContentsTitle="Contents"
+              HeadingLevels="h1, h2"
+              DocumentId="bylaws" />
+
+@code {
+    private MarkupString? _bylawsHtml;
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await NebaApiService.GetBylawsAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _errorMessage = $"Failed to load bylaws: {error.Description}";
+                return;
+            }
+
+            _bylawsHtml = result.Value;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load bylaws: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

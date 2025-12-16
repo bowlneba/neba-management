@@ -1,0 +1,53 @@
+@page "/tournaments/rules"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inject NebaApiService NebaApiService
+
+<PageTitle>Tournament Rules - NEBA</PageTitle>
+
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">NEBA Tournament Rules</h1>
+    <p class="mt-1 text-sm text-gray-600">Official rules and regulations for NEBA tournaments</p>
+</div>
+
+<NebaDocument Content="@_rulesHtml"
+              IsLoading="@_isLoading"
+              ErrorMessage="@_errorMessage"
+              LoadingText="Loading tournament rules..."
+              ErrorTitle="Error Loading Tournament Rules"
+              ShowTableOfContents="true"
+              TableOfContentsTitle="Contents"
+              HeadingLevels="h1, h2"
+              DocumentId="tournament-rules" />
+
+@code {
+    private MarkupString? _rulesHtml;
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await NebaApiService.GetTournamentRulesAsync();
+
+            if (result.IsError)
+            {
+                var error = result.FirstError;
+                _errorMessage = $"Failed to load tournament rules: {error.Description}";
+                return;
+            }
+
+            _rulesHtml = result.Value;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load tournament rules: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

@@ -1,0 +1,242 @@
+@using Microsoft.JSInterop
+@using Neba.Web.Server.Notifications
+@implements IAsyncDisposable
+
+<script src="./Components/NebaDocument.razor.js" type="module"></script>
+<link rel="stylesheet" href="/neba-document.css" />
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="mb-6">
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="@ErrorTitle"
+                   Message="@ErrorMessage"
+                   Dismissible="true"
+                   OnDismiss="@HandleErrorDismiss" />
+    </div>
+}
+
+<NebaLoadingIndicator IsVisible="@IsLoading"
+                      Text="@LoadingText"
+                      Scope="LoadingIndicatorScope.Page" />
+
+@if (!IsLoading && Content.HasValue)
+{
+    <div class="neba-document-container" id="@ContainerId">
+        @if (ShowTableOfContents)
+        {
+            <!-- Mobile TOC Button -->
+            <button class="neba-document-toc-mobile-btn" id="@TocMobileButtonId" aria-label="Open table of contents">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                <span>Contents</span>
+            </button>
+
+            <!-- Desktop TOC -->
+            <nav class="neba-document-toc" id="@TocId" aria-label="Table of Contents">
+                <div class="toc-sticky">
+                    <h2 class="toc-title">@TableOfContentsTitle</h2>
+                    <div id="@TocListId"></div>
+                </div>
+            </nav>
+
+            <!-- Mobile TOC Modal -->
+            <div class="neba-document-toc-modal" id="@TocModalId" role="dialog" aria-modal="true" aria-labelledby="@TocModalTitleId">
+                <div class="neba-document-toc-modal-overlay" id="@TocModalOverlayId"></div>
+                <div class="neba-document-toc-modal-content">
+                    <div class="neba-document-toc-modal-header">
+                        <h2 id="@TocModalTitleId" class="toc-title">@TableOfContentsTitle</h2>
+                        <button class="neba-document-toc-modal-close" id="@TocModalCloseId" aria-label="Close table of contents">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="neba-document-toc-modal-body">
+                        <div id="@TocMobileListId"></div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="neba-panel neba-document-content" id="@ContentId">
+            @Content
+        </div>
+
+        <!-- Slide-over Panel for Internal Links -->
+        <div class="neba-document-slideover" id="@SlideoverId" role="dialog" aria-modal="true" aria-labelledby="@SlideoverTitleId">
+            <div class="neba-document-slideover-overlay" id="@SlideoverOverlayId"></div>
+            <div class="neba-document-slideover-panel">
+                <div class="neba-document-slideover-header">
+                    <h2 id="@SlideoverTitleId" class="neba-document-slideover-title">Loading...</h2>
+                    <button class="neba-document-slideover-close" id="@SlideoverCloseId" aria-label="Close document">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="neba-document-slideover-content" id="@SlideoverContentId">
+                    <!-- Content will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The HTML content to display in the document.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public MarkupString? Content { get; set; }
+
+    /// <summary>
+    /// Controls whether the loading indicator is visible.
+    /// </summary>
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    /// <summary>
+    /// Text to display in the loading indicator.
+    /// </summary>
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading document...";
+
+    /// <summary>
+    /// Error message to display if document fails to load.
+    /// </summary>
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Title for the error alert.
+    /// </summary>
+    [Parameter]
+    public string ErrorTitle { get; set; } = "Error Loading Document";
+
+    /// <summary>
+    /// Callback invoked when the error alert is dismissed.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnErrorDismiss { get; set; }
+
+    /// <summary>
+    /// Controls whether to show the table of contents.
+    /// </summary>
+    [Parameter]
+    public bool ShowTableOfContents { get; set; } = true;
+
+    /// <summary>
+    /// Title for the table of contents section.
+    /// </summary>
+    [Parameter]
+    public string TableOfContentsTitle { get; set; } = "Contents";
+
+    /// <summary>
+    /// Heading levels to include in the table of contents (e.g., "h1, h2").
+    /// </summary>
+    [Parameter]
+    public string HeadingLevels { get; set; } = "h1, h2";
+
+    /// <summary>
+    /// Unique identifier for this document instance. Auto-generated if not provided.
+    /// </summary>
+    [Parameter]
+    public string? DocumentId { get; set; }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    private IJSObjectReference? _module;
+    private bool _tocInitialized = false;
+    private string _instanceId = Guid.NewGuid().ToString("N")[..8];
+
+    private string ContainerId => $"neba-document-{_instanceId}";
+    private string ContentId => $"neba-document-content-{_instanceId}";
+    private string TocId => $"neba-document-toc-{_instanceId}";
+    private string TocListId => $"neba-document-toc-list-{_instanceId}";
+    private string TocMobileButtonId => $"neba-document-toc-mobile-btn-{_instanceId}";
+    private string TocModalId => $"neba-document-toc-modal-{_instanceId}";
+    private string TocModalOverlayId => $"neba-document-toc-modal-overlay-{_instanceId}";
+    private string TocModalCloseId => $"neba-document-toc-modal-close-{_instanceId}";
+    private string TocModalTitleId => $"neba-document-toc-modal-title-{_instanceId}";
+    private string TocMobileListId => $"neba-document-toc-mobile-list-{_instanceId}";
+    private string SlideoverId => $"neba-document-slideover-{_instanceId}";
+    private string SlideoverOverlayId => $"neba-document-slideover-overlay-{_instanceId}";
+    private string SlideoverCloseId => $"neba-document-slideover-close-{_instanceId}";
+    private string SlideoverTitleId => $"neba-document-slideover-title-{_instanceId}";
+    private string SlideoverContentId => $"neba-document-slideover-content-{_instanceId}";
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrWhiteSpace(DocumentId))
+        {
+            _instanceId = DocumentId;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_tocInitialized || !Content.HasValue || !ShowTableOfContents)
+            return;
+
+        try
+        {
+            // Import the module
+            _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/NebaDocument.razor.js");
+
+            // Wait a bit for the DOM to be ready
+            await Task.Delay(200);
+
+            // Try to initialize TOC up to 5 times
+            for (int i = 0; i < 5; i++)
+            {
+                var success = await _module.InvokeAsync<bool>("initializeToc",
+                    ContentId,
+                    TocListId,
+                    TocMobileListId,
+                    TocMobileButtonId,
+                    TocModalId,
+                    TocModalOverlayId,
+                    TocModalCloseId,
+                    HeadingLevels,
+                    SlideoverId,
+                    SlideoverOverlayId,
+                    SlideoverCloseId,
+                    SlideoverTitleId,
+                    SlideoverContentId);
+                if (success)
+                {
+                    _tocInitialized = true;
+
+                    // After successful initialization, scroll to hash if present
+                    await _module.InvokeVoidAsync("scrollToHash", ContentId, TocListId);
+                    break;
+                }
+                await Task.Delay(200);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing TOC: {ex.Message}");
+        }
+    }
+
+    private async Task HandleErrorDismiss()
+    {
+        ErrorMessage = null;
+        if (OnErrorDismiss.HasDelegate)
+        {
+            await OnErrorDismiss.InvokeAsync();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

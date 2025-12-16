@@ -22,5 +22,11 @@ public sealed class NebaWebApplicationFactory
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:bowlneba", _database.ConnectionString);
+
+        // Mock GoogleDocs credentials for integration tests
+        builder.UseSetting("GoogleDocs:Credentials:PrivateKey", "mock-private-key-for-testing");
+        builder.UseSetting("GoogleDocs:Credentials:ClientEmail", "mock-test@test-project.iam.gserviceaccount.com");
+        builder.UseSetting("GoogleDocs:Credentials:PrivateKeyId", "mock-key-id-12345");
+        builder.UseSetting("GoogleDocs:Credentials:ClientX509CertUrl", "https://www.googleapis.com/robot/v1/metadata/x509/mock-test%40test-project.iam.gserviceaccount.com");
     }
 }

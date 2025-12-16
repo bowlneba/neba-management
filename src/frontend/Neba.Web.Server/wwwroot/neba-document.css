@@ -1,0 +1,1155 @@
+/* NebaDocument Component - Reusable Document with Table of Contents
+ * Leverages NEBA theme variables from neba_theme.css
+ * Styles common HTML elements from Google Docs exports and other document sources
+ */
+
+/* Layout Container */
+.neba-document-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+  /* Fixed height calculated to fit in viewport without causing page scroll */
+  /* Account for: Banner (~100px) + Navbar (~64px) + Page header (~100px) + Footer (~60px) + Padding (~76px) = ~400px */
+  height: calc(100vh - 400px);
+  max-height: calc(100vh - 400px);
+  min-height: 400px; /* Ensure minimum usable height */
+  overflow: hidden;
+}
+
+/* Table of Contents */
+.neba-document-toc {
+  width: 280px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.toc-sticky {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.25rem;
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.toc-sticky::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc-sticky::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-sticky::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 3px;
+}
+
+.toc-sticky::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+.toc-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neba-gray-800);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item-h1,
+.toc-item-h2,
+.toc-item-h3,
+.toc-item-h4,
+.toc-item-h5,
+.toc-item-h6 {
+  margin: 0;
+}
+
+.toc-item-h2 {
+  padding-left: 1rem;
+}
+
+.toc-item-h3 {
+  padding-left: 2rem;
+}
+
+.toc-item-h4 {
+  padding-left: 3rem;
+}
+
+.toc-item-h5 {
+  padding-left: 4rem;
+}
+
+.toc-item-h6 {
+  padding-left: 5rem;
+}
+
+.toc-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--neba-gray-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  border-radius: var(--neba-radius);
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  margin-left: -0.75rem;
+  padding-left: calc(0.75rem - 3px);
+}
+
+.toc-item-h1 .toc-link {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+}
+
+.toc-item-h2 .toc-link {
+  padding-left: calc(1.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h3 .toc-link {
+  padding-left: calc(2.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h4 .toc-link {
+  padding-left: calc(3.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h5 .toc-link {
+  padding-left: calc(4.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-item-h6 .toc-link {
+  padding-left: calc(5.75rem - 3px);
+  margin-left: -0.75rem;
+}
+
+.toc-link:hover {
+  background-color: var(--neba-blue-050);
+  color: var(--neba-blue-700);
+  border-left-color: var(--neba-blue-300);
+}
+
+.toc-link.active {
+  background-color: var(--neba-blue-100);
+  color: var(--neba-blue-700);
+  font-weight: 600;
+  border-left-color: var(--neba-blue-600);
+}
+
+/* Main Content */
+.neba-document-content {
+  line-height: 1.8;
+  color: var(--neba-text);
+  min-width: 0; /* Prevent grid overflow */
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.neba-document-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.neba-document-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.neba-document-content::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 4px;
+}
+
+.neba-document-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+/* Headings */
+.neba-document-content h1,
+.neba-document-content h2,
+.neba-document-content h3,
+.neba-document-content h4,
+.neba-document-content h5,
+.neba-document-content h6 {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.neba-document-content h1 {
+  font-size: 2rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.neba-document-content h2 {
+  font-size: 1.5rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-content h3 {
+  font-size: 1.25rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-content h4 {
+  font-size: 1.125rem;
+}
+
+.neba-document-content h5 {
+  font-size: 1rem;
+}
+
+.neba-document-content h6 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Paragraphs */
+.neba-document-content p {
+  margin-bottom: 1rem;
+  color: var(--neba-text);
+}
+
+.neba-document-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+.neba-document-content ul,
+.neba-document-content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.neba-document-content ul {
+  list-style-type: disc;
+}
+
+/* Respect HTML type attribute for ordered lists */
+.neba-document-content ol {
+  /* Default to decimal, but allow HTML type attribute to override */
+  list-style-type: decimal;
+}
+
+.neba-document-content ol[type='1'] {
+  list-style-type: decimal;
+}
+
+.neba-document-content ol[type='a'] {
+  list-style-type: lower-alpha;
+}
+
+.neba-document-content ol[type='A'] {
+  list-style-type: upper-alpha;
+}
+
+.neba-document-content ol[type='i'] {
+  list-style-type: lower-roman;
+}
+
+.neba-document-content ol[type='I'] {
+  list-style-type: upper-roman;
+}
+
+.neba-document-content li {
+  margin-bottom: 0.5rem;
+  color: var(--neba-text);
+}
+
+.neba-document-content li::marker {
+  color: var(--neba-blue-600);
+  font-weight: 600;
+}
+
+/* Nested lists */
+.neba-document-content ul ul,
+.neba-document-content ol ol,
+.neba-document-content ul ol,
+.neba-document-content ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.neba-document-content ul ul {
+  list-style-type: circle;
+}
+
+.neba-document-content ul ul ul {
+  list-style-type: square;
+}
+
+/* Links */
+.neba-document-content a {
+  color: var(--neba-blue-700);
+  text-decoration: underline;
+  text-decoration-color: var(--neba-blue-300);
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.neba-document-content a:hover {
+  color: var(--neba-blue-600);
+  text-decoration-color: var(--neba-blue-600);
+}
+
+.neba-document-content a:focus-visible {
+  outline: 2px solid var(--neba-blue-500);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Strong/Bold text */
+.neba-document-content strong,
+.neba-document-content b {
+  font-weight: 700;
+  color: var(--neba-gray-800);
+}
+
+/* Emphasis/Italic text */
+.neba-document-content em,
+.neba-document-content i {
+  font-style: italic;
+}
+
+/* Code and pre-formatted text */
+.neba-document-content code {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-accent-red);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--neba-radius);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875em;
+}
+
+.neba-document-content pre {
+  background-color: var(--neba-gray-100);
+  padding: 1rem;
+  border-radius: var(--neba-radius);
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--neba-blue-600);
+}
+
+.neba-document-content pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--neba-text);
+}
+
+/* Blockquotes */
+.neba-document-content blockquote {
+  border-left: 4px solid var(--neba-blue-600);
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: var(--neba-gray-700);
+  background-color: var(--neba-blue-100);
+  padding: 1rem;
+  border-radius: var(--neba-radius);
+}
+
+/* Horizontal rules */
+.neba-document-content hr {
+  border: none;
+  border-top: 2px solid var(--neba-border);
+  margin: 2rem 0;
+}
+
+/* Tables */
+.neba-document-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius);
+  overflow: hidden;
+}
+
+.neba-document-content thead {
+  background-color: var(--neba-blue-100);
+}
+
+.neba-document-content thead th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--neba-blue-700);
+  border-bottom: 2px solid var(--neba-blue-600);
+}
+
+.neba-document-content tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--neba-border);
+}
+
+.neba-document-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.neba-document-content tbody tr:hover {
+  background-color: var(--neba-gray-050);
+}
+
+/* Images */
+.neba-document-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--neba-radius);
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Figure and figcaption */
+.neba-document-content figure {
+  margin: 1.5rem 0;
+}
+
+.neba-document-content figcaption {
+  font-size: 0.875rem;
+  color: var(--neba-gray-700);
+  font-style: italic;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Definition lists */
+.neba-document-content dl {
+  margin-bottom: 1rem;
+}
+
+.neba-document-content dt {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  margin-top: 0.75rem;
+}
+
+.neba-document-content dd {
+  margin-left: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--neba-text);
+}
+
+/* Subscript and superscript */
+.neba-document-content sub,
+.neba-document-content sup {
+  font-size: 0.75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.neba-document-content sup {
+  top: -0.5em;
+}
+
+.neba-document-content sub {
+  bottom: -0.25em;
+}
+
+/* Mark/Highlight */
+.neba-document-content mark {
+  background-color: #fff59d;
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}
+
+/* Abbreviation */
+.neba-document-content abbr[title] {
+  text-decoration: underline dotted;
+  cursor: help;
+  border-bottom: 1px dotted var(--neba-gray-400);
+}
+
+/* Address */
+.neba-document-content address {
+  font-style: normal;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: var(--neba-gray-050);
+  border-radius: var(--neba-radius);
+  border-left: 3px solid var(--neba-blue-600);
+}
+
+/* Small text */
+.neba-document-content small {
+  font-size: 0.875em;
+  color: var(--neba-gray-700);
+}
+
+/* Deleted and inserted text */
+.neba-document-content del {
+  text-decoration: line-through;
+  color: var(--neba-accent-red);
+}
+
+.neba-document-content ins {
+  text-decoration: none;
+  background-color: rgba(22, 163, 74, 0.1);
+  border-bottom: 2px solid var(--neba-success);
+  padding: 0.125rem 0.25rem;
+}
+
+/* Google Docs specific classes (common export patterns) */
+.neba-document-content .c0,
+.neba-document-content .c1,
+.neba-document-content .c2,
+.neba-document-content .c3,
+.neba-document-content .c4,
+.neba-document-content .c5 {
+  /* Reset any inline styles that might come from Google Docs */
+  font-family: var(--neba-font-base) !important;
+}
+
+/* Dark mode support */
+.dark .neba-document-content h1,
+.dark .neba-document-content h2,
+.dark .neba-document-content h3,
+.dark .neba-document-content strong,
+.dark .neba-document-content b,
+.dark .neba-document-content dt {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-content blockquote {
+  background-color: rgba(62, 79, 217, 0.1);
+  color: var(--neba-text);
+}
+
+.dark .neba-document-content code {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .neba-document-content pre {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .neba-document-content thead {
+  background-color: rgba(62, 79, 217, 0.15);
+}
+
+.dark .neba-document-content tbody tr:hover {
+  background-color: rgba(62, 79, 217, 0.08);
+}
+
+.dark .neba-document-content address {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Dark mode support for TOC */
+.dark .toc-sticky {
+  background-color: var(--neba-bg-panel);
+  border-color: var(--neba-border);
+}
+
+.dark .toc-title {
+  color: var(--neba-text);
+}
+
+.dark .toc-item-h1 .toc-link {
+  color: var(--neba-text);
+}
+
+.dark .toc-link {
+  color: var(--neba-gray-400);
+}
+
+.dark .toc-link:hover {
+  background-color: rgba(62, 79, 217, 0.1);
+  color: var(--neba-blue-300);
+}
+
+.dark .toc-link.active {
+  background-color: rgba(62, 79, 217, 0.2);
+  color: var(--neba-blue-300);
+}
+
+/* Mobile TOC Button - Hidden on desktop */
+.neba-document-toc-mobile-btn {
+  display: none;
+}
+
+/* Mobile TOC Modal - Hidden by default */
+.neba-document-toc-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.neba-document-toc-modal.active {
+  display: block;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.neba-document-toc-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.neba-document-toc-modal-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 400px;
+  background-color: var(--neba-bg-panel);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.neba-document-toc-modal.active .neba-document-toc-modal-content {
+  transform: translateX(0);
+}
+
+.neba-document-toc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  background-color: var(--neba-bg-panel);
+}
+
+.neba-document-toc-modal-header .toc-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.neba-document-toc-modal-close {
+  background: none;
+  border: none;
+  color: var(--neba-gray-600);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--neba-radius);
+  transition: all 0.2s ease;
+}
+
+.neba-document-toc-modal-close:hover {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-gray-800);
+}
+
+.neba-document-toc-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.25rem;
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.neba-document-toc-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.neba-document-toc-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.neba-document-toc-modal-body::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 3px;
+}
+
+.neba-document-toc-modal-body::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+/* Slide-over Panel for Internal Links */
+.neba-document-slideover {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000; /* Higher than mobile TOC modal */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.neba-document-slideover.active {
+  display: block;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.neba-document-slideover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.neba-document-slideover-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  max-width: 800px;
+  min-width: 400px;
+  background-color: var(--neba-bg-panel);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.neba-document-slideover.active .neba-document-slideover-panel {
+  transform: translateX(0);
+}
+
+.neba-document-slideover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  background-color: var(--neba-bg-panel);
+  flex-shrink: 0;
+}
+
+.neba-document-slideover-title {
+  margin: 0;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  flex: 1;
+  padding-right: 1rem;
+}
+
+.neba-document-slideover-close {
+  background: none;
+  border: none;
+  color: var(--neba-gray-600);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--neba-radius);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.neba-document-slideover-close:hover {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-gray-800);
+}
+
+.neba-document-slideover-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+  line-height: 1.8;
+  color: var(--neba-text);
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--neba-blue-300) transparent;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-thumb {
+  background-color: var(--neba-blue-300);
+  border-radius: 4px;
+}
+
+.neba-document-slideover-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neba-blue-500);
+}
+
+/* Apply document content styles to slide-over content */
+.neba-document-slideover-content h1,
+.neba-document-slideover-content h2,
+.neba-document-slideover-content h3,
+.neba-document-slideover-content h4,
+.neba-document-slideover-content h5,
+.neba-document-slideover-content h6 {
+  font-weight: 600;
+  color: var(--neba-gray-800);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.neba-document-slideover-content h1 {
+  font-size: 2rem;
+  border-bottom: 2px solid var(--neba-blue-600);
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.neba-document-slideover-content h2 {
+  font-size: 1.5rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-slideover-content h3 {
+  font-size: 1.25rem;
+  color: var(--neba-blue-700);
+}
+
+.neba-document-slideover-content p {
+  margin-bottom: 1rem;
+  color: var(--neba-text);
+}
+
+.neba-document-slideover-content a {
+  color: var(--neba-blue-700);
+  text-decoration: underline;
+  text-decoration-color: var(--neba-blue-300);
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.neba-document-slideover-content a:hover {
+  color: var(--neba-blue-600);
+  text-decoration-color: var(--neba-blue-600);
+}
+
+.neba-document-slideover-content ul,
+.neba-document-slideover-content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.neba-document-slideover-content ul {
+  list-style-type: disc;
+}
+
+.neba-document-slideover-content ol {
+  list-style-type: decimal;
+}
+
+.neba-document-slideover-content ol[type='1'] {
+  list-style-type: decimal;
+}
+
+.neba-document-slideover-content ol[type='a'] {
+  list-style-type: lower-alpha;
+}
+
+.neba-document-slideover-content ol[type='A'] {
+  list-style-type: upper-alpha;
+}
+
+.neba-document-slideover-content ol[type='i'] {
+  list-style-type: lower-roman;
+}
+
+.neba-document-slideover-content ol[type='I'] {
+  list-style-type: upper-roman;
+}
+
+.neba-document-slideover-content li {
+  margin-bottom: 0.5rem;
+  color: var(--neba-text);
+}
+
+.neba-document-slideover-content li::marker {
+  color: var(--neba-blue-600);
+  font-weight: 600;
+}
+
+.neba-document-slideover-content ul ul,
+.neba-document-slideover-content ol ol,
+.neba-document-slideover-content ul ol,
+.neba-document-slideover-content ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.neba-document-slideover-content ul ul {
+  list-style-type: circle;
+}
+
+.neba-document-slideover-content ul ul ul {
+  list-style-type: square;
+}
+
+/* Tables in slide-over */
+.neba-document-slideover-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background-color: var(--neba-bg-panel);
+  border: 1px solid var(--neba-border);
+  border-radius: var(--neba-radius);
+  overflow: hidden;
+}
+
+.neba-document-slideover-content thead {
+  background-color: var(--neba-blue-100);
+}
+
+.neba-document-slideover-content thead th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--neba-blue-700);
+  border-bottom: 2px solid var(--neba-blue-600);
+}
+
+.neba-document-slideover-content tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--neba-border);
+}
+
+.neba-document-slideover-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.neba-document-slideover-content tbody tr:hover {
+  background-color: var(--neba-gray-050);
+}
+
+/* Additional content styles for slide-over */
+.neba-document-slideover-content strong,
+.neba-document-slideover-content b {
+  font-weight: 700;
+  color: var(--neba-gray-800);
+}
+
+.neba-document-slideover-content em,
+.neba-document-slideover-content i {
+  font-style: italic;
+}
+
+.neba-document-slideover-content code {
+  background-color: var(--neba-gray-100);
+  color: var(--neba-accent-red);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--neba-radius);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875em;
+}
+
+.neba-document-slideover-content blockquote {
+  border-left: 4px solid var(--neba-blue-600);
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: var(--neba-gray-700);
+  background-color: var(--neba-blue-100);
+  padding: 1rem;
+  border-radius: var(--neba-radius);
+}
+
+.neba-document-slideover-content hr {
+  border: none;
+  border-top: 2px solid var(--neba-border);
+  margin: 2rem 0;
+}
+
+/* Dark mode support for slide-over */
+.dark .neba-document-slideover-panel {
+  background-color: var(--neba-bg-panel);
+}
+
+.dark .neba-document-slideover-title {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content h1,
+.dark .neba-document-slideover-content h2,
+.dark .neba-document-slideover-content h3 {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content strong,
+.dark .neba-document-slideover-content b {
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content blockquote {
+  background-color: rgba(62, 79, 217, 0.1);
+  color: var(--neba-text);
+}
+
+.dark .neba-document-slideover-content code {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .neba-document-slideover-content thead {
+  background-color: rgba(62, 79, 217, 0.15);
+}
+
+.dark .neba-document-slideover-content tbody tr:hover {
+  background-color: rgba(62, 79, 217, 0.08);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .neba-document-container {
+    grid-template-columns: 1fr;
+    /* Remove fixed height on mobile - allow natural scrolling */
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    position: relative;
+  }
+
+  /* Show mobile TOC button */
+  .neba-document-toc-mobile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: 2rem;
+    right: 1rem;
+    z-index: 100;
+    background-color: var(--neba-blue-700);
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .neba-document-toc-mobile-btn:hover {
+    background-color: var(--neba-blue-600);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .neba-document-toc-mobile-btn:active {
+    transform: translateY(0);
+  }
+
+  .neba-document-toc-mobile-btn svg {
+    flex-shrink: 0;
+  }
+
+  /* Hide desktop TOC */
+  .neba-document-toc {
+    display: none;
+  }
+
+  .neba-document-content {
+    /* Remove fixed height on mobile - allow natural scrolling */
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Slide-over adjustments for tablet and mobile */
+  .neba-document-slideover-panel {
+    width: 85%;
+    max-width: 600px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .neba-document-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .neba-document-content h2 {
+    font-size: 1.375rem;
+  }
+
+  .neba-document-content h3 {
+    font-size: 1.125rem;
+  }
+
+  .neba-document-content table {
+    font-size: 0.875rem;
+  }
+
+  .neba-document-content thead th,
+  .neba-document-content tbody td {
+    padding: 0.5rem;
+  }
+
+  /* Slide-over adjustments for mobile */
+  .neba-document-slideover-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .neba-document-slideover-header {
+    padding: 1rem;
+  }
+
+  .neba-document-slideover-title {
+    font-size: 1.125rem;
+  }
+
+  .neba-document-slideover-content {
+    padding: 1.5rem;
+  }
+}

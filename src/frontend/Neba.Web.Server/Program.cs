@@ -61,4 +61,21 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Neba.Web.Client._Imports).Assembly);
 
+// API endpoints for slide-over panel to fetch document content
+app.MapGet("/api/documents/bylaws", async (NebaApiService apiService) =>
+{
+    var result = await apiService.GetBylawsAsync();
+    return result.IsError
+        ? Results.Problem(statusCode: 500, detail: result.FirstError.Description)
+        : Results.Ok(new { html = result.Value.Value });
+});
+
+app.MapGet("/api/documents/tournaments/rules", async (NebaApiService apiService) =>
+{
+    var result = await apiService.GetTournamentRulesAsync();
+    return result.IsError
+        ? Results.Problem(statusCode: 500, detail: result.FirstError.Description)
+        : Results.Ok(new { html = result.Value.Value });
+});
+
 await app.RunAsync();

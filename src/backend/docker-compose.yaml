@@ -11,6 +11,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Docker
+      - GoogleDocs__Credentials__PrivateKeyId=${GOOGLE_DOCS_PRIVATE_KEY_ID}
+      - GoogleDocs__Credentials__PrivateKey=${GOOGLE_DOCS_PRIVATE_KEY}
+      - GoogleDocs__Credentials__ClientEmail=${GOOGLE_DOCS_CLIENT_EMAIL}
+      - GoogleDocs__Credentials__ClientId=${GOOGLE_DOCS_CLIENT_ID}
+      - GoogleDocs__Credentials__ClientX509CertUrl=${GOOGLE_DOCS_CLIENT_X509_CERT_URL}
     depends_on:
       - neba.db
     networks:

@@ -16,6 +16,7 @@ syntax: glob
 *.user
 *.userosscache
 *.sln.docstates
+.env
 
 # Build results
 artifacts/
