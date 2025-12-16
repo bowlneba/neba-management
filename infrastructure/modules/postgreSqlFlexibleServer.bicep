@@ -37,6 +37,12 @@ param highAvailability bool = false
 @description('Database name to create')
 param databaseName string
 
+@description('Enable Azure AD authentication')
+param enableAzureADAuth bool = true
+
+@description('Enable password authentication')
+param enablePasswordAuth bool = true
+
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -62,6 +68,10 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     }
     highAvailability: {
       mode: highAvailability ? 'ZoneRedundant' : 'Disabled'
+    }
+    authConfig: {
+      activeDirectoryAuth: enableAzureADAuth ? 'Enabled' : 'Disabled'
+      passwordAuth: enablePasswordAuth ? 'Enabled' : 'Disabled'
     }
   }
 }
