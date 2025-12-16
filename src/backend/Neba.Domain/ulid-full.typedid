@@ -18,7 +18,7 @@
 #else
             if (value is null) throw new global::System.ArgumentNullException(nameof(value));
 #endif
-            if (!string.IsNullOrEmpty(value) && !global::Ulid.TryParse(value, out _))
+            if (!string.IsNullOrEmpty(value) && !global::System.Ulid.TryParse(value, out _))
             {
                 throw new global::System.ArgumentException($"Invalid Ulid format: {value}", nameof(value));
             }
@@ -30,9 +30,9 @@
             Value = value;
         }
 
-        public static PLACEHOLDERID New() => new PLACEHOLDERID(global::Ulid.NewUlid().ToString(), skipValidation: true);
+        public static PLACEHOLDERID New() => new PLACEHOLDERID(global::System.Ulid.NewUlid().ToString(), skipValidation: true);
 
-        public static PLACEHOLDERID FromGuid(global::System.Guid guid) => new PLACEHOLDERID(new global::Ulid(guid).ToString(), skipValidation: true);
+        public static PLACEHOLDERID FromGuid(global::System.Guid guid) => new PLACEHOLDERID(new global::System.Ulid(guid).ToString(), skipValidation: true);
 
         public static readonly PLACEHOLDERID Empty = new PLACEHOLDERID(string.Empty, skipValidation: true);
 
@@ -77,7 +77,7 @@
         {
             public override bool CanConvertFrom(global::System.ComponentModel.ITypeDescriptorContext? context, global::System.Type sourceType)
             {
-                return sourceType == typeof(string) || sourceType == typeof(global::Ulid) || sourceType == typeof(global::System.Guid) || base.CanConvertFrom(context, sourceType);
+                return sourceType == typeof(string) || sourceType == typeof(global::System.Ulid) || sourceType == typeof(global::System.Guid) || base.CanConvertFrom(context, sourceType);
             }
 
             public override object? ConvertFrom(global::System.ComponentModel.ITypeDescriptorContext? context, global::System.Globalization.CultureInfo? culture, object value)
@@ -85,7 +85,7 @@
                 return value switch
                 {
                     string stringValue => new PLACEHOLDERID(stringValue),
-                    global::Ulid ulidValue => new PLACEHOLDERID(ulidValue.ToString()),
+                    global::System.Ulid ulidValue => new PLACEHOLDERID(ulidValue.ToString()),
                     global::System.Guid guidValue => PLACEHOLDERID.FromGuid(guidValue),
                     _ => base.ConvertFrom(context, culture, value)
                 };
@@ -93,7 +93,7 @@
 
             public override bool CanConvertTo(global::System.ComponentModel.ITypeDescriptorContext? context, global::System.Type? sourceType)
             {
-                return sourceType == typeof(string) || sourceType == typeof(global::Ulid) || sourceType == typeof(global::System.Guid) || base.CanConvertTo(context, sourceType);
+                return sourceType == typeof(string) || sourceType == typeof(global::System.Ulid) || sourceType == typeof(global::System.Guid) || base.CanConvertTo(context, sourceType);
             }
 
             public override object? ConvertTo(global::System.ComponentModel.ITypeDescriptorContext? context, global::System.Globalization.CultureInfo? culture, object? value, global::System.Type destinationType)
@@ -105,14 +105,14 @@
                         return idValue.Value;
                     }
 
-                    if (destinationType == typeof(global::Ulid) && !string.IsNullOrEmpty(idValue.Value))
+                    if (destinationType == typeof(global::System.Ulid) && !string.IsNullOrEmpty(idValue.Value))
                     {
-                        return global::Ulid.Parse(idValue.Value);
+                        return global::System.Ulid.Parse(idValue.Value);
                     }
 
                     if (destinationType == typeof(global::System.Guid) && !string.IsNullOrEmpty(idValue.Value))
                     {
-                        return global::Ulid.Parse(idValue.Value).ToGuid();
+                        return global::System.Ulid.Parse(idValue.Value).ToGuid();
                     }
                 }
 
@@ -145,7 +145,7 @@
             }
 
             // Validate that it's a valid Ulid format
-            var ulid = global::Ulid.Parse(input);
+            var ulid = global::System.Ulid.Parse(input);
             return new PLACEHOLDERID(ulid.ToString(), skipValidation: true);
         }
 
@@ -172,7 +172,7 @@
                 return true;
             }
 
-            if (global::Ulid.TryParse(input, out var ulid))
+            if (global::System.Ulid.TryParse(input, out var ulid))
             {
                 result = new PLACEHOLDERID(ulid.ToString(), skipValidation: true);
                 return true;
@@ -194,7 +194,7 @@
             {
                 return new PLACEHOLDERID(string.Empty, skipValidation: true);
             }
-            var ulid = global::Ulid.Parse(input);
+            var ulid = global::System.Ulid.Parse(input);
             return new PLACEHOLDERID(ulid.ToString(), skipValidation: true);
         }
 #endif
@@ -209,7 +209,7 @@
             {
                 return new PLACEHOLDERID(string.Empty, skipValidation: true);
             }
-            var ulid = global::Ulid.Parse(input);
+            var ulid = global::System.Ulid.Parse(input);
             return new PLACEHOLDERID(ulid.ToString(), skipValidation: true);
         }
 
@@ -224,7 +224,7 @@
                 return true;
             }
 
-            if (global::Ulid.TryParse(input, out var ulid))
+            if (global::System.Ulid.TryParse(input, out var ulid))
             {
                 result = new PLACEHOLDERID(ulid.ToString(), skipValidation: true);
                 return true;

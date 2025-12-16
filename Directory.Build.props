@@ -32,8 +32,4 @@
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Ulid" />
-  </ItemGroup>
-
 </Project>
