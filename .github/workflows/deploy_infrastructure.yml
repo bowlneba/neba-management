@@ -104,7 +104,7 @@ jobs:
           echo ""
 
           DEPLOYMENT_NAME="infrastructure-${{ vars.AZURE_ENVIRONMENT }}-$(date +%Y%m%d-%H%M%S)"
-          
+
           # Start deployment in background
           az deployment sub create \
             --name "$DEPLOYMENT_NAME" \
@@ -132,11 +132,11 @@ jobs:
           echo ""
           echo "📊 Monitoring deployment progress..."
           echo ""
-          
+
           # Monitor deployment with progress updates
           while true; do
             STATE=$(az deployment sub show --name "$DEPLOYMENT_NAME" --query 'properties.provisioningState' -o tsv 2>/dev/null || echo "NotFound")
-            
+
             if [ "$STATE" = "Succeeded" ]; then
               echo "✅ Deployment completed successfully!"
               break
@@ -148,16 +148,16 @@ jobs:
               echo "⚠️  Deployment was canceled"
               exit 1
             fi
-            
+
             # Show active operations
             OPERATIONS=$(az deployment sub show --name "$DEPLOYMENT_NAME" --query "properties.dependencies[].{resource:resourceType, state:dependsOn[0].resourceName}" -o tsv 2>/dev/null || echo "")
             TIMESTAMP=$(date '+%H:%M:%S')
             echo "[$TIMESTAMP] Deployment status: $STATE"
-            
+
             # Check resource group deployment status
             if az group show --name '${{ vars.AZURE_RESOURCE_GROUP_NAME }}' &>/dev/null; then
               echo "  ✓ Resource Group created"
-              
+
               # Check individual resources
               RESOURCES=$(az resource list --resource-group '${{ vars.AZURE_RESOURCE_GROUP_NAME }}' --query '[].{Type:type, Name:name, State:provisioningState}' -o tsv 2>/dev/null)
               if [ -n "$RESOURCES" ]; then
@@ -173,7 +173,7 @@ jobs:
             else
               echo "  ⏳ Creating resource group..."
             fi
-            
+
             echo ""
             sleep 30
           done
