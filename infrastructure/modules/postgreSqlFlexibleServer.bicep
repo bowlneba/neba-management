@@ -43,6 +43,9 @@ param enableAzureADAuth bool = true
 @description('Enable password authentication')
 param enablePasswordAuth bool = true
 
+@description('Enable System-Assigned Managed Identity for the PostgreSQL server')
+param enableManagedIdentity bool = true
+
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -50,11 +53,14 @@ param tags object = {}
 resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
   name: name
   location: location
-  tags: tags
   sku: {
     name: skuName
     tier: startsWith(skuName, 'Standard_B') ? 'Burstable' : startsWith(skuName, 'Standard_D') || startsWith(skuName, 'Standard_E') ? 'MemoryOptimized' : 'GeneralPurpose'
   }
+  identity: enableManagedIdentity ? {
+    type: 'SystemAssigned'
+  } : null
+  tags: tags
   properties: {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
