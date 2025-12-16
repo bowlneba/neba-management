@@ -89,10 +89,11 @@ jobs:
       - name: Deploy to Azure Web App
         run: |
           echo "🚀 Starting deployment (this may take 10-15 minutes for large apps)..."
-          az webapp deployment source config-zip \
+          az webapp deploy \
             --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
             --name ${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }} \
-            --src deploy.zip \
+            --src-path deploy.zip \
+            --type zip \
             --timeout 1200
           echo "✅ Deployment completed"
 
