@@ -344,7 +344,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         // Match Google Docs URLs like:
         // https://docs.google.com/document/d/DOCUMENT_ID/edit
         // https://docs.google.com/document/d/DOCUMENT_ID/
-        Match match = Regex.Match(url, @"docs\.google\.com/document/d/([a-zA-Z0-9_-]+)");
+        Match match = Regex.Match(url, @"docs\.google\.com/document/d/([a-zA-Z0-9_-]+)", RegexOptions.None, TimeSpan.FromSeconds(1));
         return match.Success ? match.Groups[1].Value : null;
     }
 
