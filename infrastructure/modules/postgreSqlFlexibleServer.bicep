@@ -37,6 +37,15 @@ param highAvailability bool = false
 @description('Database name to create')
 param databaseName string
 
+@description('Enable Azure AD authentication')
+param enableAzureADAuth bool = true
+
+@description('Enable password authentication')
+param enablePasswordAuth bool = true
+
+@description('Enable System-Assigned Managed Identity for the PostgreSQL server')
+param enableManagedIdentity bool = true
+
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -44,21 +53,20 @@ param tags object = {}
 resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
   name: name
   location: location
-  tags: tags
-  identity: {
-    type: 'SystemAssigned'
-  }
   sku: {
     name: skuName
-    tier: startsWith(skuName, 'B_') ? 'Burstable' : startsWith(skuName, 'GP_') ? 'GeneralPurpose' : 'MemoryOptimized'
+    tier: startsWith(skuName, 'Standard_B') ? 'Burstable' : startsWith(skuName, 'Standard_D') || startsWith(skuName, 'Standard_E') ? 'MemoryOptimized' : 'GeneralPurpose'
   }
+  identity: enableManagedIdentity ? {
+    type: 'SystemAssigned'
+  } : null
+  tags: tags
   properties: {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
     version: version
     storage: {
       storageSizeGB: storageSizeGB
-      autoGrow: 'Enabled'
     }
     backup: {
       backupRetentionDays: backupRetentionDays
@@ -68,8 +76,8 @@ resource postgreSqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
       mode: highAvailability ? 'ZoneRedundant' : 'Disabled'
     }
     authConfig: {
-      activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Enabled'
+      activeDirectoryAuth: enableAzureADAuth ? 'Enabled' : 'Disabled'
+      passwordAuth: enablePasswordAuth ? 'Enabled' : 'Disabled'
     }
   }
 }
@@ -99,4 +107,3 @@ output id string = postgreSqlServer.id
 output name string = postgreSqlServer.name
 output fqdn string = postgreSqlServer.properties.fullyQualifiedDomainName
 output databaseName string = database.name
-output principalId string = postgreSqlServer.identity!.principalId

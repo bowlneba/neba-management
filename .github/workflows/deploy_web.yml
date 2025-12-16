@@ -99,33 +99,53 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Create deployment package
+        run: |
+          cd ./publish
+          zip -r ../deploy.zip .
+          cd ..
+          echo "Created deployment package: deploy.zip"
+          echo "Package size: $(du -h deploy.zip | cut -f1)"
+
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}
-          package: ./publish
+        run: |
+          echo "🚀 Starting deployment (this may take 10-15 minutes for large apps)..."
+          az webapp deploy \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --name ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --src-path deploy.zip \
+            --type zip \
+            --timeout 1200
+          echo "✅ Deployment completed"
 
       - name: Verify deployment
         run: |
           APP_URL="https://${{ vars.AZURE_WEB_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}.azurewebsites.net"
           echo "🔍 Verifying Web App deployment at: $APP_URL"
 
-          # Wait for app to be ready with exponential backoff (max 60s)
-          MAX_ATTEMPTS=6
+          # Azure App Service needs time to extract zip, restart, and initialize
+          echo "⏳ Waiting 60 seconds for Azure App Service to restart after deployment..."
+          sleep 60
+
+          # Wait for app to be ready with exponential backoff
+          MAX_ATTEMPTS=12
+          INITIAL_DELAY=5
           ATTEMPT=1
-          DELAY=2
+          DELAY=$INITIAL_DELAY
           HTTP_STATUS="000"
+
+          echo "Starting health checks (max $MAX_ATTEMPTS attempts, up to ~6 minutes)..."
           while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" || echo "000")
             if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
               echo "✅ Web App is responding with status code: $HTTP_STATUS (after $ATTEMPT attempt(s))"
               break
-            else
-              echo "Waiting for Web App... (attempt $ATTEMPT, status: $HTTP_STATUS)"
-              sleep $DELAY
-              ATTEMPT=$((ATTEMPT + 1))
-              DELAY=$((DELAY * 2))
             fi
+            echo "⏳ Waiting for Web App... (attempt $ATTEMPT/$MAX_ATTEMPTS, status: $HTTP_STATUS)"
+            sleep $DELAY
+            ATTEMPT=$((ATTEMPT + 1))
+            DELAY=$((DELAY * 2))
+            if [ $DELAY -gt 40 ]; then DELAY=40; fi
           done
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then

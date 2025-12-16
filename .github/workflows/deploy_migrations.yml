@@ -17,6 +17,7 @@ on:
         type: string
 
 permissions:
+  id-token: write  # Required for OIDC authentication to read from Key Vault
   contents: read
 
 env:
@@ -29,15 +30,15 @@ jobs:
     environment: ${{ inputs.environment || 'Production' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v5.2.2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@7e7f03d249393c7c24e6bb4cb48f3695fe4c1d3c # v5.0.0
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
@@ -50,9 +51,59 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Azure Login (OIDC)
+        uses: azure/login@6c251865b4e6290e7b78be643ea2d005bc51f69a # v2.2.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get database details and admin password
+        id: get-db-info
+        run: |
+          echo "🔑 Reading database admin password from Key Vault..."
+          DB_ADMIN_PASSWORD=$(az keyvault secret show \
+            --vault-name ${{ vars.AZURE_KEY_VAULT_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --name DatabaseAdminPassword \
+            --query value -o tsv)
+          echo "::add-mask::$DB_ADMIN_PASSWORD"
+
+          echo "📦 Getting database server FQDN..."
+          DB_SERVER=$(az postgres flexible-server show \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} \
+            --query fullyQualifiedDomainName -o tsv)
+
+          # Build connection string with admin credentials and SSL mode
+          CONNECTION_STRING="Host=$DB_SERVER;Database=${{ vars.DATABASE_NAME }};Username=${{ vars.DATABASE_ADMIN_USERNAME }};Password=$DB_ADMIN_PASSWORD;SslMode=Require"
+          echo "::add-mask::$CONNECTION_STRING"
+
+          echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_OUTPUT
+          echo "DB_SERVER_NAME=${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }}" >> $GITHUB_OUTPUT
+
+      - name: Add temporary firewall rule for GitHub Actions
+        id: add-firewall-rule
+        run: |
+          echo "🔓 Adding temporary firewall rule for GitHub Actions runner..."
+
+          # Get the public IP of the GitHub Actions runner
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "Runner IP: $RUNNER_IP"
+
+          # Add firewall rule
+          az postgres flexible-server firewall-rule create \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --name ${{ steps.get-db-info.outputs.DB_SERVER_NAME }} \
+            --rule-name "GitHub-Actions-${{ github.run_id }}" \
+            --start-ip-address "$RUNNER_IP" \
+            --end-ip-address "$RUNNER_IP"
+
+          echo "✅ Firewall rule added"
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_OUTPUT
+
       - name: Apply Website database migrations
         env:
-          ConnectionStrings__bowlneba: ${{ secrets.BOWLNEBA_CONNECTION_STRING }}
+          ConnectionStrings__bowlneba: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
         run: |
           echo "🔄 Applying Website database migrations..."
           dotnet ef database update \
@@ -60,6 +111,17 @@ jobs:
             --context WebsiteDbContext \
             --verbose
           echo "✅ Website database migrations applied successfully"
+
+      - name: Remove temporary firewall rule
+        if: steps.add-firewall-rule.outcome == 'success'
+        run: |
+          echo "🔒 Removing temporary firewall rule..."
+          az postgres flexible-server firewall-rule delete \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+            --name ${{ steps.get-db-info.outputs.DB_SERVER_NAME }} \
+            --rule-name "GitHub-Actions-${{ github.run_id }}" \
+            --yes || echo "⚠️  Firewall rule may not exist"
+          echo "✅ Firewall rule removed"
 
       - name: Generate migration summary
         if: success()

@@ -10,29 +10,34 @@ internal sealed class WebsiteDbContextFactory
 {
     public WebsiteDbContext CreateDbContext(string[] args)
     {
-        // Use standard ASP.NET Core configuration hierarchy (last source added wins):
-        // 1. Environment variables (lowest priority - base)
-        // 2. appsettings.json (can override environment)
-        // 3. appsettings.development.json (highest priority - local development)
-        // 4. Hardcoded fallback if all are empty
-        string apiProjectPath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "..",
-            "..",
-            "Neba.Api");
+        // Priority order (highest to lowest):
+        // 1. Environment variables (for CI/CD and production)
+        // 2. appsettings.Development.json (for local development)
+        // 3. appsettings.json
+        // 4. Hardcoded fallback
 
-        string? connectionString = null;
+        // First, try to read from environment variable (for GitHub Actions / Azure)
+        string? connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__bowlneba");
 
-        if (Directory.Exists(apiProjectPath))
+        // If not in environment, try configuration files from API project
+        if (string.IsNullOrEmpty(connectionString))
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(apiProjectPath)
-                .AddEnvironmentVariables()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.development.json", optional: true)
-                .Build();
+            string apiProjectPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "..",
+                "..",
+                "Neba.Api");
 
-            connectionString = configuration.GetConnectionString("Website");
+            if (Directory.Exists(apiProjectPath))
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(apiProjectPath)
+                    .AddJsonFile("appsettings.json", optional: true)
+                    .AddJsonFile("appsettings.Development.json", optional: true)
+                    .Build();
+
+                connectionString = configuration.GetConnectionString("bowlneba");
+            }
         }
 
         // Fallback to hardcoded local connection string

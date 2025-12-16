@@ -35,8 +35,6 @@
 
 async Task Main()
 {
-	var x = new Ulid(Guid.NewGuid());
-	x.ToString().Dump();
 	SeasonAwards.RemoveRange(SeasonAwards);
 	Titles.RemoveRange(Titles);
 	Bowlers.RemoveRange(Bowlers);

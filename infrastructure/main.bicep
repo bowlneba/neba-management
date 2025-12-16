@@ -127,7 +127,6 @@ module apiAppService 'modules/appService.bicep' = {
     corsAllowedOrigins: [
       'https://${azureWebAppServiceName}-${azureLocation}.azurewebsites.net'
     ]
-    startupCommand: 'dotnet Neba.Api.dll'
     appSettings: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
@@ -138,11 +137,7 @@ module apiAppService 'modules/appService.bicep' = {
         value: 'http://+:8080'
       }
       {
-        name: 'WEBSITE_RUN_FROM_PACKAGE'
-        value: '1'
-      }
-      {
-        name: 'KeyVaultUri'
+        name: 'KeyVault__VaultUrl'
         value: keyVault.outputs.uri
       }
     ]
@@ -179,10 +174,6 @@ module webAppService 'modules/appService.bicep' = {
       {
         name: 'ASPNETCORE_URLS'
         value: 'http://+:8080'
-      }
-      {
-        name: 'WEBSITE_RUN_FROM_PACKAGE'
-        value: '1'
       }
       {
         name: 'NebaApi__BaseUrl'
