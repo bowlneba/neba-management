@@ -293,7 +293,7 @@ jobs:
           sleep 30
 
           # Create connection string for API (Managed Identity - passwordless)
-          CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }};"
+          CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }};SslMode=Require"
 
           # Add connection string to Key Vault
           echo "Adding ConnectionStrings--bowlneba..."
