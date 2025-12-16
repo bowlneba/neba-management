@@ -14,21 +14,84 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-export function initializeToc(
-    contentId,
-    tocListId,
-    tocMobileListId,
-    tocMobileButtonId,
-    tocModalId,
-    tocModalOverlayId,
-    tocModalCloseId,
-    headingLevels = 'h1, h2',
-    slideoverId = null,
-    slideoverOverlayId = null,
-    slideoverCloseId = null,
-    slideoverTitleId = null,
-    slideoverContentId = null
-) {
+/**
+ * Initialize the table-of-contents and related interactions.
+ * Accepts a single `config` object for maintainability. For backward
+ * compatibility, the function still supports the original positional
+ * argument form (legacy callers) by detecting a string first argument
+ * and converting it into the `config` object.
+ *
+ * Config object shape:
+ * {
+ *   contentId,
+ *   tocListId,
+ *   tocMobileListId,
+ *   tocMobileButtonId,
+ *   tocModalId,
+ *   tocModalOverlayId,
+ *   tocModalCloseId,
+ *   headingLevels = 'h1, h2',
+ *   slideoverId = null,
+ *   slideoverOverlayId = null,
+ *   slideoverCloseId = null,
+ *   slideoverTitleId = null,
+ *   slideoverContentId = null
+ * }
+ */
+export function initializeToc(configOrContentId) {
+    // Backward compatibility: support legacy positional args
+    let config = configOrContentId;
+    if (typeof configOrContentId === 'string') {
+        const args = Array.from(arguments);
+        const [
+            contentId,
+            tocListId,
+            tocMobileListId,
+            tocMobileButtonId,
+            tocModalId,
+            tocModalOverlayId,
+            tocModalCloseId,
+            headingLevels = 'h1, h2',
+            slideoverId = null,
+            slideoverOverlayId = null,
+            slideoverCloseId = null,
+            slideoverTitleId = null,
+            slideoverContentId = null
+        ] = args;
+
+        config = {
+            contentId,
+            tocListId,
+            tocMobileListId,
+            tocMobileButtonId,
+            tocModalId,
+            tocModalOverlayId,
+            tocModalCloseId,
+            headingLevels,
+            slideoverId,
+            slideoverOverlayId,
+            slideoverCloseId,
+            slideoverTitleId,
+            slideoverContentId
+        };
+    }
+
+    const {
+        contentId,
+        tocListId,
+        tocMobileListId,
+        tocMobileButtonId,
+        tocModalId,
+        tocModalOverlayId,
+        tocModalCloseId,
+        headingLevels = 'h1, h2',
+        slideoverId = null,
+        slideoverOverlayId = null,
+        slideoverCloseId = null,
+        slideoverTitleId = null,
+        slideoverContentId = null
+    } = config || {};
+
     console.log('[NebaDocument] Initializing TOC...');
     console.log('[NebaDocument] Content ID:', contentId);
     console.log('[NebaDocument] TOC List ID:', tocListId);
