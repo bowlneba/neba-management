@@ -96,13 +96,13 @@ public static class InfrastructureDependencyInjection
                 .AddAzureKeyVault(vaultUri, defaultAzureCredential,
                     options =>
                     {
-                        options.AddSecret("ConnectionStrings--bowlneba");
-
-                        options.AddSecret("GoogleDocs--Credentials--ClientEmail");
-                        options.AddSecret("GoogleDocs--Credentials--ClientId");
-                        options.AddSecret("GoogleDocs--Credentials--PrivateKeyId");
-                        options.AddSecret("GoogleDocs--Credentials--PrivateKey");
-                        options.AddSecret("GoogleDocs--Credentials--ClientX509CertUrl");
+                        options
+                            .AddSecret("ConnectionStrings--bowlneba")
+                            .AddSecret("GoogleDocs--Credentials--ClientEmail")
+                            .AddSecret("GoogleDocs--Credentials--ClientId")
+                            .AddSecret("GoogleDocs--Credentials--PrivateKeyId")
+                            .AddSecret("GoogleDocs--Credentials--PrivateKey")
+                            .AddSecret("GoogleDocs--Credentials--ClientX509CertUrl");
                     },
                     name: "Azure Key Vault",
                     tags: keyVaultTags);

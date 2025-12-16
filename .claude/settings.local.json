@@ -52,7 +52,15 @@
       "Bash(az webapp identity show:*)",
       "Bash(az webapp config appsettings set:*)",
       "Bash(az webapp restart:*)",
-      "Bash(timeout 30 az webapp log:*)"
+      "Bash(timeout 30 az webapp log:*)",
+      "Bash(az keyvault secret show:*)",
+      "Bash(az account show:*)",
+      "Bash(az ad signed-in-user show:*)",
+      "Bash(az postgres flexible-server ad-admin create:*)",
+      "Bash(az postgres flexible-server update:*)",
+      "Bash(az account get-access-token:*)",
+      "Bash(brew install:*)",
+      "Bash(az postgres flexible-server parameter set:*)"
     ],
     "deny": [],
     "ask": []
