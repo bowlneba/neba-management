@@ -15,7 +15,7 @@ public sealed class GetBylawsQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_ShouldReturnTournamentRulesHtml()
+    public async Task HandleAsync_ShouldReturnBylawsHtml()
     {
         // Arrange
         const string expectedHtml = "<h1>Bylaws</h1><p>These are the bylaws...</p>";
@@ -30,6 +30,6 @@ public sealed class GetBylawsQueryHandlerTests
 
         // Assert
         result.ShouldBe(expectedHtml);
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
+        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("bylaws", TestContext.Current.CancellationToken), Times.Once);
     }
 }

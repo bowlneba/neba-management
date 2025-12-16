@@ -3,7 +3,7 @@ using Neba.Application.Abstractions.Messaging;
 namespace Neba.Application.Documents.Bylaws;
 
 /// <summary>
-/// Handles queries to retrieve tournament rules documentation as HTML.
+/// Handles queries to retrieve organization bylaws documentation as HTML.
 /// </summary>
 /// <param name="documentsService">Service for retrieving documents from configured sources.</param>
 internal sealed class GetBylawsQueryHandler(IDocumentsService documentsService)
@@ -13,11 +13,11 @@ internal sealed class GetBylawsQueryHandler(IDocumentsService documentsService)
     private readonly IDocumentsService _documentsService = documentsService;
 
     /// <summary>
-    /// Retrieves the tournament rules document as HTML.
+    /// Retrieves the organization bylaws document as HTML.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The tournament rules as an HTML string.</returns>
+    /// <returns>The organization bylaws as an HTML string.</returns>
     public async Task<string> HandleAsync(
         GetBylawsQuery request,
         CancellationToken cancellationToken)
