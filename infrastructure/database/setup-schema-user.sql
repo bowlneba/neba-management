@@ -48,6 +48,10 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA :schema_name TO :username;
 ALTER DEFAULT PRIVILEGES IN SCHEMA :schema_name GRANT EXECUTE ON FUNCTIONS TO :username;
 
 -- Verify permissions
+-- Note: The verification queries below use psql variable substitution (:'variable')
+-- which substitutes the variable as a quoted string literal. This is safe for
+-- WHERE clauses in SELECT statements. For DDL/DML operations, we use EXECUTE format()
+-- with %I/%L for proper identifier/literal quoting (see DO block above).
 \echo 'Schema and user setup completed successfully'
 \echo 'Verifying permissions...'
 SELECT
