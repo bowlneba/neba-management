@@ -20,12 +20,12 @@ GRANT USAGE ON SCHEMA website TO "neba-web";
 GRANT CREATE ON SCHEMA website TO "neba-web";
 
 -- Grant privileges on existing objects in the schema (if any)
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA website TO "neba-web";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA website TO "neba-web";
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA website TO "neba-web";
 
 -- Make future objects created by the primary DB owner (`neba`) available to `neba-web`
 -- Note: the Docker Postgres container initializes objects as the POSTGRES_USER (neba)
-ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website GRANT ALL ON TABLES TO "neba-web";
+ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "neba-web";
 ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website GRANT USAGE ON SEQUENCES TO "neba-web";
 
 COMMIT;
