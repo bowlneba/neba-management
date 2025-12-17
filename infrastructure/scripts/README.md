@@ -1,27 +1,148 @@
 # Deployment Scripts
 
-This directory contains scripts for setting up and managing the NEBA Management infrastructure.
+This directory contains scripts for setting up and managing the NEBA Management database infrastructure.
 
-## PostgreSQL Managed Identity Setup
+## Database Schema User Setup
 
-These scripts complete the Azure AD authentication setup for managed identity database access.
+The database uses schema-specific users with limited permissions for security and isolation. Each application component (website, API, reports, etc.) has its own database user with access only to their specific schema.
 
 ### How It Works
 
-The infrastructure (Bicep) enables Azure AD authentication on the PostgreSQL server, but additional steps are required to actually use it:
+The infrastructure deployment automatically creates schema-specific users during the GitHub Actions workflow:
 
 1. **Bicep deployment** (automated):
-   - Enables Azure AD authentication capability on the server
-   - Enables password authentication (for backward compatibility)
+   - Creates PostgreSQL server with admin credentials
+   - Enables SSL/TLS for secure connections
+   - Sets up Key Vault for secret storage
 
-2. **Post-deployment setup** (these scripts):
-   - Sets an Azure AD admin user
-   - Creates a database role for the API's managed identity
-   - Grants appropriate permissions
+2. **Post-deployment setup** (automated in GitHub Actions):
+   - Creates connection strings in Key Vault
+   - Runs SQL scripts to create schema-specific users
+   - Grants appropriate CRUD permissions per schema
 
-**Without running these scripts**, your environment will use password-based authentication (which works immediately after Bicep deployment).
+### Setup Script
 
-**After running these scripts**, your environment can use managed identity authentication (more secure, no password needed).
+Located in `infrastructure/database/setup-schema-user.sql`:
+
+- Creates schema if it doesn't exist
+- Creates PostgreSQL user with password
+- Grants CRUD permissions (SELECT, INSERT, UPDATE, DELETE)
+- Sets up permissions for sequences and functions
+- Configures default privileges for future objects
+
+**This script is idempotent** - it can be run multiple times safely without errors.
+
+### Current Users
+
+- **Admin User** (`DATABASE_ADMIN_USERNAME`): Full database access for migrations
+- **Website User** (`DATABASE_WEB_USERNAME`): CRUD access to "website" schema only
+
+### Connection Strings in Key Vault
+
+After deployment, the following connection strings are available:
+
+- `ConnectionStrings--website-migrations`: Admin credentials for running EF Core migrations
+- `ConnectionStrings--website`: Website user credentials (limited to "website" schema)
+
+### Adding New Schema-Specific Users
+
+To add a new user for a different component (e.g., reports):
+
+1. Add environment variables in GitHub Actions:
+   - `DATABASE_<PURPOSE>_USERNAME` (e.g., `DATABASE_REPORTS_USERNAME`)
+   - `DATABASE_<PURPOSE>_PASSWORD` (secret)
+
+2. Update `.github/workflows/deploy_infrastructure.yml`:
+   - Add the new secret to the workflow inputs
+   - Create the connection string in Key Vault
+   - Run the setup script with the new schema name
+
+Example for a reports user:
+
+```yaml
+- name: Setup Reports Database User
+  env:
+    DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
+    DATABASE_REPORTS_PASSWORD: ${{ secrets.DATABASE_REPORTS_PASSWORD }}
+  run: |
+    PGPASSWORD="$DATABASE_ADMIN_PASSWORD" psql \
+      "host=$DB_SERVER port=5432 dbname=$DB_NAME user=$ADMIN_USERNAME sslmode=require" \
+      -v schema_name='reports' \
+      -v username="${{ vars.DATABASE_REPORTS_USERNAME }}" \
+      -v password="$DATABASE_REPORTS_PASSWORD" \
+      -f infrastructure/database/setup-schema-user.sql
+```
+
+### Security Considerations
+
+1. **Least Privilege**: Each user has access only to their specific schema
+2. **No Superuser Access**: Application users cannot modify database structure
+3. **Password Authentication**: Traditional PostgreSQL username/password authentication
+4. **SSL/TLS Required**: All connections must use encrypted connections
+5. **Key Vault Storage**: Credentials stored securely in Azure Key Vault
+
+### Local Development
+
+For local development with Docker:
+
+```bash
+# The docker-compose setup creates users automatically
+docker compose up -d
+
+# Connection string for local development
+Host=localhost;Port=19630;Database=bowlneba;Username=website_user;Password=website_pass;
+```
+
+See `src/backend/docker-compose.yaml` for local user configuration.
+
+### Manual Setup (if needed)
+
+To manually create a schema user:
+
+```bash
+# Set variables
+export DB_SERVER="your-server.postgres.database.azure.com"
+export DB_NAME="bowlneba"
+export ADMIN_USER="adminuser"
+export ADMIN_PASSWORD="your-admin-password"
+export SCHEMA_NAME="reports"
+export NEW_USERNAME="reports_user"
+export NEW_PASSWORD="secure-password"
+
+# Run the setup script
+PGPASSWORD="$ADMIN_PASSWORD" psql \
+  "host=$DB_SERVER port=5432 dbname=$DB_NAME user=$ADMIN_USER sslmode=require" \
+  -v schema_name="$SCHEMA_NAME" \
+  -v username="$NEW_USERNAME" \
+  -v password="$NEW_PASSWORD" \
+  -f infrastructure/database/setup-schema-user.sql
+```
+
+### Troubleshooting
+
+#### Error: "psql: command not found"
+
+Install PostgreSQL client tools:
+- macOS: `brew install postgresql@17`
+- Ubuntu/Debian: `apt-get install postgresql-client`
+- Windows: Download from [postgresql.org](https://www.postgresql.org/download/)
+
+#### Error: "Access denied"
+
+- Verify you're using the correct admin credentials
+- Ensure the PostgreSQL server firewall allows your IP
+- Check that SSL mode is set to "require"
+
+#### Error: "Role already exists"
+
+This is normal if re-running the script. The script updates the password but doesn't fail.
+
+### Related Documentation
+
+- [Database Setup Scripts](../database/README.md)
+- [Infrastructure Deployment](.github/workflows/deploy_infrastructure.yml)
+- [Connection String Configuration](../README.md#database-connections)
+
 
 ### Prerequisites
 

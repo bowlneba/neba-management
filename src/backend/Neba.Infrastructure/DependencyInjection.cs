@@ -99,7 +99,8 @@ public static class InfrastructureDependencyInjection
                     options =>
                     {
                         options
-                            .AddSecret("ConnectionStrings--bowlneba")
+                            .AddSecret("ConnectionStrings--website-migrations")
+                            .AddSecret("ConnectionStrings--website")
                             .AddSecret("GoogleDocs--Credentials--ClientEmail")
                             .AddSecret("GoogleDocs--Credentials--ClientId")
                             .AddSecret("GoogleDocs--Credentials--PrivateKeyId")

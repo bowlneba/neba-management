@@ -103,7 +103,7 @@ jobs:
 
       - name: Apply Website database migrations
         env:
-          ConnectionStrings__bowlneba: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
+          ConnectionStrings__website-migrations: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
         run: |
           echo "🔄 Applying Website database migrations..."
           dotnet ef database update \

@@ -208,7 +208,6 @@ jobs:
           WEB_URL=$(cat deployment-output.json | jq -r '.properties.outputs.webAppServiceUrl.value')
           DB_SERVER=$(cat deployment-output.json | jq -r '.properties.outputs.postgreSqlServerFqdn.value')
           DB_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.postgreSqlDatabaseName.value')
-          API_PRINCIPAL_ID=$(cat deployment-output.json | jq -r '.properties.outputs.apiAppServicePrincipalId.value')
           KV_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.keyVaultName.value')
           KV_URI=$(cat deployment-output.json | jq -r '.properties.outputs.keyVaultUri.value')
 
@@ -216,7 +215,6 @@ jobs:
           echo "web-url=$WEB_URL" >> $GITHUB_OUTPUT
           echo "db-server=$DB_SERVER" >> $GITHUB_OUTPUT
           echo "db-name=$DB_NAME" >> $GITHUB_OUTPUT
-          echo "api-principal-id=$API_PRINCIPAL_ID" >> $GITHUB_OUTPUT
           echo "kv-name=$KV_NAME" >> $GITHUB_OUTPUT
           echo "kv-uri=$KV_URI" >> $GITHUB_OUTPUT
 
