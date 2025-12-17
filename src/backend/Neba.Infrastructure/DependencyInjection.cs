@@ -42,19 +42,19 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddDatabase(IConfigurationManager config)
         {
-            string bowlnebaConnectionString = config.GetConnectionString("bowlneba")
-                ?? throw new InvalidOperationException("Database connection string 'bowlneba' is not configured.");
+            string websiteConnectionString = config.GetConnectionString("website")
+                ?? throw new InvalidOperationException("Database connection string 'website' is not configured.");
 
             services.AddDbContext<WebsiteDbContext>(options => options
-                .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
+                .UseNpgsql(websiteConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
-            string[] bowlnebaTags = ["database", "bowlneba"];
+            string[] websiteTags = ["database", "website"];
 
             services.AddHealthChecks()
                 .AddDbContextCheck<WebsiteDbContext>(
-                    name: "Bowlneba Database",
-                    tags: bowlnebaTags);
+                    name: "Website Database",
+                    tags: websiteTags);
 
             services.AddRepositories();
 
