@@ -32,7 +32,7 @@ public static class BowlerFactory
     {
 #pragma warning disable CA5394 // Random is acceptable here - used only for test data generation, not security
         Random random = seed.HasValue ? new Random(seed.Value) : new Random();
-        
+
         // Generate unique IDs using larger ranges and timestamp to avoid collisions across tests
         long baseTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var shuffledWebsiteIds = Enumerable.Range(1, 100000)
