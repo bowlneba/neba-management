@@ -21,7 +21,7 @@ public sealed class NebaWebApplicationFactory
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("ConnectionStrings:bowlneba", _database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:website", _database.ConnectionString);
 
         // Mock GoogleDocs credentials for integration tests
         builder.UseSetting("GoogleDocs:Credentials:PrivateKey", "mock-private-key-for-testing");

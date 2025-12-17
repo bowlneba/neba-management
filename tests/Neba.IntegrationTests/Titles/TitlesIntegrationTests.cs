@@ -9,6 +9,7 @@ using Neba.Tests;
 
 namespace Neba.IntegrationTests.Titles;
 
+[Collection(nameof(TitlesIntegrationTestCollection))]
 public sealed class TitlesIntegrationTests
     : ApiTestsBase
 {
