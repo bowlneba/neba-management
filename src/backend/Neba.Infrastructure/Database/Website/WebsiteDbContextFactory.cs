@@ -40,9 +40,6 @@ internal sealed class WebsiteDbContextFactory
             }
         }
 
-        // Fallback to hardcoded local connection string
-        connectionString ??= "Host=localhost;Port=19630;Database=bowlneba;Username=neba;Password=neba";
-
         DbContextOptionsBuilder<WebsiteDbContext> optionsBuilder = new();
 
         optionsBuilder.UseNpgsql(

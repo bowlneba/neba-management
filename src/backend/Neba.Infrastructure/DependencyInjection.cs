@@ -45,30 +45,8 @@ public static class InfrastructureDependencyInjection
             string bowlnebaConnectionString = config.GetConnectionString("bowlneba")
                 ?? throw new InvalidOperationException("Database connection string 'bowlneba' is not configured.");
 
-            // Configure Azure AD authentication for PostgreSQL if not in development
-            NpgsqlDataSourceBuilder dataSourceBuilder = new(bowlnebaConnectionString);
-
-            // Only use Azure AD authentication in production (when Key Vault is enabled)
-            bool useKeyVault = config.GetValue("KeyVault:Enabled", false);
-            if (useKeyVault)
-            {
-                dataSourceBuilder.UsePeriodicPasswordProvider(
-                    async (_, ct) =>
-                    {
-                        DefaultAzureCredential credential = new();
-                        AccessToken token = await credential.GetTokenAsync(
-                            new TokenRequestContext(["https://ossrdbms-aad.database.windows.net/.default"]),
-                            ct);
-                        return token.Token;
-                    },
-                    TimeSpan.FromMinutes(55), // Refresh token every 55 minutes (tokens expire after 60)
-                    TimeSpan.Zero); // Refresh immediately on first use
-            }
-
-            NpgsqlDataSource dataSource = dataSourceBuilder.Build();
-
             services.AddDbContext<WebsiteDbContext>(options => options
-                .UseNpgsql(dataSource, npgsqlOptions =>
+                .UseNpgsql(bowlnebaConnectionString, npgsqlOptions =>
                     npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
 
             string[] bowlnebaTags = ["database", "bowlneba"];
