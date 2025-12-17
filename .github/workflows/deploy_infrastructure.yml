@@ -373,6 +373,11 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Database Users:** Website user configured with CRUD access to 'website' schema" >> $GITHUB_STEP_SUMMARY
           else
+            echo "❌ Failed to create website user with permissions on 'website' schema" >&2
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Database Users:** Failed to configure website user. See logs for details." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v5
         with:
