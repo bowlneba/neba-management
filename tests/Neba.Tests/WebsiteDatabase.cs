@@ -15,7 +15,7 @@ public sealed class WebsiteDatabase
 {
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
         .WithImage("postgres:17.6")
-        .WithDatabase("bowlneba")
+        .WithDatabase("website")
         .WithUsername("neba")
         .WithPassword("neba")
         .Build();

@@ -36,12 +36,9 @@ internal sealed class WebsiteDbContextFactory
                     .AddJsonFile("appsettings.Development.json", optional: true)
                     .Build();
 
-                connectionString = configuration.GetConnectionString("bowlneba");
+                connectionString = configuration.GetConnectionString("website-migrations");
             }
         }
-
-        // Fallback to hardcoded local connection string
-        connectionString ??= "Host=localhost;Port=19630;Database=bowlneba;Username=neba;Password=neba";
 
         DbContextOptionsBuilder<WebsiteDbContext> optionsBuilder = new();
 

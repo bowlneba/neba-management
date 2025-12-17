@@ -10,6 +10,7 @@ using Neba.Tests;
 
 namespace Neba.IntegrationTests.Awards;
 
+[Collection(nameof(Infrastructure.Collections.AwardsIntegrationTest))]
 public sealed class AwardsIntegrationTests
     : ApiTestsBase
 {

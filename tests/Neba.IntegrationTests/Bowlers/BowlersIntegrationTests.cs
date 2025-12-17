@@ -8,6 +8,7 @@ using Neba.Tests;
 
 namespace Neba.IntegrationTests.Bowlers;
 
+[Collection(nameof(Infrastructure.Collections.BowlersIntegrationTests))]
 public sealed class BowlersIntegrationTests
     : ApiTestsBase
 {

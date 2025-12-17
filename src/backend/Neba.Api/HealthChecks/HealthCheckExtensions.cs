@@ -3,6 +3,7 @@ namespace Neba.Api.HealthChecks;
 internal static class HealthCheckExtensions
 {
 #pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable S1144 // Remove unused constructor of private type.
     extension(WebApplication app)
     {
         /// <summary>
@@ -19,9 +20,9 @@ internal static class HealthCheckExtensions
                 ResponseWriter = HealthCheckResponseWriter.Default()
             });
 
-            app.MapHealthChecks("/health/bowlneba", new()
+            app.MapHealthChecks("/health/website", new()
             {
-                Predicate = check => check.Tags.Contains("bowlneba"),
+                Predicate = check => check.Tags.Contains("website"),
                 ResponseWriter = HealthCheckResponseWriter.Default()
             });
 
