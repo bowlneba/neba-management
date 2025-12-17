@@ -19,6 +19,9 @@ on:
       DATABASE_ADMIN_PASSWORD:
         description: 'PostgreSQL database admin password'
         required: true
+      DATABASE_WEB_PASSWORD:
+        description: 'PostgreSQL website user password'
+        required: true
       GOOGLE_DOCS_CLIENT_EMAIL:
         description: 'Google Docs service account client email'
         required: false
@@ -228,29 +231,10 @@ jobs:
           echo "**Database Name:** $DB_NAME" >> $GITHUB_STEP_SUMMARY
           echo "**Key Vault:** $KV_NAME" >> $GITHUB_STEP_SUMMARY
 
-      - name: Configure Database Access for API Managed Identity
-        run: |
-          echo "🔐 Configuring Managed Identity access to PostgreSQL..."
-
-          # Get the API App Service Managed Identity principal ID
-          API_PRINCIPAL_ID="${{ steps.outputs.outputs.api-principal-id }}"
-          API_APP_NAME="${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }}"
-
-          # Add API's Managed Identity as Azure AD admin for PostgreSQL
-          az postgres flexible-server ad-admin create \
-            --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
-            --server-name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} \
-            --display-name "$API_APP_NAME" \
-            --object-id "$API_PRINCIPAL_ID" \
-            --type ServicePrincipal || echo "AD admin already exists or failed to create"
-
-          echo "✅ Managed Identity configured for database access"
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Database Access:** API Managed Identity configured" >> $GITHUB_STEP_SUMMARY
-
       - name: Add Secrets to Key Vault
         env:
           DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
+          DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
           GOOGLE_DOCS_CLIENT_EMAIL: ${{ secrets.GOOGLE_DOCS_CLIENT_EMAIL }}
           GOOGLE_DOCS_CLIENT_ID: ${{ secrets.GOOGLE_DOCS_CLIENT_ID }}
           GOOGLE_DOCS_CLIENT_X509_CERT_URL: ${{ secrets.GOOGLE_DOCS_CLIENT_X509_CERT_URL }}
@@ -263,10 +247,12 @@ jobs:
           KV_NAME=$(az keyvault list --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} --query '[0].name' -o tsv)
           DB_SERVER=$(az postgres flexible-server show --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} --name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} --query 'fullyQualifiedDomainName' -o tsv)
           DB_NAME="${{ vars.DATABASE_NAME }}"
+          WEB_USERNAME="${{ vars.DATABASE_WEB_USERNAME }}"
 
           echo "Key Vault: $KV_NAME"
           echo "Database Server: $DB_SERVER"
           echo "Database Name: $DB_NAME"
+          echo "Website Username: $WEB_USERNAME"
 
           # Get the currently authenticated service principal's object ID
           # For OIDC, az account show returns the client/app ID, we need to get the object ID
@@ -292,15 +278,26 @@ jobs:
           echo "Waiting for RBAC permissions to propagate..."
           sleep 30
 
-          # Create connection string for API (Managed Identity - passwordless)
-          CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.AZURE_API_APP_SERVICE_NAME }}-${{ vars.AZURE_LOCATION }};SslMode=Require"
+          # Create connection string for migrations (using admin credentials)
+          MIGRATION_CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=${{ vars.DATABASE_ADMIN_USERNAME }};Password=$DATABASE_ADMIN_PASSWORD;SslMode=Require"
 
-          # Add connection string to Key Vault
-          echo "Adding ConnectionStrings--bowlneba..."
+          # Add migration connection string to Key Vault
+          echo "Adding ConnectionStrings--website-migrations..."
           az keyvault secret set \
             --vault-name "$KV_NAME" \
-            --name "ConnectionStrings--bowlneba" \
-            --value "$CONNECTION_STRING" \
+            --name "ConnectionStrings--website-migrations" \
+            --value "$MIGRATION_CONNECTION_STRING" \
+            --output none
+
+          # Create connection string for website (using website user credentials)
+          WEBSITE_CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=$WEB_USERNAME;Password=$DATABASE_WEB_PASSWORD;SslMode=Require"
+
+          # Add website connection string to Key Vault
+          echo "Adding ConnectionStrings--website..."
+          az keyvault secret set \
+            --vault-name "$KV_NAME" \
+            --name "ConnectionStrings--website" \
+            --value "$WEBSITE_CONNECTION_STRING" \
             --output none
 
           # Add database admin password to Key Vault for manual access
@@ -349,8 +346,35 @@ jobs:
 
           echo "✅ Secrets added to Key Vault"
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Key Vault Secrets:** ConnectionStrings--bowlneba, DatabaseAdminPassword, GoogleDocs credentials" >> $GITHUB_STEP_SUMMARY
+          echo "**Key Vault Secrets:** ConnectionStrings--website-migrations, ConnectionStrings--website, DatabaseAdminPassword, GoogleDocs credentials" >> $GITHUB_STEP_SUMMARY
 
+      - name: Setup Database Schema Users
+        env:
+          DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
+          DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
+        run: |
+          echo "👤 Setting up database schema-specific users..."
+
+          DB_SERVER=$(az postgres flexible-server show --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} --name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} --query 'fullyQualifiedDomainName' -o tsv)
+          DB_NAME="${{ vars.DATABASE_NAME }}"
+          ADMIN_USERNAME="${{ vars.DATABASE_ADMIN_USERNAME }}"
+          WEB_USERNAME="${{ vars.DATABASE_WEB_USERNAME }}"
+
+          echo "Setting up website user with access to 'website' schema..."
+
+          # Run the schema user setup script
+          PGPASSWORD="$DATABASE_ADMIN_PASSWORD" psql \
+            "host=$DB_SERVER port=5432 dbname=$DB_NAME user=$ADMIN_USERNAME sslmode=require" \
+            -v schema_name='website' \
+            -v username="$WEB_USERNAME" \
+            -v password="$DATABASE_WEB_PASSWORD" \
+            -f infrastructure/database/setup-schema-user.sql
+
+          if [ $? -eq 0 ]; then
+            echo "✅ Website user created successfully with permissions on 'website' schema"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Database Users:** Website user configured with CRUD access to 'website' schema" >> $GITHUB_STEP_SUMMARY
+          else
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v5
         with:

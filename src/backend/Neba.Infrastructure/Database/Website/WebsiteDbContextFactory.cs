@@ -36,7 +36,7 @@ internal sealed class WebsiteDbContextFactory
                     .AddJsonFile("appsettings.Development.json", optional: true)
                     .Build();
 
-                connectionString = configuration.GetConnectionString("website");
+                connectionString = configuration.GetConnectionString("website-migrations");
             }
         }
 
