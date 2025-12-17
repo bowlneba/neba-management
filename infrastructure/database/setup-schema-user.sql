@@ -10,7 +10,11 @@
 --   :password - The password for the user
 
 -- Create schema if it doesn't exist
-CREATE SCHEMA IF NOT EXISTS :schema_name;
+DO $$
+BEGIN
+    EXECUTE format('CREATE SCHEMA IF NOT EXISTS %I', :'schema_name');
+END
+$$;
 
 -- Create user if it doesn't exist
 DO $$
