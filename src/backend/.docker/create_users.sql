@@ -15,9 +15,8 @@ BEGIN
 END
 $$;
 
--- Ensure the user has usage and create privileges on the schema
+-- Ensure the user has usage privileges on the schema
 GRANT USAGE ON SCHEMA website TO "neba-web";
-GRANT CREATE ON SCHEMA website TO "neba-web";
 
 -- Grant privileges on existing objects in the schema (if any)
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA website TO "neba-web";
