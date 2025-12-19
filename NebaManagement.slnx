@@ -9,6 +9,7 @@
   <Folder Name="/Backend/Website/">
     <Project Path="Neba.Website.Endpoints/Neba.Website.Endpoints.csproj" />
     <Project Path="src/backend/Neba.Website.Application/Neba.Website.Application.csproj" />
+    <Project Path="src/backend/Neba.Website.Contracts/Neba.Website.Contracts.csproj" />
     <Project Path="src/backend/Neba.Website.Domain/Neba.Website.Domain.csproj" />
     <Project Path="src/backend/Neba.Website.Infrastructure/Neba.Website.Infrastructure.csproj" />
   </Folder>
