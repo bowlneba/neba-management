@@ -1,8 +1,9 @@
+using Neba.Domain;
 using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 
-namespace Neba.Domain.Bowlers;
+namespace Neba.Website.Domain.Bowlers;
 
 /// <summary>
 /// A bowler represents a NEBA member who participates in tournaments. The Bowler entity serves as the

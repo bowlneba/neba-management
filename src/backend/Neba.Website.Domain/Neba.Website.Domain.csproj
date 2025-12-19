@@ -2,9 +2,14 @@
 
   <PropertyGroup>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\Neba.Domain\Neba.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.IntegrationTests" />
+    <InternalsVisibleTo Include="Neba.Tests" />
   </ItemGroup>
 
 </Project>

@@ -3,10 +3,10 @@ using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;
 using Neba.Domain.Awards;
-using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests.Website;
+using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Awards;
 

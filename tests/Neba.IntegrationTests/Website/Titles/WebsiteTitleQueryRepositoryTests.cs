@@ -4,6 +4,7 @@ using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests.Website;
+using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Titles;
 

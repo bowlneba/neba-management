@@ -6,6 +6,7 @@ using Neba.Domain.Identifiers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
 

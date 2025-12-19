@@ -6,6 +6,7 @@ using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Titles;
+using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Titles;
 

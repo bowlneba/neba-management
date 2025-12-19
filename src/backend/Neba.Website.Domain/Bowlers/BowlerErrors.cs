@@ -1,7 +1,7 @@
 using ErrorOr;
 using Neba.Domain.Identifiers;
 
-namespace Neba.Domain.Bowlers;
+namespace Neba.Website.Domain.Bowlers;
 
 /// <summary>
 /// Provides domain errors related to bowlers.
