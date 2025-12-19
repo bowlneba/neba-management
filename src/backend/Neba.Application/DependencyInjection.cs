@@ -1,6 +1,6 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;

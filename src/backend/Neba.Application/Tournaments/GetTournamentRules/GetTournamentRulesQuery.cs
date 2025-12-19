@@ -1,5 +1,5 @@
 
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 
 namespace Neba.Application.Tournaments.GetTournamentRules;
 

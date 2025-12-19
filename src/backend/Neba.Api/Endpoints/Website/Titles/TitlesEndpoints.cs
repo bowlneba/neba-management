@@ -1,5 +1,5 @@
 using Neba.Api.Endpoints.Website.Bowlers;
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;

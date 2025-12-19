@@ -1,4 +1,4 @@
-namespace Neba.Application.Abstractions.Messaging;
+namespace Neba.Application.Messaging;
 
 /// <summary>
 /// Represents a query that returns a response of type <typeparamref name="TResponse"/>.

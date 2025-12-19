@@ -1,4 +1,4 @@
-namespace Neba.Application.Abstractions.Messaging;
+namespace Neba.Application.Messaging;
 
 /// <summary>
 /// Defines a handler for processing a query and returning a response.

@@ -1,4 +1,4 @@
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 using Neba.Application.Documents.Bylaws;
 
 namespace Neba.Api.Endpoints.Website.Documents;

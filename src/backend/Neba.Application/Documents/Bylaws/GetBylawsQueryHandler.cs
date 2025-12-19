@@ -1,4 +1,4 @@
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 
 namespace Neba.Application.Documents.Bylaws;
 

@@ -1,9 +1,8 @@
 using ErrorOr;
-using Neba.Application.Abstractions.Messaging;
+using Neba.Application.Messaging;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
-using Neba.Domain.Bowlers;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Api.Endpoints.Website.Bowlers;
