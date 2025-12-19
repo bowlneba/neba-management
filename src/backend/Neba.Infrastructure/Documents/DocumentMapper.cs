@@ -548,7 +548,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
             "UPPER_ALPHA" => " type='A'",                // A, B, C
             "ROMAN" => " type='i'",                      // i, ii, iii
             "UPPER_ROMAN" => " type='I'",                // I, II, III
-            _ => ""
+            var _ => ""
         };
     }
 
@@ -625,17 +625,19 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
                 "HEADING_2" => "h2",
                 "HEADING_3" => "h3",
                 "HEADING_4" => "h4",
-                _ => "p"
+                var _ => "p"
             };
 
             // Add ID to headings so they can be linked to
-            if (style.NamedStyleType.StartsWith(HeadingPrefix, StringComparison.Ordinal))
+            if (!style.NamedStyleType.StartsWith(HeadingPrefix, StringComparison.Ordinal))
             {
-                string headingText = GetPlainTextFromParagraph(paragraph).Trim();
-                if (_headingIds.TryGetValue(headingText, out string? existingId))
-                {
-                    id = existingId;
-                }
+                return (tag, id);
+            }
+
+            string headingText = GetPlainTextFromParagraph(paragraph).Trim();
+            if (_headingIds.TryGetValue(headingText, out string? existingId))
+            {
+                id = existingId;
             }
         }
 
