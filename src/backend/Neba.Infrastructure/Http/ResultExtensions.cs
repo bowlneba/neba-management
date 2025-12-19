@@ -1,11 +1,44 @@
 using ErrorOr;
+using Microsoft.AspNetCore.Http;
 
-namespace Neba.Api;
+namespace Neba.Infrastructure.Http;
 
-internal static class ResultExtensions
+#pragma warning disable S2325 // Extension methods should be static
+#pragma warning disable S1144 // Remove unused constructor of private type.
+
+/// <summary>
+/// Extension methods for converting <see cref="ErrorOr{T}"/> results to ASP.NET Core HTTP responses.
+/// </summary>
+public static class ResultExtensions
 {
     extension<T>(ErrorOr<T> result)
     {
+        /// <summary>
+        /// Converts an <see cref="ErrorOr{T}"/> error result to an ASP.NET Core problem details response.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IResult"/> containing RFC 7807 problem details with appropriate HTTP status code.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when attempting to create a problem result from a successful result.
+        /// </exception>
+        /// <remarks>
+        /// This method maps <see cref="ErrorType"/> to appropriate HTTP status codes:
+        /// <list type="bullet">
+        /// <item><description>Validation errors → 400 Bad Request</description></item>
+        /// <item><description>Unauthorized errors → 401 Unauthorized</description></item>
+        /// <item><description>Forbidden errors → 403 Forbidden</description></item>
+        /// <item><description>NotFound errors → 404 Not Found</description></item>
+        /// <item><description>Conflict errors → 409 Conflict</description></item>
+        /// <item><description>Failure/Unexpected errors → 500 Internal Server Error</description></item>
+        /// </list>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// ErrorOr&lt;User&gt; result = await userService.GetUserAsync(id);
+        /// return result.IsError ? result.Problem() : Results.Ok(result.Value);
+        /// </code>
+        /// </example>
         public IResult Problem()
         {
             if (!result.IsError)
@@ -52,8 +85,7 @@ internal static class ResultExtensions
             static int GetStatusCode(Error error)
                 => error.Type switch
                 {
-                    ErrorType.Failure => StatusCodes.Status500InternalServerError,
-                    ErrorType.Unexpected => StatusCodes.Status500InternalServerError,
+                    ErrorType.Failure or ErrorType.Unexpected => StatusCodes.Status500InternalServerError,
                     ErrorType.Validation => StatusCodes.Status400BadRequest,
                     ErrorType.Conflict => StatusCodes.Status409Conflict,
                     ErrorType.NotFound => StatusCodes.Status404NotFound,

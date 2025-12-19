@@ -7,6 +7,7 @@ using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Application.Messaging;
 using Neba.Contracts;
 using Neba.Domain.Identifiers;
+using Neba.Infrastructure.Http;
 using Neba.Website.Contracts.Bowlers;
 
 namespace Neba.Website.Endpoints.Bowlers;
@@ -46,7 +47,7 @@ internal static class BowlersTitlesEndpoints
                         return result.Problem();
                     }
 
-                    BowlerTitlesResponse response = result.Value!.ToResponseModel();
+                    BowlerTitlesResponse response = result.Value.ToResponseModel();
 
                     return TypedResults.Ok(ApiResponse.Create(response));
                 })
