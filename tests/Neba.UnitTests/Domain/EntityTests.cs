@@ -1,6 +1,6 @@
-using Neba.Domain.Abstractions;
+using Neba.Domain;
 
-namespace Neba.UnitTests.Abstractions;
+namespace Neba.UnitTests.Domain;
 
 public sealed class EntityTests
 {

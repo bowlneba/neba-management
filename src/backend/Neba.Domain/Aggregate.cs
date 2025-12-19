@@ -1,4 +1,4 @@
-namespace Neba.Domain.Abstractions;
+namespace Neba.Domain;
 
 /// <summary>
 /// Represents a domain aggregate root, which is an entity that serves as the entry point for a cluster of related objects in Domain-Driven Design (DDD).

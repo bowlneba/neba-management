@@ -1,5 +1,5 @@
 
-namespace Neba.Domain.Abstractions;
+namespace Neba.Domain;
 
 /// <summary>
 /// Represents a domain entity with a unique identity, as defined by Domain-Driven Design (DDD) principles.

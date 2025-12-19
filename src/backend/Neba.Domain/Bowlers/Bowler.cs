@@ -1,4 +1,3 @@
-using Neba.Domain.Abstractions;
 using Neba.Domain.Awards;
 using Neba.Domain.Tournaments;
 
@@ -9,7 +8,7 @@ namespace Neba.Domain.Bowlers;
 /// aggregate root for tracking competitive achievements, including titles won and season awards earned.
 /// </summary>
 /// <remarks>
-/// Current implementation is minimal, focused on website display needs. Additional properties for member
+/// The current implementation is minimal, focused on website display needs. Additional properties for member
 /// management (date of birth, gender, membership information, contact details) will be added when migrating
 /// from the organization management software.
 /// </remarks>
