@@ -1,10 +1,6 @@
 <Solution>
   <Folder Name="/Backend/">
     <File Path="src\backend\docker-compose.yaml" />
-    <Project Path="src/backend/Neba.Api/Neba.Api.csproj" />
-    <Project Path="src/backend/Neba.Application/Neba.Application.csproj" />
-    <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
-    <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Backend/Website/">
     <Project Path="Neba.Website.Endpoints/Neba.Website.Endpoints.csproj" />
@@ -26,6 +22,10 @@
     <Project Path="src/frontend/Neba.Web.Server/Neba.Web.Server.csproj" />
   </Folder>
   <Folder Name="/Shared Kernel/">
+    <Project Path="src/backend/Neba.Api/Neba.Api.csproj" />
+    <Project Path="src/backend/Neba.Application/Neba.Application.csproj" />
+    <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
+    <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
     <Project Path="src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj" />
   </Folder>
   <Folder Name="/Tests/">

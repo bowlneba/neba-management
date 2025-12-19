@@ -5,7 +5,6 @@ using Neba.Contracts;
 using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
-using Neba.Tests;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Awards;
 

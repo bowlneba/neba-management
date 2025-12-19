@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 using ErrorOr;
 
-namespace Neba.Domain.Bowlers;
+namespace Neba.Domain;
 
 /// <summary>
 /// A value object representing a bowler's complete name information, including legal name components
@@ -113,7 +113,7 @@ public sealed record Name
     /// Uses nickname if available, otherwise uses first name.
     /// Use case: Public website display, tournament results, awards lists.
     /// </summary>
-    /// <returns>The display name string (e.g., "Dave Smith" if nickname exists, otherwise "David Smith").</returns>
+    /// <returns>The display name string (e.g., "Dave Smith" if a nickname exists, otherwise "David Smith").</returns>
     public string ToDisplayName()
         => !string.IsNullOrWhiteSpace(Nickname)
             ? $"{Nickname} {LastName}"

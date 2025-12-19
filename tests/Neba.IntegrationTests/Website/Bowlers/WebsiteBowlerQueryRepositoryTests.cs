@@ -6,7 +6,6 @@ using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
-using Neba.Tests;
 using Neba.Tests.Website;
 
 namespace Neba.IntegrationTests.Website.Bowlers;

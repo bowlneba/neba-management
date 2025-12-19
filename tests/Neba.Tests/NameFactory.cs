@@ -1,4 +1,4 @@
-using Neba.Domain.Bowlers;
+using Neba.Domain;
 
 namespace Neba.Tests;
 

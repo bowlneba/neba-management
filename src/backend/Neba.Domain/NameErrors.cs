@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Neba.Domain.Bowlers;
+namespace Neba.Domain;
 
 internal static class NameErrors
 {

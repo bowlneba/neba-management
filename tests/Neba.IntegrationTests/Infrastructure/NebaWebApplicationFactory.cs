@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Neba.Api;
-using Neba.Tests;
 using Neba.Tests.Website;
 
 namespace Neba.IntegrationTests.Infrastructure;

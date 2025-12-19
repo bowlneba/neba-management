@@ -6,7 +6,6 @@ using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
-using Neba.Tests;
 using Neba.Tests.Website;
 
 namespace Neba.IntegrationTests.Website.Awards;

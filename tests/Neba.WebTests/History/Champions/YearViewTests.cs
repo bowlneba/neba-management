@@ -1,7 +1,6 @@
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Neba.Tests;
 using Neba.Tests.Website;
 using Neba.Web.Server.History.Champions;
 

@@ -1,5 +1,5 @@
 using ErrorOr;
-using Neba.Domain.Bowlers;
+using Neba.Domain;
 using Neba.Tests;
 
 namespace Neba.UnitTests.Domain;
@@ -43,11 +43,11 @@ public sealed class NameTests
     public void Create_ShouldReturnMultipleErrors_WhenFirstAndLastNameAreInvalid()
     {
         // Arrange
-        const string FirstName = " ";
-        const string LastName = "";
+        const string firstName = " ";
+        const string lastName = "";
 
         // Act
-        ErrorOr<Name> result = Name.Create(FirstName, LastName);
+        ErrorOr<Name> result = Name.Create(firstName, lastName);
 
         // Assert
         result.IsError.ShouldBeTrue();

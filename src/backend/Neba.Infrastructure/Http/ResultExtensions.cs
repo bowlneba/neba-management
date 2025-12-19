@@ -5,6 +5,7 @@ namespace Neba.Infrastructure.Http;
 
 #pragma warning disable S2325 // Extension methods should be static
 #pragma warning disable S1144 // Remove unused constructor of private type.
+#pragma warning disable CA1034 // Do not nest type
 
 /// <summary>
 /// Extension methods for converting <see cref="ErrorOr{T}"/> results to ASP.NET Core HTTP responses.
