@@ -1,5 +1,5 @@
 
-namespace Neba.Application.Bowlers.BowlerTitles;
+namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Provides query operations for retrieving bowler-related data from the data store.

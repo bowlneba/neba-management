@@ -1,7 +1,7 @@
 ﻿using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Application.Awards.HighAverage;
 using Neba.Application.Awards.HighBlock;
-using Neba.Application.Bowlers.BowlerTitles;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;

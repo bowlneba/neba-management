@@ -1,4 +1,4 @@
-﻿using Neba.Application.Bowlers.BowlerTitles;
+﻿using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;
 

@@ -1,6 +1,6 @@
 using Neba.Domain.Identifiers;
 
-namespace Neba.Application.Bowlers.BowlerTitles;
+namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Represents a summary of a bowler's titles, including the bowler's ID, name, and total title count.

@@ -1,7 +1,7 @@
-using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Identifiers;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 
-namespace Neba.Application.Bowlers;
+namespace Neba.Website.Application.Bowlers;
 
 /// <summary>
 /// Provides query operations for retrieving bowler-related data from the data store.

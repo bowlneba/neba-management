@@ -2,7 +2,7 @@ using ErrorOr;
 using Neba.Application.Messaging;
 using Neba.Domain.Identifiers;
 
-namespace Neba.Application.Bowlers.BowlerTitles;
+namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Query to retrieve the detailed titles for a specific bowler.

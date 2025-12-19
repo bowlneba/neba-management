@@ -3,11 +3,11 @@ using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Application.Messaging;
 using Neba.Contracts;
 using Neba.Domain.Identifiers;
 using Neba.Infrastructure.Http;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Contracts.Bowlers;
 
 namespace Neba.Website.Endpoints.Bowlers;

@@ -1,6 +1,6 @@
 using Neba.Application.Messaging;
 
-namespace Neba.Application.Bowlers.BowlerTitles;
+namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Query to retrieve a summary of titles for all bowlers.

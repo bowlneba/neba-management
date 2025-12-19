@@ -2,7 +2,7 @@
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 
-namespace Neba.Application.Bowlers.BowlerTitles;
+namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
 /// <summary>
 /// Data transfer object representing a single title won by a bowler, including bowler and tournament details.

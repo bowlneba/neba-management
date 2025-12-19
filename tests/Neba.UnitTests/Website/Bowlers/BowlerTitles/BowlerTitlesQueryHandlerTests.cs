@@ -1,8 +1,8 @@
 using ErrorOr;
-using Neba.Application.Bowlers;
-using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Identifiers;
 using Neba.Tests.Website;
+using Neba.Website.Application.Bowlers;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 

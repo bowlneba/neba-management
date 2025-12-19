@@ -1,5 +1,5 @@
-﻿using Neba.Application.Bowlers.BowlerTitles;
-using Neba.Tests.Website;
+﻿using Neba.Tests.Website;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 
