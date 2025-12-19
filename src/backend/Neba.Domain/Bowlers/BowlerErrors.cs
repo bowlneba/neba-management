@@ -1,4 +1,5 @@
 using ErrorOr;
+using Neba.Domain.Identifiers;
 
 namespace Neba.Domain.Bowlers;
 

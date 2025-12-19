@@ -2,6 +2,7 @@ using System.Globalization;
 using Bogus;
 using Neba.Application.Awards.HighAverage;
 using Neba.Domain.Awards;
+using Neba.Domain.Identifiers;
 
 namespace Neba.Tests;
 

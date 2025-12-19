@@ -1,5 +1,6 @@
 using Neba.Domain.Awards;
 using Neba.Domain.Bowlers;
+using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 
 namespace Neba.Tests;

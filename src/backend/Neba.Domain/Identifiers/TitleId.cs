@@ -1,6 +1,6 @@
 using StronglyTypedIds;
 
-namespace Neba.Domain.Tournaments;
+namespace Neba.Domain.Identifiers;
 
 /// <summary>
 /// Represents a unique identifier for a Title entity.

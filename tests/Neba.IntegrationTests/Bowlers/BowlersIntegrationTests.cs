@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Neba.Contracts;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Domain.Bowlers;
+using Neba.Domain.Identifiers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests;
 

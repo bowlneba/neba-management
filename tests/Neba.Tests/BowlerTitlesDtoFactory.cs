@@ -2,6 +2,7 @@ using Bogus;
 using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Application.Tournaments;
 using Neba.Domain.Bowlers;
+using Neba.Domain.Identifiers;
 
 namespace Neba.Tests;
 
