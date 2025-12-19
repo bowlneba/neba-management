@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba;
+namespace Neba.Domain;
 
 /// <summary>
 /// Represents a month of the year.

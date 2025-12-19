@@ -1,4 +1,4 @@
-﻿using Neba.Domain.Bowlers;
+﻿using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 

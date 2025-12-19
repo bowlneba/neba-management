@@ -1,3 +1,5 @@
+using Neba.Domain.Identifiers;
+
 namespace Neba.Contracts.Website.Titles;
 
 /// <summary>
@@ -20,7 +22,7 @@ public sealed record TitleSummaryResponse
     /// Gets the unique identifier of the bowler.
     /// </summary>
     /// <example>"01JEFQH5Y9KM7N3P5Q6R8S9T0W"</example>
-    public required Ulid BowlerId { get; init; }
+    public required BowlerId BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full display name of the bowler.

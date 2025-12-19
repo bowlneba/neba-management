@@ -43,7 +43,7 @@ public sealed class BowlersIntegrationTests
             await response.Content.ReadFromJsonAsync<ApiResponse<BowlerTitlesResponse>>();
 
         result.ShouldNotBeNull();
-        result.Data.BowlerId.ShouldBe(seedBowlerId.Value);
+        result.Data.BowlerId.ShouldBe(seedBowlerId);
     }
 
     [Fact]

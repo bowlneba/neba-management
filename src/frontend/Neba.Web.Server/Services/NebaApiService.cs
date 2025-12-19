@@ -5,6 +5,7 @@ using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
+using Neba.Domain.Identifiers;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Refit;
@@ -25,7 +26,7 @@ internal class NebaApiService(INebaApi nebaApi)
         return result.Value.Items.Select(dto => dto.ToViewModel()).ToList().AsReadOnly();
     }
 
-    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Ulid bowlerId)
+    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(BowlerId bowlerId)
     {
         ErrorOr<Contracts.ApiResponse<BowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 

@@ -192,9 +192,8 @@ public sealed class AwardsIntegrationTests
         result.ShouldNotBeNull();
 
         // Verify each award has all required fields populated
-        foreach (var award in result.Items)
+        foreach (HighBlockAwardResponse award in result.Items)
         {
-            award.Id.ShouldNotBe(Ulid.Empty);
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();
             award.Score.ShouldBeGreaterThan(0);
@@ -286,9 +285,8 @@ public sealed class AwardsIntegrationTests
         result.ShouldNotBeNull();
 
         // Verify each award has all required fields populated
-        foreach (var award in result.Items)
+        foreach (HighAverageAwardResponse award in result.Items)
         {
-            award.Id.ShouldNotBe(Ulid.Empty);
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();
             award.Average.ShouldBeGreaterThan(0);

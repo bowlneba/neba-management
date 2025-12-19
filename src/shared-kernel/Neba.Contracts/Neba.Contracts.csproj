@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\backend\Neba.Domain\Neba.Domain.csproj" />
       <ProjectReference Include="..\Neba.SharedKernel\Neba.SharedKernel.csproj" />
     </ItemGroup>
 

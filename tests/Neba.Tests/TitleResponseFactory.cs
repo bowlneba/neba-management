@@ -1,5 +1,7 @@
 using Bogus;
 using Neba.Contracts.Website.Titles;
+using Neba.Domain;
+using Neba.Domain.Identifiers;
 
 namespace Neba.Tests;
 
@@ -9,14 +11,14 @@ public static class TitleResponseFactory
     public const string TournamentType = "Singles";
 
     public static TitleResponse Create(
-        Ulid? bowlerId = null,
+        BowlerId? bowlerId = null,
         string? bowlerName = null,
         Month? tournamentMonth = null,
         int? tournamentYear = null,
         string? tournamentType = null)
         => new()
         {
-            BowlerId = bowlerId ?? Ulid.NewUlid(),
+            BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? BowlerName,
             TournamentMonth = tournamentMonth ?? Month.January,
             TournamentYear = tournamentYear ?? 2023,
@@ -31,7 +33,7 @@ public static class TitleResponseFactory
         int? seed = null)
     {
         Faker<TitleResponse> faker = new Faker<TitleResponse>()
-            .RuleFor(b => b.BowlerId, _ => Ulid.NewUlid())
+            .RuleFor(b => b.BowlerId, _ => BowlerId.New())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
             .RuleFor(b => b.TournamentMonth, f => f.PickRandom(Month.List.ToArray()))
             .RuleFor(b => b.TournamentYear, f => f.Random.Int(2000, 2025))

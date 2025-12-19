@@ -1,5 +1,6 @@
 using Bogus;
 using Neba.Contracts.Website.Bowlers;
+using Neba.Domain;
 
 namespace Neba.Tests;
 

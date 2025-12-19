@@ -1,4 +1,4 @@
-@using Neba.Web.Server.Components
+@using Neba.Domain.Identifiers
 @using Neba.Web.Server.Notifications
 @inject NebaApiService NebaApiService
 
@@ -139,20 +139,20 @@
     /// <summary>
     /// Controls whether the modal is visible.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public bool IsOpen { get; set; }
 
     /// <summary>
     /// Callback invoked when the modal should be closed.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public EventCallback OnClose { get; set; }
 
     /// <summary>
     /// The unique identifier for the bowler.
     /// </summary>
     [Parameter]
-    public Ulid? BowlerId { get; set; }
+    public BowlerId? BowlerId { get; set; }
 
     /// <summary>
     /// The full name of the bowler.
@@ -194,7 +194,9 @@
 
         try
         {
-            var result = await NebaApiService.GetBowlerTitlesAsync(BowlerId!.Value);
+            var bowlerId = BowlerId ?? throw new InvalidOperationException("BowlerId is required to load titles.");
+
+            var result = await NebaApiService.GetBowlerTitlesAsync(bowlerId);
 
             if (result.IsError)
             {

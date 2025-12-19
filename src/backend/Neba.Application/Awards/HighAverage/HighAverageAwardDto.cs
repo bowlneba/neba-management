@@ -1,4 +1,3 @@
-using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Application.Awards.HighAverage;

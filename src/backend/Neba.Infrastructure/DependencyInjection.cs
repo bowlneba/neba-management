@@ -1,4 +1,3 @@
-using Azure.Core;
 using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -10,7 +9,6 @@ using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Infrastructure.Database.Website;
 using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Infrastructure.Documents;
-using Npgsql;
 
 namespace Neba.Infrastructure;
 

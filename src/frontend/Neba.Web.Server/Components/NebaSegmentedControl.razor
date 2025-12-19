@@ -24,19 +24,19 @@
     /// <summary>
     /// The list of options to display in the segmented control.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public List<SegmentedControlOption> Options { get; set; } = new();
 
     /// <summary>
     /// The currently selected option value.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public string SelectedValue { get; set; } = string.Empty;
 
     /// <summary>
     /// Callback invoked when the selected value changes.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public EventCallback<string> OnValueChanged { get; set; }
 
     /// <summary>

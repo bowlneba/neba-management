@@ -1,4 +1,3 @@
-@using Neba.Web.Server.Services
 @implements IAsyncDisposable
 @inject IJSRuntime Js
 
@@ -42,7 +41,7 @@
     /// <summary>
     /// The notification payload containing severity, message, and metadata.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public NotificationPayload Payload { get; set; } = null!;
 
     /// <summary>

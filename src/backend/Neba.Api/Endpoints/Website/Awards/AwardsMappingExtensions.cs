@@ -31,7 +31,7 @@ internal static class AwardsMappingExtensions
         {
             return new BowlerTitlesResponse
             {
-                BowlerId = dto.BowlerId.Value,
+                BowlerId = dto.BowlerId,
                 BowlerName = dto.BowlerName,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
@@ -49,7 +49,7 @@ internal static class AwardsMappingExtensions
         {
             return new TitleSummaryResponse
             {
-                BowlerId = dto.BowlerId.Value,
+                BowlerId = dto.BowlerId,
                 BowlerName = dto.BowlerName,
                 TitleCount = dto.TitleCount
             };
@@ -62,7 +62,6 @@ internal static class AwardsMappingExtensions
         {
             return new HighBlockAwardResponse
             {
-                Id = dto.Id.Value,
                 BowlerName = dto.BowlerName,
                 Season = dto.Season,
                 Score = dto.Score
@@ -76,7 +75,6 @@ internal static class AwardsMappingExtensions
         {
             return new HighAverageAwardResponse
             {
-                Id = dto.Id.Value,
                 BowlerName = dto.BowlerName,
                 Season = dto.Season,
                 Average = dto.Average,

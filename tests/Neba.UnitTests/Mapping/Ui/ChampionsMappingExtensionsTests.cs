@@ -1,6 +1,6 @@
 using Neba.Contracts.Website.Bowlers;
 using Neba.Contracts.Website.Titles;
-using Neba.Domain.Bowlers;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Tests;
 using Neba.Web.Server.History.Champions;
@@ -14,13 +14,13 @@ public sealed class ChampionsMappingExtensionsTests
     {
         // Arrange
         BowlerId bowlerId = BowlerId.New();
-        TitleSummaryResponse response = TitleSummaryResponseFactory.Create(bowlerId: bowlerId.Value, titleCount: 0);
+        TitleSummaryResponse response = TitleSummaryResponseFactory.Create(bowlerId: bowlerId, titleCount: 0);
 
         // Act
         BowlerTitleSummaryViewModel viewModel = response.ToViewModel();
 
         // Assert
-        viewModel.BowlerId.ShouldBe(bowlerId.Value);
+        viewModel.BowlerId.ShouldBe(bowlerId);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public sealed class ChampionsMappingExtensionsTests
     public void BowlerTitlesResponse_ToViewModel_ShouldMapTitlesInOrder()
     {
         // Arrange
-        IReadOnlyCollection<Contracts.Website.Bowlers.BowlerTitleResponse> titles = new[]
+        IReadOnlyCollection<BowlerTitleResponse> titles = new[]
         {
             BowlerTitleResponseFactory.Create(month: Month.March, year: 2020),
             BowlerTitleResponseFactory.Create(month: Month.January, year: 2019),

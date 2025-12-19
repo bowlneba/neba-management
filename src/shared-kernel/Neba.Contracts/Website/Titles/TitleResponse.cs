@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Ardalis.SmartEnum.SystemTextJson;
+using Neba.Domain;
+using Neba.Domain.Identifiers;
 
 namespace Neba.Contracts.Website.Titles;
 
@@ -27,7 +29,7 @@ public sealed record TitleResponse
     /// Gets the unique identifier of the bowler who won the title.
     /// </summary>
     /// <example>"01JEFQH5Y9KM7N3P5Q6R8S9T0W"</example>
-    public required Ulid BowlerId { get; init; }
+    public required BowlerId BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full display name of the bowler who won the title.

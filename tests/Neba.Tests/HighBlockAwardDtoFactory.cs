@@ -1,7 +1,6 @@
 using System.Globalization;
 using Bogus;
 using Neba.Application.Awards.HighBlock;
-using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Tests;

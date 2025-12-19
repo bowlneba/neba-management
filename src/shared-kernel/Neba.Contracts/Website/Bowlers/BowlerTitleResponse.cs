@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Ardalis.SmartEnum.SystemTextJson;
+using Neba.Domain;
 
 namespace Neba.Contracts.Website.Bowlers;
 

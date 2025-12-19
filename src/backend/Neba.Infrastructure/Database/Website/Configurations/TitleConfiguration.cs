@@ -1,7 +1,7 @@
 using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Neba.Domain.Bowlers;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 
