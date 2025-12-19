@@ -30,4 +30,8 @@
     <InternalsVisibleTo Include="Neba.IntegrationTests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="Database\.editorconfig" />
+  </ItemGroup>
+
 </Project>

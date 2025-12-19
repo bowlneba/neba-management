@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Neba.Application.Tournaments;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
-using Neba.Infrastructure.Database.Website;
-using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
+using Neba.Website.Application.Tournaments;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.Tournaments;
+using Neba.Website.Infrastructure.Database;
+using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
 

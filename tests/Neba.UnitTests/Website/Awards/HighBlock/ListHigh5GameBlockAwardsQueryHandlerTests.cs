@@ -1,6 +1,6 @@
-using Neba.Application.Awards;
-using Neba.Application.Awards.HighBlock;
 using Neba.Tests.Website;
+using Neba.Website.Application.Awards;
+using Neba.Website.Application.Awards.HighBlock;
 
 namespace Neba.UnitTests.Website.Awards.HighBlock;
 

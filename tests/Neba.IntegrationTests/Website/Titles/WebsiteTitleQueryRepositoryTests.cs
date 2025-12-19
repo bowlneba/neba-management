@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Neba.Domain.Bowlers;
-using Neba.Infrastructure.Database.Website;
-using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Infrastructure.Database;
+using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Titles;
 

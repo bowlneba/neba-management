@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
-using Neba.Domain.Bowlers;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Titles;

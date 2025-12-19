@@ -28,7 +28,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
 
     public string ConvertToHtml(Document document)
     {
-        // First pass: collect all headings to build anchor map
+        // First pass: collect all headings to build an anchor map
         BuildHeadingMap(document);
 
         var html = new StringBuilder();

@@ -2,10 +2,10 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
-using Neba.Domain.Awards;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Awards;
+using Neba.Website.Domain.Awards;
 using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Awards;

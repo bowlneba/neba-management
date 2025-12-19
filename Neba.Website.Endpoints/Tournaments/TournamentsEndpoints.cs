@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Neba.Application.Messaging;
-using Neba.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.GetTournamentRules;
 
 namespace Neba.Website.Endpoints.Tournaments;
 

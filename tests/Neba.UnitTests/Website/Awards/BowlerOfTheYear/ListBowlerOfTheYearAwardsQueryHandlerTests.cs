@@ -1,6 +1,6 @@
-using Neba.Application.Awards;
-using Neba.Application.Awards.BowlerOfTheYear;
 using Neba.Tests.Website;
+using Neba.Website.Application.Awards;
+using Neba.Website.Application.Awards.BowlerOfTheYear;
 
 namespace Neba.UnitTests.Website.Awards.BowlerOfTheYear;
 

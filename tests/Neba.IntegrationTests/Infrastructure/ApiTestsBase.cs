@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Infrastructure.Database.Website;
 using Neba.Tests.Website;
+using Neba.Website.Infrastructure.Database;
 
 namespace Neba.IntegrationTests.Infrastructure;
 

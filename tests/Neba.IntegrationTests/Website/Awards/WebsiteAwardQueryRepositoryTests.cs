@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Neba.Application.Awards.BowlerOfTheYear;
-using Neba.Application.Awards.HighAverage;
-using Neba.Application.Awards.HighBlock;
-using Neba.Domain.Awards;
-using Neba.Infrastructure.Database.Website;
-using Neba.Infrastructure.Database.Website.Repositories;
 using Neba.Tests.Website;
+using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HighAverage;
+using Neba.Website.Application.Awards.HighBlock;
+using Neba.Website.Domain.Awards;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Infrastructure.Database;
+using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Awards;
 

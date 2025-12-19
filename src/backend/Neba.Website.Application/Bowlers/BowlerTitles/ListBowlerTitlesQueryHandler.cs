@@ -2,6 +2,8 @@
 
 namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
+#pragma warning disable CA1812 // Internal class is instantiated through dependency injection
+
 internal sealed class ListBowlerTitlesQueryHandler(IWebsiteTitleQueryRepository websiteTitleQueryRepository)
         : IQueryHandler<ListBowlerTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>
 {

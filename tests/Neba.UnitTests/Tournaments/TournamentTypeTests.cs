@@ -1,4 +1,4 @@
-using Neba.Domain.Tournaments;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.UnitTests.Tournaments;
 
@@ -8,7 +8,7 @@ public sealed class TournamentTypeTests
     public void TournamentType_ShouldHave14DifferentTournamentTypes()
     {
         // Arrange & Act
-        IReadOnlyCollection<TournamentType> tournamentTypes = Neba.Domain.Tournaments.TournamentType.List;
+        IReadOnlyCollection<TournamentType> tournamentTypes = TournamentType.List;
 
         // Assert
         tournamentTypes.Count.ShouldBe(14);

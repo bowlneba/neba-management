@@ -10,7 +10,7 @@ namespace Neba.Website.Endpoints;
 /// <summary>
 /// Provides extension point(s) to register the website's HTTP endpoint groups on an
 /// <see cref="IEndpointRouteBuilder"/>. This centralizes wiring of feature endpoint
-/// mappings (Bowlers, Titles, Awards, Tournaments and Documents) so they can be
+/// mappings (Bowlers, Titles, Awards, Tournaments, and Documents) so they can be
 /// registered with a single method call during application startup.
 /// </summary>
 public static class WebsiteEndpoints

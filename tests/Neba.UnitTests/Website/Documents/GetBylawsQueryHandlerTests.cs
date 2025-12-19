@@ -1,5 +1,5 @@
 using Neba.Application.Documents;
-using Neba.Application.Documents.Bylaws;
+using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents;
 

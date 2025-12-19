@@ -2,8 +2,8 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Neba.Application.Documents.Bylaws;
 using Neba.Application.Messaging;
+using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.Website.Endpoints.Documents;
 

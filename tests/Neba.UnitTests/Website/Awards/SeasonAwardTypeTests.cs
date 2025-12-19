@@ -1,4 +1,4 @@
-using Neba.Domain.Awards;
+using Neba.Website.Domain.Awards;
 
 namespace Neba.UnitTests.Website.Awards;
 

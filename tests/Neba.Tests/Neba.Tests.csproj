@@ -3,8 +3,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\Neba.Domain\Neba.Domain.csproj" />
     <ProjectReference Include="..\..\src\backend\Neba.Infrastructure\Neba.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\backend\Neba.Website.Application\Neba.Website.Application.csproj" />
     <ProjectReference Include="..\..\src\backend\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />
     <ProjectReference Include="..\..\src\backend\Neba.Website.Domain\Neba.Website.Domain.csproj" />
+    <ProjectReference Include="..\..\src\backend\Neba.Website.Infrastructure\Neba.Website.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\frontend\Neba.Web.Server\Neba.Web.Server.csproj" />
     <ProjectReference Include="..\..\src\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
   </ItemGroup>

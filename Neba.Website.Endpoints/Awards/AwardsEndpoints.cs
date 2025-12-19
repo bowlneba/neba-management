@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Neba.Application.Messaging;
-using Neba.Application.Awards.BowlerOfTheYear;
-using Neba.Application.Awards.HighAverage;
-using Neba.Application.Awards.HighBlock;
 using Neba.Contracts;
+using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HighAverage;
+using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Contracts.Awards;
 
 namespace Neba.Website.Endpoints.Awards;

@@ -1,7 +1,7 @@
 using Neba.Domain;
-using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
+using Neba.Website.Domain.Awards;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Domain.Bowlers;
 

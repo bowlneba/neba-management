@@ -11,5 +11,10 @@
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
     <ProjectReference Include="..\Neba.Website.Application\Neba.Website.Application.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.IntegrationTests" />
+    <InternalsVisibleTo Include="Neba.Tests" />
+  </ItemGroup>
 
 </Project>

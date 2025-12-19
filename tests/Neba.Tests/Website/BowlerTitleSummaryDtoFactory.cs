@@ -1,6 +1,6 @@
 using Bogus;
-using Neba.Application.Bowlers.BowlerTitles;
 using Neba.Domain.Identifiers;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.Tests.Website;
 

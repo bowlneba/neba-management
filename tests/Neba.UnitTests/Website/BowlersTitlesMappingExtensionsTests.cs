@@ -1,11 +1,11 @@
-using Neba.Application.Tournaments;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
+using Neba.Website.Application.Tournaments;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;
+using Neba.Website.Domain.Tournaments;
 using Neba.Website.Endpoints.Bowlers;
 
 namespace Neba.UnitTests.Website;

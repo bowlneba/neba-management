@@ -1,6 +1,6 @@
-using Neba.Application.Awards;
-using Neba.Application.Awards.HighAverage;
 using Neba.Tests.Website;
+using Neba.Website.Application.Awards;
+using Neba.Website.Application.Awards.HighAverage;
 
 namespace Neba.UnitTests.Website.Awards.HighAverage;
 
