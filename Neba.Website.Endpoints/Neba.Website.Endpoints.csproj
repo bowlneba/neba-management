@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\backend\Neba.Website.Infrastructure\Neba.Website.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

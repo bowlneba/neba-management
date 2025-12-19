@@ -6,6 +6,12 @@
     <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
     <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Backend/Website/">
+    <Project Path="Neba.Website.Endpoints/Neba.Website.Endpoints.csproj" />
+    <Project Path="src/backend/Neba.Website.Application/Neba.Website.Application.csproj" />
+    <Project Path="src/backend/Neba.Website.Domain/Neba.Website.Domain.csproj" />
+    <Project Path="src/backend/Neba.Website.Infrastructure/Neba.Website.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/Directory/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
