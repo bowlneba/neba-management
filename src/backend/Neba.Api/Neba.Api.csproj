@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Neba.Website.Endpoints\Neba.Website.Endpoints.csproj" />
     <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
   </ItemGroup>

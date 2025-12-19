@@ -1,8 +1,8 @@
 using Neba.Contracts;
-using Neba.Contracts.Website.Awards;
-using Neba.Contracts.Website.Bowlers;
-using Neba.Contracts.Website.Titles;
 using Neba.Domain.Identifiers;
+using Neba.Website.Contracts.Awards;
+using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.Titles;
 using Refit;
 
 namespace Neba.Web.Server.Services;

@@ -156,7 +156,7 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     public void ShouldHandleOverlayClickWhenCallbackProvided()
     {
         // Arrange
-        var clickedCount = 0;
+        int clickedCount = 0;
         IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
             .Add(p => p.DelayMs, 0) // No delay for testing
@@ -224,7 +224,7 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
     public void ShouldHandleMultipleOverlayClicks()
     {
         // Arrange
-        var clickedCount = 0;
+        int clickedCount = 0;
         IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
             .Add(p => p.IsVisible, true)
             .Add(p => p.DelayMs, 0) // No delay for testing

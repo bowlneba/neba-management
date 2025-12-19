@@ -2,9 +2,12 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Neba.Contracts;
-using Neba.Contracts.Website.Awards;
 using Neba.Tests;
+using Neba.Tests.Website;
+using Neba.Web.Server.Components;
+using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.Services;
+using Neba.Website.Contracts.Awards;
 
 namespace Neba.WebTests.History.Awards;
 
@@ -24,19 +27,19 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsAwards()
     {
         // Arrange - Set up successful API response
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", score: 1180),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2022", score: 1150)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -57,7 +60,7 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_DisplaysAwardsByYear()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", score: 1180),
@@ -65,12 +68,12 @@ public sealed class HighBlockTests : TestContextWrapper
             HighBlockAwardResponseFactory.Create(bowlerName: "Alice Brown", season: "2021", score: 1125)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -98,19 +101,19 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_TiedScores_DisplaysTieIndicator()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2023", score: 1180)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -129,12 +132,12 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_EmptyResponse_DisplaysNoDataMessage()
     {
         // Arrange
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = new List<HighBlockAwardResponse>()
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -156,7 +159,7 @@ public sealed class HighBlockTests : TestContextWrapper
             .ThrowsAsync(new InvalidOperationException("API Error"));
 
         // Act
-        var component = Render<Neba.Web.Server.History.Awards.HighBlock>();
+        IRenderedComponent<HighBlock> component = Render<Neba.Web.Server.History.Awards.HighBlock>();
 
         // Assert - Component should render without throwing even when API fails
         component.ShouldNotBeNull();
@@ -172,12 +175,12 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_ApiReturnsError_DisplaysErrorAlert()
     {
         // Arrange
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = new List<HighBlockAwardResponse>()
         };
 
-        using var response = ApiResponseFactory.CreateResponse(collectionResponse, System.Net.HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateResponse(collectionResponse, System.Net.HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -194,17 +197,17 @@ public sealed class HighBlockTests : TestContextWrapper
     public void Render_WithData_IncludesLoadingIndicator()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -217,7 +220,7 @@ public sealed class HighBlockTests : TestContextWrapper
         cut.ShouldNotBeNull();
 
         // Verify that the NebaLoadingIndicator component is present in the rendered output
-        var loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaLoadingIndicator>();
+        IRenderedComponent<NebaLoadingIndicator> loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaLoadingIndicator>();
         loadingIndicator.ShouldNotBeNull();
     }
 
@@ -225,19 +228,19 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_MultipleAwardsInSameSeason_HandlesTieCorrectly()
     {
         // Arrange - Three-way tie
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Senior", season: "2024", score: 1200)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -257,17 +260,17 @@ public sealed class HighBlockTests : TestContextWrapper
     public void Render_DisplaysDescriptiveText()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create()
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -286,17 +289,17 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_DisplaysCorrectTableHeaders()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -315,17 +318,17 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SingleBowler_NoTieIndicator()
     {
         // Arrange
-        var awards = new List<HighBlockAwardResponse>
+        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
         {
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
         };
 
-        var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
+        CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())

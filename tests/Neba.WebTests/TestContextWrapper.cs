@@ -1,4 +1,5 @@
 using Bunit;
+using TestContext = Bunit.TestContext;
 
 namespace Neba.WebTests;
 
@@ -10,7 +11,7 @@ public abstract class TestContextWrapper : IDisposable
 {
     private readonly Lazy<Bunit.TestContext> _testContext = new Lazy<Bunit.TestContext>(() =>
     {
-        var context = new Bunit.TestContext();
+        TestContext context = new Bunit.TestContext();
 
         // Setup JS interop to handle module imports
         context.JSInterop.Mode = JSRuntimeMode.Loose;

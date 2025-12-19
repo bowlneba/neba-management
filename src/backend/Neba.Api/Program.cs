@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Neba.Api.Endpoints.Website;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Application;
 using Neba.Infrastructure;
+using Neba.Website.Endpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

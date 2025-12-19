@@ -2,9 +2,12 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Neba.Contracts;
-using Neba.Contracts.Website.Awards;
 using Neba.Tests;
+using Neba.Tests.Website;
+using Neba.Web.Server.Components;
+using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.Services;
+using Neba.Website.Contracts.Awards;
 
 namespace Neba.WebTests.History.Awards;
 
@@ -24,19 +27,19 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsAwards()
     {
         // Arrange - Set up successful API response
-        var awards = new List<BowlerOfTheYearResponse>
+        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
         {
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
             BowlerOfTheYearResponseFactory.Create("Bob Johnson", "2023", "Open")
         };
 
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -57,7 +60,7 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_DisplaysAwardsByYear()
     {
         // Arrange
-        var awards = new List<BowlerOfTheYearResponse>
+        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
         {
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
@@ -65,12 +68,12 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
             BowlerOfTheYearResponseFactory.Create("Alice Brown", "2023", "Senior")
         };
 
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -95,12 +98,12 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_EmptyResponse_DisplaysNoDataMessage()
     {
         // Arrange
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = new List<BowlerOfTheYearResponse>()
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -122,7 +125,7 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
             .ThrowsAsync(new InvalidOperationException("API Error"));
 
         // Act
-        var component = Render<Neba.Web.Server.History.Awards.BowlerOfTheYear>();
+        IRenderedComponent<BowlerOfTheYear> component = Render<Neba.Web.Server.History.Awards.BowlerOfTheYear>();
 
         // Assert - Component should render without throwing even when API fails
         component.ShouldNotBeNull();
@@ -138,12 +141,12 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_ApiReturnsError_DisplaysErrorAlert()
     {
         // Arrange
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = new List<BowlerOfTheYearResponse>()
         };
 
-        using var response = ApiResponseFactory.CreateResponse(collectionResponse, System.Net.HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateResponse(collectionResponse, System.Net.HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -161,17 +164,17 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void Render_WithData_IncludesLoadingIndicator()
     {
         // Arrange
-        var awards = new List<BowlerOfTheYearResponse>
+        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
         {
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open")
         };
 
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -184,7 +187,7 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
         cut.ShouldNotBeNull();
 
         // Verify that the NebaLoadingIndicator component is present in the rendered output
-        var loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaLoadingIndicator>();
+        IRenderedComponent<NebaLoadingIndicator> loadingIndicator = cut.FindComponent<Neba.Web.Server.Components.NebaLoadingIndicator>();
         loadingIndicator.ShouldNotBeNull();
     }
 
@@ -192,7 +195,7 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_MultipleAwardsInSameSeason_GroupsCorrectly()
     {
         // Arrange
-        var awards = new List<BowlerOfTheYearResponse>
+        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
         {
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
@@ -201,12 +204,12 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
             BowlerOfTheYearResponseFactory.Create("Charlie Rookie", "2024", "Rookie")
         };
 
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -233,17 +236,17 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void Render_DisplaysDescriptiveText()
     {
         // Arrange
-        var awards = new List<BowlerOfTheYearResponse>
+        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
         {
             BowlerOfTheYearResponseFactory.Create()
         };
 
-        var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
+        CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
             Items = awards
         };
 
-        using var response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> response = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())

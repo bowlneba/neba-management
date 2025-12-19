@@ -4,7 +4,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\src\backend\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />
     <ProjectReference Include="..\src\backend\Neba.Website.Infrastructure\Neba.Website.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.UnitTests" />
   </ItemGroup>
 
 </Project>

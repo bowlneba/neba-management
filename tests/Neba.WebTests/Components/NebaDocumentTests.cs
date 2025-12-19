@@ -132,7 +132,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldRenderContentWhenNotLoadingAndContentHasValue()
     {
         // Arrange
-        var content = new MarkupString("<h1>Test Heading</h1><p>Test content</p>");
+        MarkupString content = new MarkupString("<h1>Test Heading</h1><p>Test content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -149,7 +149,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldNotRenderContentWhenIsLoadingIsTrue()
     {
         // Arrange
-        var content = new MarkupString("<p>Content</p>");
+        MarkupString content = new MarkupString("<p>Content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -176,7 +176,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldRenderTableOfContentsByDefault()
     {
         // Arrange
-        var content = new MarkupString("<h1>Heading</h1>");
+        MarkupString content = new MarkupString("<h1>Heading</h1>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -192,7 +192,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldNotRenderTableOfContentsWhenShowTableOfContentsIsFalse()
     {
         // Arrange
-        var content = new MarkupString("<h1>Heading</h1>");
+        MarkupString content = new MarkupString("<h1>Heading</h1>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -208,7 +208,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldRenderCustomTableOfContentsTitle()
     {
         // Arrange
-        var content = new MarkupString("<h1>Heading</h1>");
+        MarkupString content = new MarkupString("<h1>Heading</h1>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -225,7 +225,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldUseDefaultTableOfContentsTitle()
     {
         // Arrange
-        var content = new MarkupString("<h1>Heading</h1>");
+        MarkupString content = new MarkupString("<h1>Heading</h1>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -241,7 +241,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldGenerateUniqueContainerIdByDefault()
     {
         // Arrange
-        var content = new MarkupString("<p>Content</p>");
+        MarkupString content = new MarkupString("<p>Content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut1 = Render<NebaDocument>(parameters => parameters
@@ -262,7 +262,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldUseCustomDocumentId()
     {
         // Arrange
-        var content = new MarkupString("<p>Content</p>");
+        MarkupString content = new MarkupString("<p>Content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -278,7 +278,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldRenderDocumentContainerStructure()
     {
         // Arrange
-        var content = new MarkupString("<p>Content</p>");
+        MarkupString content = new MarkupString("<p>Content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -306,7 +306,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldInvokeOnErrorDismissCallback()
     {
         // Arrange
-        var dismissCalled = false;
+        bool dismissCalled = false;
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
             .Add(p => p.ErrorMessage, "Error message")
             .Add(p => p.OnErrorDismiss, EventCallback.Factory.Create(this, () => dismissCalled = true))
@@ -342,7 +342,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldApplyPanelClassToContent()
     {
         // Arrange
-        var content = new MarkupString("<p>Content</p>");
+        MarkupString content = new MarkupString("<p>Content</p>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -357,7 +357,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldSetCorrectHeadingLevelsDefault()
     {
         // Arrange
-        var content = new MarkupString("<h1>Heading 1</h1><h2>Heading 2</h2>");
+        MarkupString content = new MarkupString("<h1>Heading 1</h1><h2>Heading 2</h2>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
@@ -371,7 +371,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     public void ShouldAcceptCustomHeadingLevels()
     {
         // Arrange
-        var content = new MarkupString("<h1>H1</h1><h2>H2</h2><h3>H3</h3>");
+        MarkupString content = new MarkupString("<h1>H1</h1><h2>H2</h2><h3>H3</h3>");
 
         // Act
         IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
