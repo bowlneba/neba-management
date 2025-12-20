@@ -38,6 +38,10 @@ internal sealed class WebsiteDbContextFactory
 
                 connectionString = configuration.GetConnectionString("website-migrations");
             }
+            else
+            {
+                connectionString = "Host=localhost;Port=19630;Database=bowlneba;Username=neba;Password=neba;Include Error Detail=true";
+            }
         }
 
         DbContextOptionsBuilder<WebsiteDbContext> optionsBuilder = new();
