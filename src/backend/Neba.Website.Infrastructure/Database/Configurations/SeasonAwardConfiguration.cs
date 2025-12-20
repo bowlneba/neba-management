@@ -12,11 +12,15 @@ internal sealed class SeasonAwardConfiguration
     public void Configure(EntityTypeBuilder<SeasonAward> builder)
     {
         builder.ToTable("season_awards", WebsiteDbContext.DefaultSchema);
-        builder.HasKey(seasonAward => seasonAward.Id);
 
-        builder.HasIndex(seasonAward => seasonAward.Season);
+        builder.Property<int>("db_id")
+            .HasColumnName("db_id")
+            .ValueGeneratedOnAdd();
+
+        builder.HasKey("db_id");
 
         builder.Property(seasonAward => seasonAward.Id)
+            .HasColumnName("season_award_id")
             .ValueGeneratedNever()
             .HasMaxLength(26)
             .IsFixedLength()
@@ -31,8 +35,7 @@ internal sealed class SeasonAwardConfiguration
             .HasMaxLength(9) // e.g., "2023", "2024-2025"
             .IsRequired();
 
-        builder.Property(seasonAward => seasonAward.BowlerId)
-            .HasConversion<BowlerId.EfCoreValueConverter>()
+        builder.Property<int>(BowlerConfiguration.ShadowForeignKeyName)
             .IsRequired();
 
         builder.Property(seasonAward => seasonAward.BowlerOfTheYearCategory)
@@ -46,5 +49,11 @@ internal sealed class SeasonAwardConfiguration
         builder.Property(seasonAward => seasonAward.SeasonTotalGames);
 
         builder.Property(seasonAward => seasonAward.Tournaments);
+
+
+        builder.HasIndex(seasonAward => seasonAward.Id)
+            .IsUnique();
+
+        builder.HasIndex(seasonAward => seasonAward.Season);
     }
 }

@@ -49,7 +49,6 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
             .Select(award => new
             {
                 award.Id,
-                award.BowlerId,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 award.Season,
                 award.BowlerOfTheYearCategory
@@ -70,7 +69,6 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
             var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
 
             dto.Id.ShouldBe(expectedAward.Id);
-            dto.BowlerId.ShouldBe(expectedAward.BowlerId);
             dto.BowlerName.ShouldBe(expectedAward.BowlerName);
             dto.Season.ShouldBe(expectedAward.Season);
             dto.Category.ShouldBe(expectedAward.BowlerOfTheYearCategory);

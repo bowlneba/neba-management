@@ -72,7 +72,7 @@ public static class BowlerFactory
                     Name = NameFactory.Bogus(),
                     WebsiteId = websiteId,
                     ApplicationId = applicationId,
-                    Titles = TitleFactory.Bogus(bowlerId, f.Random.Int(0, 10), seed),
+                    Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
                     SeasonAwards = SeasonAwardFactory
                         .BogusBowlerOfTheYear(bowlerId, f.Random.Int(0, 5), seed)
                         .Union(SeasonAwardFactory.BogusHighBlockAward(bowlerId, f.Random.Int(0, 5), seed))

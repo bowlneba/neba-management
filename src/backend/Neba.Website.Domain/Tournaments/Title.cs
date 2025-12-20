@@ -16,11 +16,6 @@ namespace Neba.Website.Domain.Tournaments;
 public sealed class Title : Entity<TitleId>
 {
     /// <summary>
-    /// Gets the unique identifier of the bowler who won the title.
-    /// </summary>
-    public BowlerId BowlerId { get; init; }
-
-    /// <summary>
     /// Gets the bowler entity who won the title. Used internally for navigation.
     /// </summary>
     internal Bowler Bowler { get; init; } = null!;

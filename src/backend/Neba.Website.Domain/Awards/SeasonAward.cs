@@ -41,11 +41,6 @@ public sealed class SeasonAward
     public required string Season { get; init; }
 
     /// <summary>
-    /// The unique identifier of the bowler receiving the award.
-    /// </summary>
-    public required BowlerId BowlerId { get; init; }
-
-    /// <summary>
     /// The bowler entity associated with the award. Internal use only.
     /// </summary>
     internal Bowler Bowler { get; } = null!;
@@ -70,14 +65,14 @@ public sealed class SeasonAward
 
     /// <summary>
     /// Total games bowled in stat-eligible tournaments during the season (for HighAverage awards).
-    /// Provides context for comparison between high average winners.
+    /// Provides context for comparison between high-average winners.
     /// Null for other award types.
     /// </summary>
     public int? SeasonTotalGames { get; init; }
 
     /// <summary>
     /// Number of tournaments participated in during the season (for HighAverage awards).
-    /// Provides context for comparison and potential tie-breaking.
+    /// Provides context for comparison and potential tiebreaking.
     /// Null for other award types.
     /// </summary>
     public int? Tournaments { get; init; }

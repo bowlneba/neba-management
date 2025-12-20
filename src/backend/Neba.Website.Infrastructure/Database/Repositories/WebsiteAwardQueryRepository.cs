@@ -19,7 +19,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             .Select(award => new BowlerOfTheYearAwardDto
             {
                 Id = award.Id,
-                BowlerId = award.BowlerId,
+                BowlerId = award.Bowler.Id,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
                 Category = award.BowlerOfTheYearCategory!

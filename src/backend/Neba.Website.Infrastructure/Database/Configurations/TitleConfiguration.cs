@@ -13,21 +13,28 @@ internal sealed class TitleConfiguration
     public void Configure(EntityTypeBuilder<Title> builder)
     {
         builder.ToTable("titles", WebsiteDbContext.DefaultSchema);
-        builder.HasKey(title => title.Id);
+
+        builder.Property<int>("db_id")
+            .HasColumnName("db_id")
+            .ValueGeneratedOnAdd();
+
+        builder.HasKey("db_id");
 
         builder.HasIndex(title => new { title.Year, title.Month });
 
         builder
             .Property(title => title.Id)
+            .HasColumnName("title_id")
             .ValueGeneratedNever()
             .HasMaxLength(26)
             .IsFixedLength()
             .HasConversion<TitleId.EfCoreValueConverter>();
 
-        builder
-            .Property(title => title.BowlerId)
-            .IsRequired()
-            .HasConversion<BowlerId.EfCoreValueConverter>();
+        builder.HasIndex(title => title.Id)
+            .IsUnique();
+
+        builder.Property<int>(BowlerConfiguration.ShadowForeignKeyName)
+            .IsRequired();
 
         builder
             .Property(title => title.TournamentType)
