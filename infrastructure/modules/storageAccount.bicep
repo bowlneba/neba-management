@@ -28,6 +28,10 @@ param allowSharedKeyAccess bool = true
 @description('Enable blob public access')
 param allowBlobPublicAccess bool = false
 
+@description('Default network action for the storage account (Allow or Deny)')
+@allowed(['Allow', 'Deny'])
+param networkDefaultAction string = 'Allow'
+
 @description('Tags to apply to the resource')
 param tags object = {}
 
@@ -48,7 +52,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     allowBlobPublicAccess: allowBlobPublicAccess
     networkAcls: {
       bypass: 'AzureServices'
-      defaultAction: 'Allow'
+      defaultAction: networkDefaultAction
     }
     encryption: {
       keySource: 'Microsoft.Storage'
