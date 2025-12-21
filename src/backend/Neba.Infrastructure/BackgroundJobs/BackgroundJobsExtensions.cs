@@ -28,6 +28,11 @@ internal static class BackgroundJobsExtensions
                 return settings;
             });
 
+            services.AddHealthChecks()
+                .AddHangfire(options => options.MinimumAvailableServers = 1,
+                name: "Background Jobs",
+                tags: ["infrastructure", "background-jobs"]);
+
             services.AddHangfireInfrastructure(config);
 
             services.AddScoped<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
