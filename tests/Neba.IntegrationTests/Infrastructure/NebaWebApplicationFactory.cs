@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neba.Api;
 using Neba.Tests.Website;
@@ -35,6 +38,13 @@ public sealed class NebaWebApplicationFactory
         {
             logging.ClearProviders();
             logging.SetMinimumLevel(LogLevel.Warning);
+        });
+
+        // Disable Hangfire background job server in tests to avoid shutdown timeouts
+        builder.ConfigureServices(services =>
+        {
+            // Remove Hangfire hosted service to prevent background processing during tests
+            services.RemoveAll(typeof(IHostedService));
         });
     }
 }
