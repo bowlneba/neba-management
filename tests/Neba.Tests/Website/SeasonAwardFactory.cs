@@ -32,8 +32,7 @@ public static class SeasonAwardFactory
             .RuleFor(boy => boy.Id, _ => SeasonAwardId.New())
             .RuleFor(boy => boy.AwardType, _ => SeasonAwardType.BowlerOfTheYear)
             .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(boy => boy.BowlerOfTheYearCategory, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()))
-            .RuleFor(boy => boy.Bowler, _ => BowlerFactory.Create(id: bowlerId));
+            .RuleFor(boy => boy.BowlerOfTheYearCategory, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()));
 
         if (seed.HasValue)
         {
@@ -55,7 +54,6 @@ public static class SeasonAwardFactory
             .RuleFor(award => award.Id, _ => SeasonAwardId.New())
             .RuleFor(award => award.AwardType, _ => SeasonAwardType.High5GameBlock)
             .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Bowler, _ => BowlerFactory.Create(id: bowlerId))
             .RuleFor(award => award.HighBlockScore, f => f.Random.Int(1200, 1400));
 
         if (seed.HasValue)
@@ -89,7 +87,6 @@ public static class SeasonAwardFactory
             .RuleFor(award => award.Id, _ => SeasonAwardId.New())
             .RuleFor(award => award.AwardType, _ => SeasonAwardType.HighAverage)
             .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Bowler, _ => BowlerFactory.Create(id: bowlerId))
             .RuleFor(award => award.Average, f => f.Random.Int(180, 240))
             .RuleFor(award => award.SeasonTotalGames, f => f.Random.Int(90, 120))
             .RuleFor(award => award.Tournaments, f => f.Random.Int(8, 12));
