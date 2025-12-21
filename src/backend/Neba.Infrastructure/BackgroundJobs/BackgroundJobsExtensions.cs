@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.BackgroundJobs;
 
 namespace Neba.Infrastructure.BackgroundJobs;
 
@@ -28,6 +29,8 @@ internal static class BackgroundJobsExtensions
             });
 
             services.AddHangfireInfrastructure(config);
+
+            services.AddScoped<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
 
             return services;
         }
