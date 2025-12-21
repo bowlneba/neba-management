@@ -81,7 +81,10 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log modularMonolith --oneline)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log modularMonolith --oneline --max-count=20)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..modularMonolith --oneline)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...modularMonolith --stat)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...modularMonolith --stat)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management status --short)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline -1)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff --name-only HEAD~1..HEAD)"
     ],
     "deny": [],
     "ask": []

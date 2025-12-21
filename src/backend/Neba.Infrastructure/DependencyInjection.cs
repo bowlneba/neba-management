@@ -67,6 +67,8 @@ public static class InfrastructureDependencyInjection
                         options
                             .AddSecret("ConnectionStrings--website-migrations")
                             .AddSecret("ConnectionStrings--website")
+                            .AddSecret("ConnectionStrings--hangfire")
+                            .AddSecret("ConnectionStrings--azure-storage")
                             .AddSecret("GoogleDocs--Credentials--ClientEmail")
                             .AddSecret("GoogleDocs--Credentials--ClientId")
                             .AddSecret("GoogleDocs--Credentials--PrivateKeyId")
