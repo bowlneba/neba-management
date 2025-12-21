@@ -27,9 +27,9 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.Property<int>("db_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("db_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("db_id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("db_id"));
 
                     b.Property<decimal?>("Average")
                         .HasPrecision(5, 2)
@@ -52,7 +52,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(26)
                         .HasColumnType("character(26)")
-                        .HasColumnName("season_award_id")
+                        .HasColumnName("domain_id")
                         .IsFixedLength();
 
                     b.Property<string>("Season")
@@ -69,22 +69,22 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("tournaments");
 
-                    b.Property<int>("bowler_db_id")
+                    b.Property<int>("bowler_id")
                         .HasColumnType("integer")
-                        .HasColumnName("bowler_db_id");
+                        .HasColumnName("bowler_id");
 
                     b.HasKey("db_id")
                         .HasName("pk_season_awards");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_season_awards_season_award_id");
+                        .HasDatabaseName("ix_season_awards_domain_id");
 
                     b.HasIndex("Season")
                         .HasDatabaseName("ix_season_awards_season");
 
-                    b.HasIndex("bowler_db_id")
-                        .HasDatabaseName("ix_season_awards_bowler_db_id");
+                    b.HasIndex("bowler_id")
+                        .HasDatabaseName("ix_season_awards_bowler_id");
 
                     b.ToTable("season_awards", "website");
                 });
@@ -94,9 +94,9 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.Property<int>("db_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("db_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("db_id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("db_id"));
 
                     b.Property<int?>("ApplicationId")
                         .HasColumnType("integer")
@@ -106,7 +106,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(26)
                         .HasColumnType("character(26)")
-                        .HasColumnName("bowler_id")
+                        .HasColumnName("domain_id")
                         .IsFixedLength();
 
                     b.Property<int?>("WebsiteId")
@@ -123,7 +123,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_bowlers_bowler_id");
+                        .HasDatabaseName("ix_bowlers_domain_id");
 
                     b.HasIndex("WebsiteId")
                         .IsUnique()
@@ -138,15 +138,15 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.Property<int>("db_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("db_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("db_id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("db_id"));
 
                     b.Property<string>("Id")
                         .IsRequired()
                         .HasMaxLength(26)
                         .HasColumnType("character(26)")
-                        .HasColumnName("title_id")
+                        .HasColumnName("domain_id")
                         .IsFixedLength();
 
                     b.Property<int>("Month")
@@ -161,19 +161,19 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("year");
 
-                    b.Property<int>("bowler_db_id")
+                    b.Property<int>("bowler_id")
                         .HasColumnType("integer")
-                        .HasColumnName("bowler_db_id");
+                        .HasColumnName("bowler_id");
 
                     b.HasKey("db_id")
                         .HasName("pk_titles");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_titles_title_id");
+                        .HasDatabaseName("ix_titles_domain_id");
 
-                    b.HasIndex("bowler_db_id")
-                        .HasDatabaseName("ix_titles_bowler_db_id");
+                    b.HasIndex("bowler_id")
+                        .HasDatabaseName("ix_titles_bowler_id");
 
                     b.HasIndex("Year", "Month")
                         .HasDatabaseName("ix_titles_year_month");
@@ -185,10 +185,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 {
                     b.HasOne("Neba.Website.Domain.Bowlers.Bowler", "Bowler")
                         .WithMany("SeasonAwards")
-                        .HasForeignKey("bowler_db_id")
+                        .HasForeignKey("bowler_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_season_awards_bowlers_bowler_db_id");
+                        .HasConstraintName("fk_season_awards_bowlers_bowler_id");
 
                     b.Navigation("Bowler");
                 });
@@ -199,7 +199,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         {
                             b1.Property<int>("Bowlerdb_id")
                                 .HasColumnType("integer")
-                                .HasColumnName("db_id");
+                                .HasColumnName("id");
 
                             b1.Property<string>("FirstName")
                                 .IsRequired()
@@ -237,7 +237,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("Bowlerdb_id")
-                                .HasConstraintName("fk_bowlers_bowlers_db_id");
+                                .HasConstraintName("fk_bowlers_bowlers_id");
                         });
 
                     b.Navigation("Name")
@@ -248,10 +248,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 {
                     b.HasOne("Neba.Website.Domain.Bowlers.Bowler", "Bowler")
                         .WithMany("Titles")
-                        .HasForeignKey("bowler_db_id")
+                        .HasForeignKey("bowler_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_titles_bowlers_bowler_db_id");
+                        .HasConstraintName("fk_titles_bowlers_bowler_id");
 
                     b.Navigation("Bowler");
                 });

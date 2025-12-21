@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
+using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Bowlers;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -8,28 +9,25 @@ namespace Neba.Website.Infrastructure.Database.Configurations;
 internal sealed class BowlerConfiguration
     : IEntityTypeConfiguration<Bowler>
 {
-    internal const string ShadowForeignKeyName = "bowler_db_id";
+    internal const string ForeignKeyName = "bowler_id";
 
     public void Configure(EntityTypeBuilder<Bowler> builder)
     {
+
         // set up shadow primary int key and update foreign keys to use it
         // make the BowlerId a unique index instead (and do the same for other entity configurations)
 
         builder.ToTable("bowlers", WebsiteDbContext.DefaultSchema);
 
         builder.Property<int>("db_id")
-            .HasColumnName("db_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("id")
+            .UseIdentityAlwaysColumn();
 
         builder.HasKey("db_id");
 
         builder
             .Property(bowler => bowler.Id)
-            .ValueGeneratedNever()
-            .HasColumnName("bowler_id")
-            .HasMaxLength(26)
-            .IsFixedLength()
-            .HasConversion<BowlerId.EfCoreValueConverter>();
+            .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>();
 
         builder.HasIndex(bowler => bowler.Id)
             .IsUnique();
@@ -84,12 +82,12 @@ internal sealed class BowlerConfiguration
 
         builder.HasMany(bowler => bowler.Titles)
             .WithOne(title => title.Bowler)
-            .HasForeignKey(ShadowForeignKeyName)
+            .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(bowler => bowler.SeasonAwards)
             .WithOne(seasonAward => seasonAward.Bowler)
-            .HasForeignKey(ShadowForeignKeyName)
+            .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

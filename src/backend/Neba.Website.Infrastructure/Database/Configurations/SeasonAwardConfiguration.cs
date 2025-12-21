@@ -2,6 +2,7 @@ using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
+using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Awards;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -14,17 +15,13 @@ internal sealed class SeasonAwardConfiguration
         builder.ToTable("season_awards", WebsiteDbContext.DefaultSchema);
 
         builder.Property<int>("db_id")
-            .HasColumnName("db_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("id")
+            .UseIdentityAlwaysColumn();
 
         builder.HasKey("db_id");
 
         builder.Property(seasonAward => seasonAward.Id)
-            .HasColumnName("season_award_id")
-            .ValueGeneratedNever()
-            .HasMaxLength(26)
-            .IsFixedLength()
-            .HasConversion<SeasonAwardId.EfCoreValueConverter>();
+            .IsUlid<SeasonAwardId, SeasonAwardId.EfCoreValueConverter>();
 
         builder.Property(seasonAward => seasonAward.AwardType)
             .HasConversion<SmartEnumConverter<SeasonAwardType, int>>()
@@ -35,7 +32,7 @@ internal sealed class SeasonAwardConfiguration
             .HasMaxLength(9) // e.g., "2023", "2024-2025"
             .IsRequired();
 
-        builder.Property<int>(BowlerConfiguration.ShadowForeignKeyName)
+        builder.Property<int>(BowlerConfiguration.ForeignKeyName)
             .IsRequired();
 
         builder.Property(seasonAward => seasonAward.BowlerOfTheYearCategory)

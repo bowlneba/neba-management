@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
+using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -15,8 +16,8 @@ internal sealed class TitleConfiguration
         builder.ToTable("titles", WebsiteDbContext.DefaultSchema);
 
         builder.Property<int>("db_id")
-            .HasColumnName("db_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("id")
+            .UseIdentityAlwaysColumn();
 
         builder.HasKey("db_id");
 
@@ -24,16 +25,12 @@ internal sealed class TitleConfiguration
 
         builder
             .Property(title => title.Id)
-            .HasColumnName("title_id")
-            .ValueGeneratedNever()
-            .HasMaxLength(26)
-            .IsFixedLength()
-            .HasConversion<TitleId.EfCoreValueConverter>();
+            .IsUlid<TitleId, TitleId.EfCoreValueConverter>();
 
         builder.HasIndex(title => title.Id)
             .IsUnique();
 
-        builder.Property<int>(BowlerConfiguration.ShadowForeignKeyName)
+        builder.Property<int>(BowlerConfiguration.ForeignKeyName)
             .IsRequired();
 
         builder

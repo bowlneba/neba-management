@@ -20,8 +20,8 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 schema: "website",
                 columns: table => new
                 {
-                    db_id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     first_name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     last_name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     middle_name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
@@ -29,11 +29,11 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     nickname = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
                     website_id = table.Column<int>(type: "integer", nullable: true),
                     application_id = table.Column<int>(type: "integer", nullable: true),
-                    bowler_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
+                    domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_bowlers", x => x.db_id);
+                    table.PrimaryKey("pk_bowlers", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,27 +41,27 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 schema: "website",
                 columns: table => new
                 {
-                    db_id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     award_type = table.Column<int>(type: "integer", nullable: false),
                     season = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
-                    bowler_db_id = table.Column<int>(type: "integer", nullable: false),
+                    bowler_id = table.Column<int>(type: "integer", nullable: false),
                     bowler_of_the_year_category = table.Column<int>(type: "integer", nullable: true),
                     high_block_score = table.Column<int>(type: "integer", nullable: true),
                     average = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: true),
                     season_total_games = table.Column<int>(type: "integer", nullable: true),
                     tournaments = table.Column<int>(type: "integer", nullable: true),
-                    season_award_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
+                    domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_season_awards", x => x.db_id);
+                    table.PrimaryKey("pk_season_awards", x => x.id);
                     table.ForeignKey(
-                        name: "fk_season_awards_bowlers_bowler_db_id",
-                        column: x => x.bowler_db_id,
+                        name: "fk_season_awards_bowlers_bowler_id",
+                        column: x => x.bowler_id,
                         principalSchema: "website",
                         principalTable: "bowlers",
-                        principalColumn: "db_id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -70,23 +70,23 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 schema: "website",
                 columns: table => new
                 {
-                    db_id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    bowler_db_id = table.Column<int>(type: "integer", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    bowler_id = table.Column<int>(type: "integer", nullable: false),
                     tournament_type = table.Column<int>(type: "integer", nullable: false),
                     month = table.Column<int>(type: "integer", nullable: false),
                     year = table.Column<int>(type: "integer", nullable: false),
-                    title_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
+                    domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_titles", x => x.db_id);
+                    table.PrimaryKey("pk_titles", x => x.id);
                     table.ForeignKey(
-                        name: "fk_titles_bowlers_bowler_db_id",
-                        column: x => x.bowler_db_id,
+                        name: "fk_titles_bowlers_bowler_id",
+                        column: x => x.bowler_id,
                         principalSchema: "website",
                         principalTable: "bowlers",
-                        principalColumn: "db_id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -99,10 +99,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 filter: "\"application_id\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_bowlers_bowler_id",
+                name: "ix_bowlers_domain_id",
                 schema: "website",
                 table: "bowlers",
-                column: "bowler_id",
+                column: "domain_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -120,10 +120,17 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 filter: "\"website_id\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_season_awards_bowler_db_id",
+                name: "ix_season_awards_bowler_id",
                 schema: "website",
                 table: "season_awards",
-                column: "bowler_db_id");
+                column: "bowler_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_season_awards_domain_id",
+                schema: "website",
+                table: "season_awards",
+                column: "domain_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_season_awards_season",
@@ -132,23 +139,16 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 column: "season");
 
             migrationBuilder.CreateIndex(
-                name: "ix_season_awards_season_award_id",
-                schema: "website",
-                table: "season_awards",
-                column: "season_award_id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_titles_bowler_db_id",
+                name: "ix_titles_bowler_id",
                 schema: "website",
                 table: "titles",
-                column: "bowler_db_id");
+                column: "bowler_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_titles_title_id",
+                name: "ix_titles_domain_id",
                 schema: "website",
                 table: "titles",
-                column: "title_id",
+                column: "domain_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
