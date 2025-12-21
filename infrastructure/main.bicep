@@ -54,12 +54,22 @@ param azurePostgresBackupRetentionDays int = 7
 @description('Key Vault name')
 param azureKeyVaultName string
 
+@description('Storage Account name')
+param azureStorageAccountName string
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
   ManagedBy: 'Bicep'
   Project: 'NebaManagement'
 }
+
+// Storage account names are limited to 24 characters and must be lowercase
+var locationNoDash = replace(azureLocation, '-', '')
+var allowedPrefixLength = max(0, 24 - length(locationNoDash))
+var prefixLength = min(length(azureStorageAccountName), allowedPrefixLength)
+var storageAccountNamePrefix = substring(azureStorageAccountName, 0, prefixLength)
+var storageAccountFinalName = toLower(replace('${storageAccountNamePrefix}${locationNoDash}', '-', ''))
 
 // Resource Group - In Bicep, we explicitly create the RG at subscription scope
 resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
@@ -93,6 +103,19 @@ module keyVault 'modules/keyVault.bicep' = {
     enableRbacAuthorization: true
     enableAzureServicesAccess: true
     tags: union(tags, { Component: 'KeyVault' })
+  }
+}
+
+// Storage Account Module
+module storageAccount 'modules/storageAccount.bicep' = {
+  scope: rg
+  name: 'storageAccount-deployment'
+  params: {
+    name: storageAccountFinalName
+    location: azureLocation
+    skuName: 'Standard_LRS'
+    accessTier: 'Hot'
+    tags: union(tags, { Component: 'Storage' })
   }
 }
 
@@ -140,6 +163,10 @@ module apiAppService 'modules/appService.bicep' = {
         name: 'KeyVault__VaultUrl'
         value: keyVault.outputs.uri
       }
+      {
+        name: 'AzureStorage__BlobServiceUri'
+        value: storageAccount.outputs.primaryBlobEndpoint
+      }
     ]
   }
 }
@@ -167,6 +194,23 @@ module webKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
   }
 }
+
+// RBAC Role Assignment: API Managed Identity -> Storage Blob Data Contributor
+// Storage Blob Data Contributor role ID: ba92f5b4-2d11-453d-a403-e96b0029c9fe
+module apiStorageAccess 'modules/storageRoleAssignment.bicep' = {
+  scope: rg
+  name: 'apiStorageAccess-deployment'
+  params: {
+    storageAccountName: storageAccount.outputs.name
+    principalId: apiAppService.outputs.principalId
+    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  }
+}
+
+// Note: we do not create a Key Vault secret for the storage account connection string
+// because account keys are not exposed by default. Prefer Managed Identity / AAD
+// authentication. If you need the connection string saved, re-enable this module
+// and ensure `storageAccount` outputs a secure `connectionString` (use @secure()).
 
 // Web App Service Module
 module webAppService 'modules/appService.bicep' = {
@@ -213,3 +257,5 @@ output postgreSqlServerFqdn string = postgreSqlServer.outputs.fqdn
 output postgreSqlDatabaseName string = postgreSqlServer.outputs.databaseName
 output keyVaultName string = keyVault.outputs.name
 output keyVaultUri string = keyVault.outputs.uri
+output storageAccountName string = storageAccount.outputs.name
+output storageAccountBlobEndpoint string = storageAccount.outputs.primaryBlobEndpoint

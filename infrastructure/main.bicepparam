@@ -12,6 +12,7 @@ param azureAppServicePlanName = 'asp-neba-dev'
 param azureApiAppServiceName = 'app-neba-api-dev'
 param azureWebAppServiceName = 'app-neba-web-dev'
 param azureAppServicePlanSku = 'B1'
+param azureStorageAccountName = 'stnebadev'
 
 param tags = {
   Environment: 'dev'

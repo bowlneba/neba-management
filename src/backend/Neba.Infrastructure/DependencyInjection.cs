@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Infrastructure.BackgroundJobs;
 using Neba.Infrastructure.Documents;
+using Neba.Infrastructure.Storage;
 
 namespace Neba.Infrastructure;
 
@@ -31,7 +32,8 @@ public static class InfrastructureDependencyInjection
             return services
                 .AddKeyVault(config)
                 .AddGoogleDocs(config)
-                .AddBackgroundJobs(config);
+                .AddBackgroundJobs(config)
+                .AddStorageService(config);
         }
 
         private IServiceCollection AddKeyVault(IConfigurationManager config)
@@ -65,6 +67,7 @@ public static class InfrastructureDependencyInjection
                         options
                             .AddSecret("ConnectionStrings--website-migrations")
                             .AddSecret("ConnectionStrings--website")
+                            .AddSecret("ConnectionStrings--hangfire")
                             .AddSecret("GoogleDocs--Credentials--ClientEmail")
                             .AddSecret("GoogleDocs--Credentials--ClientId")
                             .AddSecret("GoogleDocs--Credentials--PrivateKeyId")

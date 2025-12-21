@@ -18,6 +18,21 @@ services:
       - GoogleDocs__Credentials__ClientX509CertUrl=${GOOGLE_DOCS_CLIENT_X509_CERT_URL}
     depends_on:
       - neba.db
+      - neba.storage
+    networks:
+      - neba-network
+
+  neba.storage:
+    container_name: neba-storage
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "19631:10000" # Blob service
+      - "19632:10001" # Queue service
+      - "19633:10002" # Table service
+    volumes:
+      - neba-storage:/data
+    command:
+      azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data --debug /data/debug.log
     networks:
       - neba-network
 
@@ -42,3 +57,4 @@ networks:
 
 volumes:
   neba-db-data:
+  neba-storage:

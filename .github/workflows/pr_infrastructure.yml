@@ -78,6 +78,7 @@ jobs:
               databaseAdminUsername='${{ vars.DATABASE_ADMIN_USERNAME }}' \
               databaseAdminPassword="$DATABASE_ADMIN_PASSWORD" \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
+              azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}' \
             --result-format FullResourcePayloads 2>&1)
           WHATIF_EXIT_CODE=$?
           set -e  # Re-enable exit on error
