@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Logging;
 using Neba.Api;
 using Neba.Tests.Website;
 
@@ -28,5 +29,12 @@ public sealed class NebaWebApplicationFactory
         builder.UseSetting("GoogleDocs:Credentials:ClientEmail", "mock-test@test-project.iam.gserviceaccount.com");
         builder.UseSetting("GoogleDocs:Credentials:PrivateKeyId", "mock-key-id-12345");
         builder.UseSetting("GoogleDocs:Credentials:ClientX509CertUrl", "https://www.googleapis.com/robot/v1/metadata/x509/mock-test%40test-project.iam.gserviceaccount.com");
+
+        // Suppress verbose logging during tests
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.SetMinimumLevel(LogLevel.Warning);
+        });
     }
 }
