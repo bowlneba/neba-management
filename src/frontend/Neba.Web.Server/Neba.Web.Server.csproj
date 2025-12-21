@@ -16,7 +16,10 @@
 
   <ItemGroup>
     <PackageReference Include="ErrorOr" />
+    <PackageReference Include="Hangfire.AspNetCore" />
+    <PackageReference Include="Hangfire.PostgreSql" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
