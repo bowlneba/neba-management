@@ -67,7 +67,7 @@ internal static class BackgroundJobsExtensions
             services.AddHangfireServer((serviceProvider, options) =>
             {
                 HangfireSettings settings = serviceProvider.GetRequiredService<HangfireSettings>();
-                
+
                 options.WorkerCount = settings.WorkerCount;
                 options.ServerName = $"API - {Environment.MachineName}";
                 options.Queues = ["default"];
@@ -85,7 +85,7 @@ internal static class BackgroundJobsExtensions
         {
             HangfireSettings settings = app.Services.GetRequiredService<HangfireSettings>();
             GlobalJobFilters.Filters.Add(new JobExpirationFilterAttribute(settings));
-            
+
             app.UseHangfireDashboard("/jobs", new DashboardOptions
             {
                 Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
