@@ -61,7 +61,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website
 
 -- Procedures
 ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website
-    GRANT EXECUTE ON ROUT
+    GRANT EXECUTE ON ROUTINES TO "neba-web";
 -- Website: username = neba-web, password = neba-web
 -- Hangfire: username = neba-jobs, password = neba-jobs
 

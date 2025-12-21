@@ -10,7 +10,6 @@ internal sealed class JobExpirationFilterAttribute(HangfireSettings settings)
 {
     public HangfireSettings Settings { get; } = settings;
 
-#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
     public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
     {
         if (context.NewState is SucceededState)
