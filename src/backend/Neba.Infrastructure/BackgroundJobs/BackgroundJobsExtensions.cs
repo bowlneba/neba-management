@@ -63,19 +63,16 @@ internal static class BackgroundJobsExtensions
                         TransactionSynchronisationTimeout = TimeSpan.FromMinutes(1)
                     }));
 
-            //get hangfire settings
-            HangfireSettings settings = services.BuildServiceProvider()
-                .GetRequiredService<HangfireSettings>();
-
-            services.AddHangfireServer(options =>
+            services.AddHangfireServer((serviceProvider, options) =>
             {
+                HangfireSettings settings = serviceProvider.GetRequiredService<HangfireSettings>();
+                
                 options.WorkerCount = settings.WorkerCount;
                 options.ServerName = $"API - {Environment.MachineName}";
                 options.Queues = ["default"];
             });
 
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 3 });
-            GlobalJobFilters.Filters.Add(new JobExpirationFilterAttribute(settings));
 
             return services;
         }
@@ -85,6 +82,9 @@ internal static class BackgroundJobsExtensions
     {
         public WebApplication UseBackgroundJobsDashboard()
         {
+            HangfireSettings settings = app.Services.GetRequiredService<HangfireSettings>();
+            GlobalJobFilters.Filters.Add(new JobExpirationFilterAttribute(settings));
+            
             app.UseHangfireDashboard("/jobs", new DashboardOptions
             {
                 Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
