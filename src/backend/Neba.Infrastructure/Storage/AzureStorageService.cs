@@ -25,12 +25,12 @@ internal sealed class AzureStorageService
 
         var uploadOptions = new BlobUploadOptions
         {
-            HttpHeaders = new BlobHttpHeaders {ContentType = contentType},
+            HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
             Conditions = null // allows overwrite
 
         };
 
-        await blobClient.UploadAsync(stream,  uploadOptions, cancellationToken);
+        await blobClient.UploadAsync(stream, uploadOptions, cancellationToken);
 
         return blobClient.Uri.ToString();
     }
@@ -42,7 +42,7 @@ internal sealed class AzureStorageService
 
         var uploadOptions = new BlobUploadOptions
         {
-            HttpHeaders = new BlobHttpHeaders {ContentType = contentType},
+            HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
             Conditions = null // allows overwrite
         };
 

@@ -22,7 +22,7 @@ public interface IStorageService
     /// If <c>null</c> or empty, implementations may attempt to infer the type or apply a sensible default.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A string that represents the stored blob location or identifier (implementation-defined).</returns>
-    Task<string> UploadAsync(string containerName, string blobName, string content, string contentType,  CancellationToken cancellationToken);
+    Task<string> UploadAsync(string containerName, string blobName, string content, string contentType, CancellationToken cancellationToken);
 
     /// <summary>
     /// Uploads binary content from a stream to the specified <paramref name="containerName"/> and <paramref name="blobName"/>.
