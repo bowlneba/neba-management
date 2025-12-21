@@ -116,23 +116,23 @@ jobs:
       - name: Configure database users and permissions
         run: |
           echo "👥 Configuring database users and permissions..."
-          
+
           # Connect using admin credentials to set up roles
           PGPASSWORD='${{ steps.get-db-info.outputs.CONNECTION_STRING }}' psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
                -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
                -d "${{ vars.DATABASE_NAME }}" \
                << 'EOSQL'
-          
+
           /* ============================================================
              ROLE SETUP
              ============================================================
              - ddl_owner (DATABASE_OWNER_USERNAME): owns schemas, no login
              - neba-web (DATABASE_WEB_USERNAME): runtime application identity
              - kippermand (DATABASE_QUERY_USERNAME): human CRUD access
-             
+
              Future: add app_b, app_c, etc. for additional bounded contexts
              ============================================================ */
-          
+
           DO $$
           BEGIN
               -- Create schema owner role (NOLOGIN - pure ownership)
@@ -141,7 +141,7 @@ jobs:
                       NOLOGIN
                       NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
               END IF;
-          
+
               -- Create application runtime user
               IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_WEB_USERNAME }}') THEN
                   CREATE ROLE "${{ vars.DATABASE_WEB_USERNAME }}"
@@ -150,7 +150,7 @@ jobs:
               ELSE
                   ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" WITH PASSWORD '${{ secrets.DATABASE_WEB_PASSWORD }}';
               END IF;
-          
+
               -- Create human query user
               IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_QUERY_USERNAME }}') THEN
                   CREATE ROLE "${{ vars.DATABASE_QUERY_USERNAME }}"
@@ -159,68 +159,68 @@ jobs:
               ELSE
                   ALTER ROLE "${{ vars.DATABASE_QUERY_USERNAME }}" WITH PASSWORD '${{ secrets.DATABASE_QUERY_PASSWORD }}';
               END IF;
-              
+
               -- Future: Create additional app users (app_b, app_c, etc.) here
           END
           $$;
-          
+
           /* ============================================================
              SCHEMA CREATION & OWNERSHIP
              ============================================================
              Schemas represent bounded contexts.
              Ownership MUST be ddl_owner for consistent permissions.
-             
+
              Future: Create additional schemas (b, c, etc.) here
              ============================================================ */
-          
+
           CREATE SCHEMA IF NOT EXISTS website AUTHORIZATION "${{ vars.DATABASE_OWNER_USERNAME }}";
-          
+
           -- Ensure ownership didn't drift
           ALTER SCHEMA website OWNER TO "${{ vars.DATABASE_OWNER_USERNAME }}";
-          
+
           /* ============================================================
              SCHEMA LOCKDOWN
              ============================================================
              Remove implicit access via PUBLIC.
              ============================================================ */
-          
+
           REVOKE ALL ON SCHEMA website FROM PUBLIC;
-          
+
           -- Future: Revoke PUBLIC access from additional schemas here
-          
+
           /* ============================================================
              SCHEMA VISIBILITY (USAGE)
              ============================================================
              USAGE = schema is visible / name-resolvable.
              ============================================================ */
-          
+
           GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
           GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
-          
+
           -- Future: Grant USAGE to additional app users on their respective schemas
-          
+
           /* ============================================================
              EXISTING OBJECT PERMISSIONS
              ============================================================
              Covers redeploys or restored databases where objects exist.
              ============================================================ */
-          
+
           -- Application user: CRUD on website schema
           GRANT SELECT, INSERT, UPDATE, DELETE
           ON ALL TABLES IN SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
-          
+
           GRANT USAGE, SELECT
           ON ALL SEQUENCES IN SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
-          
+
           -- Human user: CRUD on all schemas
           GRANT SELECT, INSERT, UPDATE, DELETE
           ON ALL TABLES IN SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
-          
+
           GRANT USAGE, SELECT
           ON ALL SEQUENCES IN SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
-          
+
           -- Future: Grant permissions to app_b on schema b, app_c on schema c, etc.
-          
+
           /* ============================================================
              DEFAULT PRIVILEGES (CRITICAL)
              ============================================================
@@ -228,40 +228,132 @@ jobs:
              This is what makes "tables don't exist yet" safe.
              Admin creates objects on behalf of ddl_owner during migrations.
              ============================================================ */
-          
+
           -- Website schema: application user defaults
           ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
           IN SCHEMA website
           GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${{ vars.DATABASE_WEB_USERNAME }}";
-          
+
           ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
           IN SCHEMA website
           GRANT USAGE, SELECT ON SEQUENCES TO "${{ vars.DATABASE_WEB_USERNAME }}";
-          
+
           -- Website schema: human user defaults
           ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
           IN SCHEMA website
           GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${{ vars.DATABASE_QUERY_USERNAME }}";
-          
+
           ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
           IN SCHEMA website
           GRANT USAGE, SELECT ON SEQUENCES TO "${{ vars.DATABASE_QUERY_USERNAME }}";
-          
+
           -- Future: Add default privileges for additional schemas/users here
-          
+
           /* ============================================================
              DEFENSIVE SEARCH PATH
              ============================================================
              Prevents accidental cross-schema access.
              ============================================================ */
-          
+
           ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" SET search_path = website;
-          
+
           -- Future: Set search paths for additional app users (app_b = b, app_c = c, etc.)
-          
+
           EOSQL
-          
+
           echo "✅ Database users and permissions configured successfully"
+
+      - name: Validate schema ownership and permissions
+        run: |
+          echo "🔍 Validating schema ownership and permissions..."
+
+          # Connect using admin credentials to validate setup
+          PGPASSWORD='${{ steps.get-db-info.outputs.CONNECTION_STRING }}' psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
+               -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
+               -d "${{ vars.DATABASE_NAME }}" \
+               << 'EOSQL'
+
+          /* ============================================================
+             VALIDATION: TABLE OWNERSHIP
+             ============================================================
+             Any table not owned by ddl_owner is a violation.
+             All schema objects must be owned by the owner role.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM pg_tables
+              WHERE schemaname IN ('website') -- Future: Add 'b', 'c', etc.
+                AND tableowner <> '${{ vars.DATABASE_OWNER_USERNAME }}';
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Found % table(s) not owned by ddl_owner (${{ vars.DATABASE_OWNER_USERNAME }})', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ All tables owned by ddl_owner';
+          END
+          $$;
+
+          /* ============================================================
+             VALIDATION: RUNTIME ROLES MUST NOT OWN OBJECTS
+             ============================================================
+             Application and human users should never own objects.
+             Only ddl_owner should own schema objects.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM pg_class c
+              JOIN pg_namespace n ON n.oid = c.relnamespace
+              JOIN pg_roles r ON r.oid = c.relowner
+              WHERE r.rolname IN ('${{ vars.DATABASE_WEB_USERNAME }}', '${{ vars.DATABASE_QUERY_USERNAME }}'); -- Future: Add 'app_b', 'app_c', etc.
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Found % object(s) owned by runtime roles', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ No objects owned by runtime roles';
+          END
+          $$;
+
+          /* ============================================================
+             VALIDATION: APPLICATION ISOLATION
+             ============================================================
+             Application users must only have privileges in their schema.
+             Cross-schema access is a security violation.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM information_schema.table_privileges
+              WHERE grantee = '${{ vars.DATABASE_WEB_USERNAME }}'
+                AND table_schema <> 'website';
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Application user (${{ vars.DATABASE_WEB_USERNAME }}) has % privilege(s) outside its schema', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ Application user isolated to its schema';
+
+              -- Future: Add validation for app_b (schema b), app_c (schema c), etc.
+          END
+          $$;
+
+          EOSQL
+
+          echo "✅ All validation checks passed"
 
       - name: Remove temporary firewall rule
         if: steps.add-firewall-rule.outcome == 'success'
