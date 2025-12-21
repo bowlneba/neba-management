@@ -56,6 +56,12 @@ internal sealed class AzureStorageService
         BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
+        // NOTE: This call will throw Azure.RequestFailedException with Status == 404
+        // if the blob does not exist. Consumers may prefer a different behavior
+        // (e.g., returning null, a domain-specific exception, or checking
+        // existence first via `ExistsAsync`). Consider wrapping this call in a
+        // try/catch to translate 404 into a more appropriate result for your
+        // domain or call `blobClient.ExistsAsync(cancellationToken)` beforehand.
         Stream response = await blobClient.OpenReadAsync(cancellationToken: cancellationToken);
 
         return response;
@@ -66,6 +72,11 @@ internal sealed class AzureStorageService
         BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
+        // NOTE: `DownloadContentAsync` will throw Azure.RequestFailedException
+        // with Status == 404 when the blob is missing. If callers expect a
+        // non-throwing behavior, either perform an existence check
+        // (`blobClient.ExistsAsync`) before downloading or catch
+        // `RequestFailedException` and map 404 to a domain-appropriate result.
         Response<BlobDownloadResult> downloadResponse = await blobClient.DownloadContentAsync(cancellationToken);
 
         return downloadResponse.Value.Content.ToString();
