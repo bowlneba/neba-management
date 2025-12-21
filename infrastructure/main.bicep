@@ -64,6 +64,13 @@ param tags object = {
   Project: 'NebaManagement'
 }
 
+// Storage account names are limited to 24 characters and must be lowercase
+var locationNoDash = replace(azureLocation, '-', '')
+var allowedPrefixLength = max(0, 24 - length(locationNoDash))
+var prefixLength = min(length(azureStorageAccountName), allowedPrefixLength)
+var storageAccountNamePrefix = substring(azureStorageAccountName, 0, prefixLength)
+var storageAccountFinalName = toLower(replace('${storageAccountNamePrefix}${locationNoDash}', '-', ''))
+
 // Resource Group - In Bicep, we explicitly create the RG at subscription scope
 resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   name: azureResourceGroupName
@@ -104,7 +111,7 @@ module storageAccount 'modules/storageAccount.bicep' = {
   scope: rg
   name: 'storageAccount-deployment'
   params: {
-    name: replace('${azureStorageAccountName}${azureLocation}', '-', '')
+    name: storageAccountFinalName
     location: azureLocation
     skuName: 'Standard_LRS'
     accessTier: 'Hot'
@@ -196,22 +203,10 @@ module apiStorageAccess 'modules/storageRoleAssignment.bicep' = {
   }
 }
 
-// Key Vault Secret: Azure Storage Connection String
-module storageConnectionStringSecret 'modules/keyVaultSecret.bicep' = {
-  scope: rg
-  name: 'storageConnectionStringSecret-deployment'
-  params: {
-    keyVaultName: keyVault.outputs.name
-    secretName: 'connectionstrings--azure-storage'
-    secretValue: storageAccount.outputs.connectionString
-    contentType: 'text/plain'
-    tags: union(tags, { Component: 'Storage' })
-  }
-  dependsOn: [
-    apiKeyVaultAccess
-    webKeyVaultAccess
-  ]
-}
+// Note: we do not create a Key Vault secret for the storage account connection string
+// because account keys are not exposed by default. Prefer Managed Identity / AAD
+// authentication. If you need the connection string saved, re-enable this module
+// and ensure `storageAccount` outputs a secure `connectionString` (use @secure()).
 
 // Web App Service Module
 module webAppService 'modules/appService.bicep' = {
