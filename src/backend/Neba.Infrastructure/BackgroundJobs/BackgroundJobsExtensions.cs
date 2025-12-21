@@ -46,23 +46,30 @@ internal static class BackgroundJobsExtensions
             string hangfireConnectionString = config.GetConnectionString("hangfire")
                 ?? throw new InvalidOperationException("Hangfire connection string is not configured.");
 
-            services.AddHangfire(options => options
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(postgres => postgres
-                    .UseNpgsqlConnection(hangfireConnectionString),
-                    new PostgreSqlStorageOptions
-                    {
-                        SchemaName = "hangfire",
-                        PrepareSchemaIfNecessary = true,
-                        EnableTransactionScopeEnlistment = true,
-                        DeleteExpiredBatchSize = 1000,
-                        QueuePollInterval = TimeSpan.FromSeconds(30),
-                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                        CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                        TransactionSynchronisationTimeout = TimeSpan.FromMinutes(1)
-                    }));
+            services.AddHangfire((serviceProvider, options) =>
+            {
+                HangfireSettings settings = serviceProvider.GetRequiredService<HangfireSettings>();
+                
+                options
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseFilter(new AutomaticRetryAttribute { Attempts = 3 })
+                    .UseFilter(new JobExpirationFilterAttribute(settings))
+                    .UsePostgreSqlStorage(postgres => postgres
+                        .UseNpgsqlConnection(hangfireConnectionString),
+                        new PostgreSqlStorageOptions
+                        {
+                            SchemaName = "hangfire",
+                            PrepareSchemaIfNecessary = true,
+                            EnableTransactionScopeEnlistment = true,
+                            DeleteExpiredBatchSize = 1000,
+                            QueuePollInterval = TimeSpan.FromSeconds(30),
+                            JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                            CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                            TransactionSynchronisationTimeout = TimeSpan.FromMinutes(1)
+                        });
+            });
 
             services.AddHangfireServer((serviceProvider, options) =>
             {
@@ -73,8 +80,6 @@ internal static class BackgroundJobsExtensions
                 options.Queues = ["default"];
             });
 
-            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 3 });
-
             return services;
         }
     }
@@ -83,9 +88,6 @@ internal static class BackgroundJobsExtensions
     {
         public WebApplication UseBackgroundJobsDashboard()
         {
-            HangfireSettings settings = app.Services.GetRequiredService<HangfireSettings>();
-            GlobalJobFilters.Filters.Add(new JobExpirationFilterAttribute(settings));
-
             app.UseHangfireDashboard("/jobs", new DashboardOptions
             {
                 Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
