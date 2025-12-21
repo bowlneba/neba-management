@@ -36,6 +36,9 @@ param networkDefaultAction string = 'Allow'
 @description('Tags to apply to the resource')
 param tags object = {}
 
+@description('Require infrastructure encryption (double-encryption). Set to true to enforce infrastructure encryption where supported.')
+param requireInfrastructureEncryption bool = true
+
 // Storage Account resource
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: name
@@ -67,6 +70,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
           keyType: 'Account'
         }
       }
+      requireInfrastructureEncryption: requireInfrastructureEncryption
     }
   }
 }
