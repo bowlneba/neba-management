@@ -156,6 +156,18 @@ module apiKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
   }
 }
 
+// RBAC Role Assignment: Web Managed Identity -> Key Vault Secrets User
+// Needed for Web.Server to read Hangfire connection string from Key Vault
+module webKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
+  scope: rg
+  name: 'webKeyVaultAccess-deployment'
+  params: {
+    keyVaultName: keyVault.outputs.name
+    principalId: webAppService.outputs.principalId
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+  }
+}
+
 // Web App Service Module
 module webAppService 'modules/appService.bicep' = {
   scope: rg
@@ -179,6 +191,10 @@ module webAppService 'modules/appService.bicep' = {
         name: 'NebaApi__BaseUrl'
         value: 'https://${apiAppService.outputs.defaultHostName}'
       }
+      {
+        name: 'KeyVault__VaultUrl'
+        value: keyVault.outputs.uri
+      }
     ]
   }
 }
@@ -191,6 +207,7 @@ output apiAppServiceUrl string = 'https://${apiAppService.outputs.defaultHostNam
 output apiAppServicePrincipalId string = apiAppService.outputs.principalId
 output webAppServiceName string = webAppService.outputs.name
 output webAppServiceUrl string = 'https://${webAppService.outputs.defaultHostName}'
+output webAppServicePrincipalId string = webAppService.outputs.principalId
 output postgreSqlServerName string = postgreSqlServer.outputs.name
 output postgreSqlServerFqdn string = postgreSqlServer.outputs.fqdn
 output postgreSqlDatabaseName string = postgreSqlServer.outputs.databaseName

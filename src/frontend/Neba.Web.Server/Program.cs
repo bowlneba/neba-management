@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
 using Neba.Web.Server.BackgroundJobs;
@@ -6,6 +7,18 @@ using Neba.Web.Server.Services;
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Add Key Vault configuration if enabled
+bool useKeyVault = builder.Configuration.GetValue("KeyVault:Enabled", false);
+if (useKeyVault)
+{
+    string? vaultUrl = builder.Configuration["KeyVault:VaultUrl"];
+    if (!string.IsNullOrEmpty(vaultUrl))
+    {
+        var vaultUri = new Uri(vaultUrl);
+        builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
+    }
+}
 
 builder.Services.AddOptions<NebaApiConfiguration>()
     .Bind(builder.Configuration.GetSection("NebaApi"))
