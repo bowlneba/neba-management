@@ -14,15 +14,18 @@ internal static class StorageExtensions
     {
         public IServiceCollection AddStorageService(IConfiguration config)
         {
-            services.AddSingleton(sp =>
-            {
-                string connectionString = config.GetConnectionString("azure-storage")
+            string connectionString = config.GetConnectionString("azure-storage")
                     ?? throw new InvalidOperationException("Azure Storage connection string is not configured.");
 
-                return new BlobServiceClient(connectionString);
-            });
+            services.AddSingleton(_ => new BlobServiceClient(connectionString));
 
             services.AddSingleton<IStorageService, AzureStorageService>();
+
+            services.AddHealthChecks()
+                .AddAzureBlobStorage(
+                    name: "Azure Blob Storage",
+                    tags: ["infrastructure", "storage"]
+                );
 
             return services;
         }

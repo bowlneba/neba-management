@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum.EFCore" />
+    <PackageReference Include="AspNetCore.HealthChecks.Azure.Storage.Blobs" />
     <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" />
     <PackageReference Include="AspNetCore.HealthChecks.Hangfire" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />
