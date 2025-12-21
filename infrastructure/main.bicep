@@ -163,6 +163,10 @@ module apiAppService 'modules/appService.bicep' = {
         name: 'KeyVault__VaultUrl'
         value: keyVault.outputs.uri
       }
+      {
+        name: 'AzureStorage__BlobServiceUri'
+        value: storageAccount.outputs.primaryBlobEndpoint
+      }
     ]
   }
 }

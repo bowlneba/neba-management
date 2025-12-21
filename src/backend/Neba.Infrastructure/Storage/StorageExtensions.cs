@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +15,30 @@ internal static class StorageExtensions
     {
         public IServiceCollection AddStorageService(IConfiguration config)
         {
-            string connectionString = config.GetConnectionString("azure-storage")
-                    ?? throw new InvalidOperationException("Azure Storage connection string is not configured.");
+            // Prefer managed identity (Azure) over connection string (local Azurite)
+            string? blobServiceUri = config["AzureStorage:BlobServiceUri"];
 
-            services.AddSingleton(_ => new BlobServiceClient(connectionString));
+            BlobServiceClient blobServiceClient;
+
+            if (!string.IsNullOrEmpty(blobServiceUri))
+            {
+                // Azure: Use managed identity with DefaultAzureCredential
+                var serviceUri = new Uri(blobServiceUri);
+                var credential = new DefaultAzureCredential();
+                blobServiceClient = new BlobServiceClient(serviceUri, credential);
+            }
+            else
+            {
+                // Local: Use connection string for Azurite
+                string connectionString = config.GetConnectionString("azure-storage")
+                    ?? throw new InvalidOperationException(
+                        "Either AzureStorage:BlobServiceUri (for managed identity) or " +
+                        "ConnectionStrings:azure-storage (for local development) must be configured.");
+
+                blobServiceClient = new BlobServiceClient(connectionString);
+            }
+
+            services.AddSingleton(blobServiceClient);
 
             services.AddSingleton<IStorageService, AzureStorageService>();
 
