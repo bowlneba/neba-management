@@ -54,6 +54,9 @@ param azurePostgresBackupRetentionDays int = 7
 @description('Key Vault name')
 param azureKeyVaultName string
 
+@description('Storage Account name')
+param azureStorageAccountName string
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
@@ -93,6 +96,19 @@ module keyVault 'modules/keyVault.bicep' = {
     enableRbacAuthorization: true
     enableAzureServicesAccess: true
     tags: union(tags, { Component: 'KeyVault' })
+  }
+}
+
+// Storage Account Module
+module storageAccount 'modules/storageAccount.bicep' = {
+  scope: rg
+  name: 'storageAccount-deployment'
+  params: {
+    name: replace('${azureStorageAccountName}${azureLocation}', '-', '')
+    location: azureLocation
+    skuName: 'Standard_LRS'
+    accessTier: 'Hot'
+    tags: union(tags, { Component: 'Storage' })
   }
 }
 
@@ -168,6 +184,35 @@ module webKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
   }
 }
 
+// RBAC Role Assignment: API Managed Identity -> Storage Blob Data Contributor
+// Storage Blob Data Contributor role ID: ba92f5b4-2d11-453d-a403-e96b0029c9fe
+module apiStorageAccess 'modules/storageRoleAssignment.bicep' = {
+  scope: rg
+  name: 'apiStorageAccess-deployment'
+  params: {
+    storageAccountName: storageAccount.outputs.name
+    principalId: apiAppService.outputs.principalId
+    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  }
+}
+
+// Key Vault Secret: Azure Storage Connection String
+module storageConnectionStringSecret 'modules/keyVaultSecret.bicep' = {
+  scope: rg
+  name: 'storageConnectionStringSecret-deployment'
+  params: {
+    keyVaultName: keyVault.outputs.name
+    secretName: 'connectionstrings--azure-storage'
+    secretValue: storageAccount.outputs.connectionString
+    contentType: 'text/plain'
+    tags: union(tags, { Component: 'Storage' })
+  }
+  dependsOn: [
+    apiKeyVaultAccess
+    webKeyVaultAccess
+  ]
+}
+
 // Web App Service Module
 module webAppService 'modules/appService.bicep' = {
   scope: rg
@@ -213,3 +258,5 @@ output postgreSqlServerFqdn string = postgreSqlServer.outputs.fqdn
 output postgreSqlDatabaseName string = postgreSqlServer.outputs.databaseName
 output keyVaultName string = keyVault.outputs.name
 output keyVaultUri string = keyVault.outputs.uri
+output storageAccountName string = storageAccount.outputs.name
+output storageAccountBlobEndpoint string = storageAccount.outputs.primaryBlobEndpoint

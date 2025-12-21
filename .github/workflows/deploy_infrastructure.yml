@@ -89,7 +89,8 @@ jobs:
               azurePostgresStorageSizeGB=${{ vars.AZURE_POSTGRES_STORAGE_SIZE_GB }} \
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
-              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}'
+              azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
+              azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}'
 
   deploy:
     name: Deploy to ${{ inputs.environment || 'Production' }}
@@ -120,6 +121,7 @@ jobs:
           echo "  - Web App Service: ${{ vars.AZURE_WEB_APP_SERVICE_NAME }}"
           echo "  - PostgreSQL Server: ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }}"
           echo "  - Key Vault: ${{ vars.AZURE_KEY_VAULT_NAME }}-${{ vars.AZURE_LOCATION }}"
+          echo "  - Storage Account: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}${{ vars.AZURE_LOCATION }}"
           echo ""
           echo "⏱️  Expected deployment time: 15-25 minutes (PostgreSQL takes 8-15 minutes)"
           echo ""
@@ -148,6 +150,7 @@ jobs:
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
+              azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}' \
             --no-wait
 
           echo ""
@@ -188,6 +191,7 @@ jobs:
                     *"Microsoft.Web/sites"*) echo "  ⏳ App Service ($name): $state" ;;
                     *"Microsoft.DBforPostgreSQL/flexibleServers"*) echo "  ⏳ PostgreSQL Server: $state (this takes 8-15 min)" ;;
                     *"Microsoft.KeyVault/vaults"*) echo "  ⏳ Key Vault: $state" ;;
+                    *"Microsoft.Storage/storageAccounts"*) echo "  ⏳ Storage Account: $state" ;;
                   esac
                 done
               fi
@@ -213,6 +217,8 @@ jobs:
           DB_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.postgreSqlDatabaseName.value')
           KV_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.keyVaultName.value')
           KV_URI=$(cat deployment-output.json | jq -r '.properties.outputs.keyVaultUri.value')
+          STORAGE_NAME=$(cat deployment-output.json | jq -r '.properties.outputs.storageAccountName.value')
+          STORAGE_BLOB_ENDPOINT=$(cat deployment-output.json | jq -r '.properties.outputs.storageAccountBlobEndpoint.value')
 
           echo "api-url=$API_URL" >> $GITHUB_OUTPUT
           echo "web-url=$WEB_URL" >> $GITHUB_OUTPUT
@@ -220,6 +226,8 @@ jobs:
           echo "db-name=$DB_NAME" >> $GITHUB_OUTPUT
           echo "kv-name=$KV_NAME" >> $GITHUB_OUTPUT
           echo "kv-uri=$KV_URI" >> $GITHUB_OUTPUT
+          echo "storage-name=$STORAGE_NAME" >> $GITHUB_OUTPUT
+          echo "storage-blob-endpoint=$STORAGE_BLOB_ENDPOINT" >> $GITHUB_OUTPUT
 
           echo "### 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -231,6 +239,7 @@ jobs:
           echo "**Database Server:** $DB_SERVER" >> $GITHUB_STEP_SUMMARY
           echo "**Database Name:** $DB_NAME" >> $GITHUB_STEP_SUMMARY
           echo "**Key Vault:** $KV_NAME" >> $GITHUB_STEP_SUMMARY
+          echo "**Storage Account:** $STORAGE_NAME" >> $GITHUB_STEP_SUMMARY
 
       - name: Add Secrets to Key Vault
         env:
