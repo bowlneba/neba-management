@@ -52,8 +52,6 @@ public static class BowlerFactory
         Bogus.Faker<Bowler> faker = new Bogus.Faker<Bowler>()
             .CustomInstantiator(f =>
             {
-                var bowlerId = BowlerId.New();
-
                 int? websiteId = null;
                 if (f.Random.Bool(0.5f))
                 {
@@ -68,15 +66,15 @@ public static class BowlerFactory
 
                 return new Bowler
                 {
-                    Id = bowlerId,
+                    Id = BowlerId.New(),
                     Name = NameFactory.Bogus(),
                     WebsiteId = websiteId,
                     ApplicationId = applicationId,
                     Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
                     SeasonAwards = SeasonAwardFactory
-                        .BogusBowlerOfTheYear(bowlerId, f.Random.Int(0, 5), seed)
-                        .Union(SeasonAwardFactory.BogusHighBlockAward(bowlerId, f.Random.Int(0, 5), seed))
-                        .Union(SeasonAwardFactory.BogusHighAverageAward(bowlerId, f.Random.Int(0, 5), seed))
+                        .BogusBowlerOfTheYear(f.Random.Int(0, 5), seed)
+                        .Union(SeasonAwardFactory.BogusHighBlockAward(f.Random.Int(0, 5), seed))
+                        .Union(SeasonAwardFactory.BogusHighAverageAward(f.Random.Int(0, 5), seed))
                         .ToList().AsReadOnly()
                 };
             });

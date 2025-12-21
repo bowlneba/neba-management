@@ -21,10 +21,9 @@ public static class SeasonAwardFactory
     }
 
     public static SeasonAward BogusBowlerOfTheYear(BowlerId bowlerId, int? seed = null)
-        => BogusBowlerOfTheYear(bowlerId, 1, seed).Single();
+        => BogusBowlerOfTheYear(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusBowlerOfTheYear(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
@@ -43,10 +42,9 @@ public static class SeasonAwardFactory
     }
 
     public static SeasonAward BogusHighBlockAward(int? seed = null)
-        => BogusHighBlockAward(BowlerId.New(), 1, seed).Single();
+        => BogusHighBlockAward(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusHighBlockAward(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
@@ -76,10 +74,9 @@ public static class SeasonAwardFactory
         };
 
     public static SeasonAward BogusHighAverageAward(int? seed = null)
-        => BogusHighAverageAward(BowlerId.New(), 1, seed).Single();
+        => BogusHighAverageAward(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusHighAverageAward(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
