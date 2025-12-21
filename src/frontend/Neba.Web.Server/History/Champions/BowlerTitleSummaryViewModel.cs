@@ -1,3 +1,5 @@
+using Neba.Domain.Identifiers;
+
 namespace Neba.Web.Server.History.Champions;
 
 /// <summary>
@@ -8,7 +10,7 @@ public sealed record BowlerTitleSummaryViewModel
     /// <summary>
     /// Gets the unique identifier for the bowler.
     /// </summary>
-    public required Ulid BowlerId { get; init; }
+    public required BowlerId BowlerId { get; init; }
 
     /// <summary>
     /// Gets the full name of the bowler.

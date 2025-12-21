@@ -21,8 +21,16 @@
                     <div class="nav-section-title">Getting Started</div>
                     <ul class="nav-links">
                         <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Overview</a></li>
-                        <li><a href="{{ '/architecture' | relative_url }}" {% if page.url contains 'architecture' %}class="active"{% endif %}>Architecture</a></li>
                         <li><a href="{{ '/contributing' | relative_url }}" {% if page.url contains 'contributing' %}class="active"{% endif %}>Contributing</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Architecture</div>
+                    <ul class="nav-links">
+                        <li><a href="{{ '/architecture' | relative_url }}" {% if page.url == '/architecture/' %}class="active"{% endif %}>Overview</a></li>
+                        <li><a href="{{ '/architecture/bounded-contexts' | relative_url }}" {% if page.url contains 'bounded-contexts' %}class="active"{% endif %}>Bounded Contexts</a></li>
+                        <li><a href="{{ '/architecture/adr-001-ulid-shadow-keys' | relative_url }}" {% if page.url contains 'adr-001' %}class="active"{% endif %}>ADR-001: ULID Pattern</a></li>
                     </ul>
                 </div>
 

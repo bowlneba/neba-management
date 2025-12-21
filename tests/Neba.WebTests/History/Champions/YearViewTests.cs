@@ -1,7 +1,7 @@
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Neba.Tests;
+using Neba.Tests.Website;
 using Neba.Web.Server.History.Champions;
 
 namespace Neba.WebTests.History.Champions;
@@ -12,7 +12,7 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_NoTitles_DisplaysEmptyMessage()
     {
         // Arrange
-        var titlesByYear = new List<TitlesByYearViewModel>();
+        List<TitlesByYearViewModel> titlesByYear = new List<TitlesByYearViewModel>();
 
         // Act
         IRenderedComponent<YearView> cut = Render<YearView>(parameters => parameters
@@ -30,14 +30,14 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_Titles_GroupsByYear()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(tournamentMonth: 12, tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentMonth: 11, tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentMonth: 10, tournamentYear: 2023)
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -59,13 +59,13 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_Titles_DisplaysYearHeadersWithCounts()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024)
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -88,12 +88,12 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_OneTitle_UsesSingularForm()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create()
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -115,13 +115,13 @@ public sealed class YearViewTests : TestContextWrapper
     public void OnParametersSet_Titles_ExpandsAllSections()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -143,12 +143,12 @@ public sealed class YearViewTests : TestContextWrapper
     public async Task ToggleSection_HeaderClicked_TogglesExpansion()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create()
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -180,12 +180,12 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_Titles_DisplaysTableWithCorrectColumns()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create()
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -209,12 +209,12 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_Titles_DisplaysChampionNamesAsClickableButtons()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(bowlerName: "Alice Smith")
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -237,14 +237,14 @@ public sealed class YearViewTests : TestContextWrapper
     public void Render_MultipleYears_SortsYearsDescending()
     {
         // Arrange
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(tournamentYear: 2022),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2024),
             BowlerTitleViewModelFactory.Create(tournamentYear: 2023)
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();
@@ -269,12 +269,12 @@ public sealed class YearViewTests : TestContextWrapper
     {
         // Arrange
         BowlerTitleViewModel? clickedChampion = null;
-        var titles = new List<BowlerTitleViewModel>
+        List<BowlerTitleViewModel> titles = new List<BowlerTitleViewModel>
         {
             BowlerTitleViewModelFactory.Create(bowlerName: "Alice")
         };
 
-        var titlesByYear = titles
+        List<TitlesByYearViewModel> titlesByYear = titles
             .GroupBy(t => t.TournamentYear)
             .Select(g => new TitlesByYearViewModel { Year = g.Key, Titles = g.ToList() })
             .ToList();

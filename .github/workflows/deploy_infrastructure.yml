@@ -288,7 +288,7 @@ jobs:
             --output none
 
           # Create connection string for website (using website user credentials)
-          WEBSITE_CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=$WEB_USERNAME;Password=$DATABASE_WEB_PASSWORD;SslMode=Require"
+          WEBSITE_CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=$WEB_USERNAME;Password=$DATABASE_WEB_PASSWORD;SslMode=Require;SearchPath=website"
 
           # Add website connection string to Key Vault
           echo "Adding ConnectionStrings--website..."

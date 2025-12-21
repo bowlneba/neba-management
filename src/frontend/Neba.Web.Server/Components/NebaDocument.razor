@@ -1,4 +1,3 @@
-@using Microsoft.JSInterop
 @using Neba.Web.Server.Notifications
 @implements IAsyncDisposable
 
@@ -88,7 +87,7 @@
     /// <summary>
     /// The HTML content to display in the document.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter][EditorRequired]
     public MarkupString? Content { get; set; }
 
     /// <summary>
@@ -190,7 +189,7 @@
             await Task.Delay(200);
 
             // Try to initialize TOC up to 5 times
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var success = await _module.InvokeAsync<bool>("initializeToc",
                     ContentId,

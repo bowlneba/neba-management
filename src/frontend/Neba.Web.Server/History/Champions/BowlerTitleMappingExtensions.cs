@@ -1,5 +1,5 @@
-using Neba.Contracts.Website.Bowlers;
-using Neba.Contracts.Website.Titles;
+using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.Titles;
 
 namespace Neba.Web.Server.History.Champions;
 

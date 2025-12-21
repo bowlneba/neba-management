@@ -3,10 +3,12 @@
 using System.Collections.ObjectModel;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
-using Neba.Contracts.Website.Bowlers;
-using Neba.Contracts.Website.Titles;
+using Neba.Domain.Identifiers;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
+using Neba.Website.Contracts.Awards;
+using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.Titles;
 using Refit;
 
 namespace Neba.Web.Server.Services;
@@ -25,7 +27,7 @@ internal class NebaApiService(INebaApi nebaApi)
         return result.Value.Items.Select(dto => dto.ToViewModel()).ToList().AsReadOnly();
     }
 
-    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(Ulid bowlerId)
+    public async Task<ErrorOr<BowlerTitlesViewModel>> GetBowlerTitlesAsync(BowlerId bowlerId)
     {
         ErrorOr<Contracts.ApiResponse<BowlerTitlesResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetBowlerTitlesAsync(bowlerId));
 
@@ -39,7 +41,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<IReadOnlyCollection<TitlesByYearViewModel>>> GetTitlesByYearAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Titles.TitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
+        ErrorOr<Contracts.CollectionResponse<TitleResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetAllTitlesAsync());
 
         if (result.IsError)
         {
@@ -67,8 +69,8 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<IReadOnlyCollection<BowlerOfTheYearByYearViewModel>>> GetBowlerOfTheYearAwardsAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Awards.BowlerOfTheYearResponse>> result
-            = await ExecuteApiCallAsync(() => nebaApi.GetBowlerOfTheYearAwardsAsync());
+        ErrorOr<Contracts.CollectionResponse<BowlerOfTheYearResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetBowlerOfTheYearAwardsAsync);
 
         if (result.IsError)
         {
@@ -92,8 +94,8 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<IReadOnlyCollection<HighBlockAwardViewModel>>> GetHighBlockAwardsAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Awards.HighBlockAwardResponse>> result
-            = await ExecuteApiCallAsync(() => nebaApi.GetHighBlockAwardsAsync());
+        ErrorOr<Contracts.CollectionResponse<HighBlockAwardResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetHighBlockAwardsAsync);
 
         if (result.IsError)
         {
@@ -119,8 +121,8 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<IReadOnlyCollection<HighAverageAwardViewModel>>> GetHighAverageAwardsAsync()
     {
-        ErrorOr<Contracts.CollectionResponse<Contracts.Website.Awards.HighAverageAwardResponse>> result
-            = await ExecuteApiCallAsync(() => nebaApi.GetHighAverageAwardsAsync());
+        ErrorOr<Contracts.CollectionResponse<HighAverageAwardResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetHighAverageAwardsAsync);
 
         if (result.IsError)
         {
@@ -136,7 +138,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<MarkupString>> GetTournamentRulesAsync()
     {
-        ErrorOr<string> result = await ExecuteApiCallAsync(() => nebaApi.GetTournamentRulesAsync());
+        ErrorOr<string> result = await ExecuteApiCallAsync(nebaApi.GetTournamentRulesAsync);
 
         if (result.IsError)
         {
@@ -148,7 +150,7 @@ internal class NebaApiService(INebaApi nebaApi)
 
     public async Task<ErrorOr<MarkupString>> GetBylawsAsync()
     {
-        ErrorOr<string> result = await ExecuteApiCallAsync(() => nebaApi.GetBylawsAsync());
+        ErrorOr<string> result = await ExecuteApiCallAsync(nebaApi.GetBylawsAsync);
 
         if (result.IsError)
         {

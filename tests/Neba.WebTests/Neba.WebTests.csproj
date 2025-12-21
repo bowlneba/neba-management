@@ -3,12 +3,8 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <RootNamespace>Neba.WebTests</RootNamespace>
-        <!--
-        This template uses native xUnit.net command line options when using 'dotnet run' and
-        VSTest by default when using 'dotnet test'. For more information on how to enable support
-        for Microsoft Testing Platform, please visit:
-          https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
-        -->
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+        <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,6 +14,7 @@
     <ItemGroup>
       <PackageReference Include="bunit" />
       <PackageReference Include="Moq" />
+      <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     </ItemGroup>
 
     <ItemGroup>

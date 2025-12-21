@@ -3,10 +3,11 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Neba.Contracts;
-using Neba.Contracts.Website.Titles;
 using Neba.Tests;
+using Neba.Tests.Website;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
+using Neba.Website.Contracts.Titles;
 
 namespace Neba.WebTests.History.Champions;
 
@@ -26,7 +27,7 @@ public sealed class ChampionsTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsChampions()
     {
         // Arrange - Set up successful API response
-        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -49,7 +50,7 @@ public sealed class ChampionsTests : TestContextWrapper
             .ThrowsAsync(new InvalidOperationException("API Error"));
 
         // Act
-        var component = Render<Neba.Web.Server.History.Champions.Champions>();
+        IRenderedComponent<Web.Server.History.Champions.Champions> component = Render<Neba.Web.Server.History.Champions.Champions>();
 
         // Assert - Component should render without throwing even when API fails
         component.ShouldNotBeNull();
@@ -60,8 +61,8 @@ public sealed class ChampionsTests : TestContextWrapper
     public async Task HandleViewChanged_ValidView_SwitchesView()
     {
         // Arrange - Set up mocks for both summary and titles data to simulate view switching scenario
-        using var summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
-        using var titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleResponse> { Items = new List<TitleResponse> { TitleResponseFactory.Bogus() } });
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> summaryResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
+        using TestApiResponse<CollectionResponse<TitleResponse>> titlesResponse = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleResponse> { Items = new List<TitleResponse> { TitleResponseFactory.Bogus() } });
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -71,31 +72,31 @@ public sealed class ChampionsTests : TestContextWrapper
             .ReturnsAsync(titlesResponse.ApiResponse);
 
         IRenderedComponent<Neba.Web.Server.History.Champions.Champions> cut = Render<Neba.Web.Server.History.Champions.Champions>();
-        var instance = cut.Instance;
+        Web.Server.History.Champions.Champions instance = cut.Instance;
 
         // Get private fields via reflection
-        var selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo? selectedViewField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_selectedView", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(selectedViewField);
-        var titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo? titlesByYearField = typeof(Neba.Web.Server.History.Champions.Champions).GetField("_titlesByYear", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(titlesByYearField);
 
         // Assert initial state
-        var initialView = (ChampionsView)selectedViewField.GetValue(instance)!;
+        ChampionsView initialView = (ChampionsView)selectedViewField.GetValue(instance)!;
         Assert.Equal(ChampionsView.TitleCount, initialView);
 
-        var initialTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
+        List<TitlesByYearViewModel>? initialTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
         Assert.Null(initialTitlesByYear);
 
         // Act - Invoke HandleViewChanged to switch to Year view
-        var handleViewChangedMethod = typeof(Neba.Web.Server.History.Champions.Champions).GetMethod("HandleViewChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+        MethodInfo? handleViewChangedMethod = typeof(Neba.Web.Server.History.Champions.Champions).GetMethod("HandleViewChanged", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(handleViewChangedMethod);
         await (Task)handleViewChangedMethod.Invoke(instance, new object[] { "Year" })!;
 
         // Assert - View should have switched and titlesByYear should be loaded
-        var newView = (ChampionsView)selectedViewField.GetValue(instance)!;
+        ChampionsView newView = (ChampionsView)selectedViewField.GetValue(instance)!;
         Assert.Equal(ChampionsView.Year, newView);
 
-        var loadedTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
+        List<TitlesByYearViewModel>? loadedTitlesByYear = (List<TitlesByYearViewModel>?)titlesByYearField.GetValue(instance);
         Assert.NotNull(loadedTitlesByYear);
         Assert.NotEmpty(loadedTitlesByYear);
     }
@@ -104,7 +105,7 @@ public sealed class ChampionsTests : TestContextWrapper
     public void Render_WithData_IncludesModal()
     {
         // Arrange - Set up successful API response with champion data
-        using var response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> response = ApiResponseFactory.CreateSuccessResponse(new CollectionResponse<TitleSummaryResponse> { Items = new List<TitleSummaryResponse> { TitleSummaryResponseFactory.Create() } });
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -117,7 +118,7 @@ public sealed class ChampionsTests : TestContextWrapper
         cut.ShouldNotBeNull();
 
         // Verify that the BowlerTitlesModal component is present in the rendered output
-        var modalComponent = cut.FindComponent<Neba.Web.Server.History.Champions.BowlerTitlesModal>();
+        IRenderedComponent<BowlerTitlesModal> modalComponent = cut.FindComponent<Neba.Web.Server.History.Champions.BowlerTitlesModal>();
         modalComponent.ShouldNotBeNull();
     }
 }

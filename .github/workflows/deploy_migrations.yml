@@ -24,21 +24,21 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 jobs:
-  deploy-website-migrations:
-    name: Deploy Website Database Migrations
+  migrate-website:
+    name: Migrate Website Database
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'Production' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v5.2.2
+        uses: actions/checkout@v5
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@7e7f03d249393c7c24e6bb4cb48f3695fe4c1d3c # v5.0.0
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet packages
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
@@ -58,7 +58,7 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get database details and admin password
+      - name: Get database details and credentials
         id: get-db-info
         run: |
           echo "🔑 Reading database admin password from Key Vault..."
@@ -68,17 +68,18 @@ jobs:
             --query value -o tsv)
           echo "::add-mask::$DB_ADMIN_PASSWORD"
 
-          echo "📦 Getting database server FQDN..."
+          echo "� Getting database server FQDN..."
           DB_SERVER=$(az postgres flexible-server show \
             --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
             --name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} \
             --query fullyQualifiedDomainName -o tsv)
 
-          # Build connection string with admin credentials and SSL mode
+          # Build connection string with admin credentials for running migrations
           CONNECTION_STRING="Host=$DB_SERVER;Database=${{ vars.DATABASE_NAME }};Username=${{ vars.DATABASE_ADMIN_USERNAME }};Password=$DB_ADMIN_PASSWORD;SslMode=Require"
           echo "::add-mask::$CONNECTION_STRING"
 
           echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_OUTPUT
+          echo "DB_SERVER=$DB_SERVER" >> $GITHUB_OUTPUT
           echo "DB_SERVER_NAME=${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }}" >> $GITHUB_OUTPUT
 
       - name: Add temporary firewall rule for GitHub Actions
@@ -107,10 +108,258 @@ jobs:
         run: |
           echo "🔄 Applying Website database migrations..."
           dotnet ef database update \
-            --project src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj \
+            --project src/backend/Neba.Website.Infrastructure/Neba.Website.Infrastructure.csproj \
             --context WebsiteDbContext \
             --verbose
           echo "✅ Website database migrations applied successfully"
+
+      - name: Configure database users and permissions
+        env:
+          DB_CONNECTION_STRING: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
+          DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
+          DATABASE_QUERY_PASSWORD: ${{ secrets.DATABASE_QUERY_PASSWORD }}
+        run: |
+          echo "👥 Configuring database users and permissions..."
+
+          # Connect using admin credentials to set up roles
+          PGPASSWORD="$DB_CONNECTION_STRING" psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
+               -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
+               -d "${{ vars.DATABASE_NAME }}" \
+               << EOSQL
+
+          /* ============================================================
+             ROLE SETUP
+             ============================================================
+             - ddl_owner (DATABASE_OWNER_USERNAME): owns schemas, no login
+             - neba-web (DATABASE_WEB_USERNAME): runtime application identity
+             - kippermand (DATABASE_QUERY_USERNAME): human CRUD access
+
+             Future: add app_b, app_c, etc. for additional bounded contexts
+             ============================================================ */
+
+          DO \$\$
+          BEGIN
+              -- Create schema owner role (NOLOGIN - pure ownership)
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_OWNER_USERNAME }}') THEN
+                  CREATE ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+                      NOLOGIN
+                      NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+              END IF;
+
+              -- Create application runtime user
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_WEB_USERNAME }}') THEN
+                  CREATE ROLE "${{ vars.DATABASE_WEB_USERNAME }}"
+                      LOGIN PASSWORD '$DATABASE_WEB_PASSWORD'
+                      NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+              ELSE
+                  ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" WITH PASSWORD '$DATABASE_WEB_PASSWORD';
+              END IF;
+
+              -- Create human query user
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_QUERY_USERNAME }}') THEN
+                  CREATE ROLE "${{ vars.DATABASE_QUERY_USERNAME }}"
+                      LOGIN PASSWORD '$DATABASE_QUERY_PASSWORD'
+                      NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+              ELSE
+                  ALTER ROLE "${{ vars.DATABASE_QUERY_USERNAME }}" WITH PASSWORD '$DATABASE_QUERY_PASSWORD';
+              END IF;
+
+              -- Future: Create additional app users (app_b, app_c, etc.) here
+          END
+          \$\$;
+
+          /* ============================================================
+             SCHEMA CREATION & OWNERSHIP
+             ============================================================
+             Schemas represent bounded contexts.
+             Ownership MUST be ddl_owner for consistent permissions.
+
+             Future: Create additional schemas (b, c, etc.) here
+             ============================================================ */
+
+          CREATE SCHEMA IF NOT EXISTS website AUTHORIZATION "${{ vars.DATABASE_OWNER_USERNAME }}";
+
+          -- Ensure ownership didn't drift
+          ALTER SCHEMA website OWNER TO "${{ vars.DATABASE_OWNER_USERNAME }}";
+
+          /* ============================================================
+             SCHEMA LOCKDOWN
+             ============================================================
+             Remove implicit access via PUBLIC.
+             ============================================================ */
+
+          REVOKE ALL ON SCHEMA website FROM PUBLIC;
+
+          -- Future: Revoke PUBLIC access from additional schemas here
+
+          /* ============================================================
+             SCHEMA VISIBILITY (USAGE)
+             ============================================================
+             USAGE = schema is visible / name-resolvable.
+             ============================================================ */
+
+          GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
+          GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Future: Grant USAGE to additional app users on their respective schemas
+
+          /* ============================================================
+             EXISTING OBJECT PERMISSIONS
+             ============================================================
+             Covers redeploys or restored databases where objects exist.
+             ============================================================ */
+
+          -- Application user: CRUD on website schema
+          GRANT SELECT, INSERT, UPDATE, DELETE
+          ON ALL TABLES IN SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
+
+          GRANT USAGE, SELECT
+          ON ALL SEQUENCES IN SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
+
+          -- Human user: CRUD on all schemas
+          GRANT SELECT, INSERT, UPDATE, DELETE
+          ON ALL TABLES IN SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          GRANT USAGE, SELECT
+          ON ALL SEQUENCES IN SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Future: Grant permissions to app_b on schema b, app_c on schema c, etc.
+
+          /* ============================================================
+             DEFAULT PRIVILEGES (CRITICAL)
+             ============================================================
+             These apply ONLY to objects created by ddl_owner.
+             This is what makes "tables don't exist yet" safe.
+             Admin creates objects on behalf of ddl_owner during migrations.
+             ============================================================ */
+
+          -- Website schema: application user defaults
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA website
+          GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${{ vars.DATABASE_WEB_USERNAME }}";
+
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA website
+          GRANT USAGE, SELECT ON SEQUENCES TO "${{ vars.DATABASE_WEB_USERNAME }}";
+
+          -- Website schema: human user defaults
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA website
+          GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA website
+          GRANT USAGE, SELECT ON SEQUENCES TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Future: Add default privileges for additional schemas/users here
+
+          /* ============================================================
+             DEFENSIVE SEARCH PATH
+             ============================================================
+             Prevents accidental cross-schema access.
+             ============================================================ */
+
+          ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" SET search_path = website;
+
+          -- Future: Set search paths for additional app users (app_b = b, app_c = c, etc.)
+
+          EOSQL
+
+          echo "✅ Database users and permissions configured successfully"
+
+      - name: Validate schema ownership and permissions
+        env:
+          DB_CONNECTION_STRING: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
+        run: |
+          echo "🔍 Validating schema ownership and permissions..."
+
+          # Connect using admin credentials to validate setup
+          PGPASSWORD="$DB_CONNECTION_STRING" psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
+               -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
+               -d "${{ vars.DATABASE_NAME }}" \
+               << 'EOSQL'
+
+          /* ============================================================
+             VALIDATION: TABLE OWNERSHIP
+             ============================================================
+             Any table not owned by ddl_owner is a violation.
+             All schema objects must be owned by the owner role.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM pg_tables
+              WHERE schemaname IN ('website') -- Future: Add 'b', 'c', etc.
+                AND tableowner <> '${{ vars.DATABASE_OWNER_USERNAME }}';
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Found % table(s) not owned by ddl_owner (${{ vars.DATABASE_OWNER_USERNAME }})', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ All tables owned by ddl_owner';
+          END
+          $$;
+
+          /* ============================================================
+             VALIDATION: RUNTIME ROLES MUST NOT OWN OBJECTS
+             ============================================================
+             Application and human users should never own objects.
+             Only ddl_owner should own schema objects.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM pg_class c
+              JOIN pg_namespace n ON n.oid = c.relnamespace
+              JOIN pg_roles r ON r.oid = c.relowner
+              WHERE r.rolname IN ('${{ vars.DATABASE_WEB_USERNAME }}', '${{ vars.DATABASE_QUERY_USERNAME }}'); -- Future: Add 'app_b', 'app_c', etc.
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Found % object(s) owned by runtime roles', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ No objects owned by runtime roles';
+          END
+          $$;
+
+          /* ============================================================
+             VALIDATION: APPLICATION ISOLATION
+             ============================================================
+             Application users must only have privileges in their schema.
+             Cross-schema access is a security violation.
+             ============================================================ */
+
+          DO $$
+          DECLARE
+              violation_count INTEGER;
+          BEGIN
+              SELECT COUNT(*)
+              INTO violation_count
+              FROM information_schema.table_privileges
+              WHERE grantee = '${{ vars.DATABASE_WEB_USERNAME }}'
+                AND table_schema <> 'website';
+
+              IF violation_count > 0 THEN
+                  RAISE EXCEPTION '❌ Application user (${{ vars.DATABASE_WEB_USERNAME }}) has % privilege(s) outside its schema', violation_count;
+              END IF;
+
+              RAISE NOTICE '✅ Application user isolated to its schema';
+
+              -- Future: Add validation for app_b (schema b), app_c (schema c), etc.
+          END
+          $$;
+
+          EOSQL
+
+          echo "✅ All validation checks passed"
 
       - name: Remove temporary firewall rule
         if: steps.add-firewall-rule.outcome == 'success'
@@ -128,17 +377,24 @@ jobs:
         run: |
           echo "### 🎉 Migration Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ✅ Migrations applied successfully" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** ${{ vars.DATABASE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Schema:** website" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment || 'Production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Migrations applied and users configured successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Database Roles Configured:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Schema Owner: ${{ vars.DATABASE_OWNER_USERNAME }} (NOLOGIN)" >> $GITHUB_STEP_SUMMARY
+          echo "- Application: ${{ vars.DATABASE_WEB_USERNAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Query User: ${{ vars.DATABASE_QUERY_USERNAME }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Handle migration failure
         if: failure()
         run: |
           echo "### ❌ Migration Deployment Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Database:** bowlneba" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment:** ${{ vars.AZURE_ENVIRONMENT || 'Production' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ❌ Failed to apply migrations" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** ${{ vars.DATABASE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Schema:** website" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment || 'Production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ❌ Failed to apply migrations or configure users" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY

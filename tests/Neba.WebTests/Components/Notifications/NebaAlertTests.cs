@@ -173,7 +173,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldInvokeOnDismissWhenCloseButtonClicked()
     {
         // Arrange
-        var dismissCalled = false;
+        bool dismissCalled = false;
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
@@ -192,7 +192,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldInvokeOnCloseIconClickedWhenCloseButtonClicked()
     {
         // Arrange
-        var closeIconClicked = false;
+        bool closeIconClicked = false;
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
@@ -211,8 +211,8 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldInvokeBothCallbacksWhenCloseButtonClicked()
     {
         // Arrange
-        var dismissCalled = false;
-        var closeIconClicked = false;
+        bool dismissCalled = false;
+        bool closeIconClicked = false;
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
             .Add(p => p.Severity, NotifySeverity.Info)
             .Add(p => p.Message, "Test message")
@@ -233,7 +233,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderValidationMessagesWhenProvided()
     {
         // Arrange
-        var validationMessages = new List<string>
+        List<string> validationMessages = new List<string>
         {
             "Email is required",
             "Password must be at least 8 characters"
@@ -274,7 +274,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldPreferValidationMessagesOverMessage()
     {
         // Arrange
-        var validationMessages = new List<string> { "Validation error 1" };
+        List<string> validationMessages = new List<string> { "Validation error 1" };
 
         // Act
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters

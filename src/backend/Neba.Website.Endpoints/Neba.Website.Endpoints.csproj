@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neba.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />
+    <ProjectReference Include="..\Neba.Website.Infrastructure\Neba.Website.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

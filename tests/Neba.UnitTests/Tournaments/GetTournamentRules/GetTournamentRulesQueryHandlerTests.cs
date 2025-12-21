@@ -1,5 +1,5 @@
 using Neba.Application.Documents;
-using Neba.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.GetTournamentRules;
 
 namespace Neba.UnitTests.Tournaments.GetTournamentRules;
 

@@ -10,7 +10,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldRenderToastWithMessage()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -25,7 +25,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldRenderToastWithTitleAndMessage()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Warning, "Test message", "Test Title");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Warning, "Test message", "Test Title");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -43,7 +43,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldNotRenderTitleWhenNotProvided()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -62,7 +62,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldApplyCorrectSeverityClass(NotifySeverity severity, string expectedClass)
     {
         // Arrange
-        var payload = new NotificationPayload(severity, "Test message");
+        NotificationPayload payload = new NotificationPayload(severity, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -82,7 +82,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldSetCorrectAriaLive(NotifySeverity severity, string expectedAriaLive)
     {
         // Arrange
-        var payload = new NotificationPayload(severity, "Test message");
+        NotificationPayload payload = new NotificationPayload(severity, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -97,7 +97,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldRenderDismissButton()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -113,8 +113,8 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldInvokeOnDismissWhenDismissButtonClicked()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
-        var dismissCalled = false;
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        bool dismissCalled = false;
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -135,7 +135,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldAddDismissingClassWhenDismissed()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -156,7 +156,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldRenderNebaIconComponent()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Success, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Success, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -172,8 +172,8 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldAcceptCustomDuration()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
-        var customDuration = TimeSpan.FromSeconds(10);
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        TimeSpan customDuration = TimeSpan.FromSeconds(10);
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -188,7 +188,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldUseDefaultDurationWhenNotSpecified()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -202,7 +202,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldEnablePauseOnHoverByDefault()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -216,7 +216,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldAllowDisablingPauseOnHover()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -231,7 +231,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldHandleMouseEnterWithoutError()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters
@@ -249,7 +249,7 @@ public sealed class NebaToastTests : TestContextWrapper
     public void ShouldHandleMouseLeaveWithoutError()
     {
         // Arrange
-        var payload = new NotificationPayload(NotifySeverity.Info, "Test message");
+        NotificationPayload payload = new NotificationPayload(NotifySeverity.Info, "Test message");
 
         // Act
         IRenderedComponent<NebaToast> cut = Render<NebaToast>(parameters => parameters

@@ -1,9 +1,10 @@
 using System.Text.Json;
-using Neba.Api.Endpoints.Website;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
-using Neba.Application;
 using Neba.Infrastructure;
+using Neba.Website.Application;
+using Neba.Website.Endpoints;
+using Neba.Website.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+    .AddInfrastructure(builder.Configuration)
+    .AddWebsiteApplication()
+    .AddWebsiteInfrastructure(builder.Configuration);
 
 // Add CORS policy
 builder.Services.AddCors(options =>

@@ -1,7 +1,7 @@
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Neba.Tests;
+using Neba.Tests.Website;
 using Neba.Web.Server.History.Champions;
 
 namespace Neba.WebTests.History.Champions;
@@ -24,7 +24,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldGroupChampionsByTitleCount()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
@@ -44,7 +44,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyEliteTierStylesForTwentyOrMoreTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true)
         };
@@ -62,7 +62,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyMidTierStylesForTenToNineteenTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 15)
         };
@@ -80,7 +80,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyStandardTierStylesForLessThanTenTitles()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create()
         };
@@ -98,7 +98,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayCorrectHeaderText()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(),
             BowlerTitleSummaryViewModelFactory.Create()
@@ -118,7 +118,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldUseSingularFormForOneTitle()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 1)
         };
@@ -137,7 +137,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldExpandAllSectionsByDefault()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3)
@@ -156,7 +156,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldToggleSectionWhenHeaderClicked()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create()
         };
@@ -184,7 +184,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldRenderChampionCards()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(),
             BowlerTitleSummaryViewModelFactory.Create()
@@ -203,7 +203,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayBowlerNamesInCards()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice Smith"),
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Bob Jones")
@@ -222,7 +222,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayHallOfFameBadgeForHallOfFamers()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 20, hallOfFame: true)
         };
@@ -240,7 +240,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldNotDisplayHallOfFameBadgeForNonHallOfFamers()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create()
         };
@@ -259,7 +259,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     {
         // Arrange
         BowlerTitleSummaryViewModel? clickedChampion = null;
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice")
         };
@@ -282,7 +282,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderChampionsAlphabeticallyWithinGroup()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Zara"),
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice"),
@@ -304,7 +304,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderGroupsByTitleCountDescending()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 10),
@@ -326,7 +326,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyCorrectGridClasses()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create()
         };
@@ -347,7 +347,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldHandleMultipleGroupsCorrectly()
     {
         // Arrange
-        var champions = new List<BowlerTitleSummaryViewModel>
+        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
         {
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true),

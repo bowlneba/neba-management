@@ -1,4 +1,4 @@
-using Neba.Contracts.Website.Awards;
+using Neba.Website.Contracts.Awards;
 
 namespace Neba.Web.Server.History.Awards;
 

@@ -6,6 +6,13 @@
     <Project Path="src/backend/Neba.Domain/Neba.Domain.csproj" />
     <Project Path="src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Backend/Website/">
+    <Project Path="src/backend/Neba.Website.Endpoints/Neba.Website.Endpoints.csproj" />
+    <Project Path="src/backend/Neba.Website.Application/Neba.Website.Application.csproj" />
+    <Project Path="src/backend/Neba.Website.Contracts/Neba.Website.Contracts.csproj" />
+    <Project Path="src/backend/Neba.Website.Domain/Neba.Website.Domain.csproj" />
+    <Project Path="src/backend/Neba.Website.Infrastructure/Neba.Website.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/Directory/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
@@ -20,7 +27,6 @@
   </Folder>
   <Folder Name="/Shared Kernel/">
     <Project Path="src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj" />
-    <Project Path="src/shared-kernel/Neba.SharedKernel/Neba.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <File Path="tests/Directory.Build.props" />

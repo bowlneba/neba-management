@@ -19,7 +19,6 @@
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
     <PackageReference Include="Google.Apis.Docs.v1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
@@ -28,6 +27,10 @@
     <InternalsVisibleTo Include="Neba.Tests" />
     <InternalsVisibleTo Include="Neba.UnitTests" />
     <InternalsVisibleTo Include="Neba.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="Database\.editorconfig" />
   </ItemGroup>
 
 </Project>
