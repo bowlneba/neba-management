@@ -49,7 +49,7 @@ internal static class BackgroundJobsExtensions
             services.AddHangfire((serviceProvider, options) =>
             {
                 HangfireSettings settings = serviceProvider.GetRequiredService<HangfireSettings>();
-                
+
                 options
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                     .UseSimpleAssemblyNameTypeSerializer()
