@@ -19,7 +19,7 @@ param accessTier string = 'Hot'
 param httpsOnly bool = true
 
 @description('Minimum TLS version')
-@allowed(['TLS1_0', 'TLS1_1', 'TLS1_2'])
+@allowed(['TLS1_2', 'TLS1_3'])
 param minTlsVersion string = 'TLS1_2'
 
 @description('Allow shared key access')

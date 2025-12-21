@@ -23,6 +23,7 @@ internal static class StorageExtensions
 
             services.AddHealthChecks()
                 .AddAzureBlobStorage(
+                    sp => sp.GetRequiredService<BlobServiceClient>(),
                     name: "Azure Blob Storage",
                     tags: ["infrastructure", "storage"]
                 );
