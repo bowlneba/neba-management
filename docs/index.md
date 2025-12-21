@@ -21,13 +21,13 @@ title: Home
     </div>
 
     <div class="feature-box">
-        <h3><span class="feature-icon">🏗️</span> Architecture</h3>
-        <p>Clean architecture with DDD tactical patterns.</p>
+        <h3><span class="feature-icon">🏗️</span> Architecture <span class="status-badge status-ready">Ready</span></h3>
+        <p>Modular monolith with DDD tactical patterns.</p>
         <ul class="feature-list">
-            <li>Layer Overview</li>
-            <li>Domain Models</li>
-            <li>Repository Pattern</li>
-            <li>CQRS Implementation</li>
+            <li><a href="{{ '/architecture/bounded-contexts' | relative_url }}">Bounded Contexts</a></li>
+            <li><a href="{{ '/architecture/adr-001-ulid-shadow-keys' | relative_url }}">ADR-001: ULID Pattern</a></li>
+            <li>Domain Models <span class="status-badge status-soon">Soon</span></li>
+            <li>CQRS Implementation <span class="status-badge status-soon">Soon</span></li>
         </ul>
     </div>
 
