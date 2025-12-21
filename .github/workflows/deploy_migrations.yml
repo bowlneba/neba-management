@@ -200,10 +200,10 @@ jobs:
           /* ============================================================
              SCHEMA LOCKDOWN
              ============================================================
-          REVOKE ALL ON SCHEMA hangfire FROM PUBLIC;
              Remove implicit access via PUBLIC.
              ============================================================ */
 
+          REVOKE ALL ON SCHEMA hangfire FROM PUBLIC;
           REVOKE ALL ON SCHEMA website FROM PUBLIC;
 
           -- Future: Revoke PUBLIC access from additional schemas here
