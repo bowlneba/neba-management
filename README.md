@@ -95,6 +95,7 @@ src/backend/
 - [ ] API Caching
 - [x] Health Checks
 - [x] SonarCloud Integration
+- [x] Background Jobs
 - [ ] Global Exception Handling
 - [ ] Open Telemetry
 - [ ] Rate Limiting & Throttling

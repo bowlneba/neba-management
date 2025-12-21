@@ -1,10 +1,24 @@
+using Azure.Identity;
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
+using Neba.Web.Server.BackgroundJobs;
 using Neba.Web.Server.Notifications;
 using Neba.Web.Server.Services;
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Add Key Vault configuration if enabled
+bool useKeyVault = builder.Configuration.GetValue("KeyVault:Enabled", false);
+if (useKeyVault)
+{
+    string? vaultUrl = builder.Configuration["KeyVault:VaultUrl"];
+    if (!string.IsNullOrEmpty(vaultUrl))
+    {
+        var vaultUri = new Uri(vaultUrl);
+        builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
+    }
+}
 
 builder.Services.AddOptions<NebaApiConfiguration>()
     .Bind(builder.Configuration.GetSection("NebaApi"))
@@ -27,6 +41,8 @@ builder.Services.AddRefitClient<INebaApi>(new RefitSettings
         NebaApiConfiguration config = sp.GetRequiredService<NebaApiConfiguration>();
         client.BaseAddress = new Uri(config.BaseUrl);
     });
+
+builder.Services.AddBackgroundJobs(builder.Configuration);
 
 // API services
 builder.Services.AddScoped<NebaApiService>();
@@ -60,6 +76,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Neba.Web.Client._Imports).Assembly);
+
+app.UseBackgroundJobsDashboard();
 
 // API endpoints for slide-over panel to fetch document content
 app.MapGet("/api/documents/bylaws", async (NebaApiService apiService) =>

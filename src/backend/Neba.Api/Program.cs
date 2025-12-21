@@ -15,6 +15,9 @@ builder.Services.ConfigureOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
+// this is here temporarily for hangfire logging, and will be properly configured later with OTEL setup
+builder.Services.AddLogging();
+
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddWebsiteApplication()
@@ -37,6 +40,8 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
+//authorization / authentication would go here
+
 app
     .UseOpenApi()
     .UseHealthChecks();
@@ -45,6 +50,8 @@ app.UseHttpsRedirection();
 
 // Enable CORS
 app.UseCors();
+
+app.UseInfrastructure();
 
 // Future API endpoints will be added here
 app.MapWebsiteEndpoints();

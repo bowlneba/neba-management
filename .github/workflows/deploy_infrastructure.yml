@@ -22,6 +22,9 @@ on:
       DATABASE_WEB_PASSWORD:
         description: 'PostgreSQL website user password'
         required: true
+      DATABASE_JOBS_PASSWORD:
+        description: 'PostgreSQL Hangfire jobs user password'
+        required: true
       GOOGLE_DOCS_CLIENT_EMAIL:
         description: 'Google Docs service account client email'
         required: false
@@ -233,6 +236,7 @@ jobs:
         env:
           DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
           DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
+          DATABASE_JOBS_PASSWORD: ${{ secrets.DATABASE_JOBS_PASSWORD }}
           GOOGLE_DOCS_CLIENT_EMAIL: ${{ secrets.GOOGLE_DOCS_CLIENT_EMAIL }}
           GOOGLE_DOCS_CLIENT_ID: ${{ secrets.GOOGLE_DOCS_CLIENT_ID }}
           GOOGLE_DOCS_CLIENT_X509_CERT_URL: ${{ secrets.GOOGLE_DOCS_CLIENT_X509_CERT_URL }}
@@ -246,11 +250,13 @@ jobs:
           DB_SERVER=$(az postgres flexible-server show --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} --name ${{ vars.DATABASE_SERVER_NAME }}-${{ vars.AZURE_LOCATION }} --query 'fullyQualifiedDomainName' -o tsv)
           DB_NAME="${{ vars.DATABASE_NAME }}"
           WEB_USERNAME="${{ vars.DATABASE_WEB_USERNAME }}"
+          JOBS_USERNAME="${{ vars.DATABASE_JOBS_USERNAME }}"
 
           echo "Key Vault: $KV_NAME"
           echo "Database Server: $DB_SERVER"
           echo "Database Name: $DB_NAME"
           echo "Website Username: $WEB_USERNAME"
+          echo "Jobs Username: $JOBS_USERNAME"
 
           # Get the currently authenticated service principal's object ID
           # For OIDC, az account show returns the client/app ID, we need to get the object ID
@@ -296,6 +302,17 @@ jobs:
             --vault-name "$KV_NAME" \
             --name "ConnectionStrings--website" \
             --value "$WEBSITE_CONNECTION_STRING" \
+            --output none
+
+          # Create connection string for Hangfire background jobs
+          HANGFIRE_CONNECTION_STRING="Host=$DB_SERVER;Database=$DB_NAME;Username=$JOBS_USERNAME;Password=$DATABASE_JOBS_PASSWORD;SslMode=Require;SearchPath=hangfire"
+
+          # Add Hangfire connection string to Key Vault
+          echo "Adding ConnectionStrings--hangfire..."
+          az keyvault secret set \
+            --vault-name "$KV_NAME" \
+            --name "ConnectionStrings--hangfire" \
+            --value "$HANGFIRE_CONNECTION_STRING" \
             --output none
 
           # Add database admin password to Key Vault for manual access
@@ -344,12 +361,13 @@ jobs:
 
           echo "✅ Secrets added to Key Vault"
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Key Vault Secrets:** ConnectionStrings--website-migrations, ConnectionStrings--website, DatabaseAdminPassword, GoogleDocs credentials" >> $GITHUB_STEP_SUMMARY
+          echo "**Key Vault Secrets:** ConnectionStrings--website-migrations, ConnectionStrings--website, ConnectionStrings--hangfire, DatabaseAdminPassword, GoogleDocs credentials" >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Database Schema Users
         env:
           DATABASE_ADMIN_PASSWORD: ${{ secrets.DATABASE_ADMIN_PASSWORD }}
           DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
+          DATABASE_JOBS_PASSWORD: ${{ secrets.DATABASE_JOBS_PASSWORD }}
         run: |
           echo "👤 Setting up database schema-specific users..."
 
@@ -357,10 +375,11 @@ jobs:
           DB_NAME="${{ vars.DATABASE_NAME }}"
           ADMIN_USERNAME="${{ vars.DATABASE_ADMIN_USERNAME }}"
           WEB_USERNAME="${{ vars.DATABASE_WEB_USERNAME }}"
+          JOBS_USERNAME="${{ vars.DATABASE_JOBS_USERNAME }}"
 
           echo "Setting up website user with access to 'website' schema..."
 
-          # Run the schema user setup script
+          # Run the schema user setup script for website
           PGPASSWORD="$DATABASE_ADMIN_PASSWORD" psql \
             "host=$DB_SERVER port=5432 dbname=$DB_NAME user=$ADMIN_USERNAME sslmode=require" \
             -v schema_name='website' \
@@ -370,12 +389,29 @@ jobs:
 
           if [ $? -eq 0 ]; then
             echo "✅ Website user created successfully with permissions on 'website' schema"
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Database Users:** Website user configured with CRUD access to 'website' schema" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Failed to create website user with permissions on 'website' schema" >&2
+            exit 1
+          fi
+
+          echo "Setting up jobs user with access to 'hangfire' schema..."
+
+          # Run the schema user setup script for Hangfire jobs
+          PGPASSWORD="$DATABASE_ADMIN_PASSWORD" psql \
+            "host=$DB_SERVER port=5432 dbname=$DB_NAME user=$ADMIN_USERNAME sslmode=require" \
+            -v schema_name='hangfire' \
+            -v username="$JOBS_USERNAME" \
+            -v password="$DATABASE_JOBS_PASSWORD" \
+            -f infrastructure/database/setup-schema-user.sql
+
+          if [ $? -eq 0 ]; then
+            echo "✅ Jobs user created successfully with permissions on 'hangfire' schema"
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Database Users:** Failed to configure website user. See logs for details." >> $GITHUB_STEP_SUMMARY
+            echo "**Database Users:** Website user and Jobs user configured with CRUD access to their respective schemas" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Failed to create jobs user with permissions on 'hangfire' schema" >&2
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Database Users:** Failed to configure jobs user. See logs for details." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
       - name: Upload deployment artifacts

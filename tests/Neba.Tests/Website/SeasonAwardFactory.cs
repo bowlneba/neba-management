@@ -21,10 +21,9 @@ public static class SeasonAwardFactory
     }
 
     public static SeasonAward BogusBowlerOfTheYear(BowlerId bowlerId, int? seed = null)
-        => BogusBowlerOfTheYear(bowlerId, 1, seed).Single();
+        => BogusBowlerOfTheYear(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusBowlerOfTheYear(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
@@ -32,8 +31,7 @@ public static class SeasonAwardFactory
             .RuleFor(boy => boy.Id, _ => SeasonAwardId.New())
             .RuleFor(boy => boy.AwardType, _ => SeasonAwardType.BowlerOfTheYear)
             .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(boy => boy.BowlerOfTheYearCategory, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()))
-            .RuleFor(boy => boy.Bowler, _ => BowlerFactory.Create(id: bowlerId));
+            .RuleFor(boy => boy.BowlerOfTheYearCategory, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()));
 
         if (seed.HasValue)
         {
@@ -44,10 +42,9 @@ public static class SeasonAwardFactory
     }
 
     public static SeasonAward BogusHighBlockAward(int? seed = null)
-        => BogusHighBlockAward(BowlerId.New(), 1, seed).Single();
+        => BogusHighBlockAward(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusHighBlockAward(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
@@ -55,7 +52,6 @@ public static class SeasonAwardFactory
             .RuleFor(award => award.Id, _ => SeasonAwardId.New())
             .RuleFor(award => award.AwardType, _ => SeasonAwardType.High5GameBlock)
             .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Bowler, _ => BowlerFactory.Create(id: bowlerId))
             .RuleFor(award => award.HighBlockScore, f => f.Random.Int(1200, 1400));
 
         if (seed.HasValue)
@@ -78,10 +74,9 @@ public static class SeasonAwardFactory
         };
 
     public static SeasonAward BogusHighAverageAward(int? seed = null)
-        => BogusHighAverageAward(BowlerId.New(), 1, seed).Single();
+        => BogusHighAverageAward(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusHighAverageAward(
-        BowlerId bowlerId,
         int count,
         int? seed = null)
     {
@@ -89,7 +84,6 @@ public static class SeasonAwardFactory
             .RuleFor(award => award.Id, _ => SeasonAwardId.New())
             .RuleFor(award => award.AwardType, _ => SeasonAwardType.HighAverage)
             .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Bowler, _ => BowlerFactory.Create(id: bowlerId))
             .RuleFor(award => award.Average, f => f.Random.Int(180, 240))
             .RuleFor(award => award.SeasonTotalGames, f => f.Random.Int(90, 120))
             .RuleFor(award => award.Tournaments, f => f.Random.Int(8, 12));

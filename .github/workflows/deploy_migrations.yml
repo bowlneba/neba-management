@@ -118,6 +118,7 @@ jobs:
           DB_CONNECTION_STRING: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
           DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
           DATABASE_QUERY_PASSWORD: ${{ secrets.DATABASE_QUERY_PASSWORD }}
+          DATABASE_JOBS_PASSWORD: ${{ secrets.DATABASE_JOBS_PASSWORD }}
         run: |
           echo "👥 Configuring database users and permissions..."
 
@@ -133,6 +134,7 @@ jobs:
              - ddl_owner (DATABASE_OWNER_USERNAME): owns schemas, no login
              - neba-web (DATABASE_WEB_USERNAME): runtime application identity
              - kippermand (DATABASE_QUERY_USERNAME): human CRUD access
+             - neba-jobs (DATABASE_JOBS_USERNAME): background jobs identity
 
              Future: add app_b, app_c, etc. for additional bounded contexts
              ============================================================ */
@@ -164,6 +166,15 @@ jobs:
                   ALTER ROLE "${{ vars.DATABASE_QUERY_USERNAME }}" WITH PASSWORD '$DATABASE_QUERY_PASSWORD';
               END IF;
 
+              -- Create background jobs user
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_JOBS_USERNAME }}') THEN
+                  CREATE ROLE "${{ vars.DATABASE_JOBS_USERNAME }}"
+                      WITH LOGIN PASSWORD '$DATABASE_JOBS_PASSWORD'
+                      NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+              ELSE
+                  ALTER ROLE "${{ vars.DATABASE_JOBS_USERNAME }}" WITH PASSWORD '$DATABASE_JOBS_PASSWORD';
+              END IF;
+
               -- Future: Create additional app users (app_b, app_c, etc.) here
           END
           \$\$;
@@ -174,13 +185,17 @@ jobs:
              Schemas represent bounded contexts.
              Ownership MUST be ddl_owner for consistent permissions.
 
+             Exception: hangfire schema is owned by neba-jobs for background job management.
+
              Future: Create additional schemas (b, c, etc.) here
              ============================================================ */
 
           CREATE SCHEMA IF NOT EXISTS website AUTHORIZATION "${{ vars.DATABASE_OWNER_USERNAME }}";
+          CREATE SCHEMA IF NOT EXISTS hangfire AUTHORIZATION "${{ vars.DATABASE_JOBS_USERNAME }}";
 
           -- Ensure ownership didn't drift
           ALTER SCHEMA website OWNER TO "${{ vars.DATABASE_OWNER_USERNAME }}";
+          ALTER SCHEMA hangfire OWNER TO "${{ vars.DATABASE_JOBS_USERNAME }}";
 
           /* ============================================================
              SCHEMA LOCKDOWN
@@ -188,6 +203,7 @@ jobs:
              Remove implicit access via PUBLIC.
              ============================================================ */
 
+          REVOKE ALL ON SCHEMA hangfire FROM PUBLIC;
           REVOKE ALL ON SCHEMA website FROM PUBLIC;
 
           -- Future: Revoke PUBLIC access from additional schemas here
@@ -259,6 +275,7 @@ jobs:
              Prevents accidental cross-schema access.
              ============================================================ */
 
+          ALTER ROLE "${{ vars.DATABASE_JOBS_USERNAME }}" SET search_path = hangfire;
           ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" SET search_path = website;
 
           -- Future: Set search paths for additional app users (app_b = b, app_c = c, etc.)
@@ -384,6 +401,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Database Roles Configured:**" >> $GITHUB_STEP_SUMMARY
           echo "- Schema Owner: ${{ vars.DATABASE_OWNER_USERNAME }} (NOLOGIN)" >> $GITHUB_STEP_SUMMARY
+          echo "- Background Jobs: ${{ vars.DATABASE_JOBS_USERNAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- Application: ${{ vars.DATABASE_WEB_USERNAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- Query User: ${{ vars.DATABASE_QUERY_USERNAME }}" >> $GITHUB_STEP_SUMMARY
 
