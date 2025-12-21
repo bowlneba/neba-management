@@ -32,6 +32,21 @@ public interface IBackgroundJobScheduler
     string Schedule<TJob>(TJob job, DateTimeOffset enqueueAt) where TJob : IBackgroundJob;
 
     /// <summary>
+    /// Add or update a recurring job with a specified cron expression
+    /// </summary>
+    /// <param name="recurringJobId"></param>
+    /// <param name="job"></param>
+    /// <param name="cronExpression"></param>
+    /// <typeparam name="TJob"></typeparam>
+    void AddOrUpdateRecurring<TJob>(string recurringJobId, TJob job, string cronExpression) where TJob : IBackgroundJob;
+
+    /// <summary>
+    /// Remove a recurring job by its identifier
+    /// </summary>
+    /// <param name="recurringJobId"></param>
+    void RemoveRecurring(string recurringJobId);
+
+    /// <summary>
     /// Schedule a job to be executed after the completion of a parent job
     /// </summary>
     /// <param name="parentJobId"></param>

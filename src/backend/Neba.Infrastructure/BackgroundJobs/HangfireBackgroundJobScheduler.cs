@@ -30,6 +30,19 @@ internal sealed class HangfireBackgroundJobScheduler
         return BackgroundJob.Schedule(() => ExecuteJobAsync(job, CancellationToken.None), enqueueAt);
     }
 
+    public void AddOrUpdateRecurring<TJob>(string recurringJobId, TJob job, string cronExpression) where TJob : IBackgroundJob
+    {
+        RecurringJob.AddOrUpdate(
+            recurringJobId,
+            () => ExecuteJobAsync(job, CancellationToken.None),
+            cronExpression);
+    }
+
+    public void RemoveRecurring(string recurringJobId)
+    {
+        RecurringJob.RemoveIfExists(recurringJobId);
+    }
+
     public string ContinueWith<TJob>(string parentJobId, TJob job) where TJob : IBackgroundJob
     {
         return BackgroundJob.ContinueJobWith(parentJobId, () => ExecuteJobAsync(job, CancellationToken.None));
