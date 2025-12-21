@@ -42,11 +42,11 @@ param requireInfrastructureEncryption bool = true
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: name
   location: location
-  tags: tags
   sku: {
     name: skuName
   }
   kind: 'StorageV2'
+  tags: tags
   properties: {
     accessTier: accessTier
     supportsHttpsTrafficOnly: httpsOnly
