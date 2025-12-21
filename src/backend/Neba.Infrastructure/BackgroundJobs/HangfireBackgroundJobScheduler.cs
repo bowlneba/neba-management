@@ -72,7 +72,6 @@ internal sealed class HangfireBackgroundJobScheduler
         return BackgroundJob.Delete(jobId);
     }
 
-    [AutomaticRetry(Attempts = 3, DelaysInSeconds = [30, 60, 120])]
     private async Task ExecuteJobAsync<TJob>(TJob job, CancellationToken cancellationToken) where TJob : IBackgroundJob
     {
         using IServiceScope scope = _serviceScopeFactory.CreateScope();
