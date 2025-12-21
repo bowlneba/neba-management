@@ -23,7 +23,8 @@ param httpsOnly bool = true
 param minTlsVersion string = 'TLS1_2'
 
 @description('Allow shared key access')
-param allowSharedKeyAccess bool = true
+@description('Allow shared key access (Account keys). Set to false to enforce AAD/token-only auth')
+param allowSharedKeyAccess bool = false
 
 @description('Enable blob public access')
 param allowBlobPublicAccess bool = false
@@ -91,4 +92,5 @@ output id string = storageAccount.id
 output name string = storageAccount.name
 output primaryEndpoints object = storageAccount.properties.primaryEndpoints
 output primaryBlobEndpoint string = storageAccount.properties.primaryEndpoints.blob
-output connectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+// Note: connection strings expose account keys. We intentionally do not output them
+// to encourage token-based authentication (Managed Identity / Azure AD).
