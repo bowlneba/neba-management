@@ -15,6 +15,9 @@ builder.Services.ConfigureOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
+// this is here temporarily for hangfire logging, and will be properly configured later with OTEL setup
+builder.Services.AddLogging();
+
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddWebsiteApplication()
