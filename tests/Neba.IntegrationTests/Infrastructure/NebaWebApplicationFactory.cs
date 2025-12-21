@@ -44,7 +44,7 @@ public sealed class NebaWebApplicationFactory
         builder.ConfigureServices(services =>
         {
             // Remove Hangfire hosted service to prevent background processing during tests
-            services.RemoveAll(typeof(IHostedService));
+            services.RemoveAll<IHostedService>();
         });
     }
 }
