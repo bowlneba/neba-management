@@ -37,6 +37,8 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
+//authorization / authentication would go here
+
 app
     .UseOpenApi()
     .UseHealthChecks();
@@ -45,6 +47,8 @@ app.UseHttpsRedirection();
 
 // Enable CORS
 app.UseCors();
+
+app.UseInfrastructure();
 
 // Future API endpoints will be added here
 app.MapWebsiteEndpoints();
