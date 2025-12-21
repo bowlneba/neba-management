@@ -54,4 +54,11 @@ public interface IBackgroundJobScheduler
     /// <typeparam name="TJob"></typeparam>
     /// <returns></returns>
     string ContinueWith<TJob>(string parentJobId, TJob job) where TJob : IBackgroundJob;
+
+    /// <summary>
+    /// Delete a job by its identifier
+    /// </summary>
+    /// <param name="jobId"></param>
+    /// <returns></returns>
+    bool Delete(string jobId);
 }
