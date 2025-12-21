@@ -22,7 +22,6 @@ param httpsOnly bool = true
 @allowed(['TLS1_2', 'TLS1_3'])
 param minTlsVersion string = 'TLS1_2'
 
-@description('Allow shared key access')
 @description('Allow shared key access (Account keys). Set to false to enforce AAD/token-only auth')
 param allowSharedKeyAccess bool = false
 
