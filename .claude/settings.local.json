@@ -71,7 +71,14 @@
       "Bash(DATABASE_NAME=\"bowlneba\":*)",
       "Bash(bash setup-postgres-managed-identity.sh:*)",
       "Bash(export PATH=\"/opt/homebrew/opt/postgresql@17/bin:$PATH\")",
-      "Bash(zip:*)"
+      "Bash(zip:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline -20)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --format=\"%H %s\" -10)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show --stat 0794cd1)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show --stat 2bd8048)",
+      "Bash(done)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main..modularMonolith --stat)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log modularMonolith --oneline)"
     ],
     "deny": [],
     "ask": []
