@@ -114,14 +114,18 @@ jobs:
           echo "✅ Website database migrations applied successfully"
 
       - name: Configure database users and permissions
+        env:
+          DB_CONNECTION_STRING: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
+          DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
+          DATABASE_QUERY_PASSWORD: ${{ secrets.DATABASE_QUERY_PASSWORD }}
         run: |
           echo "👥 Configuring database users and permissions..."
 
           # Connect using admin credentials to set up roles
-          PGPASSWORD='${{ steps.get-db-info.outputs.CONNECTION_STRING }}' psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
+          PGPASSWORD="$DB_CONNECTION_STRING" psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
                -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
                -d "${{ vars.DATABASE_NAME }}" \
-               << 'EOSQL'
+               << EOSQL
 
           /* ============================================================
              ROLE SETUP
@@ -133,7 +137,7 @@ jobs:
              Future: add app_b, app_c, etc. for additional bounded contexts
              ============================================================ */
 
-          DO $$
+          DO \$\$
           BEGIN
               -- Create schema owner role (NOLOGIN - pure ownership)
               IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_OWNER_USERNAME }}') THEN
@@ -145,24 +149,24 @@ jobs:
               -- Create application runtime user
               IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_WEB_USERNAME }}') THEN
                   CREATE ROLE "${{ vars.DATABASE_WEB_USERNAME }}"
-                      LOGIN PASSWORD '${{ secrets.DATABASE_WEB_PASSWORD }}'
+                      LOGIN PASSWORD '$DATABASE_WEB_PASSWORD'
                       NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
               ELSE
-                  ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" WITH PASSWORD '${{ secrets.DATABASE_WEB_PASSWORD }}';
+                  ALTER ROLE "${{ vars.DATABASE_WEB_USERNAME }}" WITH PASSWORD '$DATABASE_WEB_PASSWORD';
               END IF;
 
               -- Create human query user
               IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_QUERY_USERNAME }}') THEN
                   CREATE ROLE "${{ vars.DATABASE_QUERY_USERNAME }}"
-                      LOGIN PASSWORD '${{ secrets.DATABASE_QUERY_PASSWORD }}'
+                      LOGIN PASSWORD '$DATABASE_QUERY_PASSWORD'
                       NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
               ELSE
-                  ALTER ROLE "${{ vars.DATABASE_QUERY_USERNAME }}" WITH PASSWORD '${{ secrets.DATABASE_QUERY_PASSWORD }}';
+                  ALTER ROLE "${{ vars.DATABASE_QUERY_USERNAME }}" WITH PASSWORD '$DATABASE_QUERY_PASSWORD';
               END IF;
 
               -- Future: Create additional app users (app_b, app_c, etc.) here
           END
-          $$;
+          \$\$;
 
           /* ============================================================
              SCHEMA CREATION & OWNERSHIP
@@ -264,11 +268,13 @@ jobs:
           echo "✅ Database users and permissions configured successfully"
 
       - name: Validate schema ownership and permissions
+        env:
+          DB_CONNECTION_STRING: ${{ steps.get-db-info.outputs.CONNECTION_STRING }}
         run: |
           echo "🔍 Validating schema ownership and permissions..."
 
           # Connect using admin credentials to validate setup
-          PGPASSWORD='${{ steps.get-db-info.outputs.CONNECTION_STRING }}' psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
+          PGPASSWORD="$DB_CONNECTION_STRING" psql -h "${{ steps.get-db-info.outputs.DB_SERVER }}" \
                -U "${{ vars.DATABASE_ADMIN_USERNAME }}" \
                -d "${{ vars.DATABASE_NAME }}" \
                << 'EOSQL'
