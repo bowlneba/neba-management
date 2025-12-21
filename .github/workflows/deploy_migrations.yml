@@ -400,8 +400,8 @@ jobs:
           echo "**Status:** ✅ Migrations applied and users configured successfully" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Database Roles Configured:**" >> $GITHUB_STEP_SUMMARY
-          echo "- Schema Owner: ${{ vars.DATABASE_OWNER_USERNAME }} (NOLOGIN)" >> $GITHUB_
-          echo "- Background Jobs: ${{ vars.DATABASE_JOBS_USERNAME }}" >> $GITHUB_STEP_SUMMARYSTEP_SUMMARY
+          echo "- Schema Owner: ${{ vars.DATABASE_OWNER_USERNAME }} (NOLOGIN)" >> $GITHUB_STEP_SUMMARY
+          echo "- Background Jobs: ${{ vars.DATABASE_JOBS_USERNAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- Application: ${{ vars.DATABASE_WEB_USERNAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- Query User: ${{ vars.DATABASE_QUERY_USERNAME }}" >> $GITHUB_STEP_SUMMARY
 
