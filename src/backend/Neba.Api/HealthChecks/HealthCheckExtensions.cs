@@ -26,6 +26,12 @@ internal static class HealthCheckExtensions
                 ResponseWriter = HealthCheckResponseWriter.Default()
             });
 
+            app.MapHealthChecks("/health/jobs", new()
+            {
+                Predicate = check => check.Tags.Contains("background-jobs"),
+                ResponseWriter = HealthCheckResponseWriter.Default()
+            });
+
             return app;
         }
     }
