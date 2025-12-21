@@ -18,6 +18,13 @@ internal sealed class AzureStorageService
 
     public async Task<string> UploadAsync(string containerName, string blobName, string content, string contentType, CancellationToken cancellationToken)
     {
+        // NOTE: The SDK will surface errors from invalid container/blob names
+        // (Azure Blob Storage enforces strict naming rules). Validate incoming
+        // `containerName` and `blobName` early to provide clearer errors and to
+        // avoid surprising Azure SDK exceptions. For example, containers must
+        // be 3-63 lowercase letters, numbers and hyphens only. Consider
+        // throwing `ArgumentException` for invalid names.
+        // Also validate `content`/`contentType` for null/empty as appropriate.
         BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
