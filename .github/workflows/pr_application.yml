@@ -111,8 +111,8 @@ jobs:
       - name: Build projects
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-build
+      - name: Run tests with coverage
+        run: dotnet run --project ${{ matrix.test-project }} --configuration Release --no-build -- --coverage --coverage-output-format xml --coverage-output coverage.xml
 
       - name: Upload test results
         if: always()
@@ -135,7 +135,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.test-name }}
-          path: "**/TestResults/**/coverage.opencover.xml"
+          path: "**/TestResults/**/coverage.xml"
           retention-days: 30
 
   browser-tests:
