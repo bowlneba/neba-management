@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 using Azure.Storage.Blobs;
 using Neba.Infrastructure.Storage;
@@ -47,7 +48,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     {
         // Arrange
         const string content = "Hello, Azurite!";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -99,7 +100,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string originalContent = "Original content";
         const string updatedContent = "Updated content";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -131,7 +132,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string newContainerName = "auto-created-container";
         const string content = "Content in new container";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -160,7 +161,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     {
         // Arrange
         const string expectedContent = "Test content for download";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -246,7 +247,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     {
         // Arrange
         const string content = "Existence test content";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -276,7 +277,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             TestContainerName,
             "dummy-blob.txt",
             "dummy",
-            "text/plain",
+            MediaTypeNames.Text.Plain,
             CancellationToken.None);
 
         // Act
@@ -310,7 +311,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     {
         // Arrange
         const string content = "Delete test content";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -350,7 +351,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             TestContainerName,
             "dummy-blob.txt",
             "dummy",
-            "text/plain",
+            MediaTypeNames.Text.Plain,
             CancellationToken.None);
 
         // Act & Assert
@@ -376,7 +377,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             TestContainerName,
             "dummy-blob.txt",
             "dummy",
-            "text/plain",
+            MediaTypeNames.Text.Plain,
             CancellationToken.None);
 
         // Act & Assert
@@ -398,7 +399,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             TestContainerName,
             "dummy-blob.txt",
             "dummy",
-            "text/plain",
+            MediaTypeNames.Text.Plain,
             CancellationToken.None);
 
         // Act & Assert
@@ -415,7 +416,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange - Create a 1MB string
         const int oneMegabyte = 1024 * 1024;
         string largeContent = new('X', oneMegabyte);
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -448,7 +449,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string blob2Name = "blob2.txt";
         const string content1 = "Content for blob 1";
         const string content2 = "Content for blob 2";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
         await _storageService.UploadAsync(TestContainerName, blob1Name, content1, contentType, CancellationToken.None);
@@ -481,7 +482,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string blobName = "same-name.txt";
         const string content1 = "Content in container 1";
         const string content2 = "Content in container 2";
-        const string contentType = "text/plain";
+        const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
         await _storageService.UploadAsync(container1, blobName, content1, contentType, CancellationToken.None);

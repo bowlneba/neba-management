@@ -18,7 +18,7 @@ public interface IStorageService
     /// <param name="containerName">The target container to store the blob in.</param>
     /// <param name="blobName">The name/key of the blob to create or overwrite.</param>
     /// <param name="content">The text content to upload.</param>
-    /// <param name="contentType">The MIME media type of the content (for example "text/plain" or "application/json").
+    /// <param name="contentType">The MIME media type of the content (for example MediaTypeNames.Text.Plain or "application/json").
     /// If <c>null</c> or empty, implementations may attempt to infer the type or apply a sensible default.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A string that represents the stored blob location or identifier (implementation-defined).</returns>
