@@ -19,6 +19,7 @@ internal static class BackgroundJobsExtensions
         {
             services.AddOptions<HangfireSettings>()
                 .Bind(config.GetSection("Hangfire"))
+                .ValidateDataAnnotations()
                 .ValidateOnStart();
 
             services.AddSingleton(sp =>
