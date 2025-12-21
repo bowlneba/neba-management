@@ -1,9 +1,10 @@
 -- create_users.sql
--- Initializes local dev user and schema for `neba-web` access
+-- Initializes local dev users and schemas for `neba-web` and `neba-jobs` access
 BEGIN;
 
--- Create schema if it doesn't exist
+-- Create schemas if they don't exist
 CREATE SCHEMA IF NOT EXISTS website;
+CREATE SCHEMA IF NOT EXISTS hangfire;
 
 -- Create role/user `neba-web` if it doesn't already exist
 DO
@@ -15,9 +16,26 @@ BEGIN
 END
 $$;
 
--- Grant database-level privileges
+-- Create role/user `neba-jobs` if it doesn't already exist
+DO
+$$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'neba-jobs') THEN
+        CREATE ROLE "neba-jobs" WITH LOGIN PASSWORD 'neba-jobs';
+    END IF;
+END
+$$;
+
+-- Set ownership of hangfire schema to neba-jobs
+ALTER SCHEMA hangfire OWNER TO "neba-jobs";
+
+-- Grant database-level privileges to neba-web
 GRANT CONNECT ON DATABASE bowlneba TO "neba-web";
 GRANT TEMPORARY ON DATABASE bowlneba TO "neba-web";
+
+-- Grant database-level privileges to neba-jobs
+GRANT CONNECT ON DATABASE bowlneba TO "neba-jobs";
+GRANT TEMPORARY ON DATABASE bowlneba TO "neba-jobs";
 
 -- Grant schema-level privileges
 GRANT USAGE, CREATE ON SCHEMA website TO "neba-web";
@@ -43,7 +61,9 @@ ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website
 
 -- Procedures
 ALTER DEFAULT PRIVILEGES FOR ROLE neba IN SCHEMA website
-    GRANT EXECUTE ON ROUTINES TO "neba-web";
+    GRANT EXECUTE ON ROUT
+-- Website: username = neba-web, password = neba-web
+-- Hangfire: username = neba-jobs, password = neba-jobs
 
 COMMIT;
 
