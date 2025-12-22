@@ -1,7 +1,6 @@
 using System.Net.Mime;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
-using Neba.Application.Documents;
 using Neba.Application.Storage;
 
 namespace Neba.Application.Documents;
@@ -56,7 +55,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 
         Dictionary<string, string> metadata = new()
         {
-            { "synced_at", DateTime.UtcNow.ToString("o") }
+            { "syncedAt", DateTime.UtcNow.ToString("o") }
         };
 
         string location = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, metadata, cancellationToken);
