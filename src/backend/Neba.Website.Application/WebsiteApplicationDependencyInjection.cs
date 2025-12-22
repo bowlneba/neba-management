@@ -1,5 +1,7 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.BackgroundJobs;
+using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
 using Neba.Website.Application.Awards.HighAverage;
@@ -75,6 +77,7 @@ public static class WebsiteApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
             services.AddScoped<BylawsSyncBackgroundJob>();
+            services.AddScoped<IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>, SyncHtmlDocumentToStorageJobHandler>();
 
             return services;
         }
