@@ -48,7 +48,7 @@ internal sealed class AzureStorageService
         return blobClient.Uri.ToString();
     }
 
-    public async Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string,string>? metadata = null, CancellationToken cancellationToken = default)
+    public async Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(containerName);
         ArgumentException.ThrowIfNullOrWhiteSpace(blobName);
