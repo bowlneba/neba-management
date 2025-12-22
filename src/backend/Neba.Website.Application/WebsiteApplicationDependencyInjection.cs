@@ -12,7 +12,8 @@ namespace Neba.Website.Application;
 
 #pragma warning disable S2325 // Extension methods should be static
 #pragma warning disable CA1034 // Nested types should not be visible
-#pragma warning disable S1144
+#pragma warning disable S1144 // Unused private types or members should be removed
+#pragma warning disable CA1708 // Identifiers should differ by more than case
 
 /// <summary>
 /// Extension container that exposes registration helpers for the Website application layer.
@@ -73,8 +74,24 @@ public static class WebsiteApplicationDependencyInjection
         private IServiceCollection AddDocumentsUseCases()
         {
             services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
+            services.AddScoped<BylawsSyncBackgroundJob>();
 
             return services;
+        }
+    }
+
+    extension(IServiceProvider serviceProvider)
+    {
+        /// <summary>
+        /// Initializes background jobs for the Website application (e.g., document syncing).
+        /// Call this from the composition root after the application is built.
+        /// </summary>
+        public void InitializeWebsiteBackgroundJobs()
+        {
+            using IServiceScope scope = serviceProvider.CreateScope();
+
+            BylawsSyncBackgroundJob bylawsSyncJob = scope.ServiceProvider.GetRequiredService<BylawsSyncBackgroundJob>();
+            bylawsSyncJob.RegisterBylawsSyncJob();
         }
     }
 }

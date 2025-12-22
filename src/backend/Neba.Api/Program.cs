@@ -53,6 +53,9 @@ app.UseCors();
 
 app.UseInfrastructure();
 
+// Initialize background jobs after Hangfire is configured
+app.Services.InitializeWebsiteBackgroundJobs();
+
 // Future API endpoints will be added here
 app.MapWebsiteEndpoints();
 
