@@ -77,7 +77,6 @@ public static class WebsiteApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
             services.AddScoped<BylawsSyncBackgroundJob>();
-            services.AddScoped<IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>, SyncHtmlDocumentToStorageJobHandler>();
 
             return services;
         }

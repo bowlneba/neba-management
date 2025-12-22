@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
 
 namespace Neba.Infrastructure.Documents;
@@ -40,6 +41,13 @@ internal static class DocumentsExtensions
 
             services.AddSingleton<DocumentMapper>();
             services.AddSingleton<IDocumentsService, GoogleDocsService>();
+
+            return services;
+        }
+
+        public IServiceCollection AddBackgroundJobs()
+        {
+            services.AddScoped<IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>, SyncHtmlDocumentToStorageJobHandler>();
 
             return services;
         }
