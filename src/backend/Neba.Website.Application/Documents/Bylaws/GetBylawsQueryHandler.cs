@@ -10,7 +10,7 @@ namespace Neba.Website.Application.Documents.Bylaws;
 internal sealed class GetBylawsQueryHandler(IDocumentsService documentsService)
         : IQueryHandler<GetBylawsQuery, string>
 {
-    private const string BylawsDocumentName = "bylaws";
+    internal const string BylawsDocumentName = "bylaws";
     private readonly IDocumentsService _documentsService = documentsService;
 
     /// <summary>
