@@ -3,24 +3,24 @@ using Neba.Application.Documents;
 using Neba.Application.Storage;
 using Neba.Website.Application.Documents.Bylaws;
 
-namespace Neba.UnitTests.Website.Documents.Bylaws;
+namespace Neba.UnitTests.Documents;
 
-public sealed class SyncBylawsToStorageTests
+public sealed class SyncHtmlDocumentToStorageJobHandlerTests
 {
     private readonly Mock<IDocumentsService> _mockDocumentsService;
     private readonly Mock<IStorageService> _mockStorageService;
 
-    private readonly SyncBylawsToStorageJob _job;
+    private readonly SyncHtmlDocumentToStorageJobHandler _job;
 
-    public SyncBylawsToStorageTests()
+    public SyncHtmlDocumentToStorageJobHandlerTests()
     {
         _mockDocumentsService = new Mock<IDocumentsService>(MockBehavior.Strict);
         _mockStorageService = new Mock<IStorageService>(MockBehavior.Strict);
 
-        _job = new SyncBylawsToStorageJob(
+        _job = new SyncHtmlDocumentToStorageJobHandler(
             _mockDocumentsService.Object,
             _mockStorageService.Object,
-            NullLogger<SyncBylawsToStorageJob>.Instance);
+            NullLogger<SyncHtmlDocumentToStorageJobHandler>.Instance);
     }
 
     [Fact]
@@ -43,8 +43,15 @@ public sealed class SyncBylawsToStorageTests
                 TestContext.Current.CancellationToken))
             .ReturnsAsync("mock/document/location");
 
+        var job = new SyncHtmlDocumentToStorageJob
+        {
+            DocumentKey = "bylaws",
+            ContainerName = "documents",
+            DocumentName = "bylaws.html"
+        };
+
         // Act
-        await _job.ExecuteAsync(TestContext.Current.CancellationToken);
+        await _job.ExecuteAsync(job, TestContext.Current.CancellationToken);
 
         // Assert
         _mockDocumentsService.VerifyAll();
