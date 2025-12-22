@@ -50,6 +50,19 @@ internal sealed class AzureStorageService
 
     public async Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string,string>? metadata = null, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(containerName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobName);
+        ArgumentNullException.ThrowIfNull(contentStream);
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
+
+        // Validate metadata keys - Azure requires letters, digits, underscores only
+        if (metadata?.Keys.Any(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_')) == true)
+        {
+            var invalidKey = metadata.Keys.First(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_'));
+            throw new ArgumentException(
+                $"Metadata key '{invalidKey}' is invalid. Keys must contain only letters, digits, and underscores.",
+                nameof(metadata));
+        }
         BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
