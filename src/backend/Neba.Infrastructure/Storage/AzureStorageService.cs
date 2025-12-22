@@ -24,9 +24,12 @@ internal sealed class AzureStorageService
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
 
         // Validate metadata keys - Azure requires letters, digits, underscores only
-        if (metadata?.Keys.Any(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_')) == true)
+        bool IsInvalidMetadataKey(string key) =>
+            string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_');
+
+        if (metadata?.Keys.Any(IsInvalidMetadataKey) == true)
         {
-            var invalidKey = metadata.Keys.First(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_'));
+            var invalidKey = metadata.Keys.First(IsInvalidMetadataKey);
             throw new ArgumentException(
                 $"Metadata key '{invalidKey}' is invalid. Keys must contain only letters, digits, and underscores.",
                 nameof(metadata));
