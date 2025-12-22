@@ -16,12 +16,12 @@ public sealed class TitlesIntegrationTests
     public async Task ListTitles_ShouldReturnExpectedResults()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalTitles = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking().SelectMany(b => b.Titles).CountAsync());
@@ -47,12 +47,12 @@ await SeedAsync(async context =>
     public async Task ListTitleSummaries_ShouldReturnExpectedResults()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking().Where(b => b.Titles.Count > 0).CountAsync());

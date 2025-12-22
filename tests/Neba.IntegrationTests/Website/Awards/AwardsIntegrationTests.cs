@@ -17,12 +17,12 @@ public sealed class AwardsIntegrationTests
     public async Task ListBowlerOfTheYearAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalBowlerOfTheYearWins = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking()
@@ -51,7 +51,7 @@ await SeedAsync(async context =>
     public async Task ListBowlerOfTheYearAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-using HttpClient httpClient = Factory.CreateClient();
+        using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/bowler-of-the-year", UriKind.Relative));
@@ -71,12 +71,12 @@ using HttpClient httpClient = Factory.CreateClient();
     public async Task ListBowlerOfTheYearAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -104,12 +104,12 @@ await SeedAsync(async context =>
     public async Task ListHighBlockAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalHighBlockWins = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking()
@@ -138,7 +138,7 @@ await SeedAsync(async context =>
     public async Task ListHighBlockAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-using HttpClient httpClient = Factory.CreateClient();
+        using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-block", UriKind.Relative));
@@ -158,12 +158,12 @@ using HttpClient httpClient = Factory.CreateClient();
     public async Task ListHighBlockAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -191,12 +191,12 @@ await SeedAsync(async context =>
     public async Task ListHighAverageAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalHighAverageWins = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking()
@@ -225,7 +225,7 @@ await SeedAsync(async context =>
     public async Task ListHighAverageAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-using HttpClient httpClient = Factory.CreateClient();
+        using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-average", UriKind.Relative));
@@ -245,12 +245,12 @@ using HttpClient httpClient = Factory.CreateClient();
     public async Task ListHighAverageAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         using HttpClient httpClient = Factory.CreateClient();
 
