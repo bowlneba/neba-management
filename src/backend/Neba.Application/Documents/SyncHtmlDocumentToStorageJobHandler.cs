@@ -47,6 +47,20 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
     {
         ArgumentNullException.ThrowIfNull(job);
 
+        if (string.IsNullOrWhiteSpace(job.DocumentKey))
+        {
+            throw new ArgumentException("Job.DocumentKey cannot be null or whitespace.", nameof(job));
+        }
+
+        if (string.IsNullOrWhiteSpace(job.ContainerName))
+        {
+            throw new ArgumentException("Job.ContainerName cannot be null or whitespace.", nameof(job));
+        }
+
+        if (string.IsNullOrWhiteSpace(job.DocumentName))
+        {
+            throw new ArgumentException("Job.DocumentName cannot be null or whitespace.", nameof(job));
+        }
         _logger.LogStartingHtmlDocumentSync();
 
         string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(

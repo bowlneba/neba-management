@@ -36,7 +36,7 @@ public interface IStorageService
     /// <param name="metadata">Optional metadata to associate with the blob.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A string that represents the stored blob location or identifier (implementation-defined).</returns>
-    Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string,string>? metadata = null, CancellationToken cancellationToken = default);
+    Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the content of the specified blob as a string.
