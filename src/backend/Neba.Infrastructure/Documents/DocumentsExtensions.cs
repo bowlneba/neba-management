@@ -45,7 +45,7 @@ internal static class DocumentsExtensions
             return services;
         }
 
-        public IServiceCollection AddBackgroundJobs()
+        public IServiceCollection AddDocumentBackgroundJobs()
         {
             services.AddScoped<IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>, SyncHtmlDocumentToStorageJobHandler>();
 
