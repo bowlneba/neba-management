@@ -22,7 +22,7 @@ public sealed class GetBylawsQueryHandlerTests
         const string expectedHtml = "<h1>Bylaws</h1><p>These are the bylaws...</p>";
 
         _storageServiceMock
-            .Setup(ds => ds.GetContentAsync("documents","bylaws.html", TestContext.Current.CancellationToken))
+            .Setup(ds => ds.GetContentAsync("documents", "bylaws.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(expectedHtml);
 
         var query = new GetBylawsQuery();
@@ -32,6 +32,6 @@ public sealed class GetBylawsQueryHandlerTests
 
         // Assert
         result.ShouldBe(expectedHtml);
-        _storageServiceMock.Verify(ds => ds.GetContentAsync("documents","bylaws.html", TestContext.Current.CancellationToken), Times.Once);
+        _storageServiceMock.Verify(ds => ds.GetContentAsync("documents", "bylaws.html", TestContext.Current.CancellationToken), Times.Once);
     }
 }
