@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Website.Infrastructure.Database;
-using Npgsql;
-using Respawn;
 using Testcontainers.PostgreSql;
 
 namespace Neba.Tests.Website;
 
 /// <summary>
 /// Provides a PostgreSQL test database using Testcontainers for repository and integration tests.
-/// Implements IAsyncLifetime to ensure the container is started before tests run.
+/// Each test class creates its own isolated database instance for true parallel execution.
 /// </summary>
 public sealed class WebsiteDatabase
     : IAsyncLifetime
@@ -19,8 +17,6 @@ public sealed class WebsiteDatabase
         .WithUsername("neba")
         .WithPassword("neba")
         .Build();
-
-    private Respawner _respawner = null!;
 
     /// <summary>
     /// Gets the connection string for the test database.
@@ -41,26 +37,6 @@ public sealed class WebsiteDatabase
                 .UseNpgsql(ConnectionString)
                 .Options);
         await context.Database.MigrateAsync();
-
-        // Initialize Respawner
-        await using var connection = new NpgsqlConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        _respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
-        {
-            DbAdapter = DbAdapter.Postgres,
-            SchemasToInclude = ["website"]
-        });
-    }
-
-    /// <summary>
-    /// Resets the database to a clean state by deleting all data from tables.
-    /// </summary>
-    public async Task ResetAsync()
-    {
-        await using var connection = new NpgsqlConnection(ConnectionString);
-        await connection.OpenAsync();
-        await _respawner.ResetAsync(connection);
     }
 
     /// <summary>

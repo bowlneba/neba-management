@@ -10,7 +10,6 @@ using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Awards;
 
-[Collection(nameof(Infrastructure.Collections.AwardsIntegrationTest))]
 public sealed class AwardsIntegrationTests
     : ApiTestsBase
 {
@@ -18,9 +17,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListBowlerOfTheYearAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
             context.Bowlers.AddRange(seedBowlers);
@@ -54,9 +51,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListBowlerOfTheYearAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        using HttpClient httpClient = Factory.CreateClient();
+using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/bowler-of-the-year", UriKind.Relative));
@@ -76,9 +71,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListBowlerOfTheYearAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
             context.Bowlers.AddRange(seedBowlers);
@@ -111,9 +104,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighBlockAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
             context.Bowlers.AddRange(seedBowlers);
@@ -147,9 +138,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighBlockAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        using HttpClient httpClient = Factory.CreateClient();
+using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-block", UriKind.Relative));
@@ -169,9 +158,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighBlockAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
             context.Bowlers.AddRange(seedBowlers);
@@ -204,9 +191,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighAverageAwards_ShouldReturnExpectedResults()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
             context.Bowlers.AddRange(seedBowlers);
@@ -240,9 +225,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighAverageAwards_WithNoData_ShouldReturnEmptyCollection()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        using HttpClient httpClient = Factory.CreateClient();
+using HttpClient httpClient = Factory.CreateClient();
 
         // Act
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("/awards/high-average", UriKind.Relative));
@@ -262,9 +245,7 @@ public sealed class AwardsIntegrationTests
     public async Task ListHighAverageAwards_ShouldIncludeAllRequiredFields()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
-        await SeedAsync(async context =>
+await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
             context.Bowlers.AddRange(seedBowlers);

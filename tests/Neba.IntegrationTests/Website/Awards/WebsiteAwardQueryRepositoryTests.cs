@@ -10,24 +10,24 @@ using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Awards;
 
-[CollectionDefinition(nameof(WebsiteAwardQueryRepositoryTests))]
-public sealed class WebsiteAwardQueryRepositoryTestsFixture
-    : ICollectionFixture<WebsiteDatabase>;
-
-[Collection(nameof(WebsiteAwardQueryRepositoryTests))]
-public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) : IAsyncLifetime
+public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
 {
+    private WebsiteDatabase _database = null!;
+
     /// <summary>
-    /// Called before each test - resets the database to a clean state.
+    /// Called before each test class - initializes a fresh database container.
     /// </summary>
     public async ValueTask InitializeAsync()
-        => await database.ResetAsync();
+    {
+        _database = new WebsiteDatabase();
+        await _database.InitializeAsync();
+    }
 
     /// <summary>
-    /// Called after each test - no cleanup needed.
+    /// Called after all tests complete - disposes the database container.
     /// </summary>
-    public ValueTask DisposeAsync()
-        => ValueTask.CompletedTask;
+    public async ValueTask DisposeAsync()
+        => await _database.DisposeAsync();
 
     [Fact]
     public async Task ListBowlerOfTheYearAwardsAsync_ShouldReturnAllAwards()
@@ -35,7 +35,7 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
             new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
+                .UseNpgsql(_database.ConnectionString)
                 .Options);
 
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1960);
@@ -81,7 +81,7 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
             new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
+                .UseNpgsql(_database.ConnectionString)
                 .Options);
 
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1970);
@@ -127,7 +127,7 @@ public sealed class WebsiteAwardQueryRepositoryTests(WebsiteDatabase database) :
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
             new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
+                .UseNpgsql(_database.ConnectionString)
                 .Options);
 
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);

@@ -6,13 +6,15 @@ namespace Neba.IntegrationTests.Infrastructure;
 
 /// <summary>
 /// Base class for integration tests that provides a test database and web application factory.
-/// Each test class that inherits from this will get its own isolated database instance.
+/// Each test class gets its own isolated database container, enabling true parallel test execution.
+/// No database cleanup is needed between tests as each test class has a fresh database.
 /// </summary>
 public abstract class ApiTestsBase
     : IAsyncLifetime
 {
     /// <summary>
     /// Gets the test database instance for this test class.
+    /// Each test class gets a fresh PostgreSQL container.
     /// </summary>
     protected WebsiteDatabase Database { get; private set; } = null!;
 
@@ -40,13 +42,6 @@ public abstract class ApiTestsBase
         await Factory.DisposeAsync();
         await Database.DisposeAsync();
     }
-
-    /// <summary>
-    /// Resets the database to a clean state between tests.
-    /// Call this method in test setup or at the start of each test to ensure isolation.
-    /// </summary>
-    protected async Task ResetDatabaseAsync()
-        => await Database.ResetAsync();
 
     /// <summary>
     /// Executes an action with a scoped DbContext for seeding data.

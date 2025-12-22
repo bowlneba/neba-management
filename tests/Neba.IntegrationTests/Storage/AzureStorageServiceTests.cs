@@ -12,7 +12,6 @@ namespace Neba.IntegrationTests.Storage;
 /// Integration tests for AzureStorageService using Azurite test container.
 /// Tests verify blob upload, download, existence checks, and deletion operations.
 /// </summary>
-[Collection(nameof(Infrastructure.Collections.StorageIntegrationTests))]
 public sealed class AzureStorageServiceTests : IAsyncLifetime
 {
     private AzureStorageContainer _storageContainer = null!;
