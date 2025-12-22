@@ -33,6 +33,7 @@ public static class InfrastructureDependencyInjection
                 .AddKeyVault(config)
                 .AddGoogleDocs(config)
                 .AddBackgroundJobs(config)
+                .AddDocumentBackgroundJobs()
                 .AddStorageService(config);
         }
 
