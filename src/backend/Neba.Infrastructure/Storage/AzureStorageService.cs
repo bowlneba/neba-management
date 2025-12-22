@@ -18,27 +18,27 @@ internal sealed class AzureStorageService
 
     public async Task<string> UploadAsync(string containerName, string blobName, string content, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
     {
-        // NOTE: The SDK will surface errors from invalid container/blob names
-        // (Azure Blob Storage enforces strict naming rules). Validate incoming
-        // `containerName` and `blobName` early to provide clearer errors and to
-        // avoid surprising Azure SDK exceptions. For example, containers must
-        // be 3-63 lowercase letters, numbers and hyphens only. Consider
-        // throwing `ArgumentException` for invalid names.
-        // Also validate `content`/`contentType` for null/empty as appropriate.
+        ArgumentException.ThrowIfNullOrWhiteSpace(containerName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(content);
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
+
+        // Validate metadata keys - Azure requires letters, digits, underscores only
+        if (metadata?.Keys.Any(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_')) == true)
+        {
+            var invalidKey = metadata.Keys.First(key => string.IsNullOrWhiteSpace(key) || !key.All(c => char.IsLetterOrDigit(c) || c == '_'));
+            throw new ArgumentException(
+                $"Metadata key '{invalidKey}' is invalid. Keys must contain only letters, digits, and underscores.",
+                nameof(metadata));
+        }
+
         BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        var uploadOptions = new BlobUploadOptions
-        {
-            HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
-            Conditions = null, // allows overwrite
-            Metadata = metadata ?? new Dictionary<string, string>()
-
-        };
-
-        await blobClient.UploadAsync(stream, uploadOptions, cancellationToken);
+        // Use the simplest overload - just upload the stream
+        await blobClient.UploadAsync(stream, overwrite: true, cancellationToken);
 
         return blobClient.Uri.ToString();
     }
