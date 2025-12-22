@@ -1,7 +1,7 @@
 using Neba.Application.Documents;
 using Neba.Website.Application.Documents.Bylaws;
 
-namespace Neba.UnitTests.Website.Documents;
+namespace Neba.UnitTests.Website.Documents.Bylaws;
 
 public sealed class GetBylawsQueryHandlerTests
 {
