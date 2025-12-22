@@ -37,8 +37,13 @@ internal sealed class AzureStorageService
 
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        // Use the simplest overload - just upload the stream
-        await blobClient.UploadAsync(stream, overwrite: true, cancellationToken);
+        var uploadOptions = new BlobUploadOptions
+        {
+            HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
+            Metadata = metadata
+        };
+
+        await blobClient.UploadAsync(stream, uploadOptions, cancellationToken);
 
         return blobClient.Uri.ToString();
     }
@@ -51,8 +56,7 @@ internal sealed class AzureStorageService
         var uploadOptions = new BlobUploadOptions
         {
             HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
-            Conditions = null, // allows overwrite
-            Metadata = metadata ?? new Dictionary<string, string>()
+            Metadata = metadata
         };
 
         await blobClient.UploadAsync(contentStream, uploadOptions, cancellationToken);
