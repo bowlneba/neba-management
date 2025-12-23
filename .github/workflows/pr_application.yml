@@ -1,10 +1,5 @@
 name: Pull Request Workflow (Application)
 
-permissions:
-  contents: read
-  pull-requests: write
-  checks: write
-
 on:
   workflow_dispatch:
   pull_request:
@@ -17,6 +12,8 @@ jobs:
   code-quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v5
@@ -48,6 +45,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v5
@@ -77,6 +76,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: write
     strategy:
       matrix:
         include:
@@ -153,6 +155,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     name: Playwright E2E Tests
+    permissions:
+      contents: read
+      checks: write
 
     strategy:
       fail-fast: false
@@ -224,9 +229,14 @@ jobs:
           retention-days: 7
 
   sonarcloud:
+    name: SonarCloud Analysis
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
 
     steps:
       - uses: actions/checkout@v5
@@ -281,6 +291,12 @@ jobs:
             /o:"bowlneba" \
             /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.vscoveragexml.reportsPaths="coverage-reports/**/TestResults/**/coverage.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage-reports/**/TestResults/**/coverage.xml" \
+            /d:sonar.exclusions="**/wwwroot/**,**/obj/**,**/bin/**,**/Migrations/**,**/*.razor.js" \
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/**,**/*Tests/**,**/wwwroot/**,**/*.razor.js" \
+            /d:sonar.test.exclusions="**/obj/**,**/bin/**" \
+            /d:sonar.issue.ignore.multicriteria=e1 \
+            /d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S2068 \
+            /d:sonar.issue.ignore.multicriteria.e1.resourceKey="**/appsettings.Docker.json"
           dotnet build --configuration Release --no-restore
           dotnet-sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
