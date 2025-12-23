@@ -34,7 +34,7 @@ public sealed record SyncHtmlDocumentToStorageJob
     public string TriggeredBy { get; init; } = "system";
 
     /// <summary>
-    /// SignalR hub group name for broadcasting status updates.
+    /// Document type identifier for broadcasting status updates (e.g., "bylaws-refresh").
     /// </summary>
     public string? HubGroupName { get; init; }
 

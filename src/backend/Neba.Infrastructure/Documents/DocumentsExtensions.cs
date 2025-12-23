@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
+using Neba.Infrastructure.Documents.Sse;
 
 namespace Neba.Infrastructure.Documents;
 
@@ -55,19 +55,10 @@ internal static class DocumentsExtensions
 
         public IServiceCollection AddDocumentRefreshNotification()
         {
-            services.AddSingleton<IDocumentRefreshNotifier, SignalRDocumentRefreshNotifier>();
+            services.AddSingleton<DocumentRefreshChannelManager>();
+            services.AddSingleton<IDocumentRefreshNotifier, SseDocumentRefreshNotifier>();
 
             return services;
-        }
-    }
-
-    extension(WebApplication app)
-    {
-        internal WebApplication UseDocumentRefreshNotification()
-        {
-            app.MapHub<DocumentRefreshSignalRHub>("/hubs/document-refresh");
-
-            return app;
         }
     }
 }

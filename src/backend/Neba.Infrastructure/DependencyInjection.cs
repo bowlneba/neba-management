@@ -91,9 +91,7 @@ public static class InfrastructureDependencyInjection
         /// <returns>The web application for method chaining.</returns>
         public WebApplication UseInfrastructure()
         {
-            app
-                .UseBackgroundJobsDashboard()
-                .UseDocumentRefreshNotification();
+            app.UseBackgroundJobsDashboard();
 
             return app;
         }
