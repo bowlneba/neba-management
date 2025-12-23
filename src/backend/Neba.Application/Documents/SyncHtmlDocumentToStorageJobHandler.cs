@@ -72,13 +72,13 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
         {
             _logger.LogStartingHtmlDocumentSync();
 
-            await UpdateStatusAsync(job, RefreshStatus.Uploading);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Uploading);
 
             string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
                 job.DocumentKey,
                 cancellationToken);
 
-            await UpdateStatusAsync(job, RefreshStatus.Retrieving);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Retrieving);
 
             job.Metadata["syncedAt"] = DateTimeOffset.UtcNow.ToString("o");
             job.Metadata["syncedBy"] = job.TriggeredBy;
@@ -87,7 +87,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 
             _logger.LogCompletedHtmlDocumentSync(name);
 
-            await UpdateStatusAsync(job, RefreshStatus.Completed);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Completed);
 
             if (!string.IsNullOrWhiteSpace(job.DocumentCacheKey))
             {
@@ -105,7 +105,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
         {
             _logger.LogErrorDuringHtmlDocumentSync(ex);
 
-            await UpdateStatusAsync(job, RefreshStatus.Failed, ex.Message);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Failed, ex.Message);
 
             // Keep failed state longer for debugging
             if (!string.IsNullOrWhiteSpace(job.CacheKey))
@@ -120,7 +120,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 
     private async Task UpdateStatusAsync(
         SyncHtmlDocumentToStorageJob job,
-        RefreshStatus status,
+        DocumentRefreshStatus status,
         string? message = null)
     {
         if (!string.IsNullOrWhiteSpace(job.CacheKey))

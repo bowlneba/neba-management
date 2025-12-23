@@ -11,9 +11,9 @@ public sealed record DocumentRefreshResponse
     public required string JobId { get; init; }
 
     /// <summary>
-    /// The current <see cref="RefreshStatus"/> of the refresh operation.
+    /// The current <see cref="DocumentRefreshStatus"/> of the refresh operation.
     /// </summary>
-    public required RefreshStatus Status { get; init; }
+    public required DocumentRefreshStatus Status { get; init; }
 
     /// <summary>
     /// Optional human-readable message providing additional context such as

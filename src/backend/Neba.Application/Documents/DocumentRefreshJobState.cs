@@ -17,9 +17,9 @@ public sealed record DocumentRefreshJobState
     public required string DocumentType { get; init; }
 
     /// <summary>
-    /// The current <see cref="RefreshStatus"/> of the job.
+    /// The current <see cref="DocumentRefreshStatus"/> of the job.
     /// </summary>
-    public required RefreshStatus Status { get; init; }
+    public required DocumentRefreshStatus Status { get; init; }
 
     /// <summary>
     /// Timestamp when the job started.
@@ -27,7 +27,7 @@ public sealed record DocumentRefreshJobState
     public DateTimeOffset StartedAt { get; init; }
 
     /// <summary>
-    /// Optional error message describing a failure when <see cref="Status"/> is <see cref="RefreshStatus.Failed"/>.
+    /// Optional error message describing a failure when <see cref="Status"/> is <see cref="DocumentRefreshStatus.Failed"/>.
     /// </summary>
     public string? ErrorMessage { get; init; }
 
