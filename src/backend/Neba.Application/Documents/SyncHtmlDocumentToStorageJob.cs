@@ -27,4 +27,24 @@ public sealed record SyncHtmlDocumentToStorageJob
     /// Optional metadata to associate with the stored document.
     /// </summary>
     public Dictionary<string, string> Metadata { get; init; } = [];
+
+     /// <summary>
+    /// User or system that triggered the sync (e.g., username or "scheduled").
+    /// </summary>
+    public string TriggeredBy { get; init; } = "system";
+
+    /// <summary>
+    /// SignalR hub group name for broadcasting status updates.
+    /// </summary>
+    public string? HubGroupName { get; init; }
+
+    /// <summary>
+    /// Cache key for tracking job state.
+    /// </summary>
+    public string? CacheKey { get; init; }
+
+    /// <summary>
+    /// Cache key for the document content cache (to invalidate on completion).
+    /// </summary>
+    public string? DocumentCacheKey { get; init; }
 }
