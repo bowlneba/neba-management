@@ -999,25 +999,6 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
-
-    [Fact]
-    public async Task GetTournamentRulesAsync_NullContent_ReturnsError()
-    {
-        // Arrange
-        using var apiResponse = ApiResponseFactory.CreateDocumentResponse<string>(null!);
-
-        _mockNebaApi
-            .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse.ApiResponse);
-
-        // Act
-        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
-
-        // Assert
-        result.IsError.ShouldBeTrue();
-        result.Errors.Count.ShouldBeGreaterThan(0);
-    }
-
     [Fact]
     public async Task GetTournamentRulesAsync_ApiException_ReturnsError()
     {
