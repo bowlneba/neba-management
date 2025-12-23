@@ -29,7 +29,7 @@ public static class DocumentRefreshSseStreamHandler
         return async (
             DocumentRefreshChannelManager channelManager,
             HybridCache cache,
-            ILogger logger,
+            ILogger<DocumentRefreshSseStreamHandler> logger,
             CancellationToken cancellationToken) =>
         {
             return Results.Stream(
