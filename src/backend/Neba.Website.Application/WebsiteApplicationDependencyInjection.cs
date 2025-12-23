@@ -76,6 +76,7 @@ public static class WebsiteApplicationDependencyInjection
         private IServiceCollection AddDocumentsUseCases()
         {
             services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
+            services.AddScoped<ICommandHandler<RefreshBylawsCacheCommand, string>, RefreshBylawsCacheCommandHandler>();
             services.AddScoped<BylawsSyncBackgroundJob>();
 
             return services;
