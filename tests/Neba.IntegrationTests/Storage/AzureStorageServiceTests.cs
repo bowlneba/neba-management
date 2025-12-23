@@ -42,7 +42,11 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         await _storageContainer.InitializeAsync();
 
         var blobServiceClient = new BlobServiceClient(_storageContainer.ConnectionString);
-        _storageService = new AzureStorageService(blobServiceClient);
+        var settings = new AzureStorageSettings
+        {
+            UploadChunkSizeBytes = 8 * 1024 * 1024 // 8 MB chunks for testing
+        };
+        _storageService = new AzureStorageService(blobServiceClient, settings);
     }
 
     public async ValueTask DisposeAsync()
@@ -77,8 +81,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 
         // Assert
         blobUri.ShouldNotBeNullOrEmpty();
-        blobUri.ShouldContain(TestContainerName);
-        blobUri.ShouldContain(TestBlobName);
+        blobUri.ShouldBe(TestBlobName);
 
         // Verify blob was actually created
         bool exists = await _storageService.ExistsAsync(TestContainerName, TestBlobName, CancellationToken.None);
@@ -104,8 +107,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 
         // Assert
         blobUri.ShouldNotBeNullOrEmpty();
-        blobUri.ShouldContain(TestContainerName);
-        blobUri.ShouldContain(TestBlobName);
+        blobUri.ShouldBe(TestBlobName);
 
         // Verify blob was actually created
         bool exists = await _storageService.ExistsAsync(TestContainerName, TestBlobName, CancellationToken.None);
@@ -730,6 +732,309 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         var blob2Client = GetBlobClient(TestContainerName, blob2Name);
         var properties2 = await blob2Client.GetPropertiesAsync();
         properties2.Value.Metadata.ShouldContainKeyAndValue("category", "B");
+    }
+
+    #endregion
+
+    #region UploadLargeAsync Tests
+
+    [Fact]
+    public async Task UploadLargeAsync_WithLargeStream_ShouldUploadSuccessfully()
+    {
+        // Arrange - Create a 10MB stream
+        const int tenMegabytes = 10 * 1024 * 1024;
+        byte[] largeContent = new byte[tenMegabytes];
+#pragma warning disable CA5394 // Random is acceptable for test data generation
+        new Random(42).NextBytes(largeContent); // Seed for reproducibility
+#pragma warning restore CA5394
+        using var stream = new MemoryStream(largeContent);
+        const string contentType = "application/octet-stream";
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            TestContainerName,
+            "large-file.bin",
+            stream,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+        blobUri.ShouldContain("large-file.bin");
+
+        // Verify blob was created
+        bool exists = await _storageService.ExistsAsync(TestContainerName, "large-file.bin", CancellationToken.None);
+        exists.ShouldBeTrue();
+
+        // Verify content integrity
+        await using Stream downloadedStream = await _storageService.GetStreamAsync(
+            TestContainerName,
+            "large-file.bin",
+            CancellationToken.None);
+
+        using var memoryStream = new MemoryStream();
+        await downloadedStream.CopyToAsync(memoryStream);
+        byte[] downloadedContent = memoryStream.ToArray();
+
+        downloadedContent.Length.ShouldBe(tenMegabytes);
+        downloadedContent.ShouldBe(largeContent);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_WithMultipleChunks_ShouldUploadAllChunks()
+    {
+        // Arrange - Create a 25MB stream (to ensure multiple 8MB chunks)
+        const int twentyFiveMegabytes = 25 * 1024 * 1024;
+        byte[] largeContent = new byte[twentyFiveMegabytes];
+
+        // Fill with predictable pattern to verify data integrity
+        for (int i = 0; i < largeContent.Length; i++)
+        {
+            largeContent[i] = (byte)(i % 256);
+        }
+
+        using var stream = new MemoryStream(largeContent);
+        const string contentType = "application/octet-stream";
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            TestContainerName,
+            "multi-chunk-file.bin",
+            stream,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+
+        // Verify content integrity across all chunks
+        await using Stream downloadedStream = await _storageService.GetStreamAsync(
+            TestContainerName,
+            "multi-chunk-file.bin",
+            CancellationToken.None);
+
+        using var memoryStream = new MemoryStream();
+        await downloadedStream.CopyToAsync(memoryStream);
+        byte[] downloadedContent = memoryStream.ToArray();
+
+        downloadedContent.Length.ShouldBe(twentyFiveMegabytes);
+        downloadedContent.ShouldBe(largeContent);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_WithMetadata_ShouldStoreMetadata()
+    {
+        // Arrange
+        const int fiveMegabytes = 5 * 1024 * 1024;
+        byte[] content = new byte[fiveMegabytes];
+#pragma warning disable CA5394 // Random is acceptable for test data generation
+        new Random(123).NextBytes(content);
+#pragma warning restore CA5394
+        using var stream = new MemoryStream(content);
+        const string contentType = "video/mp4";
+        var metadata = CreateDocument();
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            TestContainerName,
+            "video-with-metadata.mp4",
+            stream,
+            contentType,
+            metadata,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+
+        // Verify metadata was stored
+        var blobClient = GetBlobClient(TestContainerName, "video-with-metadata.mp4");
+        var properties = await blobClient.GetPropertiesAsync();
+
+        properties.Value.Metadata.ShouldContainKeyAndValue("documentType", "invoice");
+        properties.Value.Metadata.ShouldContainKeyAndValue("year", "2025");
+        properties.Value.ContentType.ShouldBe(contentType);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_ShouldCreateContainerIfNotExists()
+    {
+        // Arrange
+        const string newContainerName = "large-upload-container";
+        const int fiveMegabytes = 5 * 1024 * 1024;
+        byte[] content = new byte[fiveMegabytes];
+        using var stream = new MemoryStream(content);
+        const string contentType = "application/octet-stream";
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            newContainerName,
+            "large-file.bin",
+            stream,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+
+        // Verify container was created
+        var containerClient = GetBlobServiceClient().GetBlobContainerClient(newContainerName);
+        bool containerExists = await containerClient.ExistsAsync();
+        containerExists.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_ShouldOverwriteExistingBlob()
+    {
+        // Arrange
+        const int fiveMegabytes = 5 * 1024 * 1024;
+        byte[] originalContent = new byte[fiveMegabytes];
+        byte[] updatedContent = new byte[fiveMegabytes];
+
+#pragma warning disable CA5394 // Random is acceptable for test data generation
+        new Random(1).NextBytes(originalContent);
+        new Random(2).NextBytes(updatedContent);
+#pragma warning restore CA5394
+
+        const string contentType = "application/octet-stream";
+        const string blobName = "overwrite-test.bin";
+
+        // Upload original content
+        using (var stream = new MemoryStream(originalContent))
+        {
+            await _storageService.LargeUploadAsync(
+                TestContainerName,
+                blobName,
+                stream,
+                contentType,
+                metadata: null,
+                CancellationToken.None);
+        }
+
+        // Act - Upload updated content
+        using (var stream = new MemoryStream(updatedContent))
+        {
+            await _storageService.LargeUploadAsync(
+                TestContainerName,
+                blobName,
+                stream,
+                contentType,
+                metadata: null,
+                CancellationToken.None);
+        }
+
+        // Assert
+        await using Stream downloadedStream = await _storageService.GetStreamAsync(
+            TestContainerName,
+            blobName,
+            CancellationToken.None);
+
+        using var memoryStream = new MemoryStream();
+        await downloadedStream.CopyToAsync(memoryStream);
+        byte[] downloadedContent = memoryStream.ToArray();
+
+        downloadedContent.ShouldBe(updatedContent);
+        downloadedContent.ShouldNotBe(originalContent);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_WithSmallFile_ShouldStillWork()
+    {
+        // Arrange - Upload a small file (less than one chunk) using UploadLargeAsync
+        const string content = "Small content using large upload method";
+        byte[] contentBytes = Encoding.UTF8.GetBytes(content);
+        using var stream = new MemoryStream(contentBytes);
+        const string contentType = MediaTypeNames.Text.Plain;
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            TestContainerName,
+            "small-file-large-upload.txt",
+            stream,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+
+        // Verify content
+        string retrievedContent = await _storageService.GetContentAsync(
+            TestContainerName,
+            "small-file-large-upload.txt",
+            CancellationToken.None);
+
+        retrievedContent.ShouldBe(content);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_WithEmptyStream_ShouldCreateEmptyBlob()
+    {
+        // Arrange
+        using var stream = new MemoryStream();
+        const string contentType = "application/octet-stream";
+
+        // Act
+        string blobUri = await _storageService.LargeUploadAsync(
+            TestContainerName,
+            "empty-file.bin",
+            stream,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Assert
+        blobUri.ShouldNotBeNullOrEmpty();
+
+        // Verify blob exists and is empty
+        bool exists = await _storageService.ExistsAsync(TestContainerName, "empty-file.bin", CancellationToken.None);
+        exists.ShouldBeTrue();
+
+        await using Stream downloadedStream = await _storageService.GetStreamAsync(
+            TestContainerName,
+            "empty-file.bin",
+            CancellationToken.None);
+
+        using var memoryStream = new MemoryStream();
+        await downloadedStream.CopyToAsync(memoryStream);
+        memoryStream.ToArray().Length.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task UploadLargeAsync_WithDifferentContentTypes_ShouldStoreCorrectContentType()
+    {
+        // Arrange
+        const int fiveMegabytes = 5 * 1024 * 1024;
+        byte[] content = new byte[fiveMegabytes];
+
+        var testCases = new[]
+        {
+            ("video.mp4", "video/mp4"),
+            ("document.pdf", "application/pdf"),
+            ("image.png", "image/png"),
+            ("data.json", "application/json")
+        };
+
+        foreach (var (blobName, contentType) in testCases)
+        {
+            using var stream = new MemoryStream(content);
+
+            // Act
+            await _storageService.LargeUploadAsync(
+                TestContainerName,
+                blobName,
+                stream,
+                contentType,
+                metadata: null,
+                CancellationToken.None);
+
+            // Assert
+            var blobClient = GetBlobClient(TestContainerName, blobName);
+            var properties = await blobClient.GetPropertiesAsync();
+            properties.Value.ContentType.ShouldBe(contentType);
+        }
     }
 
     #endregion

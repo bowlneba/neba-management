@@ -67,12 +67,9 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
             job.DocumentKey,
             cancellationToken);
 
-        Dictionary<string, string> metadata = new()
-        {
-            { "syncedAt", DateTime.UtcNow.ToString("o") }
-        };
+        job.Metadata.Add("syncedAt", DateTime.UtcNow.ToString("o"));
 
-        string location = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, metadata, cancellationToken);
+        string location = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
 
         _logger.LogCompletedHtmlDocumentSync(location);
     }

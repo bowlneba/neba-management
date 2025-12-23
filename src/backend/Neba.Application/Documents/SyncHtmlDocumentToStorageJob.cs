@@ -22,4 +22,9 @@ public sealed record SyncHtmlDocumentToStorageJob
     /// The filename to use when storing the document in the container.
     /// </summary>
     public required string DocumentName { get; init; }
+
+    /// <summary>
+    /// Optional metadata to associate with the stored document.
+    /// </summary>
+    public Dictionary<string, string> Metadata { get; init; } = [];
 }
