@@ -40,12 +40,12 @@ internal static class DocumentEndpoints
 
                     DocumentDto result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                    return TypedResults.Ok(result.ToResponse());
+                    return TypedResults.Ok(result.ToStringResponse());
                 })
                 .WithName("GetBylaws")
                 .WithSummary("Get the NEBA Bylaws document.")
                 .WithDescription("Retrieves the NEBA Bylaws document")
-                .Produces<DocumentResponse>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+                .Produces<DocumentResponse<string>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
                 .WithTags("documents", "website");
 

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Neba.Application.Documents;
 using Neba.Application.Messaging;
+using Neba.Contracts;
 using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Endpoints.Documents;
 
 namespace Neba.Website.Endpoints.Tournaments;
 
@@ -35,12 +37,12 @@ internal static class TournamentEndpoints
 
                 DocumentDto documentDto = await queryHandler.HandleAsync(query, CancellationToken.None);
 
-                return TypedResults.Ok(documentDto);
+                return TypedResults.Ok(documentDto.ToStringResponse());
             })
             .WithName("GetTournamentRules")
             .WithSummary("Get the tournament rules document.")
             .WithDescription("Retrieves the tournament rules document")
-            .Produces<DocumentDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+            .Produces<DocumentResponse<string>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
             .WithTags("tournaments", "website", "documents");
 

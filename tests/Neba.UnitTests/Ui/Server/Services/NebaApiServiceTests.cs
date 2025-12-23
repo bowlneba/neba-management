@@ -6,6 +6,7 @@ using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Tests;
 using Neba.Tests.Website;
+using Neba.Web.Server.Documents;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
@@ -947,22 +948,18 @@ public sealed class NebaApiServiceTests
         // Arrange
         const string htmlContent = "<h1>Tournament Rules</h1><p>These are the rules.</p>";
 
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
-        using var apiResponse = new Refit.ApiResponse<string>(
-            httpResponse,
-            htmlContent,
-            new RefitSettings());
+        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse);
+            .ReturnsAsync(apiResponse.ApiResponse);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.Value.ShouldBe(htmlContent);
+        result.Value.Content.Value.ShouldBe(htmlContent);
     }
 
     [Fact]
@@ -971,40 +968,32 @@ public sealed class NebaApiServiceTests
         // Arrange
         const string htmlContent = "";
 
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
-        using var apiResponse = new Refit.ApiResponse<string>(
-            httpResponse,
-            htmlContent,
-            new RefitSettings());
+        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse);
+            .ReturnsAsync(apiResponse.ApiResponse);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.Value.ShouldBe(string.Empty);
+        result.Value.Content.Value.ShouldBe(string.Empty);
     }
 
     [Fact]
     public async Task GetTournamentRulesAsync_ApiError_ReturnsError()
     {
         // Arrange
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError) { ReasonPhrase = "Server Error" };
-        using var apiResponse = new Refit.ApiResponse<string>(
-            httpResponse,
-            null,
-            new RefitSettings());
+        using var apiResponse = ApiResponseFactory.CreateDocumentResponse("", HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse);
+            .ReturnsAsync(apiResponse.ApiResponse);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1015,18 +1004,14 @@ public sealed class NebaApiServiceTests
     public async Task GetTournamentRulesAsync_NullContent_ReturnsError()
     {
         // Arrange
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
-        using var apiResponse = new Refit.ApiResponse<string>(
-            httpResponse,
-            null,
-            new RefitSettings());
+        using var apiResponse = ApiResponseFactory.CreateDocumentResponse<string>(null!);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse);
+            .ReturnsAsync(apiResponse.ApiResponse);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1046,7 +1031,7 @@ public sealed class NebaApiServiceTests
             .ThrowsAsync(apiException);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1062,7 +1047,7 @@ public sealed class NebaApiServiceTests
             .ThrowsAsync(new HttpRequestException("Network error"));
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1078,7 +1063,7 @@ public sealed class NebaApiServiceTests
             .ThrowsAsync(new TaskCanceledException("Timeout"));
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1094,7 +1079,7 @@ public sealed class NebaApiServiceTests
             .ThrowsAsync(new InvalidOperationException("Unexpected error"));
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -1116,22 +1101,18 @@ public sealed class NebaApiServiceTests
                 <p>For more information, contact the tournament director.</p>
             </div>";
 
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
-        using var apiResponse = new Refit.ApiResponse<string>(
-            httpResponse,
-            htmlContent,
-            new RefitSettings());
+        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
-            .ReturnsAsync(apiResponse);
+            .ReturnsAsync(apiResponse.ApiResponse);
 
         // Act
-        ErrorOr<MarkupString> result = await _sut.GetTournamentRulesAsync();
+        ErrorOr<DocumentViewModel<MarkupString>> result = await _sut.GetTournamentRulesAsync();
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.Value.ShouldBe(htmlContent);
+        result.Value.Content.Value.ShouldBe(htmlContent);
     }
 
     #endregion

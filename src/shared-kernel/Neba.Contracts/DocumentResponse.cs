@@ -3,12 +3,12 @@ namespace Neba.Contracts;
 /// <summary>
 /// Response DTO containing a document's content and associated metadata.
 /// </summary>
-public sealed record DocumentResponse
+public sealed record DocumentResponse<T>
 {
     /// <summary>
-    /// The document content (for example, HTML or plain text).
+    /// The document content
     /// </summary>
-    public required string Content { get; init; }
+    public required T Content { get; init; }
 
     /// <summary>
     /// Read-only metadata key/value pairs describing the document.

@@ -9,9 +9,9 @@ internal static class DocumentsMappingExtensions
 {
     extension(DocumentDto dto)
     {
-        public DocumentResponse ToResponse()
+        public DocumentResponse<string> ToStringResponse()
         {
-            return new DocumentResponse
+            return new DocumentResponse<string>
             {
                 Content = dto.Content,
                 Metadata = dto.Metadata
