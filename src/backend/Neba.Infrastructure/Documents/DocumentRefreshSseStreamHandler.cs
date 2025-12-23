@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
@@ -29,13 +30,13 @@ public static class DocumentRefreshSseStreamHandler
         return async (
             DocumentRefreshChannelManager channelManager,
             HybridCache cache,
-            ILogger<DocumentRefreshSseStreamHandler> logger,
+            [FromServices] ILogger<DocumentRefreshChannelManager> logger,
             CancellationToken cancellationToken) =>
         {
             return Results.Stream(
                 async stream =>
                 {
-                    var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
+                    var writer = new StreamWriter(stream, Encoding.UTF8);
 
                     try
                     {
@@ -101,5 +102,6 @@ public static class DocumentRefreshSseStreamHandler
         string json = JsonSerializer.Serialize(statusEvent, s_jsonOptions);
         await writer.WriteLineAsync($"data: {json}".AsMemory(), cancellationToken);
         await writer.WriteLineAsync(ReadOnlyMemory<char>.Empty, cancellationToken);
+        await writer.FlushAsync(cancellationToken);
     }
 }

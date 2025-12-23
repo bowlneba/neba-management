@@ -57,7 +57,8 @@ WebApplication app = builder.Build();
 
 app
     .UseOpenApi()
-    .UseHealthChecks();
+    .UseHealthChecks()
+    .UseBackgroundJobsDashboard();
 
 app.UseHttpsRedirection();
 
