@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
@@ -19,7 +20,16 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddLogging();
 
 // this is here temporarily until we configure actual caching with cache query instances
-builder.Services.AddHybridCache();
+builder.Services.AddHybridCache(options =>
+{
+    options.MaximumPayloadBytes = 1024 * 1024 * 10; // 10 MB
+    options.MaximumKeyLength = 512;
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(30),
+        LocalCacheExpiration = TimeSpan.FromMinutes(15)
+    };
+});
 
 builder.Services
     .AddInfrastructure(builder.Configuration)
@@ -54,7 +64,8 @@ app.UseHttpsRedirection();
 // Enable CORS
 app.UseCors();
 
-app.UseInfrastructure();
+app
+    .UseInfrastructure();
 
 // Initialize background jobs after Hangfire is configured
 app.Services.InitializeWebsiteBackgroundJobs();
