@@ -140,7 +140,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
                 DocumentType = job.DocumentKey,
                 StartedAt = existingState?.StartedAt ?? DateTimeOffset.UtcNow,
                 TriggeredBy = job.TriggeredBy,
-                Status = status,
+                Status = status.Name,
                 ErrorMessage = message
             };
 
