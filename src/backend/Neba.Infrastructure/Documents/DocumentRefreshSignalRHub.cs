@@ -30,7 +30,7 @@ internal sealed class DocumentRefreshSignalRHub
         if (state is not null)
         {
             await Clients.Caller.SendAsync(
-                "DocumentRefreshStatusChanged",
+                "DocumentRefreshStatusChange",
                 state.Status,
                 state.ErrorMessage,
                 cancellationToken: cancellationToken);

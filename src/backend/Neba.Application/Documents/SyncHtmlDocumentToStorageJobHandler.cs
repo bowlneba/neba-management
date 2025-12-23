@@ -76,13 +76,13 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
         {
             _logger.LogStartingHtmlDocumentSync();
 
-            await UpdateStatusAsync(job, DocumentRefreshStatus.Uploading, cancellationToken: cancellationToken);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Retrieving, cancellationToken: cancellationToken);
 
             string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
                 job.DocumentKey,
                 cancellationToken);
 
-            await UpdateStatusAsync(job, DocumentRefreshStatus.Retrieving, cancellationToken: cancellationToken);
+            await UpdateStatusAsync(job, DocumentRefreshStatus.Uploading, cancellationToken: cancellationToken);
 
             job.Metadata["syncedAt"] = DateTimeOffset.UtcNow.ToString("o");
             job.Metadata["syncedBy"] = job.TriggeredBy;

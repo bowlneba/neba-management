@@ -20,6 +20,6 @@ internal sealed class SignalRDocumentRefreshNotifier(IHubContext<DocumentRefresh
         }
 
         await _hubContext.Clients.Group(hubGroupName)
-            .SendAsync("JobStatusChanged", status, errorMessage, cancellationToken);
+            .SendAsync("DocumentRefreshStatusChange", status, errorMessage, cancellationToken);
     }
 }

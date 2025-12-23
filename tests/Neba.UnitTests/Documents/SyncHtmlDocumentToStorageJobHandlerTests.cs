@@ -11,6 +11,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
     private readonly Mock<IDocumentsService> _mockDocumentsService;
     private readonly Mock<IStorageService> _mockStorageService;
     private readonly Mock<HybridCache> _mockCache;
+    private readonly Mock<IDocumentRefreshNotifier> _mockNotifier;
 
     private readonly SyncHtmlDocumentToStorageJobHandler _job;
 
@@ -19,11 +20,13 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         _mockDocumentsService = new Mock<IDocumentsService>(MockBehavior.Strict);
         _mockStorageService = new Mock<IStorageService>(MockBehavior.Strict);
         _mockCache = new Mock<HybridCache>(MockBehavior.Loose);
+        _mockNotifier = new Mock<IDocumentRefreshNotifier>(MockBehavior.Loose);
 
         _job = new SyncHtmlDocumentToStorageJobHandler(
             _mockDocumentsService.Object,
             _mockStorageService.Object,
             _mockCache.Object,
+            _mockNotifier.Object,
             NullLogger<SyncHtmlDocumentToStorageJobHandler>.Instance);
     }
 
