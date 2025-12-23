@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
+using Neba.Infrastructure.SignalR;
 
 namespace Neba.Infrastructure.Documents;
 
@@ -48,6 +49,13 @@ internal static class DocumentsExtensions
         public IServiceCollection AddDocumentBackgroundJobs()
         {
             services.AddScoped<IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>, SyncHtmlDocumentToStorageJobHandler>();
+
+            return services;
+        }
+
+        public IServiceCollection AddDocumentRefreshNotification()
+        {
+            services.AddSingleton<IDocumentRefreshNotifier, SignalRDocumentRefreshNotifier>();
 
             return services;
         }
