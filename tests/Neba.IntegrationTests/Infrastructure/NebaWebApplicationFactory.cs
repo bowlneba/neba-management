@@ -26,6 +26,13 @@ public sealed class NebaWebApplicationFactory
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:website", _database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:hangfire", _database.ConnectionString);
+
+        // Configure Hangfire settings for integration tests
+        builder.UseSetting("Hangfire:WorkerCount", "1");
+        builder.UseSetting("Hangfire:SucceededJobsRetentionDays", "1");
+        builder.UseSetting("Hangfire:DeletedJobsRetentionDays", "1");
+        builder.UseSetting("Hangfire:FailedJobsRetentionDays", "1");
 
         // Mock GoogleDocs credentials for integration tests
         builder.UseSetting("GoogleDocs:Credentials:PrivateKey", "mock-private-key-for-testing");
