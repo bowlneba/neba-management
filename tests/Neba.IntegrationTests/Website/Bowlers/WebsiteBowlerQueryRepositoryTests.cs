@@ -10,24 +10,24 @@ using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
 
-[CollectionDefinition(nameof(WebsiteBowlerQueryRepositoryTests))]
-public sealed class WebsiteBowlerQueryRepositoryTestsFixture
-    : ICollectionFixture<WebsiteDatabase>;
-
-[Collection(nameof(WebsiteBowlerQueryRepositoryTests))]
-public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) : IAsyncLifetime
+public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
 {
+    private WebsiteDatabase _database = null!;
+
     /// <summary>
-    /// Called before each test - resets the database to a clean state.
+    /// Called before each test class - initializes a fresh database container.
     /// </summary>
     public async ValueTask InitializeAsync()
-        => await database.ResetAsync();
+    {
+        _database = new WebsiteDatabase();
+        await _database.InitializeAsync();
+    }
 
     /// <summary>
-    /// Called after each test - no cleanup needed.
+    /// Called after all tests complete - disposes the database container.
     /// </summary>
-    public ValueTask DisposeAsync()
-        => ValueTask.CompletedTask;
+    public async ValueTask DisposeAsync()
+        => await _database.DisposeAsync();
 
     [Fact]
     public async Task GetBowlerTitlesAsync_BowlerId_ShouldReturnNull_WhenBowlerDoesNotExist()
@@ -35,7 +35,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
             new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
+                .UseNpgsql(_database.ConnectionString)
                 .Options);
 
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
@@ -59,7 +59,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests(WebsiteDatabase database) 
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
             new DbContextOptionsBuilder<WebsiteDbContext>()
-                .UseNpgsql(database.ConnectionString)
+                .UseNpgsql(_database.ConnectionString)
                 .Options);
 
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);

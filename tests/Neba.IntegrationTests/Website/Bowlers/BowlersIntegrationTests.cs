@@ -9,7 +9,6 @@ using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
 
-[Collection(nameof(Infrastructure.Collections.BowlersIntegrationTests))]
 public sealed class BowlersIntegrationTests
     : ApiTestsBase
 {
@@ -17,8 +16,6 @@ public sealed class BowlersIntegrationTests
     public async Task GetBowlerTitles_ShouldReturnResults_WhenBowlerExists()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
         BowlerId seedBowlerId = BowlerId.Empty;
 
         await SeedAsync(async context =>
@@ -50,8 +47,6 @@ public sealed class BowlersIntegrationTests
     public async Task GetBowlerTitles_ShouldReturnNotFound_WhenBowlerDoesNotExist()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
         await SeedAsync(async context =>
         {
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);

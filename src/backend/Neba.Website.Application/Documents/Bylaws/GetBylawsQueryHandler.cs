@@ -1,17 +1,16 @@
-using Neba.Application.Documents;
 using Neba.Application.Messaging;
+using Neba.Application.Storage;
 
 namespace Neba.Website.Application.Documents.Bylaws;
 
 /// <summary>
 /// Handles queries to retrieve organization bylaws documentation as HTML.
 /// </summary>
-/// <param name="documentsService">Service for retrieving documents from configured sources.</param>
-internal sealed class GetBylawsQueryHandler(IDocumentsService documentsService)
+/// <param name="storageService">Service for retrieving documents from configured sources.</param>
+internal sealed class GetBylawsQueryHandler(IStorageService storageService)
         : IQueryHandler<GetBylawsQuery, string>
 {
-    private const string BylawsDocumentName = "bylaws";
-    private readonly IDocumentsService _documentsService = documentsService;
+    private readonly IStorageService _storageService = storageService;
 
     /// <summary>
     /// Retrieves the organization bylaws document as HTML.
@@ -23,7 +22,7 @@ internal sealed class GetBylawsQueryHandler(IDocumentsService documentsService)
         GetBylawsQuery request,
         CancellationToken cancellationToken)
     {
-        string htmlContent = await _documentsService.GetDocumentAsHtmlAsync(BylawsDocumentName, cancellationToken);
+        string htmlContent = await _storageService.GetContentAsync(BylawConstants.BylawsContainerName, BylawConstants.BylawsFileName, cancellationToken);
 
         return htmlContent;
     }

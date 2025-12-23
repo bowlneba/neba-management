@@ -1,17 +1,18 @@
 using Neba.Application.Documents;
+using Neba.Application.Storage;
 using Neba.Website.Application.Documents.Bylaws;
 
-namespace Neba.UnitTests.Website.Documents;
+namespace Neba.UnitTests.Website.Documents.Bylaws;
 
 public sealed class GetBylawsQueryHandlerTests
 {
-    private readonly Mock<IDocumentsService> _documentsServiceMock;
+    private readonly Mock<IStorageService> _storageServiceMock;
     private readonly GetBylawsQueryHandler _handler;
 
     public GetBylawsQueryHandlerTests()
     {
-        _documentsServiceMock = new Mock<IDocumentsService>(MockBehavior.Strict);
-        _handler = new GetBylawsQueryHandler(_documentsServiceMock.Object);
+        _storageServiceMock = new Mock<IStorageService>(MockBehavior.Strict);
+        _handler = new GetBylawsQueryHandler(_storageServiceMock.Object);
     }
 
     [Fact]
@@ -19,8 +20,9 @@ public sealed class GetBylawsQueryHandlerTests
     {
         // Arrange
         const string expectedHtml = "<h1>Bylaws</h1><p>These are the bylaws...</p>";
-        _documentsServiceMock
-            .Setup(ds => ds.GetDocumentAsHtmlAsync("bylaws", TestContext.Current.CancellationToken))
+
+        _storageServiceMock
+            .Setup(ds => ds.GetContentAsync("documents", "bylaws.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(expectedHtml);
 
         var query = new GetBylawsQuery();
@@ -30,6 +32,6 @@ public sealed class GetBylawsQueryHandlerTests
 
         // Assert
         result.ShouldBe(expectedHtml);
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("bylaws", TestContext.Current.CancellationToken), Times.Once);
+        _storageServiceMock.Verify(ds => ds.GetContentAsync("documents", "bylaws.html", TestContext.Current.CancellationToken), Times.Once);
     }
 }

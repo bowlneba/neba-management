@@ -9,7 +9,6 @@ using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Titles;
 
-[Collection(nameof(Infrastructure.Collections.TitlesIntegrationTests))]
 public sealed class TitlesIntegrationTests
     : ApiTestsBase
 {
@@ -17,14 +16,12 @@ public sealed class TitlesIntegrationTests
     public async Task ListTitles_ShouldReturnExpectedResults()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
         await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalTitles = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking().SelectMany(b => b.Titles).CountAsync());
@@ -50,14 +47,12 @@ public sealed class TitlesIntegrationTests
     public async Task ListTitleSummaries_ShouldReturnExpectedResults()
     {
         // Arrange
-        await ResetDatabaseAsync();
-
         await SeedAsync(async context =>
-        {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
-        });
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
             => await context.Bowlers.AsNoTracking().Where(b => b.Titles.Count > 0).CountAsync());

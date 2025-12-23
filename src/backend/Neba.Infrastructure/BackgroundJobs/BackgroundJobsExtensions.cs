@@ -88,7 +88,7 @@ internal static class BackgroundJobsExtensions
     {
         public WebApplication UseBackgroundJobsDashboard()
         {
-            app.UseHangfireDashboard("/jobs", new DashboardOptions
+            app.UseHangfireDashboard("/background-jobs", new DashboardOptions
             {
                 Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
                 DashboardTitle = "Background Jobs - API",

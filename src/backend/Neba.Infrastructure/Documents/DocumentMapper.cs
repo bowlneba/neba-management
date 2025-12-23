@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using Google.Apis.Docs.v1.Data;
 
 namespace Neba.Infrastructure.Documents;
@@ -25,6 +26,31 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
     private readonly Dictionary<string, string> _headingIds = [];
     private readonly Dictionary<string, string> _documentRouteMap
         = settings.Documents.ToDictionary(d => d.DocumentId, d => d.Route);
+
+    /// <summary>
+    /// Normalizes text content by replacing Unicode special characters with HTML entities.
+    /// This prevents encoding issues when displaying content in browsers.
+    /// </summary>
+    private static string NormalizeText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        // First, HTML encode to prevent XSS and handle basic special characters
+        text = HttpUtility.HtmlEncode(text);
+
+        // Then replace smart quotes and other typographic characters with their HTML entity equivalents
+        // (HtmlEncode doesn't handle these, leaving them as UTF-8 which can cause display issues)
+        text = text.Replace("\u2018", "&#8216;", StringComparison.Ordinal); // Left single quotation mark
+        text = text.Replace("\u2019", "&#8217;", StringComparison.Ordinal); // Right single quotation mark (apostrophe)
+        text = text.Replace("\u201C", "&#8220;", StringComparison.Ordinal); // Left double quotation mark
+        text = text.Replace("\u201D", "&#8221;", StringComparison.Ordinal); // Right double quotation mark
+        text = text.Replace("\u2013", "&#8211;", StringComparison.Ordinal); // En dash
+        text = text.Replace("\u2014", "&#8212;", StringComparison.Ordinal); // Em dash
+        text = text.Replace("\u2026", "&#8230;", StringComparison.Ordinal); // Horizontal ellipsis
+
+        return text;
+    }
 
     public string ConvertToHtml(Document document)
     {
@@ -581,6 +607,9 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
 
     private string FormatTextElement(string text, TextStyle? textStyle)
     {
+        // Normalize text to handle Unicode characters properly
+        text = NormalizeText(text);
+
         // Check for links
         if (textStyle?.Link != null)
         {
@@ -704,7 +733,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
 
                     content = processLinks && textStyle?.Link != null
                         ? FormatTextElement(content, textStyle)
-                        : ApplyTextFormatting(content, textStyle);
+                        : NormalizeAndFormatText(content, textStyle);
 
                     text.Append(content);
                 }
@@ -712,5 +741,11 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         }
 
         return text.ToString();
+    }
+
+    private static string NormalizeAndFormatText(string text, TextStyle? textStyle)
+    {
+        text = NormalizeText(text);
+        return ApplyTextFormatting(text, textStyle);
     }
 }

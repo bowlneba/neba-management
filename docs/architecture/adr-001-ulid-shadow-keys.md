@@ -7,7 +7,7 @@ title: ADR-001 - ULID and Shadow Key Pattern
 
 **Status**: Accepted
 
-**Date**: 2024-12-20
+**Date**: 2025-12-20
 
 **Context**: Modular Monolith Refactoring
 

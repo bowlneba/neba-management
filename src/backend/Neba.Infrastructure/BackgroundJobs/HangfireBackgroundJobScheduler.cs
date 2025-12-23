@@ -72,7 +72,7 @@ internal sealed class HangfireBackgroundJobScheduler
         return BackgroundJob.Delete(jobId);
     }
 
-    private async Task ExecuteJobAsync<TJob>(TJob job, CancellationToken cancellationToken) where TJob : IBackgroundJob
+    public async Task ExecuteJobAsync<TJob>(TJob job, CancellationToken cancellationToken) where TJob : IBackgroundJob
     {
         using IServiceScope scope = _serviceScopeFactory.CreateScope();
         IBackgroundJobHandler<TJob> handler = scope.ServiceProvider.GetRequiredService<IBackgroundJobHandler<TJob>>();

@@ -320,6 +320,137 @@ public sealed class DocumentMapperTests
         html.ShouldContain("  <li>Sibling</li>\n");
     }
 
+    [Fact]
+    public void ConvertToHtml_SmartQuotesAndApostrophes_AreConvertedToHtmlEntities()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        // Unicode characters: ' (U+2018), ' (U+2019), " (U+201C), " (U+201D)
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph("It\u2019s the year\u2019s best \u201Cproduct\u201D with \u2018quotes\u2019."));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p>It&#8217;s the year&#8217;s best &#8220;product&#8221; with &#8216;quotes&#8217;.</p>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_DashesAndEllipsis_AreConvertedToHtmlEntities()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        // Unicode characters: – (U+2013 en dash), — (U+2014 em dash), … (U+2026 ellipsis)
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph("2020\u20132024 \u2014 the years passed\u2026"));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p>2020&#8211;2024 &#8212; the years passed&#8230;</p>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_HtmlSpecialCharacters_AreHtmlEncoded()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph("<script>alert(\u2019XSS\u2019)</script> & other < > characters"));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p>&lt;script&gt;alert(&#8217;XSS&#8217;)&lt;/script&gt; &amp; other &lt; &gt; characters</p>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_UnicodeInHeadings_AreNormalizedWithCorrectIds()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Heading("Player\u2019s Guide", "HEADING_2"));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<h2 id='players-guide'>Player&#8217;s Guide</h2>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_UnicodeInLists_AreNormalized()
+    {
+        // Arrange
+        string listId = "list-unicode";
+        var lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
+
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        var document = GoogleDocsDocumentFactory.CreateWithLists(
+            lists,
+            GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "First item\u2019s content"),
+            GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Second item \u2014 with dash"));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldContain("  <li>First item&#8217;s content</li>\n");
+        html.ShouldContain("  <li>Second item &#8212; with dash</li>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_UnicodeInLinks_TextIsNormalizedButUrlIsNot()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph((
+                "Player\u2019s Guide",
+                GoogleDocsDocumentFactory.LinkToExternal(new Uri("https://example.com/guide", UriKind.Absolute)))));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p><a href='https://example.com/guide' target='_blank' rel='noopener noreferrer'>Player&#8217;s Guide</a></p>\n");
+    }
+
+    [Fact]
+    public void ConvertToHtml_UnicodeInFormattedText_AreNormalizedWithFormatting()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        var boldStyle = new Google.Apis.Docs.v1.Data.TextStyle { Bold = true };
+
+        var document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph(("This year\u2019s best", boldStyle)));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p><strong>This year&#8217;s best</strong></p>\n");
+    }
+
     private static string Normalize(string html)
         => html.Replace("\r\n", "\n", StringComparison.Ordinal);
 }
