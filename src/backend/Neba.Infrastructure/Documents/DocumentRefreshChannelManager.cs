@@ -187,22 +187,22 @@ public sealed class DocumentRefreshChannelManager : IAsyncDisposable
     private sealed class ChannelState
     {
         private int _listenerCount;
-        private DateTimeOffset _lastActivity;
+        private long _lastActivityTicks;
 
         public Channel<DocumentRefreshStatusEvent> Channel { get; }
         public DateTimeOffset CreatedAt { get; }
-        public DateTimeOffset LastActivity => _lastActivity;
+        public DateTimeOffset LastActivity => new DateTimeOffset(_lastActivityTicks, TimeSpan.Zero);
         public int ListenerCount => _listenerCount;
 
         public ChannelState(Channel<DocumentRefreshStatusEvent> channel, DateTimeOffset createdAt)
         {
             Channel = channel;
             CreatedAt = createdAt;
-            _lastActivity = createdAt;
+            _lastActivityTicks = createdAt.UtcTicks;
         }
 
         public void IncrementListeners() => Interlocked.Increment(ref _listenerCount);
         public void DecrementListeners() => Interlocked.Decrement(ref _listenerCount);
-        public void UpdateLastActivity() => Interlocked.Exchange(ref _lastActivity, DateTimeOffset.UtcNow);
+        public void UpdateLastActivity() => Interlocked.Exchange(ref _lastActivityTicks, DateTimeOffset.UtcNow.UtcTicks);
     }
 }

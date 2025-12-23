@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Caching.Hybrid;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
@@ -13,6 +14,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.ConfigureOpenApi();
 
+// this should go w/ the cache stuffs when it comes
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
@@ -57,8 +59,7 @@ WebApplication app = builder.Build();
 
 app
     .UseOpenApi()
-    .UseHealthChecks()
-    .UseBackgroundJobsDashboard();
+    .UseHealthChecks();
 
 app.UseHttpsRedirection();
 

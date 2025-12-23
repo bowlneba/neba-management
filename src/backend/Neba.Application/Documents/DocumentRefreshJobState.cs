@@ -18,9 +18,10 @@ public sealed record DocumentRefreshJobState
     public required string DocumentType { get; init; }
 
     /// <summary>
-    /// The current <see cref="DocumentRefreshStatus"/> of the job.
+    /// The current status of the job (e.g., "Retrieving", "Uploading", "Completed", "Failed").
+    /// Stored as string for cache serialization compatibility.
     /// </summary>
-    public required DocumentRefreshStatus Status { get; init; }
+    public required string Status { get; init; }
 
     /// <summary>
     /// Timestamp when the job started.

@@ -41,4 +41,24 @@ public sealed record DocumentRefreshStatusEvent
             Timestamp = DateTimeOffset.UtcNow
         };
     }
+
+    /// <summary>
+    /// Creates an event from a status string (when reading from cache).
+    /// </summary>
+    /// <param name="status">The status as a string.</param>
+    /// <param name="errorMessage">Optional error message.</param>
+    /// <returns>A new <see cref="DocumentRefreshStatusEvent"/> instance.</returns>
+    public static DocumentRefreshStatusEvent FromStatus(
+        string status,
+        string? errorMessage = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(status);
+
+        return new DocumentRefreshStatusEvent
+        {
+            Status = status,
+            ErrorMessage = errorMessage,
+            Timestamp = DateTimeOffset.UtcNow
+        };
+    }
 }
