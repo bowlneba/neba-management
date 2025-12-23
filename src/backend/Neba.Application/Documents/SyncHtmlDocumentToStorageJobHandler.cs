@@ -1,6 +1,6 @@
 using System.Data;
 using System.Net.Mime;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Storage;
@@ -21,7 +21,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 {
     private readonly IDocumentsService _documentsService;
     private readonly IStorageService _storageService;
-    private readonly IDistributedCache _cache;
+    private readonly HybridCache _cache;
     private readonly ILogger<SyncHtmlDocumentToStorageJobHandler> _logger;
     /// <summary>
     /// Initializes a new instance of the <see cref="SyncHtmlDocumentToStorageJobHandler"/> class.
@@ -33,7 +33,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
     public SyncHtmlDocumentToStorageJobHandler(
         IDocumentsService documentsService,
         IStorageService storageService,
-        IDistributedCache cache,
+        HybridCache cache,
         ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
     {
         _documentsService = documentsService;
@@ -125,7 +125,10 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
     {
         if (!string.IsNullOrWhiteSpace(job.CacheKey))
         {
-            DocumentRefreshJobState? existingState = await _cache.GetAsync<DocumentRefreshJobState>(job.CacheKey, CancellationToken.None);
+            DocumentRefreshJobState? existingState = await _cache.GetOrCreateAsync(
+                job.CacheKey,
+                _ => ValueTask.FromResult<DocumentRefreshJobState?>(null),
+                cancellationToken: CancellationToken.None);
 
             var state = new DocumentRefreshJobState
             {
@@ -136,10 +139,10 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
                 ErrorMessage = message
             };
 
-            await _cache.SetAsync(job.CacheKey, state, new DistributedCacheEntryOptions
+            await _cache.SetAsync(job.CacheKey, state, new HybridCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            }, CancellationToken.None);
+                Expiration = TimeSpan.FromMinutes(10)
+            }, cancellationToken: CancellationToken.None);
         }
     }
 }

@@ -18,6 +18,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 // this is here temporarily for hangfire logging, and will be properly configured later with OTEL setup
 builder.Services.AddLogging();
 
+// this is here temporarily until we configure actual caching with cache query instances
+builder.Services.AddHybridCache();
+
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddWebsiteApplication()
