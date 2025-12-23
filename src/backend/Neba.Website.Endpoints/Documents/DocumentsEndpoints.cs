@@ -1,8 +1,11 @@
 using System.Net.Mime;
+using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Neba.Application.Messaging;
+using Neba.Contracts;
+using Neba.Infrastructure.Http;
 using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.Website.Endpoints.Documents;
@@ -16,7 +19,8 @@ internal static class DocumentEndpoints
         public IEndpointRouteBuilder MapDocumentEndpoints()
         {
             app
-                .MapGetBylawsEndpoint();
+                .MapGetBylawsEndpoint()
+                .MapRefreshBylawsCacheEndpoint();
 
             return app;
         }
@@ -39,6 +43,34 @@ internal static class DocumentEndpoints
                 .WithSummary("Get the NEBA Bylaws document.")
                 .WithDescription("Retrieves the NEBA Bylaws document as an HTML string.")
                 .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Html)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
+                .WithTags("documents", "website");
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapRefreshBylawsCacheEndpoint()
+        {
+            app.MapPost(
+                "/bylaws/refresh-cache",
+                async (
+                    ICommandHandler<RefreshBylawsCacheCommand, string> commandHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var command = new RefreshBylawsCacheCommand();
+                    ErrorOr<string> jobIdResult = await commandHandler.HandleAsync(command, cancellationToken);
+
+                    if(jobIdResult.IsError)
+                    {
+                        return jobIdResult.Problem();
+                    }
+
+                    return TypedResults.Ok(ApiResponse.Create(jobIdResult.Value));
+                })
+                .WithName("RefreshBylawsCache")
+                .WithSummary("Refresh the cached NEBA Bylaws document.")
+                .WithDescription("Refreshes the cached version of the NEBA Bylaws document.")
+                .Produces(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
                 .WithTags("documents", "website");
 
