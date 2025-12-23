@@ -18,9 +18,9 @@ internal sealed class BylawsSyncBackgroundJob
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = BylawConstants.BylawsDocumentName,
-            ContainerName = BylawConstants.BylawsContainerName,
-            DocumentName = BylawConstants.BylawsFileName
+            DocumentKey = BylawsConstants.BylawsDocumentName,
+            ContainerName = BylawsConstants.BylawsContainerName,
+            DocumentName = BylawsConstants.BylawsFileName
         };
 
         // Schedule to run monthly at 7:00 AM UTC on the 1st day of each month
@@ -33,9 +33,9 @@ internal sealed class BylawsSyncBackgroundJob
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = BylawConstants.BylawsDocumentName,
-            ContainerName = BylawConstants.BylawsContainerName,
-            DocumentName = BylawConstants.BylawsFileName
+            DocumentKey = BylawsConstants.BylawsDocumentName,
+            ContainerName = BylawsConstants.BylawsContainerName,
+            DocumentName = BylawsConstants.BylawsFileName
         };
 
         return _scheduler.Enqueue(job);

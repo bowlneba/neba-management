@@ -22,7 +22,7 @@ internal sealed class GetBylawsQueryHandler(IStorageService storageService)
         GetBylawsQuery request,
         CancellationToken cancellationToken)
     {
-        string htmlContent = await _storageService.GetContentAsync(BylawConstants.BylawsContainerName, BylawConstants.BylawsFileName, cancellationToken);
+        string htmlContent = await _storageService.GetContentAsync(BylawsConstants.BylawsContainerName, BylawsConstants.BylawsFileName, cancellationToken);
 
         return htmlContent;
     }

@@ -3,7 +3,7 @@ namespace Neba.Website.Application.Documents.Bylaws;
 /// <summary>
 /// Constants used for storing and retrieving the association's bylaws document.
 /// </summary>
-public static class BylawConstants
+public static class BylawsConstants
 {
     /// <summary>
     /// The name of the container (or blob/container) where bylaws documents are stored.
