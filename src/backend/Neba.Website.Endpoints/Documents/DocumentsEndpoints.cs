@@ -3,9 +3,10 @@ using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Contracts;
-using Neba.Infrastructure.Documents.Sse;
+using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Http;
 using Neba.Website.Application.Documents.Bylaws;
 
@@ -32,19 +33,19 @@ internal static class DocumentEndpoints
             app.MapGet(
                 "/bylaws",
                 async (
-                    IQueryHandler<GetBylawsQuery, string> queryHandler,
+                    IQueryHandler<GetBylawsQuery, DocumentDto> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
                     var query = new GetBylawsQuery();
 
-                    string result = await queryHandler.HandleAsync(query, cancellationToken);
+                    DocumentDto result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                    return TypedResults.Content(result, MediaTypeNames.Text.Html);
+                    return TypedResults.Ok(result.ToResponse());
                 })
                 .WithName("GetBylaws")
                 .WithSummary("Get the NEBA Bylaws document.")
-                .WithDescription("Retrieves the NEBA Bylaws document as an HTML string.")
-                .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Html)
+                .WithDescription("Retrieves the NEBA Bylaws document")
+                .Produces<DocumentResponse>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
                 .WithTags("documents", "website");
 

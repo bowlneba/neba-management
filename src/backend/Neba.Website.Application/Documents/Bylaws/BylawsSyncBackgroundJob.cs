@@ -13,12 +13,12 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = BylawsConstants.BylawsDocumentName,
-            ContainerName = BylawsConstants.BylawsContainerName,
-            DocumentName = BylawsConstants.BylawsFileName,
-            HubGroupName = $"{BylawsConstants.BylawsDocumentName}-refresh",
-            CacheKey = $"{BylawsConstants.BylawsDocumentName}:refresh:current",
-            DocumentCacheKey = BylawsConstants.BylawsDocumentName,
+            DocumentKey = BylawsConstants.DocumentKey,
+            ContainerName = BylawsConstants.ContainerName,
+            DocumentName = BylawsConstants.FileName,
+            HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
+            CacheKey = $"{BylawsConstants.DocumentKey}:refresh:current",
+            DocumentCacheKey = BylawsConstants.DocumentKey,
             TriggeredBy = "scheduled"
         };
 
@@ -32,12 +32,12 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = BylawsConstants.BylawsDocumentName,
-            ContainerName = BylawsConstants.BylawsContainerName,
-            DocumentName = BylawsConstants.BylawsFileName,
-            HubGroupName = $"{BylawsConstants.BylawsDocumentName}-refresh",
-            CacheKey = $"{BylawsConstants.BylawsDocumentName}:refresh:current",
-            DocumentCacheKey = BylawsConstants.BylawsDocumentName,
+            DocumentKey = BylawsConstants.DocumentKey,
+            ContainerName = BylawsConstants.ContainerName,
+            DocumentName = BylawsConstants.FileName,
+            HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
+            CacheKey = $"{BylawsConstants.DocumentKey}:refresh:current",
+            DocumentCacheKey = BylawsConstants.DocumentKey,
             TriggeredBy = "user"
         };
 

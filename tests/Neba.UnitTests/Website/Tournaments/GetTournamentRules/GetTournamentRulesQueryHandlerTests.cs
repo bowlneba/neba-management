@@ -1,35 +1,37 @@
 using Neba.Application.Documents;
+using Neba.Application.Storage;
+using Neba.Tests.Documents;
 using Neba.Website.Application.Tournaments.GetTournamentRules;
 
 namespace Neba.UnitTests.Website.Tournaments.GetTournamentRules;
 
 public sealed class GetTournamentRulesQueryHandlerTests
 {
-    private readonly Mock<IDocumentsService> _documentsServiceMock;
+    private readonly Mock<IStorageService> _storageServiceMock;
     private readonly GetTournamentRulesQueryHandler _handler;
 
     public GetTournamentRulesQueryHandlerTests()
     {
-        _documentsServiceMock = new Mock<IDocumentsService>(MockBehavior.Strict);
-        _handler = new GetTournamentRulesQueryHandler(_documentsServiceMock.Object);
+        _storageServiceMock = new Mock<IStorageService>(MockBehavior.Strict);
+        _handler = new GetTournamentRulesQueryHandler(_storageServiceMock.Object);
     }
 
     [Fact]
-    public async Task HandleAsync_ShouldReturnTournamentRulesHtml()
+    public async Task HandleAsync_ShouldReturnTournamentRulesDocument()
     {
         // Arrange
-        const string expectedHtml = "<h1>Tournament Rules</h1><p>These are the rules...</p>";
-        _documentsServiceMock
-            .Setup(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken))
-            .ReturnsAsync(expectedHtml);
+        DocumentDto expectedDocument = DocumentDtoFactory.CreateTournamentRules();
+        _storageServiceMock
+            .Setup(ds => ds.GetContentWithMetadataAsync("tournaments", "tournament-rules", TestContext.Current.CancellationToken))
+            .ReturnsAsync(expectedDocument);
 
         var query = new GetTournamentRulesQuery();
 
         // Act
-        string result = await _handler.HandleAsync(query, TestContext.Current.CancellationToken);
+        DocumentDto result = await _handler.HandleAsync(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.ShouldBe(expectedHtml);
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
+        result.ShouldBe(expectedDocument);
+        _storageServiceMock.Verify(ds => ds.GetContentWithMetadataAsync("tournaments", "tournament-rules", TestContext.Current.CancellationToken), Times.Once);
     }
 }

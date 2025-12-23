@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Website.Application.Tournaments.GetTournamentRules;
 
@@ -28,18 +29,18 @@ internal static class TournamentEndpoints
 
         private IEndpointRouteBuilder MapGetTournamentRulesEndpoint()
         {
-            app.MapGet("/rules", async (IQueryHandler<GetTournamentRulesQuery, string> queryHandler) =>
+            app.MapGet("/rules", async (IQueryHandler<GetTournamentRulesQuery, DocumentDto> queryHandler) =>
             {
                 GetTournamentRulesQuery query = new();
 
-                string htmlContent = await queryHandler.HandleAsync(query, CancellationToken.None);
+                DocumentDto documentDto = await queryHandler.HandleAsync(query, CancellationToken.None);
 
-                return TypedResults.Content(htmlContent, MediaTypeNames.Text.Html);
+                return TypedResults.Ok(documentDto);
             })
             .WithName("GetTournamentRules")
             .WithSummary("Get the tournament rules document.")
-            .WithDescription("Retrieves the tournament rules document as an HTML string.")
-            .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Html)
+            .WithDescription("Retrieves the tournament rules document")
+            .Produces<DocumentDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
             .WithTags("tournaments", "website", "documents");
 

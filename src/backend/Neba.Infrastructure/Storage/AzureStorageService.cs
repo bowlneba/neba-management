@@ -4,6 +4,7 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Neba.Application.Documents;
 using Neba.Application.Storage;
 
 namespace Neba.Infrastructure.Storage;
@@ -106,14 +107,14 @@ internal sealed class AzureStorageService
         return downloadResponse.Value.Content.ToString();
     }
 
-    public async Task<ContentWithMetadata> GetContentWithMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task<DocumentDto> GetContentWithMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
     {
         BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
         Response<BlobDownloadResult> downloadResponse = await blobClient.DownloadContentAsync(cancellationToken);
 
-        var contentWithMetadata = new ContentWithMetadata
+        var contentWithMetadata = new DocumentDto
         {
             Content = downloadResponse.Value.Content.ToString(),
             Metadata = downloadResponse.Value.Details.Metadata.AsReadOnly()

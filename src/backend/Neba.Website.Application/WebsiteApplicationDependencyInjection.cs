@@ -68,14 +68,14 @@ public static class WebsiteApplicationDependencyInjection
 
         private IServiceCollection AddTournamentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetTournamentRulesQuery, string>, GetTournamentRulesQueryHandler>();
+            services.AddScoped<IQueryHandler<GetTournamentRulesQuery, DocumentDto>, GetTournamentRulesQueryHandler>();
 
             return services;
         }
 
         private IServiceCollection AddDocumentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
+            services.AddScoped<IQueryHandler<GetBylawsQuery, DocumentDto>, GetBylawsQueryHandler>();
             services.AddScoped<ICommandHandler<RefreshBylawsCacheCommand, string>, RefreshBylawsCacheCommandHandler>();
             services.AddScoped<BylawsSyncBackgroundJob>();
 
