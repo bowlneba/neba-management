@@ -263,6 +263,183 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         actualBytes.ShouldBe(expectedBytes);
     }
 
+    [Fact]
+    public async Task GetContentWithMetadataAsync_ShouldReturnContentAndMetadata()
+    {
+        // Arrange
+        const string expectedContent = "Content with metadata for retrieval";
+        const string contentType = MediaTypeNames.Text.Plain;
+        var expectedMetadata = CreateSimple();
+
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            expectedContent,
+            contentType,
+            expectedMetadata,
+            CancellationToken.None);
+
+        // Act
+        var result = await _storageService.GetContentWithMetadataAsync(
+            TestContainerName,
+            TestBlobName,
+            CancellationToken.None);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Content.ShouldBe(expectedContent);
+        result.Metadata.ShouldNotBeNull();
+        result.Metadata.ShouldContainKeyAndValue("author", "TestUser");
+        result.Metadata.ShouldContainKeyAndValue("version", "1.0");
+        result.Metadata.ShouldContainKeyAndValue("environment", "test");
+    }
+
+    [Fact]
+    public async Task GetContentWithMetadataAsync_WithNoMetadata_ShouldReturnContentWithEmptyMetadata()
+    {
+        // Arrange
+        const string expectedContent = "Content without metadata";
+        const string contentType = MediaTypeNames.Text.Plain;
+
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            expectedContent,
+            contentType,
+            metadata: null,
+            CancellationToken.None);
+
+        // Act
+        var result = await _storageService.GetContentWithMetadataAsync(
+            TestContainerName,
+            TestBlobName,
+            CancellationToken.None);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Content.ShouldBe(expectedContent);
+        result.Metadata.ShouldNotBeNull();
+        result.Metadata.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task GetContentWithMetadataAsync_ShouldReturnReadOnlyMetadata()
+    {
+        // Arrange
+        const string content = "Test content";
+        const string contentType = MediaTypeNames.Text.Plain;
+        var metadata = CreateDocument();
+
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            content,
+            contentType,
+            metadata,
+            CancellationToken.None);
+
+        // Act
+        var result = await _storageService.GetContentWithMetadataAsync(
+            TestContainerName,
+            TestBlobName,
+            CancellationToken.None);
+
+        // Assert
+        result.Metadata.ShouldBeAssignableTo<IReadOnlyDictionary<string, string>>();
+    }
+
+    [Fact]
+    public async Task GetContentWithMetadataAsync_WithComplexMetadata_ShouldPreserveAllMetadataValues()
+    {
+        // Arrange
+        const string content = "Content with complex metadata";
+        const string contentType = MediaTypeNames.Text.Plain;
+        var metadata = CreateWithSpecialCharacters();
+
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            content,
+            contentType,
+            metadata,
+            CancellationToken.None);
+
+        // Act
+        var result = await _storageService.GetContentWithMetadataAsync(
+            TestContainerName,
+            TestBlobName,
+            CancellationToken.None);
+
+        // Assert
+        result.Metadata.ShouldContainKeyAndValue("description", "Test with spaces and special chars: @#$%");
+        result.Metadata.ShouldContainKeyAndValue("path", "/documents/2025/invoices");
+        result.Metadata.ShouldContainKeyAndValue("email", "test@example.com");
+        result.Metadata.Count.ShouldBe(3);
+    }
+
+    [Fact]
+    public async Task GetContentWithMetadataAsync_ShouldThrow_WhenBlobDoesNotExist()
+    {
+        // Arrange
+        const string nonExistentBlobName = "non-existent-blob.txt";
+
+        // Ensure container exists
+        await _storageService.UploadAsync(
+            TestContainerName,
+            "dummy-blob.txt",
+            "dummy",
+            MediaTypeNames.Text.Plain,
+            metadata: null,
+            CancellationToken.None);
+
+        // Act & Assert
+        await Should.ThrowAsync<Azure.RequestFailedException>(async () =>
+            await _storageService.GetContentWithMetadataAsync(
+                TestContainerName,
+                nonExistentBlobName,
+                CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetContentWithMetadataAsync_AfterMetadataUpdate_ShouldReturnUpdatedMetadata()
+    {
+        // Arrange
+        const string content = "Content for metadata update test";
+        const string contentType = MediaTypeNames.Text.Plain;
+        var originalMetadata = CreateStatus("draft", "1.0");
+
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            content,
+            contentType,
+            originalMetadata,
+            CancellationToken.None);
+
+        // Update blob with new metadata
+        var updatedMetadata = CreateWithReviewer();
+        await _storageService.UploadAsync(
+            TestContainerName,
+            TestBlobName,
+            content,
+            contentType,
+            updatedMetadata,
+            CancellationToken.None);
+
+        // Act
+        var result = await _storageService.GetContentWithMetadataAsync(
+            TestContainerName,
+            TestBlobName,
+            CancellationToken.None);
+
+        // Assert
+        result.Metadata.ShouldContainKeyAndValue("status", "published");
+        result.Metadata.ShouldContainKeyAndValue("version", "2.0");
+        result.Metadata.ShouldContainKeyAndValue("reviewedBy", "Admin");
+        result.Metadata.Count.ShouldBe(3);
+        result.Metadata.ShouldNotContainKey("draft");
+    }
+
     #endregion
 
     #region Exists and Delete Tests

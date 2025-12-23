@@ -6,9 +6,9 @@ namespace Neba.Application.Storage;
 public sealed record ContentWithMetadata
 {
     /// <summary>
-    /// Gets the content code or identifier. This value is required.
+    /// Gets the content. This value is required.
     /// </summary>
-    public required string Code { get; init; }
+    public required string Content { get; init; }
 
     /// <summary>
     /// Gets a read-only dictionary of metadata key/value pairs associated with the content.

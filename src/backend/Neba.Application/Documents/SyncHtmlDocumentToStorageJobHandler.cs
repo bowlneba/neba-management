@@ -1,4 +1,6 @@
+using System.Data;
 using System.Net.Mime;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Storage;
@@ -19,20 +21,24 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 {
     private readonly IDocumentsService _documentsService;
     private readonly IStorageService _storageService;
+    private readonly IDistributedCache _cache;
     private readonly ILogger<SyncHtmlDocumentToStorageJobHandler> _logger;
     /// <summary>
     /// Initializes a new instance of the <see cref="SyncHtmlDocumentToStorageJobHandler"/> class.
     /// </summary>
     /// <param name="documentsService">Service for retrieving documents as HTML.</param>
     /// <param name="storageService">Service for uploading content to storage containers.</param>
+    /// <param name="cache">Distributed cache for temporary storage.</param>
     /// <param name="logger">Logger used to record sync progress and results.</param>
     public SyncHtmlDocumentToStorageJobHandler(
         IDocumentsService documentsService,
         IStorageService storageService,
+        IDistributedCache cache,
         ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
     {
         _documentsService = documentsService;
         _storageService = storageService;
+        _cache = cache;
         _logger = logger;
     }
 
@@ -61,16 +67,79 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
         {
             throw new ArgumentException("Job.DocumentName cannot be null or whitespace.", nameof(job));
         }
-        _logger.LogStartingHtmlDocumentSync();
 
-        string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
-            job.DocumentKey,
-            cancellationToken);
+        try
+        {
+            _logger.LogStartingHtmlDocumentSync();
 
-        job.Metadata.Add("syncedAt", DateTime.UtcNow.ToString("o"));
+            await UpdateStatusAsync(job, RefreshStatus.Uploading);
 
-        string location = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
+            string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
+                job.DocumentKey,
+                cancellationToken);
 
-        _logger.LogCompletedHtmlDocumentSync(location);
+            await UpdateStatusAsync(job, RefreshStatus.Retrieving);
+
+            job.Metadata["syncedAt"] = DateTimeOffset.UtcNow.ToString("o");
+            job.Metadata["syncedBy"] = job.TriggeredBy;
+
+            string name = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
+
+            _logger.LogCompletedHtmlDocumentSync(name);
+
+            await UpdateStatusAsync(job, RefreshStatus.Completed);
+
+            if (!string.IsNullOrWhiteSpace(job.DocumentCacheKey))
+            {
+                await _cache.RemoveAsync(job.DocumentCacheKey, cancellationToken);
+            }
+
+            // Clear job state after a short delay (allows late joiners to see final status)
+            if (!string.IsNullOrWhiteSpace(job.CacheKey))
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                await _cache.RemoveAsync(job.CacheKey, cancellationToken);
+            }
+        }
+        catch(Exception ex)
+        {
+            _logger.LogErrorDuringHtmlDocumentSync(ex);
+
+            await UpdateStatusAsync(job, RefreshStatus.Failed, ex.Message);
+
+            // Keep failed state longer for debugging
+            if (!string.IsNullOrWhiteSpace(job.CacheKey))
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                await _cache.RemoveAsync(job.CacheKey, cancellationToken);
+            }
+
+            throw;
+        }
+    }
+
+    private async Task UpdateStatusAsync(
+        SyncHtmlDocumentToStorageJob job,
+        RefreshStatus status,
+        string? message = null)
+    {
+        if (!string.IsNullOrWhiteSpace(job.CacheKey))
+        {
+            DocumentRefreshJobState? existingState = await _cache.GetAsync<DocumentRefreshJobState>(job.CacheKey, CancellationToken.None);
+
+            var state = new DocumentRefreshJobState
+            {
+                DocumentType = job.DocumentKey,
+                StartedAt = existingState?.StartedAt ?? DateTimeOffset.UtcNow,
+                TriggeredBy = job.TriggeredBy,
+                Status = status,
+                ErrorMessage = message
+            };
+
+            await _cache.SetAsync(job.CacheKey, state, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            }, CancellationToken.None);
+        }
     }
 }

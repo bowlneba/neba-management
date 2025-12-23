@@ -69,6 +69,15 @@ public interface IStorageService
     Task<string> GetContentAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves the content and metadata of the specified blob.
+    /// </summary>
+    /// <param name="containerName">The container where the blob is located.</param>
+    /// <param name="blobName">The name/key of the blob to retrieve.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="ContentWithMetadata"/> containing the blob data and its metadata.</returns>
+    Task<ContentWithMetadata> GetContentWithMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves the specified blob as a <see cref="Stream"/> for reading.
     /// Callers are responsible for disposing the returned stream when finished.
     /// </summary>

@@ -106,6 +106,22 @@ internal sealed class AzureStorageService
         return downloadResponse.Value.Content.ToString();
     }
 
+    public async Task<ContentWithMetadata> GetContentWithMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    {
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+        Response<BlobDownloadResult> downloadResponse = await blobClient.DownloadContentAsync(cancellationToken);
+
+        var contentWithMetadata = new ContentWithMetadata
+        {
+            Content = downloadResponse.Value.Content.ToString(),
+            Metadata = downloadResponse.Value.Details.Metadata.AsReadOnly()
+        };
+
+        return contentWithMetadata;
+    }
+
     public async Task<bool> ExistsAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
     {
         BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);

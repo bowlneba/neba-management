@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Application.Documents;
 using Neba.Application.Storage;
@@ -9,6 +10,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
 {
     private readonly Mock<IDocumentsService> _mockDocumentsService;
     private readonly Mock<IStorageService> _mockStorageService;
+    private readonly Mock<IDistributedCache> _mockCache;
 
     private readonly SyncHtmlDocumentToStorageJobHandler _job;
 
@@ -16,10 +18,12 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
     {
         _mockDocumentsService = new Mock<IDocumentsService>(MockBehavior.Strict);
         _mockStorageService = new Mock<IStorageService>(MockBehavior.Strict);
+        _mockCache = new Mock<IDistributedCache>(MockBehavior.Loose);
 
         _job = new SyncHtmlDocumentToStorageJobHandler(
             _mockDocumentsService.Object,
             _mockStorageService.Object,
+            _mockCache.Object,
             NullLogger<SyncHtmlDocumentToStorageJobHandler>.Instance);
     }
 

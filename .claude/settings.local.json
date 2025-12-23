@@ -89,7 +89,8 @@
       "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.IntegrationTests/bin/Debug/net10.0/Neba.IntegrationTests:*)",
       "Bash(time dotnet run:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de --stat)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)",
+      "Bash(touch:*)"
     ],
     "deny": [],
     "ask": []

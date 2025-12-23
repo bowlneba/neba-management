@@ -4,6 +4,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Neba.Domain\Neba.Domain.csproj" />
   </ItemGroup>
 
