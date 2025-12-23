@@ -1,4 +1,5 @@
 namespace Neba.Application.Documents;
+
 /// <summary>
 /// Represents the current state of a document refresh job including identifiers,
 /// document type, status, timing and any error information. Used to report

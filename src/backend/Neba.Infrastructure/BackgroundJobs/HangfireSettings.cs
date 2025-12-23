@@ -16,4 +16,3 @@ internal sealed record HangfireSettings
     [Range(1, 365, ErrorMessage = "FailedJobsRetentionDays must be between 1 and 365.")]
     public required int FailedJobsRetentionDays { get; init; }
 }
-

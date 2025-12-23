@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
 
-namespace Neba.Infrastructure.Documents.Sse;
+namespace Neba.Infrastructure.Documents;
 
 /// <summary>
 /// SSE-based implementation of <see cref="IDocumentRefreshNotifier"/>.

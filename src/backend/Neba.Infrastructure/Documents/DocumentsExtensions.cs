@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
-using Neba.Infrastructure.Documents.Sse;
 
 namespace Neba.Infrastructure.Documents;
 

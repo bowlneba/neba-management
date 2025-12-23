@@ -1,6 +1,6 @@
 using Neba.Application.Documents;
 
-namespace Neba.Infrastructure.Documents.Sse;
+namespace Neba.Infrastructure.Documents;
 
 /// <summary>
 /// Represents a document refresh status event for SSE streaming.

@@ -1,6 +1,7 @@
 using Ardalis.SmartEnum;
 
 namespace Neba.Application.Documents;
+
 /// <summary>
 /// Represents the state of a document refresh operation.
 /// Uses <see cref="Ardalis.SmartEnum.SmartEnum{T}"/> to provide named, strongly-typed values.

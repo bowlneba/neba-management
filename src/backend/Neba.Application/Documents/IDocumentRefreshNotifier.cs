@@ -1,4 +1,5 @@
 namespace Neba.Application.Documents;
+
 /// <summary>
 /// Notifies interested clients about document refresh progress and status changes.
 /// </summary>

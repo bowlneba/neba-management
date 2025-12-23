@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Neba.Infrastructure.Documents.Sse;
+namespace Neba.Infrastructure.Documents;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

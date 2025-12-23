@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
-namespace Neba.Infrastructure.Documents.Sse;
+namespace Neba.Infrastructure.Documents;
 
 /// <summary>
 /// Manages document refresh notification channels with on-demand creation and automatic cleanup.

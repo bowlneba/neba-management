@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
 
-namespace Neba.Infrastructure.Documents.Sse;
+namespace Neba.Infrastructure.Documents;
 
 /// <summary>
 /// Factory for creating SSE stream handlers for document refresh status updates.
