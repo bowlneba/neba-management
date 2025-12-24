@@ -1,6 +1,6 @@
 using Neba.Application.Messaging;
 
-namespace Neba.Website.Application.Tournaments;
+namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 /// <summary>
 /// Command to request a refresh of the tournament rules cache.

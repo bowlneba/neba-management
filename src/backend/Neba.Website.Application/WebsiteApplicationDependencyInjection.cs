@@ -1,6 +1,5 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
@@ -8,8 +7,7 @@ using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Documents.Bylaws;
-using Neba.Website.Application.Tournaments;
-using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.TournamentRules;
 
 namespace Neba.Website.Application;
 

@@ -1,9 +1,9 @@
 using Neba.Application.Documents;
 using Neba.Application.Storage;
 using Neba.Tests.Documents;
-using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.TournamentRules;
 
-namespace Neba.UnitTests.Website.Tournaments.GetTournamentRules;
+namespace Neba.UnitTests.Website.Tournaments.TournamentRules;
 
 public sealed class GetTournamentRulesQueryHandlerTests
 {

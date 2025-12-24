@@ -8,8 +8,7 @@ using Neba.Application.Messaging;
 using Neba.Contracts;
 using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Http;
-using Neba.Website.Application.Tournaments;
-using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.TournamentRules;
 using Neba.Website.Endpoints.Documents;
 
 namespace Neba.Website.Endpoints.Tournaments;

@@ -1,7 +1,7 @@
 using ErrorOr;
 using Neba.Application.Messaging;
 
-namespace Neba.Website.Application.Tournaments;
+namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 internal sealed class RefreshTournamentRulesCacheCommandHandler(TournamentRulesSyncBackgroundJob tournamentRulesSyncBackgroundJob)
         : ICommandHandler<RefreshTournamentRulesCacheCommand, string>

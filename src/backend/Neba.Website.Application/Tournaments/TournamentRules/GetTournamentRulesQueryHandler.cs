@@ -2,7 +2,7 @@ using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Application.Storage;
 
-namespace Neba.Website.Application.Tournaments.GetTournamentRules;
+namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 #pragma warning disable CA1812 // Internal class is instantiated through dependency injection
 

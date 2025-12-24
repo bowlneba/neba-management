@@ -1,4 +1,4 @@
-namespace Neba.Website.Application.Tournaments;
+namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 /// <summary>
 /// Constants used for storing and retrieving the tournament rules document.

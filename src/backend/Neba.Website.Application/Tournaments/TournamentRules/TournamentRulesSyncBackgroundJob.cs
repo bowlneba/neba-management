@@ -1,7 +1,7 @@
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
 
-namespace Neba.Website.Application.Tournaments;
+namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler scheduler)
 {
