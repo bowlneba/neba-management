@@ -89,7 +89,15 @@
       "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.IntegrationTests/bin/Debug/net10.0/Neba.IntegrationTests:*)",
       "Bash(time dotnet run:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de --stat)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)",
+      "Bash(touch:*)",
+      "Bash(ls:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..documentRefresh --oneline)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...documentRefresh --stat)",
+      "Bash(./bin/Debug/net10.0/Neba.UnitTests)",
+      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Application/WebsiteApplicationDependencyInjection.cs)",
+      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)"
     ],
     "deny": [],
     "ask": []

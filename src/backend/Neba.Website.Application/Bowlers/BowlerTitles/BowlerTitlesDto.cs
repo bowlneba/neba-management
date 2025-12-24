@@ -23,5 +23,3 @@ public sealed record BowlerTitlesDto
     /// </summary>
     public required IReadOnlyCollection<TitleDto> Titles { get; init; }
 }
-
-

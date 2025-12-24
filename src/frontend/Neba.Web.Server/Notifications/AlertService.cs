@@ -11,17 +11,15 @@ namespace Neba.Web.Server.Notifications;
 /// </remarks>
 public class AlertService
 {
-    private AlertItem? _currentAlert;
-
     /// <summary>
     /// The currently active alert, or null if no alert is displayed.
     /// </summary>
     public AlertItem? CurrentAlert
     {
-        get => _currentAlert;
+        get;
         private set
         {
-            _currentAlert = value;
+            field = value;
             NotifyStateChanged();
         }
     }

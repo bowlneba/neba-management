@@ -13,7 +13,7 @@ public sealed class TitleCountViewTests : TestContextWrapper
     {
         // Arrange & Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
-            .Add(p => p.Champions, new List<BowlerTitleSummaryViewModel>()));
+            .Add(p => p.Champions, []));
 
         // Assert
         IReadOnlyList<IElement> sections = cut.FindAll(".tier-elite-section, .tier-mid-section, .tier-standard-section");
@@ -24,12 +24,12 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldGroupChampionsByTitleCount()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -44,10 +44,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyEliteTierStylesForTwentyOrMoreTitles()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -62,10 +62,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyMidTierStylesForTenToNineteenTitles()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 15)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -80,10 +80,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyStandardTierStylesForLessThanTenTitles()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -98,11 +98,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayCorrectHeaderText()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(),
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -118,10 +118,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldUseSingularFormForOneTitle()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 1)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -137,11 +137,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldExpandAllSectionsByDefault()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 5),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -156,10 +156,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldToggleSectionWhenHeaderClicked()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions));
@@ -184,11 +184,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldRenderChampionCards()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(),
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -203,11 +203,11 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayBowlerNamesInCards()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice Smith"),
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Bob Jones")
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -222,10 +222,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldDisplayHallOfFameBadgeForHallOfFamers()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 20, hallOfFame: true)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -240,10 +240,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldNotDisplayHallOfFameBadgeForNonHallOfFamers()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -259,10 +259,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     {
         // Arrange
         BowlerTitleSummaryViewModel? clickedChampion = null;
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice")
-        };
+        ];
 
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
             .Add(p => p.Champions, champions)
@@ -282,12 +282,12 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderChampionsAlphabeticallyWithinGroup()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Zara"),
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Alice"),
             BowlerTitleSummaryViewModelFactory.Create(bowlerName: "Mike")
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -304,12 +304,12 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldOrderGroupsByTitleCountDescending()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 10),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -326,10 +326,10 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldApplyCorrectGridClasses()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create()
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters
@@ -347,14 +347,14 @@ public sealed class TitleCountViewTests : TestContextWrapper
     public void ShouldHandleMultipleGroupsCorrectly()
     {
         // Arrange
-        List<BowlerTitleSummaryViewModel> champions = new List<BowlerTitleSummaryViewModel>
-        {
+        List<BowlerTitleSummaryViewModel> champions =
+        [
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 25, hallOfFame: true),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 10),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3),
             BowlerTitleSummaryViewModelFactory.Create(titleCount: 3)
-        };
+        ];
 
         // Act
         IRenderedComponent<TitleCountView> cut = Render<TitleCountView>(parameters => parameters

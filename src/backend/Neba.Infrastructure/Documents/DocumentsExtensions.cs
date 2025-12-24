@@ -51,5 +51,21 @@ internal static class DocumentsExtensions
 
             return services;
         }
+
+        public IServiceCollection AddDocumentRefreshNotification()
+        {
+            // Simple dictionary of channels - one per document type
+#pragma warning disable S1135 // Track issues in a proper issue tracker
+            // TODO: If we need automatic cleanup or multi-tenant channels in the future, consider:
+            //   - Reference counting for active listeners
+            //   - Automatic channel disposal when idle
+            //   - Per-tenant channel isolation
+            //   For now, simple global channels are sufficient
+#pragma warning restore S1135
+            services.AddSingleton<DocumentRefreshChannels>();
+            services.AddSingleton<IDocumentRefreshNotifier, SseDocumentRefreshNotifier>();
+
+            return services;
+        }
     }
 }

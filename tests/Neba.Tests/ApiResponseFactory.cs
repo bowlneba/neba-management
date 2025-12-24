@@ -1,3 +1,4 @@
+using Neba.Contracts;
 using Refit;
 
 namespace Neba.Tests;
@@ -33,6 +34,41 @@ public static class ApiResponseFactory
         var apiResponse = new Refit.ApiResponse<T>(httpResponse, content, new RefitSettings());
         return new TestApiResponse<T>(apiResponse, httpResponse);
     }
+
+    /// <summary>
+    /// Creates a successful DocumentResponse API response with the specified content.
+    /// </summary>
+    /// <typeparam name="T">The type of the document content.</typeparam>
+    /// <param name="content">The content to include in the document.</param>
+    /// <param name="metadata">Optional metadata for the document. If null, an empty dictionary is used.</param>
+    /// <returns>A TestApiResponse wrapper that ensures proper disposal.</returns>
+    public static TestApiResponse<DocumentResponse<T>> CreateDocumentResponse<T>(T content, IReadOnlyDictionary<string, string>? metadata = null)
+    {
+        var documentResponse = new DocumentResponse<T>
+        {
+            Content = content,
+            Metadata = metadata ?? new Dictionary<string, string>()
+        };
+        return CreateSuccessResponse(documentResponse);
+    }
+
+    /// <summary>
+    /// Creates a DocumentResponse API response with a custom HTTP status code.
+    /// </summary>
+    /// <typeparam name="T">The type of the document content.</typeparam>
+    /// <param name="content">The content to include in the document.</param>
+    /// <param name="statusCode">The HTTP status code for the response.</param>
+    /// <param name="metadata">Optional metadata for the document. If null, an empty dictionary is used.</param>
+    /// <returns>A TestApiResponse wrapper that ensures proper disposal.</returns>
+    public static TestApiResponse<DocumentResponse<T>> CreateDocumentResponse<T>(T content, System.Net.HttpStatusCode statusCode, IReadOnlyDictionary<string, string>? metadata = null)
+    {
+        var documentResponse = new DocumentResponse<T>
+        {
+            Content = content,
+            Metadata = metadata ?? new Dictionary<string, string>()
+        };
+        return CreateResponse(documentResponse, statusCode);
+    }
 }
 
 /// <summary>
@@ -40,30 +76,29 @@ public static class ApiResponseFactory
 /// </summary>
 public sealed class TestApiResponse<T> : IDisposable
 {
-    private readonly Refit.ApiResponse<T> _apiResponse;
     private readonly HttpResponseMessage _httpResponse;
     private bool _disposed;
 
     internal TestApiResponse(Refit.ApiResponse<T> apiResponse, HttpResponseMessage httpResponse)
     {
-        _apiResponse = apiResponse;
+        ApiResponse = apiResponse;
         _httpResponse = httpResponse;
     }
 
     /// <summary>
     /// Gets the underlying ApiResponse.
     /// </summary>
-    public Refit.ApiResponse<T> ApiResponse => _apiResponse;
+    public Refit.ApiResponse<T> ApiResponse { get; }
 
     /// <summary>
     /// Converts the TestApiResponse to an ApiResponse.
     /// </summary>
-    public Refit.ApiResponse<T> ToApiResponse() => _apiResponse;
+    public Refit.ApiResponse<T> ToApiResponse() => ApiResponse;
 
     /// <summary>
     /// Implicit conversion to ApiResponse for seamless usage in tests.
     /// </summary>
-    public static implicit operator Refit.ApiResponse<T>(TestApiResponse<T> testResponse) => testResponse._apiResponse;
+    public static implicit operator Refit.ApiResponse<T>(TestApiResponse<T> testResponse) => testResponse.ApiResponse;
 
     /// <summary>
     /// Disposes of both the ApiResponse and HttpResponseMessage.
@@ -85,7 +120,7 @@ public sealed class TestApiResponse<T> : IDisposable
             if (disposing)
             {
                 // Dispose managed resources
-                _apiResponse?.Dispose();
+                ApiResponse?.Dispose();
                 _httpResponse?.Dispose();
             }
             // Dispose unmanaged resources here if any

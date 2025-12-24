@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Neba.Contracts;
 using Neba.Tests;
 using Neba.Web.Server.Components;
 using Neba.Web.Server.Pages;
@@ -24,7 +25,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldRenderPageTitle()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateSuccessResponse("<p>Bylaws content</p>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Bylaws content</p>");
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -42,7 +43,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldRenderPageDescription()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateSuccessResponse("<p>Bylaws content</p>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Bylaws content</p>");
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -59,13 +60,13 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldCallGetBylawsAsyncOnInitialization()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateSuccessResponse("<h1>NEBA Bylaws</h1>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<h1>NEBA Bylaws</h1>");
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
 
         // Act
-        IRenderedComponent<Bylaws> cut = Render<Bylaws>();
+        Render<Bylaws>();
         await Task.Delay(50); // Wait for async initialization
 
         // Assert
@@ -76,8 +77,8 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldDisplayBylawsContentWhenApiCallSucceeds()
     {
         // Arrange
-        string bylawsHtml = "<h1>Article 1</h1><p>Description of article 1</p>";
-        using TestApiResponse<string> response = ApiResponseFactory.CreateSuccessResponse(bylawsHtml);
+        const string bylawsHtml = "<h1>Article 1</h1><p>Description of article 1</p>";
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse(bylawsHtml);
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -97,7 +98,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldDisplayErrorWhenApiCallFails()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateResponse("<p>Error</p>", System.Net.HttpStatusCode.InternalServerError);
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Error</p>", System.Net.HttpStatusCode.InternalServerError);
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -137,7 +138,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldConfigureNebaDocumentWithCorrectParameters()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateSuccessResponse("<h1>Bylaws</h1>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<h1>Bylaws</h1>");
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -160,7 +161,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldNotSetContentWhenApiReturnsNotFoundError()
     {
         // Arrange
-        using TestApiResponse<string> response = ApiResponseFactory.CreateResponse("<p>Not found</p>", System.Net.HttpStatusCode.NotFound);
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Not found</p>", System.Net.HttpStatusCode.NotFound);
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())
             .ReturnsAsync(response.ApiResponse);

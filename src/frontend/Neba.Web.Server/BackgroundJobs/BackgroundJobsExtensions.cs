@@ -39,7 +39,7 @@ internal static class BackgroundJobsExtensions
                 DashboardTitle = "Background Jobs - Admin",
                 StatsPollingInterval = 5000,
                 DisplayStorageConnectionString = false,
-                IsReadOnlyFunc = context => false
+                IsReadOnlyFunc = _ => false
             });
 
             return app;

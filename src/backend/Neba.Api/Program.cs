@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
@@ -12,11 +14,24 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.ConfigureOpenApi();
 
+// this should go w/ the cache stuffs when it comes
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 // this is here temporarily for hangfire logging, and will be properly configured later with OTEL setup
 builder.Services.AddLogging();
+
+// this is here temporarily until we configure actual caching with cache query instances
+builder.Services.AddHybridCache(options =>
+{
+    options.MaximumPayloadBytes = 1024 * 1024 * 10; // 10 MB
+    options.MaximumKeyLength = 512;
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(30),
+        LocalCacheExpiration = TimeSpan.FromMinutes(15)
+    };
+});
 
 builder.Services
     .AddInfrastructure(builder.Configuration)
@@ -51,7 +66,8 @@ app.UseHttpsRedirection();
 // Enable CORS
 app.UseCors();
 
-app.UseInfrastructure();
+app
+    .UseInfrastructure();
 
 // Initialize background jobs after Hangfire is configured
 app.Services.InitializeWebsiteBackgroundJobs();

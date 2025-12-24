@@ -1,9 +1,15 @@
 using System.Net.Mime;
+using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Neba.Application.Documents;
 using Neba.Application.Messaging;
-using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Contracts;
+using Neba.Infrastructure.Documents;
+using Neba.Infrastructure.Http;
+using Neba.Website.Application.Tournaments.TournamentRules;
+using Neba.Website.Endpoints.Documents;
 
 namespace Neba.Website.Endpoints.Tournaments;
 
@@ -21,27 +27,79 @@ internal static class TournamentEndpoints
                 .WithTags("tournaments", "website")
                 .AllowAnonymous();
 
-            tournamentGroup.MapGetTournamentRulesEndpoint();
+            RouteGroupBuilder tournamentRulesGroup = tournamentGroup
+                .MapGroup("/rules")
+                .WithTags("tournaments", "website", "documents")
+                .AllowAnonymous();
+
+            tournamentRulesGroup
+                .MapGetTournamentRulesEndpoint()
+                .MapRefreshTournamentRulesCacheEndpoint()
+                .MapTournamentRulesRefreshStatusSseEndpoint();
 
             return app;
         }
 
         private IEndpointRouteBuilder MapGetTournamentRulesEndpoint()
         {
-            app.MapGet("/rules", async (IQueryHandler<GetTournamentRulesQuery, string> queryHandler) =>
+            app.MapGet("/", async (
+                IQueryHandler<GetTournamentRulesQuery, DocumentDto> queryHandler,
+                CancellationToken cancellationToken) =>
             {
-                GetTournamentRulesQuery query = new();
+                var query = new GetTournamentRulesQuery();
 
-                string htmlContent = await queryHandler.HandleAsync(query, CancellationToken.None);
+                DocumentDto result = await queryHandler.HandleAsync(query, cancellationToken);
 
-                return TypedResults.Content(htmlContent, MediaTypeNames.Text.Html);
+                return TypedResults.Ok(result.ToStringResponse());
             })
             .WithName("GetTournamentRules")
             .WithSummary("Get the tournament rules document.")
-            .WithDescription("Retrieves the tournament rules document as an HTML string.")
-            .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Html)
+            .WithDescription("Retrieves the tournament rules document")
+            .Produces<DocumentResponse<string>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
             .WithTags("tournaments", "website", "documents");
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapRefreshTournamentRulesCacheEndpoint()
+        {
+            app.MapPost(
+                "/refresh",
+                async (
+                    ICommandHandler<RefreshTournamentRulesCacheCommand, string> commandHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var command = new RefreshTournamentRulesCacheCommand();
+                    ErrorOr<string> jobIdResult = await commandHandler.HandleAsync(command, cancellationToken);
+
+                    if (jobIdResult.IsError)
+                    {
+                        return jobIdResult.Problem();
+                    }
+
+                    return TypedResults.Ok(ApiResponse.Create(jobIdResult.Value));
+                })
+                .WithName("RefreshTournamentRulesCache")
+                .WithSummary("Refresh the cached tournament rules document.")
+                .WithDescription("Refreshes the cached version of the tournament rules document.")
+                .Produces(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
+                .WithTags("tournaments", "website");
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapTournamentRulesRefreshStatusSseEndpoint()
+        {
+            app.MapGet(
+                "/refresh/status",
+                DocumentRefreshSseStreamHandler.CreateStreamHandler("tournament-rules"))
+                .WithName("TournamentRulesRefreshStatus")
+                .WithSummary("Stream tournament rules document refresh status updates via SSE")
+                .WithDescription("Subscribes to real-time status updates for tournament rules document refresh operations using Server-Sent Events.")
+                .Produces(StatusCodes.Status200OK, contentType: "text/event-stream")
+                .WithTags("tournaments", "website", "sse");
 
             return app;
         }

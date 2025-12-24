@@ -64,7 +64,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         // Assert
         result.Count.ShouldBe(expectedAwards.Count);
 
-        foreach (var dto in result)
+        foreach (BowlerOfTheYearAwardDto dto in result)
         {
             var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
 
@@ -110,7 +110,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         // Assert
         result.Count.ShouldBe(expectedAwards.Count);
 
-        foreach (var dto in result)
+        foreach (HighBlockAwardDto dto in result)
         {
             var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
 
@@ -145,7 +145,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 award.Season,
                 Average = award.Average ?? -1,
                 Games = award.SeasonTotalGames,
-                Tournaments = award.Tournaments
+                award.Tournaments
             })
             .ToListAsync(TestContext.Current.CancellationToken);
 
@@ -158,7 +158,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         // Assert
         result.Count.ShouldBe(expectedAwards.Count);
 
-        foreach (var dto in result)
+        foreach (HighAverageAwardDto dto in result)
         {
             var expectedAward = expectedAwards.First(a => a.Id == dto.Id);
 

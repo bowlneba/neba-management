@@ -22,4 +22,29 @@ public sealed record SyncHtmlDocumentToStorageJob
     /// The filename to use when storing the document in the container.
     /// </summary>
     public required string DocumentName { get; init; }
+
+    /// <summary>
+    /// Optional metadata to associate with the stored document.
+    /// </summary>
+    public Dictionary<string, string> Metadata { get; init; } = [];
+
+    /// <summary>
+    /// User or system that triggered the sync (e.g., username or "scheduled").
+    /// </summary>
+    public string TriggeredBy { get; init; } = "system";
+
+    /// <summary>
+    /// Document type identifier for broadcasting status updates (e.g., "bylaws-refresh").
+    /// </summary>
+    public string? HubGroupName { get; init; }
+
+    /// <summary>
+    /// Cache key for tracking job state.
+    /// </summary>
+    public string? CacheKey { get; init; }
+
+    /// <summary>
+    /// Cache key for the document content cache (to invalidate on completion).
+    /// </summary>
+    public string? DocumentCacheKey { get; init; }
 }

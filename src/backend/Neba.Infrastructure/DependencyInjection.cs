@@ -34,6 +34,7 @@ public static class InfrastructureDependencyInjection
                 .AddGoogleDocs(config)
                 .AddBackgroundJobs(config)
                 .AddDocumentBackgroundJobs()
+                .AddDocumentRefreshNotification()
                 .AddStorageService(config);
         }
 

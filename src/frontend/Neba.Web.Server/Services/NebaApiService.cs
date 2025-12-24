@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Neba.Domain.Identifiers;
+using Neba.Web.Server.Documents;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Website.Contracts.Awards;
@@ -136,28 +137,36 @@ internal class NebaApiService(INebaApi nebaApi)
             .AsReadOnly();
     }
 
-    public async Task<ErrorOr<MarkupString>> GetTournamentRulesAsync()
+    public async Task<ErrorOr<DocumentViewModel<MarkupString>>> GetTournamentRulesAsync()
     {
-        ErrorOr<string> result = await ExecuteApiCallAsync(nebaApi.GetTournamentRulesAsync);
+        ErrorOr<Contracts.DocumentResponse<string>> result = await ExecuteApiCallAsync(nebaApi.GetTournamentRulesAsync);
 
         if (result.IsError)
         {
             return result.Errors;
         }
 
-        return new MarkupString(result.Value);
+        return new DocumentViewModel<MarkupString>
+        {
+            Content = new MarkupString(result.Value.Content),
+            Metadata = result.Value.Metadata
+        };
     }
 
-    public async Task<ErrorOr<MarkupString>> GetBylawsAsync()
+    public async Task<ErrorOr<DocumentViewModel<MarkupString>>> GetBylawsAsync()
     {
-        ErrorOr<string> result = await ExecuteApiCallAsync(nebaApi.GetBylawsAsync);
+        ErrorOr<Contracts.DocumentResponse<string>> result = await ExecuteApiCallAsync(nebaApi.GetBylawsAsync);
 
         if (result.IsError)
         {
             return result.Errors;
         }
 
-        return new MarkupString(result.Value);
+        return new DocumentViewModel<MarkupString>
+        {
+            Content = new MarkupString(result.Value.Content),
+            Metadata = result.Value.Metadata
+        };
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)

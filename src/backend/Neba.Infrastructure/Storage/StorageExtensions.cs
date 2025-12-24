@@ -2,6 +2,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Neba.Application.Storage;
 
 namespace Neba.Infrastructure.Storage;
@@ -15,6 +16,15 @@ internal static class StorageExtensions
     {
         public IServiceCollection AddStorageService(IConfiguration config)
         {
+            services.AddOptions<AzureStorageSettings>()
+                .Bind(config.GetSection("AzureStorage"))
+                .Validate(settings => settings.UploadChunkSizeBytes > 0,
+                    "AzureStorage:UploadChunkSizeBytes must be a positive integer.")
+                .ValidateOnStart();
+
+            services.AddSingleton(sp
+                => sp.GetRequiredService<IOptions<AzureStorageSettings>>().Value);
+
             // Prefer managed identity (Azure) over connection string (local Azurite)
             string? blobServiceUri = config["AzureStorage:BlobServiceUri"];
 

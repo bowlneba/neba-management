@@ -7,14 +7,16 @@
 .neba-document-container {
   display: grid;
   grid-template-columns: 280px 1fr;
-  gap: 2rem;
+  grid-template-rows: 1fr auto; /* Content area takes available space, last updated at bottom */
+  gap: 1rem; /* Reduced gap to bring last updated closer to footer */
   align-items: start;
+  position: relative; /* allow absolutely positioned last-updated to overlap footer */
   /* Fixed height calculated to fit in viewport without causing page scroll */
   /* Account for: Banner (~100px) + Navbar (~64px) + Page header (~100px) + Footer (~60px) + Padding (~76px) = ~400px */
   height: calc(100vh - 400px);
   max-height: calc(100vh - 400px);
   min-height: 400px; /* Ensure minimum usable height */
-  overflow: hidden;
+  overflow: visible; /* allow overlap so last-updated can sit over footer */
 }
 
 /* Table of Contents */
@@ -1008,6 +1010,50 @@
   border: none;
   border-top: 2px solid var(--neba-border);
   margin: 2rem 0;
+}
+
+/* Last Updated Content (Inside Content Panel) */
+.neba-document-last-updated-content {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--neba-gray-600);
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--neba-border);
+}
+
+/* Last Updated Bottom (Outside Content, Bottom of Container) */
+.neba-document-last-updated-bottom {
+  /* absolutely position so it can overlap the footer area */
+  position: absolute;
+  bottom: -10px; /* sit 10px above footer */
+  right: 1.5rem;
+  text-align: right;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--neba-gray-600);
+  padding: 0.25rem 0 0 0;
+  margin: 0;
+  z-index: 9999; /* ensure the text sits above surrounding elements */
+}
+
+/* Last Updated Header (Slide-out) */
+.neba-document-last-updated-header {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--neba-gray-600);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--neba-border);
+}
+
+/* Dark mode support for last updated */
+.dark .neba-document-last-updated-content,
+.dark .neba-document-last-updated-bottom,
+.dark .neba-document-last-updated-header {
+  color: var(--neba-gray-400);
 }
 
 /* Dark mode support for slide-over */

@@ -1,6 +1,5 @@
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Application.BackgroundJobs;
 using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
@@ -8,7 +7,7 @@ using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Documents.Bylaws;
-using Neba.Website.Application.Tournaments.GetTournamentRules;
+using Neba.Website.Application.Tournaments.TournamentRules;
 
 namespace Neba.Website.Application;
 
@@ -68,14 +67,19 @@ public static class WebsiteApplicationDependencyInjection
 
         private IServiceCollection AddTournamentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetTournamentRulesQuery, string>, GetTournamentRulesQueryHandler>();
+            services.AddScoped<IQueryHandler<GetTournamentRulesQuery, DocumentDto>, GetTournamentRulesQueryHandler>();
+            services.AddScoped<ICommandHandler<RefreshTournamentRulesCacheCommand, string>, RefreshTournamentRulesCacheCommandHandler>();
+            services.AddScoped<ITournamentRulesSyncBackgroundJob, TournamentRulesSyncBackgroundJob>();
+            services.AddScoped<TournamentRulesSyncBackgroundJob>();
 
             return services;
         }
 
         private IServiceCollection AddDocumentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetBylawsQuery, string>, GetBylawsQueryHandler>();
+            services.AddScoped<IQueryHandler<GetBylawsQuery, DocumentDto>, GetBylawsQueryHandler>();
+            services.AddScoped<ICommandHandler<RefreshBylawsCacheCommand, string>, RefreshBylawsCacheCommandHandler>();
+            services.AddScoped<IBylawsSyncBackgroundJob, BylawsSyncBackgroundJob>();
             services.AddScoped<BylawsSyncBackgroundJob>();
 
             return services;
@@ -94,6 +98,9 @@ public static class WebsiteApplicationDependencyInjection
 
             BylawsSyncBackgroundJob bylawsSyncJob = scope.ServiceProvider.GetRequiredService<BylawsSyncBackgroundJob>();
             bylawsSyncJob.RegisterBylawsSyncJob();
+
+            TournamentRulesSyncBackgroundJob tournamentRulesSyncJob = scope.ServiceProvider.GetRequiredService<TournamentRulesSyncBackgroundJob>();
+            tournamentRulesSyncJob.RegisterTournamentRulesSyncJob();
         }
     }
 }

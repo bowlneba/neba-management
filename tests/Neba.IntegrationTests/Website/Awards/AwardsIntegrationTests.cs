@@ -92,7 +92,7 @@ public sealed class AwardsIntegrationTests
         result.ShouldNotBeNull();
 
         // Verify each award has all required fields populated
-        foreach (var award in result.Items)
+        foreach (BowlerOfTheYearResponse award in result.Items)
         {
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();

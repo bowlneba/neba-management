@@ -13,20 +13,14 @@ namespace Neba.IntegrationTests.Infrastructure;
 /// Custom WebApplicationFactory for integration testing that configures the test database.
 /// Each test class should create its own instance of WebsiteDatabase and pass it to this factory.
 /// </summary>
-public sealed class NebaWebApplicationFactory
-    : WebApplicationFactory<IApiAssemblyMarker>
+public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
+        : WebApplicationFactory<IApiAssemblyMarker>
 {
-    private readonly WebsiteDatabase _database;
-
-    public NebaWebApplicationFactory(WebsiteDatabase database)
-    {
-        _database = database;
-    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("ConnectionStrings:website", _database.ConnectionString);
-        builder.UseSetting("ConnectionStrings:hangfire", _database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:website", database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:hangfire", database.ConnectionString);
 
         // Configure Hangfire settings for integration tests
         builder.UseSetting("Hangfire:WorkerCount", "1");
@@ -47,11 +41,20 @@ public sealed class NebaWebApplicationFactory
             logging.SetMinimumLevel(LogLevel.Warning);
         });
 
-        // Disable Hangfire background job server in tests to avoid shutdown timeouts
+        // Remove Hangfire entirely from tests - integration tests don't need background jobs
         builder.ConfigureServices(services =>
         {
-            // Remove Hangfire hosted service to prevent background processing during tests
+            // Remove all Hangfire infrastructure to prevent initialization issues
+#pragma warning disable CA2263 // Prefer generic overload - can't use generic version for Hangfire types we don't reference
+            services.RemoveAll(typeof(Hangfire.JobStorage));
+            services.RemoveAll(typeof(Hangfire.IGlobalConfiguration));
+#pragma warning restore CA2263
             services.RemoveAll<IHostedService>();
+
+            // Replace real background job scheduler with no-op implementation
+            // (allows background job classes to be constructed without actually scheduling jobs)
+            services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
+            services.AddScoped<Neba.Application.BackgroundJobs.IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
         });
     }
 }

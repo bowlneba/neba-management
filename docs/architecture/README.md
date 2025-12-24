@@ -17,6 +17,10 @@ This directory contains architectural documentation for the NEBA Management appl
 
 - [ADR-001: ULID and Shadow Key Pattern](adr-001-ulid-shadow-keys.md) - Hybrid identity strategy combining ULIDs for domain identity with shadow integer keys for database relationships
 
+### Infrastructure Patterns
+
+- [Server-Sent Events (SSE)](sse-document-refresh.md) - Real-time document refresh status updates using Server-Sent Events
+
 ## Architecture Overview
 
 The NEBA Management application follows a **Modular Monolith** architecture with **Domain-Driven Design (DDD)** tactical patterns:

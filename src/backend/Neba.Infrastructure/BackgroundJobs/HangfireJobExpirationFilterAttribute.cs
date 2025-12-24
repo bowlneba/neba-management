@@ -31,4 +31,3 @@ internal sealed class JobExpirationFilterAttribute(HangfireSettings settings)
         // No implementation needed
     }
 }
-

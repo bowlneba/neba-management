@@ -27,12 +27,12 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsAwards()
     {
         // Arrange - Set up successful API response
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", score: 1180),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2022", score: 1150)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -60,13 +60,13 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_DisplaysAwardsByYear()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2023", score: 1180),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2022", score: 1150),
             HighBlockAwardResponseFactory.Create(bowlerName: "Alice Brown", season: "2021", score: 1125)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -101,12 +101,12 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_TiedScores_DisplaysTieIndicator()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Johnson", season: "2023", score: 1180)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -197,10 +197,10 @@ public sealed class HighBlockTests : TestContextWrapper
     public void Render_WithData_IncludesLoadingIndicator()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -228,12 +228,12 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_MultipleAwardsInSameSeason_HandlesTieCorrectly()
     {
         // Arrange - Three-way tie
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Jane Smith", season: "2024", score: 1200),
             HighBlockAwardResponseFactory.Create(bowlerName: "Bob Senior", season: "2024", score: 1200)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -260,10 +260,10 @@ public sealed class HighBlockTests : TestContextWrapper
     public void Render_DisplaysDescriptiveText()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create()
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -289,10 +289,10 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_DisplaysCorrectTableHeaders()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
@@ -318,10 +318,10 @@ public sealed class HighBlockTests : TestContextWrapper
     public void OnInitializedAsync_SingleBowler_NoTieIndicator()
     {
         // Arrange
-        List<HighBlockAwardResponse> awards = new List<HighBlockAwardResponse>
-        {
+        List<HighBlockAwardResponse> awards =
+        [
             HighBlockAwardResponseFactory.Create(bowlerName: "John Doe", season: "2024", score: 1200)
-        };
+        ];
 
         CollectionResponse<HighBlockAwardResponse> collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {

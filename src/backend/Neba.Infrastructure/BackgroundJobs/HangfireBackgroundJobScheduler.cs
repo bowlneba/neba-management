@@ -5,44 +5,36 @@ using Neba.Application.BackgroundJobs;
 
 namespace Neba.Infrastructure.BackgroundJobs;
 
-internal sealed class HangfireBackgroundJobScheduler
-    : IBackgroundJobScheduler
+internal sealed class HangfireBackgroundJobScheduler(
+    IServiceScopeFactory serviceScopeFactory,
+    ILogger<HangfireBackgroundJobScheduler> logger)
+        : IBackgroundJobScheduler
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<HangfireBackgroundJobScheduler> _logger;
-
-    public HangfireBackgroundJobScheduler(
-        IServiceScopeFactory serviceScopeFactory,
-        ILogger<HangfireBackgroundJobScheduler> logger)
-    {
-        _serviceScopeFactory = serviceScopeFactory;
-        _logger = logger;
-    }
 
     public string Enqueue<TJob>(TJob job) where TJob : IBackgroundJob
     {
-        _logger.LogEnqueuingJob(typeof(TJob).Name);
+        logger.LogEnqueuingJob(typeof(TJob).Name);
 
         return BackgroundJob.Enqueue(() => ExecuteJobAsync(job, CancellationToken.None));
     }
 
     public string Schedule<TJob>(TJob job, TimeSpan delay) where TJob : IBackgroundJob
     {
-        _logger.LogSchedulingJob(typeof(TJob).Name, delay);
+        logger.LogSchedulingJob(typeof(TJob).Name, delay);
 
         return BackgroundJob.Schedule(() => ExecuteJobAsync(job, CancellationToken.None), delay);
     }
 
     public string Schedule<TJob>(TJob job, DateTimeOffset enqueueAt) where TJob : IBackgroundJob
     {
-        _logger.LogSchedulingJob(typeof(TJob).Name, enqueueAt);
+        logger.LogSchedulingJob(typeof(TJob).Name, enqueueAt);
 
         return BackgroundJob.Schedule(() => ExecuteJobAsync(job, CancellationToken.None), enqueueAt);
     }
 
     public void AddOrUpdateRecurring<TJob>(string recurringJobId, TJob job, string cronExpression) where TJob : IBackgroundJob
     {
-        _logger.LogAddingOrUpdatingRecurringJob(
+        logger.LogAddingOrUpdatingRecurringJob(
             recurringJobId, typeof(TJob).Name, cronExpression);
 
         RecurringJob.AddOrUpdate(
@@ -53,31 +45,31 @@ internal sealed class HangfireBackgroundJobScheduler
 
     public void RemoveRecurring(string recurringJobId)
     {
-        _logger.LogRecurringJobRemoved(recurringJobId);
+        logger.LogRecurringJobRemoved(recurringJobId);
 
         RecurringJob.RemoveIfExists(recurringJobId);
     }
 
     public string ContinueWith<TJob>(string parentJobId, TJob job) where TJob : IBackgroundJob
     {
-        _logger.LogContinuingWithJob(parentJobId, typeof(TJob).Name);
+        logger.LogContinuingWithJob(parentJobId, typeof(TJob).Name);
 
         return BackgroundJob.ContinueJobWith(parentJobId, () => ExecuteJobAsync(job, CancellationToken.None));
     }
 
     public bool Delete(string jobId)
     {
-        _logger.LogJobDeleted(jobId);
+        logger.LogJobDeleted(jobId);
 
         return BackgroundJob.Delete(jobId);
     }
 
     public async Task ExecuteJobAsync<TJob>(TJob job, CancellationToken cancellationToken) where TJob : IBackgroundJob
     {
-        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
         IBackgroundJobHandler<TJob> handler = scope.ServiceProvider.GetRequiredService<IBackgroundJobHandler<TJob>>();
 
-        _logger.LogJobStarted(typeof(TJob).Name);
+        logger.LogJobStarted(typeof(TJob).Name);
 
         await handler.ExecuteAsync(job, cancellationToken);
     }

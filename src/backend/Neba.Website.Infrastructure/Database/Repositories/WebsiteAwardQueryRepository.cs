@@ -10,10 +10,9 @@ namespace Neba.Website.Infrastructure.Database.Repositories;
 internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
     : IWebsiteAwardQueryRepository
 {
-    private readonly WebsiteDbContext _dbContext = dbContext;
 
     public async Task<IReadOnlyCollection<BowlerOfTheYearAwardDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken)
-        => await _dbContext.SeasonAwards
+        => await dbContext.SeasonAwards
             .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
             .Select(award => new BowlerOfTheYearAwardDto
@@ -27,7 +26,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<HighBlockAwardDto>> ListHigh5GameBlockAwardsAsync(CancellationToken cancellationToken)
-        => await _dbContext.SeasonAwards
+        => await dbContext.SeasonAwards
             .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.High5GameBlock)
             .Select(award => new HighBlockAwardDto
@@ -35,13 +34,13 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
                 Id = award.Id,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
-                Score = award.HighBlockScore ?? -1,
+                Score = award.HighBlockScore ?? -1
             })
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<HighAverageAwardDto>> ListHighAverageAwardsAsync(CancellationToken cancellationToken)
     {
-        List<HighAverageAwardDto> awards = await _dbContext.SeasonAwards
+        List<HighAverageAwardDto> awards = await dbContext.SeasonAwards
             .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.HighAverage)
             .Select(award => new HighAverageAwardDto

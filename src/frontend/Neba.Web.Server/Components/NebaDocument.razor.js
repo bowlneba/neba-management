@@ -479,6 +479,55 @@ function getPageTitle(pathname) {
 }
 
 /**
+ * Builds the last updated header HTML for slide-out documents
+ * @param {Object} metadata - The document metadata containing LastUpdatedUtc and LastUpdatedBy
+ * @returns {string} HTML string for the last updated header
+ */
+function buildLastUpdatedHeader(metadata) {
+    if (!metadata || !metadata.LastUpdatedUtc) {
+        return '';
+    }
+
+    try {
+        // Parse the UTC date
+        const utcDate = new Date(metadata.LastUpdatedUtc);
+
+        // Check if date is valid
+        if (isNaN(utcDate.getTime())) {
+            return '';
+        }
+
+        // Format date as yyyy-MM-dd
+        const year = utcDate.getFullYear();
+        const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+        const day = String(utcDate.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
+        // For now, authorization is always true
+        // TODO: Replace with actual authorization check when implemented
+        const isAuthorized = true;
+
+        let lastUpdatedText = dateStr;
+
+        if (isAuthorized && metadata.LastUpdatedBy) {
+            // Format time as hh:mmtt (12-hour with AM/PM)
+            const hours24 = utcDate.getHours();
+            const hours12 = hours24 % 12 || 12;
+            const minutes = String(utcDate.getMinutes()).padStart(2, '0');
+            const ampm = hours24 >= 12 ? 'PM' : 'AM';
+            const timeStr = `${String(hours12).padStart(2, '0')}:${minutes}${ampm}`;
+
+            lastUpdatedText = `${dateStr} ${timeStr} by ${escapeHtml(metadata.LastUpdatedBy)}`;
+        }
+
+        return `<div class="neba-document-last-updated-header">${lastUpdatedText}</div>`;
+    } catch (error) {
+        console.error('[NebaDocument] Error building last updated header:', error);
+        return '';
+    }
+}
+
+/**
  * Opens an internal link in the slide-over panel
  * @param {URL} url - The URL to open
  * @param {HTMLElement} slideover - The slide-over container
@@ -516,6 +565,7 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
 
         // The API should return an object with an 'html' property
         const html = data.html || data.content || data;
+        const metadata = data.metadata || {};
 
         if (!html) {
             throw new Error('No content returned from API');
@@ -527,10 +577,13 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
 
         slideoverTitle.textContent = pageTitle;
 
-        // Set the content
+        // Build the last updated header for slide-out
+        const lastUpdatedHtml = buildLastUpdatedHeader(metadata);
+
+        // Set the content with last updated header at the top
         // WARNING: This sets HTML from an API response. Ensure the API returns properly sanitized HTML
         // or the source documents are trusted. Consider using DOMPurify if the content is user-generated.
-        slideoverContent.innerHTML = html;
+        slideoverContent.innerHTML = lastUpdatedHtml + html;
 
         // If there's a hash in the URL, scroll to it
         if (url.hash) {

@@ -19,7 +19,7 @@ public static class HighBlockAwardDtoFactory
             Id = SeasonAwardId.New(),
             BowlerName = bowlerName ?? BowlerName,
             Season = season ?? "2023",
-            Score = score ?? 1300,
+            Score = score ?? 1300
         };
 
     public static HighBlockAwardDto Bogus(int? seed = null)

@@ -3,6 +3,8 @@ using Scalar.AspNetCore;
 namespace Neba.Api.OpenApi;
 
 #pragma warning disable S2325 // Static classes should not have instance constructors
+#pragma warning disable S1144 // Remove unused constructor of private type.
+
 internal static class OpenApiExtensions
 {
     extension(IServiceCollection services)
@@ -50,4 +52,3 @@ internal static class OpenApiExtensions
         }
     }
 }
-

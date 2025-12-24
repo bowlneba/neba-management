@@ -28,8 +28,8 @@ internal interface INebaApi
     Task<Refit.ApiResponse<CollectionResponse<HighAverageAwardResponse>>> GetHighAverageAwardsAsync();
 
     [Get("/tournaments/rules")]
-    Task<Refit.ApiResponse<string>> GetTournamentRulesAsync();
+    Task<Refit.ApiResponse<DocumentResponse<string>>> GetTournamentRulesAsync();
 
     [Get("/bylaws")]
-    Task<Refit.ApiResponse<string>> GetBylawsAsync();
+    Task<Refit.ApiResponse<DocumentResponse<string>>> GetBylawsAsync();
 }

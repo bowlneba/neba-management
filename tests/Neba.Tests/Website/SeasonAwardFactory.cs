@@ -16,7 +16,7 @@ public static class SeasonAwardFactory
             Id = SeasonAwardId.New(),
             AwardType = SeasonAwardType.BowlerOfTheYear,
             Season = season ?? "2024-2025",
-            BowlerOfTheYearCategory = category ?? BowlerOfTheYearCategory.Open,
+            BowlerOfTheYearCategory = category ?? BowlerOfTheYearCategory.Open
         };
     }
 
