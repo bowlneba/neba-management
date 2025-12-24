@@ -104,6 +104,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Pre-pull test container images
+        if: matrix.test-name == 'Integration Tests'
         run: |
           docker pull postgres:17.6
           docker pull mcr.microsoft.com/azure-storage/azurite:latest
