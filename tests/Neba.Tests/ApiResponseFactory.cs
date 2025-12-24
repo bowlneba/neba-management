@@ -76,30 +76,29 @@ public static class ApiResponseFactory
 /// </summary>
 public sealed class TestApiResponse<T> : IDisposable
 {
-    private readonly Refit.ApiResponse<T> _apiResponse;
     private readonly HttpResponseMessage _httpResponse;
     private bool _disposed;
 
     internal TestApiResponse(Refit.ApiResponse<T> apiResponse, HttpResponseMessage httpResponse)
     {
-        _apiResponse = apiResponse;
+        ApiResponse = apiResponse;
         _httpResponse = httpResponse;
     }
 
     /// <summary>
     /// Gets the underlying ApiResponse.
     /// </summary>
-    public Refit.ApiResponse<T> ApiResponse => _apiResponse;
+    public Refit.ApiResponse<T> ApiResponse { get; }
 
     /// <summary>
     /// Converts the TestApiResponse to an ApiResponse.
     /// </summary>
-    public Refit.ApiResponse<T> ToApiResponse() => _apiResponse;
+    public Refit.ApiResponse<T> ToApiResponse() => ApiResponse;
 
     /// <summary>
     /// Implicit conversion to ApiResponse for seamless usage in tests.
     /// </summary>
-    public static implicit operator Refit.ApiResponse<T>(TestApiResponse<T> testResponse) => testResponse._apiResponse;
+    public static implicit operator Refit.ApiResponse<T>(TestApiResponse<T> testResponse) => testResponse.ApiResponse;
 
     /// <summary>
     /// Disposes of both the ApiResponse and HttpResponseMessage.
@@ -121,7 +120,7 @@ public sealed class TestApiResponse<T> : IDisposable
             if (disposing)
             {
                 // Dispose managed resources
-                _apiResponse?.Dispose();
+                ApiResponse?.Dispose();
                 _httpResponse?.Dispose();
             }
             // Dispose unmanaged resources here if any
