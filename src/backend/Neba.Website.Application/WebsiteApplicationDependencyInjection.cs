@@ -91,18 +91,10 @@ public static class WebsiteApplicationDependencyInjection
         /// <summary>
         /// Initializes background jobs for the Website application (e.g., document syncing).
         /// Call this from the composition root after the application is built.
-        /// Skips initialization if the background job infrastructure is not configured (e.g., in test environments).
         /// </summary>
         public void InitializeWebsiteBackgroundJobs()
         {
             using IServiceScope scope = serviceProvider.CreateScope();
-
-            // Only register background jobs if a background job scheduler is available
-            // (allows tests to remove background job infrastructure without breaking initialization)
-            if (scope.ServiceProvider.GetService<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>() is null)
-            {
-                return;
-            }
 
             BylawsSyncBackgroundJob bylawsSyncJob = scope.ServiceProvider.GetRequiredService<BylawsSyncBackgroundJob>();
             bylawsSyncJob.RegisterBylawsSyncJob();
