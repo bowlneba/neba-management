@@ -3,10 +3,10 @@ using Neba.Application.Messaging;
 
 namespace Neba.Website.Application.Tournaments.TournamentRules;
 
-internal sealed class RefreshTournamentRulesCacheCommandHandler(TournamentRulesSyncBackgroundJob tournamentRulesSyncBackgroundJob)
+internal sealed class RefreshTournamentRulesCacheCommandHandler(ITournamentRulesSyncBackgroundJob tournamentRulesSyncBackgroundJob)
         : ICommandHandler<RefreshTournamentRulesCacheCommand, string>
 {
-    private readonly TournamentRulesSyncBackgroundJob _tournamentRulesSyncBackgroundJob = tournamentRulesSyncBackgroundJob;
+    private readonly ITournamentRulesSyncBackgroundJob _tournamentRulesSyncBackgroundJob = tournamentRulesSyncBackgroundJob;
 
     public Task<ErrorOr<string>> HandleAsync(
         RefreshTournamentRulesCacheCommand command,

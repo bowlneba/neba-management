@@ -10,14 +10,14 @@ public sealed class GetBylawsQueryHandlerTests
 {
     private readonly Mock<IStorageService> _storageServiceMock;
     private readonly Mock<IDocumentsService> _documentsServiceMock;
-    private readonly Mock<BylawsSyncBackgroundJob> _bylawsSyncJobMock;
+    private readonly Mock<IBylawsSyncBackgroundJob> _bylawsSyncJobMock;
     private readonly GetBylawsQueryHandler _handler;
 
     public GetBylawsQueryHandlerTests()
     {
         _storageServiceMock = new Mock<IStorageService>(MockBehavior.Strict);
         _documentsServiceMock = new Mock<IDocumentsService>(MockBehavior.Strict);
-        _bylawsSyncJobMock = new Mock<BylawsSyncBackgroundJob>(MockBehavior.Loose, null!);
+        _bylawsSyncJobMock = new Mock<IBylawsSyncBackgroundJob>(MockBehavior.Loose);
         _handler = new GetBylawsQueryHandler(
             _storageServiceMock.Object,
             _documentsServiceMock.Object,

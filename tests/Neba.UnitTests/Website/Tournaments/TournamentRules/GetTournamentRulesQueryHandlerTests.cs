@@ -9,18 +9,18 @@ namespace Neba.UnitTests.Website.Tournaments.TournamentRules;
 public sealed class GetTournamentRulesQueryHandlerTests
 {
     private readonly Mock<IStorageService> _storageServiceMock;
-    private readonly Mock<IDocumentsService> _documentsServiceMock;
-    private readonly Mock<TournamentRulesSyncBackgroundJob> _tournamentRulesSyncJobMock;
+    private readonly Mock<IDocumentsService> _tournamentsServiceMock;
+    private readonly Mock<ITournamentRulesSyncBackgroundJob> _tournamentRulesSyncJobMock;
     private readonly GetTournamentRulesQueryHandler _handler;
 
     public GetTournamentRulesQueryHandlerTests()
     {
         _storageServiceMock = new Mock<IStorageService>(MockBehavior.Strict);
-        _documentsServiceMock = new Mock<IDocumentsService>(MockBehavior.Strict);
-        _tournamentRulesSyncJobMock = new Mock<TournamentRulesSyncBackgroundJob>(MockBehavior.Loose, null!);
+        _tournamentsServiceMock = new Mock<IDocumentsService>(MockBehavior.Strict);
+        _tournamentRulesSyncJobMock = new Mock<ITournamentRulesSyncBackgroundJob>(MockBehavior.Loose);
         _handler = new GetTournamentRulesQueryHandler(
             _storageServiceMock.Object,
-            _documentsServiceMock.Object,
+            _tournamentsServiceMock.Object,
             _tournamentRulesSyncJobMock.Object,
             NullLogger<GetTournamentRulesQueryHandler>.Instance);
     }
@@ -32,11 +32,11 @@ public sealed class GetTournamentRulesQueryHandlerTests
         DocumentDto expectedDocument = DocumentDtoFactory.CreateTournamentRules();
 
         _storageServiceMock
-            .Setup(ss => ss.ExistsAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken))
+            .Setup(ss => ss.ExistsAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(true);
 
         _storageServiceMock
-            .Setup(ss => ss.GetContentWithMetadataAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken))
+            .Setup(ss => ss.GetContentWithMetadataAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(expectedDocument);
 
         var query = new GetTournamentRulesQuery();
@@ -46,9 +46,9 @@ public sealed class GetTournamentRulesQueryHandlerTests
 
         // Assert
         result.ShouldBe(expectedDocument);
-        _storageServiceMock.Verify(ss => ss.ExistsAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
-        _storageServiceMock.Verify(ss => ss.GetContentWithMetadataAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _storageServiceMock.Verify(ss => ss.ExistsAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
+        _storageServiceMock.Verify(ss => ss.GetContentWithMetadataAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
+        _tournamentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         _tournamentRulesSyncJobMock.Verify(bj => bj.TriggerImmediateSync(), Times.Never);
     }
 
@@ -59,10 +59,10 @@ public sealed class GetTournamentRulesQueryHandlerTests
         const string tournamentRulesHtml = "<h1>Tournament Rules</h1><p>These are the rules...</p>";
 
         _storageServiceMock
-            .Setup(ss => ss.ExistsAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken))
+            .Setup(ss => ss.ExistsAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(false);
 
-        _documentsServiceMock
+        _tournamentsServiceMock
             .Setup(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken))
             .ReturnsAsync(tournamentRulesHtml);
 
@@ -79,8 +79,8 @@ public sealed class GetTournamentRulesQueryHandlerTests
         result.Content.ShouldBe(tournamentRulesHtml);
         result.Metadata.ShouldContainKey("LastUpdatedUtc");
         result.Metadata.ShouldContainKey("LastUpdatedBy");
-        _storageServiceMock.Verify(ss => ss.ExistsAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
+        _storageServiceMock.Verify(ss => ss.ExistsAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken), Times.Once);
+        _tournamentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
         _tournamentRulesSyncJobMock.Verify(bj => bj.TriggerImmediateSync(), Times.Once);
     }
 
@@ -91,10 +91,10 @@ public sealed class GetTournamentRulesQueryHandlerTests
         const string tournamentRulesHtml = "<h1>Tournament Rules</h1><p>These are the rules...</p>";
 
         _storageServiceMock
-            .Setup(ss => ss.ExistsAsync("documents", "tournament-rules.html", TestContext.Current.CancellationToken))
+            .Setup(ss => ss.ExistsAsync("tournaments", "tournament-rules.html", TestContext.Current.CancellationToken))
             .ReturnsAsync(false);
 
-        _documentsServiceMock
+        _tournamentsServiceMock
             .Setup(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken))
             .ReturnsAsync(tournamentRulesHtml);
 
@@ -111,6 +111,6 @@ public sealed class GetTournamentRulesQueryHandlerTests
         result.Content.ShouldBe(tournamentRulesHtml);
         result.Metadata.ShouldContainKey("LastUpdatedUtc");
         result.Metadata.ShouldContainKey("LastUpdatedBy");
-        _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
+        _tournamentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
     }
 }

@@ -21,13 +21,13 @@ namespace Neba.Website.Application.Tournaments.TournamentRules;
 internal sealed class GetTournamentRulesQueryHandler(
     IStorageService storageService,
     IDocumentsService documentsService,
-    TournamentRulesSyncBackgroundJob tournamentRulesSyncJob,
+    ITournamentRulesSyncBackgroundJob tournamentRulesSyncJob,
     ILogger<GetTournamentRulesQueryHandler> logger)
         : IQueryHandler<GetTournamentRulesQuery, DocumentDto>
 {
     private readonly IStorageService _storageService = storageService;
     private readonly IDocumentsService _documentsService = documentsService;
-    private readonly TournamentRulesSyncBackgroundJob _tournamentRulesSyncJob = tournamentRulesSyncJob;
+    private readonly ITournamentRulesSyncBackgroundJob _tournamentRulesSyncJob = tournamentRulesSyncJob;
     private readonly ILogger<GetTournamentRulesQueryHandler> _logger = logger;
 
     /// <summary>

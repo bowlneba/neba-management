@@ -93,7 +93,9 @@
       "Bash(touch:*)",
       "Bash(ls:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..documentRefresh --oneline)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...documentRefresh --stat)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...documentRefresh --stat)",
+      "Bash(./bin/Debug/net10.0/Neba.UnitTests)",
+      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests)"
     ],
     "deny": [],
     "ask": []

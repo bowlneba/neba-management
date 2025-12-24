@@ -19,13 +19,13 @@ namespace Neba.Website.Application.Documents.Bylaws;
 internal sealed class GetBylawsQueryHandler(
     IStorageService storageService,
     IDocumentsService documentsService,
-    BylawsSyncBackgroundJob bylawsSyncJob,
+    IBylawsSyncBackgroundJob bylawsSyncJob,
     ILogger<GetBylawsQueryHandler> logger)
         : IQueryHandler<GetBylawsQuery, DocumentDto>
 {
     private readonly IStorageService _storageService = storageService;
     private readonly IDocumentsService _documentsService = documentsService;
-    private readonly BylawsSyncBackgroundJob _bylawsSyncJob = bylawsSyncJob;
+    private readonly IBylawsSyncBackgroundJob _bylawsSyncJob = bylawsSyncJob;
     private readonly ILogger<GetBylawsQueryHandler> _logger = logger;
 
     /// <summary>

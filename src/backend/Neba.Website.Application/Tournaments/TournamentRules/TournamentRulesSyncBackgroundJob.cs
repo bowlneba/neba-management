@@ -3,7 +3,7 @@ using Neba.Application.Documents;
 
 namespace Neba.Website.Application.Tournaments.TournamentRules;
 
-internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler scheduler)
+internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler scheduler) : ITournamentRulesSyncBackgroundJob
 {
     public const string RecurringJobId = "sync-tournament-rules-to-storage";
 

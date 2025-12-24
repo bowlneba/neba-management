@@ -3,7 +3,7 @@ using Neba.Application.Documents;
 
 namespace Neba.Website.Application.Documents.Bylaws;
 
-internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
+internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler) : IBylawsSyncBackgroundJob
 {
     public const string RecurringJobId = "sync-bylaws-to-storage";
 

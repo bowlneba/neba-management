@@ -69,6 +69,7 @@ public static class WebsiteApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<GetTournamentRulesQuery, DocumentDto>, GetTournamentRulesQueryHandler>();
             services.AddScoped<ICommandHandler<RefreshTournamentRulesCacheCommand, string>, RefreshTournamentRulesCacheCommandHandler>();
+            services.AddScoped<ITournamentRulesSyncBackgroundJob, TournamentRulesSyncBackgroundJob>();
             services.AddScoped<TournamentRulesSyncBackgroundJob>();
 
             return services;
@@ -78,6 +79,7 @@ public static class WebsiteApplicationDependencyInjection
         {
             services.AddScoped<IQueryHandler<GetBylawsQuery, DocumentDto>, GetBylawsQueryHandler>();
             services.AddScoped<ICommandHandler<RefreshBylawsCacheCommand, string>, RefreshBylawsCacheCommandHandler>();
+            services.AddScoped<IBylawsSyncBackgroundJob, BylawsSyncBackgroundJob>();
             services.AddScoped<BylawsSyncBackgroundJob>();
 
             return services;
