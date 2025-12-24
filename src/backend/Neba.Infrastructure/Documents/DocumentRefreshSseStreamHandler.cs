@@ -18,7 +18,7 @@ public static class DocumentRefreshSseStreamHandler
     /// <returns>A delegate that can be used with MapGet to handle SSE streaming.</returns>
     public static Delegate CreateStreamHandler(string documentType)
     {
-        return async (
+        return (
             DocumentRefreshChannels channels,
             HybridCache cache,
             CancellationToken cancellationToken) =>
@@ -34,7 +34,7 @@ public static class DocumentRefreshSseStreamHandler
                 cancellationToken);
 
             // Use built-in SSE formatting
-            return Results.ServerSentEvents(events);
+            return Task.FromResult(Results.ServerSentEvents(events));
         };
     }
 
