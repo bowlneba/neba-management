@@ -1,3 +1,5 @@
+using Neba.Application.Caching;
+
 namespace Neba.Website.Application.Documents.Bylaws;
 
 /// <summary>
@@ -20,4 +22,15 @@ public static class BylawsConstants
     /// </summary>
     public const string FileName = "bylaws.html";
 
+    /// <summary>
+    /// Cache key for the bylaws document content.
+    /// Follows ADR-002 naming convention: website:doc:bylaws:content
+    /// </summary>
+    public static string ContentCacheKey => CacheKeys.Documents.Content(DocumentKey);
+
+    /// <summary>
+    /// Cache key for tracking bylaws document sync job state.
+    /// Follows ADR-002 naming convention: website:job:doc-sync:bylaws:current
+    /// </summary>
+    public static string JobStateCacheKey => CacheKeys.Documents.JobState(DocumentKey);
 }

@@ -12,7 +12,7 @@ namespace Neba.Website.Application.Tournaments.TournamentRules;
 /// </summary>
 /// <remarks>
 /// Uses a cache-aside pattern: attempts to retrieve from storage first (fast path),
-/// then falls back to source and triggers background sync (slow path).
+/// then falls back to source, and triggers background sync (slow path).
 /// </remarks>
 /// <param name="storageService">Service for retrieving documents from storage.</param>
 /// <param name="documentsService">Service for retrieving documents from source.</param>
@@ -36,7 +36,7 @@ internal sealed class GetTournamentRulesQueryHandler(
         GetTournamentRulesQuery request,
         CancellationToken cancellationToken)
     {
-        // Fast path: try to get from storage cache
+        // Fast path: try to get from the storage cache
         if (await storageService.ExistsAsync(
             TournamentRulesConstants.ContainerName,
             TournamentRulesConstants.FileName,
@@ -55,7 +55,7 @@ internal sealed class GetTournamentRulesQueryHandler(
             TournamentRulesConstants.DocumentKey,
             cancellationToken);
 
-        // Trigger background job to cache the document (fire-and-forget)
+        // Trigger the background job to cache the document (fire-and-forget)
         try
         {
             tournamentRulesSyncJob.TriggerImmediateSync();

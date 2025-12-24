@@ -15,8 +15,8 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
             ContainerName = TournamentRulesConstants.ContainerName,
             DocumentName = TournamentRulesConstants.FileName,
             HubGroupName = $"{TournamentRulesConstants.DocumentKey}-refresh",
-            CacheKey = $"{TournamentRulesConstants.DocumentKey}:refresh:current",
-            DocumentCacheKey = TournamentRulesConstants.DocumentKey,
+            CacheKey = TournamentRulesConstants.JobStateCacheKey,
+            DocumentCacheKey = TournamentRulesConstants.ContentCacheKey,
             TriggeredBy = "scheduled"
         };
 
@@ -34,8 +34,8 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
             ContainerName = TournamentRulesConstants.ContainerName,
             DocumentName = TournamentRulesConstants.FileName,
             HubGroupName = $"{TournamentRulesConstants.DocumentKey}-refresh",
-            CacheKey = $"{TournamentRulesConstants.DocumentKey}:refresh:current",
-            DocumentCacheKey = TournamentRulesConstants.DocumentKey,
+            CacheKey = TournamentRulesConstants.JobStateCacheKey,
+            DocumentCacheKey = TournamentRulesConstants.ContentCacheKey,
             TriggeredBy = "user"
         };
 

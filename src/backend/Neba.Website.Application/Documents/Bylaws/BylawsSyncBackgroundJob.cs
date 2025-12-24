@@ -15,8 +15,8 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
             ContainerName = BylawsConstants.ContainerName,
             DocumentName = BylawsConstants.FileName,
             HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
-            CacheKey = $"{BylawsConstants.DocumentKey}:refresh:current",
-            DocumentCacheKey = BylawsConstants.DocumentKey,
+            CacheKey = BylawsConstants.JobStateCacheKey,
+            DocumentCacheKey = BylawsConstants.ContentCacheKey,
             TriggeredBy = "scheduled"
         };
 
@@ -34,8 +34,8 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
             ContainerName = BylawsConstants.ContainerName,
             DocumentName = BylawsConstants.FileName,
             HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
-            CacheKey = $"{BylawsConstants.DocumentKey}:refresh:current",
-            DocumentCacheKey = BylawsConstants.DocumentKey,
+            CacheKey = BylawsConstants.JobStateCacheKey,
+            DocumentCacheKey = BylawsConstants.ContentCacheKey,
             TriggeredBy = "user"
         };
 
