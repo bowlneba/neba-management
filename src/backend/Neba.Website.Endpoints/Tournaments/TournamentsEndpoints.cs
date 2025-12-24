@@ -74,7 +74,7 @@ internal static class TournamentEndpoints
                     var command = new RefreshTournamentRulesCacheCommand();
                     ErrorOr<string> jobIdResult = await commandHandler.HandleAsync(command, cancellationToken);
 
-                    if(jobIdResult.IsError)
+                    if (jobIdResult.IsError)
                     {
                         return jobIdResult.Problem();
                     }

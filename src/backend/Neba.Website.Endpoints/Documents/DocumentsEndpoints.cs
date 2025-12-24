@@ -63,7 +63,7 @@ internal static class DocumentEndpoints
                     var command = new RefreshBylawsCacheCommand();
                     ErrorOr<string> jobIdResult = await commandHandler.HandleAsync(command, cancellationToken);
 
-                    if(jobIdResult.IsError)
+                    if (jobIdResult.IsError)
                     {
                         return jobIdResult.Problem();
                     }

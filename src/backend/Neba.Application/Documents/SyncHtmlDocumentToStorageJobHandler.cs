@@ -105,7 +105,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
                 await _cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogErrorDuringHtmlDocumentSync(ex);
 

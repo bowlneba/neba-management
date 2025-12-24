@@ -57,7 +57,7 @@ internal sealed class AzureStorageService
             int index = 0;
             int bytesRead;
 
-            while((bytesRead = await content.ReadAsync(buffer.AsMemory(0, _settings.UploadChunkSizeBytes), cancellationToken)) > 0)
+            while ((bytesRead = await content.ReadAsync(buffer.AsMemory(0, _settings.UploadChunkSizeBytes), cancellationToken)) > 0)
             {
                 string blockId = Convert.ToBase64String(BitConverter.GetBytes(index));
 

@@ -103,7 +103,7 @@ app.MapGet("/api/documents/tournaments/rules", async (NebaApiService apiService)
         ? Results.Problem(detail: result.FirstError.Description, statusCode: 500)
         : Results.Ok(new
         {
-            html = result.Value.Content, 
+            html = result.Value.Content,
             metadata = result.Value.Metadata
         });
 });

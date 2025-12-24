@@ -113,7 +113,7 @@ public sealed class DocumentRefreshChannelManager : IAsyncDisposable
         }
     }
 
-    #pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1031 // Do not catch general exception types
     private async Task MonitorChannelTimeoutAsync(
         string documentType,
         ChannelState channelState,
@@ -163,7 +163,7 @@ public sealed class DocumentRefreshChannelManager : IAsyncDisposable
             _logger.LogChannelMonitoringError(ex, documentType);
         }
     }
-    #pragma warning restore CA1031
+#pragma warning restore CA1031
 
     /// <summary>
     /// Disposes of the channel manager and completes all active channels.

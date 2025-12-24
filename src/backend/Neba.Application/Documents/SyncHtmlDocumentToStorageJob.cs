@@ -28,7 +28,7 @@ public sealed record SyncHtmlDocumentToStorageJob
     /// </summary>
     public Dictionary<string, string> Metadata { get; init; } = [];
 
-     /// <summary>
+    /// <summary>
     /// User or system that triggered the sync (e.g., username or "scheduled").
     /// </summary>
     public string TriggeredBy { get; init; } = "system";
