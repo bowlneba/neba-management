@@ -9,14 +9,14 @@ namespace Neba.Infrastructure.Documents;
 /// </summary>
 internal sealed class SseDocumentRefreshNotifier : IDocumentRefreshNotifier
 {
-    private readonly DocumentRefreshChannelManager _channelManager;
+    private readonly DocumentRefreshChannels _channels;
     private readonly ILogger<SseDocumentRefreshNotifier> _logger;
 
     public SseDocumentRefreshNotifier(
-        DocumentRefreshChannelManager channelManager,
+        DocumentRefreshChannels channels,
         ILogger<SseDocumentRefreshNotifier> logger)
     {
-        _channelManager = channelManager;
+        _channels = channels;
         _logger = logger;
     }
 
@@ -37,7 +37,8 @@ internal sealed class SseDocumentRefreshNotifier : IDocumentRefreshNotifier
 
         var statusEvent = DocumentRefreshStatusEvent.FromStatus(status, errorMessage);
 
-        await _channelManager.WriteToChannelAsync(documentType, statusEvent, cancellationToken);
+        var channel = _channels.GetOrCreateChannel(documentType);
+        await channel.Writer.WriteAsync(statusEvent, cancellationToken);
 
         _logger.LogNotifiedChannel(documentType, status.Name);
     }

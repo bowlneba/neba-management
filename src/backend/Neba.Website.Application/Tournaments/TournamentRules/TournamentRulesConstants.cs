@@ -8,7 +8,7 @@ public static class TournamentRulesConstants
     /// <summary>
     /// The name of the container (or blob/container) where tournament rules documents are stored.
     /// </summary>
-    public const string ContainerName = "documents";
+    public const string ContainerName = "tournaments";
 
     /// <summary>
     /// The logical name of the tournament rules document resource.

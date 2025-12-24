@@ -71,6 +71,67 @@ You are an AI assistant specialized in Domain-Driven Design (DDD), Clean Archite
 * **Caching Strategies**: Cache data appropriately, respecting data volatility.
 * **Memory Efficiency**: Properly sized aggregates and value objects.
 
+### 6. **Simplicity & Pragmatism** 🎯
+
+> **"Make it work, make it right, make it fast - in that order."**
+
+**CRITICAL**: Do not over-engineer solutions. Solve the problem at hand, not hypothetical future problems.
+
+#### Implementation Philosophy
+
+* **YAGNI (You Aren't Gonna Need It)**: Don't add functionality until it's actually needed. If you're adding code "for future use" or "just in case", you're over-engineering.
+* **Start Simple**: Begin with the simplest solution that could work. Complexity should be justified by actual requirements, not anticipated ones.
+* **Document, Don't Implement**: When you identify potential edge cases or future concerns:
+  - Add TODO comments or documentation about the concern
+  - Explain what might be needed if the situation arises
+  - **DO NOT** implement solutions for problems that don't exist yet
+* **Refactor When Needed**: It's easier to add complexity later than to remove it. Trust that you can refactor when requirements actually change.
+
+#### Examples of Over-Engineering to Avoid
+
+**❌ Don't Do This:**
+```csharp
+// Adding complex channel management with reference counting, timeouts,
+// and cleanup for a single-user application
+public class ChannelManager
+{
+    private ConcurrentDictionary<string, ChannelState> _channels;
+    // 200+ lines of lifecycle management...
+}
+```
+
+**✅ Do This Instead:**
+```csharp
+// Simple singleton channel - add complexity only when you actually need multiple channels
+services.AddSingleton(Channel.CreateUnbounded<StatusUpdate>());
+```
+
+**Documentation Alternative:**
+```csharp
+// TODO: If we need multiple channels per tenant in the future, consider:
+//   - Using a dictionary of channels keyed by tenant ID
+//   - Implementing cleanup when tenants disconnect
+//   - For now, single global channel is sufficient for current requirements
+services.AddSingleton(Channel.CreateUnbounded<StatusUpdate>());
+```
+
+#### When Complexity IS Justified
+
+Add complexity only when you have:
+1. **Concrete requirements** from users or stakeholders
+2. **Measurable problems** (performance metrics, error rates, etc.)
+3. **Current pain points** that are blocking progress
+
+#### Code Review Questions
+
+Before implementing complex solutions, ask:
+- "What actual problem does this solve TODAY?"
+- "Can I solve this with existing .NET features?"
+- "What's the simplest thing that could work?"
+- "Am I solving a real problem or a hypothetical one?"
+
+**Remember**: Future requirements will change. The complex system you build today for tomorrow's problems will likely be wrong anyway. Build for today, refactor for tomorrow.
+
 ## DDD & .NET Standards
 
 ### Domain Layer
@@ -210,6 +271,7 @@ public void MethodName_Condition_ExpectedResult()
 * **SOLID Principles Adherence**: "I have verified the design follows SOLID principles."
 * **Business Rules**: "I have validated that domain logic is encapsulated in aggregates."
 * **Event Handling**: "I have confirmed domain events are properly published and handled."
+* **Simplicity**: "I have confirmed this is the simplest solution that solves the actual requirements. Any complexity is justified by concrete needs, not hypothetical future scenarios."
 
 ### Implementation Quality Validation
 
