@@ -19,7 +19,7 @@ This directory contains architectural documentation for the NEBA Management appl
 
 ### Infrastructure Patterns
 
-- [SignalR Hubs](signalr-hubs.md) - Real-time notification architecture using SignalR for document refresh status updates
+- [Server-Sent Events (SSE)](sse-document-refresh.md) - Real-time document refresh status updates using Server-Sent Events
 
 ## Architecture Overview
 
