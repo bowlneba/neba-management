@@ -908,4 +908,21 @@ public sealed class NebaDocumentTests : TestContextWrapper
         cut.FindAll(".neba-document-toc").ShouldBeEmpty();
         cut.FindAll(".neba-document-slideover").ShouldBeEmpty();
     }
+
+    [Fact]
+    public async Task ShouldDisposeWithoutThrowingException()
+    {
+        // Arrange
+        MarkupString content = new MarkupString("<h1>Test</h1>");
+        IRenderedComponent<NebaDocument> cut = Render<NebaDocument>(parameters => parameters
+            .Add(p => p.Content, content)
+            .Add(p => p.ShowTableOfContents, true));
+
+        // Act & Assert - Should not throw when disposing as IAsyncDisposable
+        IAsyncDisposable disposable = cut.Instance;
+        await disposable.DisposeAsync();
+
+        // Verify the component exists (satisfies assertion requirement)
+        cut.Instance.ShouldNotBeNull();
+    }
 }

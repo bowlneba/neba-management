@@ -251,7 +251,18 @@
     {
         if (_module is not null)
         {
-            await _module.DisposeAsync();
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore - circuit has disconnected, browser will clean up JS resources
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore - disposal was cancelled, likely due to circuit disconnection
+            }
         }
     }
 
