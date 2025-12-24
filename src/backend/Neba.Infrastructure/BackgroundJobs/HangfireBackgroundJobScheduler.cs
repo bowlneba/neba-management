@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,21 +16,29 @@ internal sealed class HangfireBackgroundJobScheduler(
     {
         logger.LogEnqueuingJob(typeof(TJob).Name);
 
-        return BackgroundJob.Enqueue(() => ExecuteJobAsync(job, CancellationToken.None));
+        string jobName = GetJobDisplayName(job);
+        return BackgroundJob.Enqueue<HangfireBackgroundJobScheduler>(
+            x => x.ExecuteJobAsync(job, jobName, CancellationToken.None));
     }
 
     public string Schedule<TJob>(TJob job, TimeSpan delay) where TJob : IBackgroundJob
     {
         logger.LogSchedulingJob(typeof(TJob).Name, delay);
 
-        return BackgroundJob.Schedule(() => ExecuteJobAsync(job, CancellationToken.None), delay);
+        string jobName = GetJobDisplayName(job);
+        return BackgroundJob.Schedule<HangfireBackgroundJobScheduler>(
+            x => x.ExecuteJobAsync(job, jobName, CancellationToken.None),
+            delay);
     }
 
     public string Schedule<TJob>(TJob job, DateTimeOffset enqueueAt) where TJob : IBackgroundJob
     {
         logger.LogSchedulingJob(typeof(TJob).Name, enqueueAt);
 
-        return BackgroundJob.Schedule(() => ExecuteJobAsync(job, CancellationToken.None), enqueueAt);
+        string jobName = GetJobDisplayName(job);
+        return BackgroundJob.Schedule<HangfireBackgroundJobScheduler>(
+            x => x.ExecuteJobAsync(job, jobName, CancellationToken.None),
+            enqueueAt);
     }
 
     public void AddOrUpdateRecurring<TJob>(string recurringJobId, TJob job, string cronExpression) where TJob : IBackgroundJob
@@ -37,9 +46,10 @@ internal sealed class HangfireBackgroundJobScheduler(
         logger.LogAddingOrUpdatingRecurringJob(
             recurringJobId, typeof(TJob).Name, cronExpression);
 
-        RecurringJob.AddOrUpdate(
+        string jobName = GetJobDisplayName(job);
+        RecurringJob.AddOrUpdate<HangfireBackgroundJobScheduler>(
             recurringJobId,
-            () => ExecuteJobAsync(job, CancellationToken.None),
+            x => x.ExecuteJobAsync(job, jobName, CancellationToken.None),
             cronExpression);
     }
 
@@ -54,7 +64,10 @@ internal sealed class HangfireBackgroundJobScheduler(
     {
         logger.LogContinuingWithJob(parentJobId, typeof(TJob).Name);
 
-        return BackgroundJob.ContinueJobWith(parentJobId, () => ExecuteJobAsync(job, CancellationToken.None));
+        string jobName = GetJobDisplayName(job);
+        return BackgroundJob.ContinueJobWith<HangfireBackgroundJobScheduler>(
+            parentJobId,
+            x => x.ExecuteJobAsync(job, jobName, CancellationToken.None));
     }
 
     public bool Delete(string jobId)
@@ -64,7 +77,8 @@ internal sealed class HangfireBackgroundJobScheduler(
         return BackgroundJob.Delete(jobId);
     }
 
-    public async Task ExecuteJobAsync<TJob>(TJob job, CancellationToken cancellationToken) where TJob : IBackgroundJob
+    [DisplayName("{1}")]
+    public async Task ExecuteJobAsync<TJob>(TJob job, string displayName, CancellationToken cancellationToken) where TJob : IBackgroundJob
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();
         IBackgroundJobHandler<TJob> handler = scope.ServiceProvider.GetRequiredService<IBackgroundJobHandler<TJob>>();
@@ -72,5 +86,11 @@ internal sealed class HangfireBackgroundJobScheduler(
         logger.LogJobStarted(typeof(TJob).Name);
 
         await handler.ExecuteAsync(job, cancellationToken);
+    }
+
+    private static string GetJobDisplayName<TJob>(TJob job) where TJob : IBackgroundJob
+    {
+        // Use the job's JobName property for display in the Hangfire dashboard
+        return job.JobName;
     }
 }

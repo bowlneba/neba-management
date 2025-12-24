@@ -47,4 +47,8 @@ public sealed record SyncHtmlDocumentToStorageJob
     /// Cache key for the document content cache (to invalidate on completion).
     /// </summary>
     public string? DocumentCacheKey { get; init; }
+
+    /// <inheritdoc />
+    public string JobName
+        => $"Sync Document: {DocumentKey}";
 }
