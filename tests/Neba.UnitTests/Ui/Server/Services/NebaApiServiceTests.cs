@@ -42,7 +42,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -80,7 +80,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
-            Items = new List<BowlerOfTheYearResponse>(),
+            Items = new List<BowlerOfTheYearResponse>()
 
         };
 
@@ -104,7 +104,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
-            Items = new List<BowlerOfTheYearResponse>(),
+            Items = new List<BowlerOfTheYearResponse>()
 
         };
 
@@ -226,7 +226,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -262,7 +262,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<TitleSummaryResponse>
         {
-            Items = summaries,
+            Items = summaries
 
         };
 
@@ -288,7 +288,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<TitleSummaryResponse>
         {
-            Items = new List<TitleSummaryResponse>(),
+            Items = new List<TitleSummaryResponse>()
 
         };
 
@@ -312,7 +312,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<TitleSummaryResponse>
         {
-            Items = new List<TitleSummaryResponse>(),
+            Items = new List<TitleSummaryResponse>()
 
         };
 
@@ -459,7 +459,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -508,7 +508,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -546,7 +546,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
-            Items = new List<HighBlockAwardResponse>(),
+            Items = new List<HighBlockAwardResponse>()
 
         };
 
@@ -570,7 +570,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
-            Items = new List<HighBlockAwardResponse>(),
+            Items = new List<HighBlockAwardResponse>()
 
         };
 
@@ -615,7 +615,8 @@ public sealed class NebaApiServiceTests
     {
         // Arrange
         using var httpRequest = new HttpRequestMessage();
-        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        httpResponse.ReasonPhrase = "API Error";
         ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
 
         _mockNebaApi
@@ -692,7 +693,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<HighBlockAwardResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -731,7 +732,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -770,7 +771,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
         {
-            Items = new List<HighAverageAwardResponse>(),
+            Items = new List<HighAverageAwardResponse>()
 
         };
 
@@ -794,7 +795,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
         {
-            Items = new List<HighAverageAwardResponse>(),
+            Items = new List<HighAverageAwardResponse>()
 
         };
 
@@ -916,7 +917,7 @@ public sealed class NebaApiServiceTests
 
         var collectionResponse = new CollectionResponse<HighAverageAwardResponse>
         {
-            Items = awards,
+            Items = awards
 
         };
 
@@ -1106,14 +1107,14 @@ public sealed class NebaApiServiceTests
         // Arrange
         var titles = new List<TitleResponse>
         {
-            TitleResponseFactory.Create(bowlerName: "John Doe", tournamentYear: 2024, tournamentMonth: Month.January),
-            TitleResponseFactory.Create(bowlerName: "Jane Smith", tournamentYear: 2024, tournamentMonth: Month.March),
-            TitleResponseFactory.Create(bowlerName: "Bob Johnson", tournamentYear: 2023, tournamentMonth: Month.February)
+            TitleResponseFactory.Create(bowlerName: "John Doe", tournamentMonth: Month.January, tournamentYear: 2024),
+            TitleResponseFactory.Create(bowlerName: "Jane Smith", tournamentMonth: Month.March, tournamentYear: 2024),
+            TitleResponseFactory.Create(bowlerName: "Bob Johnson", tournamentMonth: Month.February, tournamentYear: 2023)
         };
 
         var collectionResponse = new CollectionResponse<TitleResponse>
         {
-            Items = titles,
+            Items = titles
 
         };
 
@@ -1149,7 +1150,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<TitleResponse>
         {
-            Items = new List<TitleResponse>(),
+            Items = new List<TitleResponse>()
 
         };
 
@@ -1173,7 +1174,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         var collectionResponse = new CollectionResponse<TitleResponse>
         {
-            Items = new List<TitleResponse>(),
+            Items = new List<TitleResponse>()
 
         };
 
@@ -1217,15 +1218,15 @@ public sealed class NebaApiServiceTests
         // Arrange
         var titles = new List<TitleResponse>
         {
-            TitleResponseFactory.Create(bowlerName: "Person A", tournamentYear: 2020, tournamentMonth: Month.January),
-            TitleResponseFactory.Create(bowlerName: "Person B", tournamentYear: 2025, tournamentMonth: Month.December),
-            TitleResponseFactory.Create(bowlerName: "Person C", tournamentYear: 2025, tournamentMonth: Month.January),
-            TitleResponseFactory.Create(bowlerName: "Person D", tournamentYear: 2024, tournamentMonth: Month.June)
+            TitleResponseFactory.Create(bowlerName: "Person A", tournamentMonth: Month.January, tournamentYear: 2020),
+            TitleResponseFactory.Create(bowlerName: "Person B", tournamentMonth: Month.December, tournamentYear: 2025),
+            TitleResponseFactory.Create(bowlerName: "Person C", tournamentMonth: Month.January, tournamentYear: 2025),
+            TitleResponseFactory.Create(bowlerName: "Person D", tournamentMonth: Month.June, tournamentYear: 2024)
         };
 
         var collectionResponse = new CollectionResponse<TitleResponse>
         {
-            Items = titles,
+            Items = titles
 
         };
 

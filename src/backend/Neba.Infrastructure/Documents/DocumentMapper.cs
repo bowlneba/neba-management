@@ -214,7 +214,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
     {
         if (!_listCounters.TryGetValue(listId, out Dictionary<int, int>? levelCounters))
         {
-            levelCounters = new Dictionary<int, int>();
+            levelCounters = [];
             _listCounters[listId] = levelCounters;
         }
 

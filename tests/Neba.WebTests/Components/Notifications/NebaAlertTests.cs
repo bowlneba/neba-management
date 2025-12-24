@@ -233,11 +233,11 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldRenderValidationMessagesWhenProvided()
     {
         // Arrange
-        List<string> validationMessages = new List<string>
-        {
+        List<string> validationMessages =
+        [
             "Email is required",
             "Password must be at least 8 characters"
-        };
+        ];
 
         // Act
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters
@@ -274,7 +274,7 @@ public sealed class NebaAlertTests : TestContextWrapper
     public void ShouldPreferValidationMessagesOverMessage()
     {
         // Arrange
-        List<string> validationMessages = new List<string> { "Validation error 1" };
+        List<string> validationMessages = ["Validation error 1"];
 
         // Act
         IRenderedComponent<NebaAlert> cut = Render<NebaAlert>(parameters => parameters

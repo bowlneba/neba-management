@@ -77,7 +77,7 @@ public sealed class BylawsTests : TestContextWrapper
     public async Task ShouldDisplayBylawsContentWhenApiCallSucceeds()
     {
         // Arrange
-        string bylawsHtml = "<h1>Article 1</h1><p>Description of article 1</p>";
+        const string bylawsHtml = "<h1>Article 1</h1><p>Description of article 1</p>";
         using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse(bylawsHtml);
         _mockNebaApi
             .Setup(x => x.GetBylawsAsync())

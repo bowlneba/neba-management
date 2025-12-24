@@ -145,7 +145,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 award.Season,
                 Average = award.Average ?? -1,
                 Games = award.SeasonTotalGames,
-                Tournaments = award.Tournaments
+                award.Tournaments
             })
             .ToListAsync(TestContext.Current.CancellationToken);
 

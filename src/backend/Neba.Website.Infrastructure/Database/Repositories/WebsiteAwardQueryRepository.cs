@@ -34,7 +34,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
                 Id = award.Id,
                 BowlerName = award.Bowler.Name.ToDisplayName(),
                 Season = award.Season,
-                Score = award.HighBlockScore ?? -1,
+                Score = award.HighBlockScore ?? -1
             })
             .ToListAsync(cancellationToken);
 

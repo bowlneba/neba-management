@@ -181,7 +181,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_UnorderedList_RendersUlAndLi()
     {
         // Arrange
-        string listId = "list-1";
+        const string listId = "list-1";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
@@ -206,7 +206,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_OrderedListWithStartNumber_RendersOlTypeAndStart()
     {
         // Arrange
-        string listId = "list-ordered";
+        const string listId = "list-ordered";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 3));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
@@ -231,7 +231,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_ListCounterResetsAfterNonListBlock()
     {
         // Arrange
-        string listId = "list-reset";
+        const string listId = "list-reset";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 1));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
@@ -264,7 +264,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_TabSeparatedListItems_AreConvertedToIndentedTable()
     {
         // Arrange
-        string listId = "list-tabs";
+        const string listId = "list-tabs";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 1, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
@@ -293,7 +293,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_NestedUnorderedList_ProducesValidParentChildStructure()
     {
         // Arrange
-        string listId = "list-nested";
+        const string listId = "list-nested";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists(
             (listId, 0, "BULLET", null),
             (listId, 1, "BULLET", null));
@@ -395,7 +395,7 @@ public sealed class DocumentMapperTests
     public void ConvertToHtml_UnicodeInLists_AreNormalized()
     {
         // Arrange
-        string listId = "list-unicode";
+        const string listId = "list-unicode";
         IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();

@@ -77,7 +77,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldDisplayRulesContentWhenApiCallSucceeds()
     {
         // Arrange
-        string rulesHtml = "<h1>Rule 1</h1><p>Description of rule 1</p>";
+        const string rulesHtml = "<h1>Rule 1</h1><p>Description of rule 1</p>";
         using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse(rulesHtml);
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())

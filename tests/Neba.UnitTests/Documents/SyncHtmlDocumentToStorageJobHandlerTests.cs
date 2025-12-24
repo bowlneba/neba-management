@@ -88,7 +88,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+        ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
         Assert.Contains("DocumentKey", exception.Message);
@@ -109,7 +109,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+        ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
         Assert.Contains("ContainerName", exception.Message);
@@ -130,7 +130,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+        ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
         Assert.Contains("DocumentName", exception.Message);
@@ -309,7 +309,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
         Assert.Same(expectedException, exception);

@@ -67,7 +67,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void FromStatus_WithNullStringStatus_ShouldThrowArgumentException()
     {
         // Arrange
-        string? statusString = null;
+        const string? statusString = null;
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => DocumentRefreshStatusEvent.FromStatus(statusString!));
@@ -87,7 +87,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void FromStatus_WithWhitespaceStringStatus_ShouldThrowArgumentException()
     {
         // Arrange
-        string statusString = "   ";
+        const string statusString = "   ";
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => DocumentRefreshStatusEvent.FromStatus(statusString));

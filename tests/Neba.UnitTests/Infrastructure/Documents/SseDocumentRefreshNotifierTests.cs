@@ -22,7 +22,7 @@ public sealed class SseDocumentRefreshNotifierTests
     public async Task NotifyStatusAsync_WithNullHubGroupName_ShouldReturnEarly()
     {
         // Arrange
-        string? hubGroupName = null;
+        const string? hubGroupName = null;
         DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
@@ -52,7 +52,7 @@ public sealed class SseDocumentRefreshNotifierTests
     public async Task NotifyStatusAsync_WithWhitespaceHubGroupName_ShouldReturnEarly()
     {
         // Arrange
-        string? hubGroupName = "   ";
+        const string? hubGroupName = "   ";
         DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act

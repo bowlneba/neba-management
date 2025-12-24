@@ -109,10 +109,7 @@ public sealed class AlertServiceTests
         var service = new AlertService();
 
         // Act
-        service.ShowInfo("Info message", "Info title", options =>
-        {
-            options.Variant = AlertVariant.Dense;
-        }, persistAcrossNavigation: true);
+        service.ShowInfo("Info message", "Info title", options => options.Variant = AlertVariant.Dense, persistAcrossNavigation: true);
 
         // Assert
         service.CurrentAlert.ShouldNotBeNull();
@@ -176,10 +173,7 @@ public sealed class AlertServiceTests
         var service = new AlertService();
 
         // Act
-        service.ShowWarning("Warning message", configure: options =>
-        {
-            options.Variant = AlertVariant.Outlined;
-        });
+        service.ShowWarning("Warning message", configure: options => options.Variant = AlertVariant.Outlined);
 
         // Assert
         service.CurrentAlert.ShouldNotBeNull();
@@ -209,10 +203,7 @@ public sealed class AlertServiceTests
         var service = new AlertService();
 
         // Act
-        service.ShowError("Error message", "Error!", options =>
-        {
-            options.Dismissible = false;
-        }, persistAcrossNavigation: true);
+        service.ShowError("Error message", "Error!", options => options.Dismissible = false, persistAcrossNavigation: true);
 
         // Assert
         service.CurrentAlert.ShouldNotBeNull();

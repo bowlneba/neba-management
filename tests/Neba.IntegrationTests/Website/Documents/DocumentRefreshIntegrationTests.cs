@@ -354,7 +354,5 @@ public sealed class DocumentRefreshIntegrationTests(ITestOutputHelper output)
         public string? ErrorMessage { get; init; }
         public string Timestamp { get; init; } = string.Empty;
     }
-#pragma warning restore S3459
-#pragma warning restore S1144
-#pragma warning restore CA1812
+#pragma warning restore S3459, S1144, CA1812
 }

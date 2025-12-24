@@ -27,12 +27,12 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_LoadsAwards()
     {
         // Arrange - Set up successful API response
-        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
-        {
+        List<BowlerOfTheYearResponse> awards =
+        [
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
             BowlerOfTheYearResponseFactory.Create("Bob Johnson", "2023", "Open")
-        };
+        ];
 
         CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
@@ -60,13 +60,13 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_SuccessfulApiResponse_DisplaysAwardsByYear()
     {
         // Arrange
-        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
-        {
+        List<BowlerOfTheYearResponse> awards =
+        [
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
             BowlerOfTheYearResponseFactory.Create("Bob Johnson", "2023", "Open"),
             BowlerOfTheYearResponseFactory.Create("Alice Brown", "2023", "Senior")
-        };
+        ];
 
         CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
@@ -164,10 +164,10 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void Render_WithData_IncludesLoadingIndicator()
     {
         // Arrange
-        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
-        {
+        List<BowlerOfTheYearResponse> awards =
+        [
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open")
-        };
+        ];
 
         CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
@@ -195,14 +195,14 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void OnInitializedAsync_MultipleAwardsInSameSeason_GroupsCorrectly()
     {
         // Arrange
-        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
-        {
+        List<BowlerOfTheYearResponse> awards =
+        [
             BowlerOfTheYearResponseFactory.Create("John Doe", "2024", "Open"),
             BowlerOfTheYearResponseFactory.Create("Jane Smith", "2024", "Woman"),
             BowlerOfTheYearResponseFactory.Create("Bob Senior", "2024", "Senior"),
             BowlerOfTheYearResponseFactory.Create("Alice Youth", "2024", "Youth"),
             BowlerOfTheYearResponseFactory.Create("Charlie Rookie", "2024", "Rookie")
-        };
+        ];
 
         CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
@@ -236,10 +236,10 @@ public sealed class BowlerOfTheYearTests : TestContextWrapper
     public void Render_DisplaysDescriptiveText()
     {
         // Arrange
-        List<BowlerOfTheYearResponse> awards = new List<BowlerOfTheYearResponse>
-        {
+        List<BowlerOfTheYearResponse> awards =
+        [
             BowlerOfTheYearResponseFactory.Create()
-        };
+        ];
 
         CollectionResponse<BowlerOfTheYearResponse> collectionResponse = new CollectionResponse<BowlerOfTheYearResponse>
         {
