@@ -13,12 +13,12 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = TournamentRulesConstants.TournamentRulesDocumentName,
-            ContainerName = TournamentRulesConstants.TournamentRulesContainerName,
-            DocumentName = TournamentRulesConstants.TournamentRulesFileName,
-            HubGroupName = $"{TournamentRulesConstants.TournamentRulesDocumentName}-refresh",
-            CacheKey = $"{TournamentRulesConstants.TournamentRulesDocumentName}:refresh:current",
-            DocumentCacheKey = TournamentRulesConstants.TournamentRulesDocumentName,
+            DocumentKey = TournamentRulesConstants.DocumentKey,
+            ContainerName = TournamentRulesConstants.ContainerName,
+            DocumentName = TournamentRulesConstants.FileName,
+            HubGroupName = $"{TournamentRulesConstants.DocumentKey}-refresh",
+            CacheKey = $"{TournamentRulesConstants.DocumentKey}:refresh:current",
+            DocumentCacheKey = TournamentRulesConstants.DocumentKey,
             TriggeredBy = "scheduled"
         };
 
@@ -32,12 +32,12 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
     {
         var job = new SyncHtmlDocumentToStorageJob
         {
-            DocumentKey = TournamentRulesConstants.TournamentRulesDocumentName,
-            ContainerName = TournamentRulesConstants.TournamentRulesContainerName,
-            DocumentName = TournamentRulesConstants.TournamentRulesFileName,
-            HubGroupName = $"{TournamentRulesConstants.TournamentRulesDocumentName}-refresh",
-            CacheKey = $"{TournamentRulesConstants.TournamentRulesDocumentName}:refresh:current",
-            DocumentCacheKey = TournamentRulesConstants.TournamentRulesDocumentName,
+            DocumentKey = TournamentRulesConstants.DocumentKey,
+            ContainerName = TournamentRulesConstants.ContainerName,
+            DocumentName = TournamentRulesConstants.FileName,
+            HubGroupName = $"{TournamentRulesConstants.DocumentKey}-refresh",
+            CacheKey = $"{TournamentRulesConstants.DocumentKey}:refresh:current",
+            DocumentCacheKey = TournamentRulesConstants.DocumentKey,
             TriggeredBy = "user"
         };
 

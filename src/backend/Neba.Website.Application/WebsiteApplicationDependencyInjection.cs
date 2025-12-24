@@ -8,6 +8,7 @@ using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Documents.Bylaws;
+using Neba.Website.Application.Tournaments;
 using Neba.Website.Application.Tournaments.GetTournamentRules;
 
 namespace Neba.Website.Application;
@@ -69,6 +70,8 @@ public static class WebsiteApplicationDependencyInjection
         private IServiceCollection AddTournamentsUseCases()
         {
             services.AddScoped<IQueryHandler<GetTournamentRulesQuery, DocumentDto>, GetTournamentRulesQueryHandler>();
+            services.AddScoped<ICommandHandler<RefreshTournamentRulesCacheCommand, string>, RefreshTournamentRulesCacheCommandHandler>();
+            services.AddScoped<TournamentRulesSyncBackgroundJob>();
 
             return services;
         }
@@ -95,6 +98,9 @@ public static class WebsiteApplicationDependencyInjection
 
             BylawsSyncBackgroundJob bylawsSyncJob = scope.ServiceProvider.GetRequiredService<BylawsSyncBackgroundJob>();
             bylawsSyncJob.RegisterBylawsSyncJob();
+
+            TournamentRulesSyncBackgroundJob tournamentRulesSyncJob = scope.ServiceProvider.GetRequiredService<TournamentRulesSyncBackgroundJob>();
+            tournamentRulesSyncJob.RegisterTournamentRulesSyncJob();
         }
     }
 }

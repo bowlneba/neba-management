@@ -90,7 +90,8 @@
       "Bash(time dotnet run:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de --stat)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
