@@ -19,10 +19,12 @@
               ShowTableOfContents="true"
               TableOfContentsTitle="Contents"
               HeadingLevels="h1, h2"
-              DocumentId="bylaws" />
+              DocumentId="bylaws"
+              Metadata="@_metadata" />
 
 @code {
     private MarkupString? _bylawsHtml;
+    private IReadOnlyDictionary<string, string>? _metadata;
     private string? _errorMessage;
     private bool _isLoading = true;
 
@@ -40,6 +42,7 @@
             }
 
             _bylawsHtml = result.Value.Content;
+            _metadata = result.Value.Metadata;
         }
         catch (Exception ex)
         {

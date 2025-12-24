@@ -1010,6 +1010,33 @@
   margin: 2rem 0;
 }
 
+/* Last Updated Footer (Main Document) */
+.neba-document-last-updated-footer {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--neba-gray-600);
+  padding: 0.75rem 1.5rem 1rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Last Updated Header (Slide-out) */
+.neba-document-last-updated-header {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--neba-gray-600);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--neba-border);
+}
+
+/* Dark mode support for last updated */
+.dark .neba-document-last-updated-footer,
+.dark .neba-document-last-updated-header {
+  color: var(--neba-gray-400);
+}
+
 /* Dark mode support for slide-over */
 .dark .neba-document-slideover-panel {
   background-color: var(--neba-bg-panel);

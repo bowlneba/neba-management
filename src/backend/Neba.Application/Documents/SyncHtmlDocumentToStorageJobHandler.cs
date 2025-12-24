@@ -84,8 +84,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Uploading, cancellationToken: cancellationToken);
 
-            job.Metadata["syncedAt"] = DateTimeOffset.UtcNow.ToString("o");
-            job.Metadata["syncedBy"] = job.TriggeredBy;
+            job.Metadata["LastUpdatedUtc"] = DateTimeOffset.UtcNow.ToString("o");
+            job.Metadata["LastUpdatedBy"] = job.TriggeredBy;
 
             string name = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
 

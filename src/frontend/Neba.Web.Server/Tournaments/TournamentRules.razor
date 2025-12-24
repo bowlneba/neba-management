@@ -19,10 +19,12 @@
               ShowTableOfContents="true"
               TableOfContentsTitle="Contents"
               HeadingLevels="h1, h2"
-              DocumentId="tournament-rules" />
+              DocumentId="tournament-rules"
+              Metadata="@_metadata" />
 
 @code {
     private MarkupString? _rulesHtml;
+    private IReadOnlyDictionary<string, string>? _metadata;
     private string? _errorMessage;
     private bool _isLoading = true;
 
@@ -40,6 +42,7 @@
             }
 
             _rulesHtml = result.Value.Content;
+            _metadata = result.Value.Metadata;
         }
         catch (Exception ex)
         {

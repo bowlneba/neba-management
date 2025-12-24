@@ -46,7 +46,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
                 "bylaws.html",
                 bylawsHtml,
                 "text/html",
-                It.Is<Dictionary<string, string>>(md => md.ContainsKey("syncedAt")),
+                It.Is<Dictionary<string, string>>(md => md.ContainsKey("LastUpdatedUtc")),
                 TestContext.Current.CancellationToken))
             .ReturnsAsync("mock/document/location");
 

@@ -63,6 +63,14 @@
             @Content
         </div>
 
+        <!-- Last Updated Footer (Main Document) -->
+        @if (!string.IsNullOrWhiteSpace(GetLastUpdatedText()))
+        {
+            <div class="neba-document-last-updated-footer">
+                @GetLastUpdatedText()
+            </div>
+        }
+
         <!-- Slide-over Panel for Internal Links -->
         <div class="neba-document-slideover" id="@SlideoverId" role="dialog" aria-modal="true" aria-labelledby="@SlideoverTitleId">
             <div class="neba-document-slideover-overlay" id="@SlideoverOverlayId"></div>
@@ -76,6 +84,7 @@
                     </button>
                 </div>
                 <div class="neba-document-slideover-content" id="@SlideoverContentId">
+                    <!-- Last Updated Header (Slide-out) - Will be injected via JS -->
                     <!-- Content will be loaded here dynamically -->
                 </div>
             </div>
@@ -143,6 +152,12 @@
     /// </summary>
     [Parameter]
     public string? DocumentId { get; set; }
+
+    /// <summary>
+    /// Metadata associated with the document (e.g., LastUpdatedUtc, LastUpdatedBy).
+    /// </summary>
+    [Parameter]
+    public IReadOnlyDictionary<string, string>? Metadata { get; set; }
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -237,5 +252,32 @@
         {
             await _module.DisposeAsync();
         }
+    }
+
+    private string? GetLastUpdatedText()
+    {
+        if (Metadata is null || !Metadata.TryGetValue("LastUpdatedUtc", out var lastUpdatedUtcStr))
+        {
+            return null;
+        }
+
+        if (!DateTime.TryParse(lastUpdatedUtcStr, out var lastUpdatedUtc))
+        {
+            return null;
+        }
+
+        // Convert UTC to local time
+        var localTime = lastUpdatedUtc.ToLocalTime();
+
+        // For now, authorization is always true
+        // TODO: Replace with actual authorization check when implemented
+        var isAuthorized = true;
+
+        if (isAuthorized && Metadata.TryGetValue("LastUpdatedBy", out var lastUpdatedBy))
+        {
+            return $"{localTime:yyyy-MM-dd hh:mmtt} by {lastUpdatedBy}";
+        }
+
+        return localTime.ToString("yyyy-MM-dd");
     }
 }
