@@ -44,7 +44,7 @@ public static class DocumentRefreshSseStreamHandler
         HybridCache cache,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        // Send initial state if available from cache
+        // Send the initial state if available from cache
         string cacheKey = $"{documentType}:refresh:current";
 
         DocumentRefreshJobState? state = await cache.GetOrCreateAsync(
@@ -59,7 +59,7 @@ public static class DocumentRefreshSseStreamHandler
             yield return initialEvent;
         }
 
-        // Stream updates from channel
+        // Stream updates from the channel
         await foreach (DocumentRefreshStatusEvent statusEvent in channelReader.ReadAllAsync(cancellationToken))
         {
             yield return statusEvent;
