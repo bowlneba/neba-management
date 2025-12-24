@@ -24,6 +24,7 @@
     "inheritdoc",
     "Instantiator",
     "LINQ",
+    "mmtt",
     "nameof",
     "Neba",
     "NETCOREAPP",

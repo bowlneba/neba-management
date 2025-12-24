@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
 using Neba.Application.Messaging;
 using Neba.Application.Storage;
@@ -9,11 +10,26 @@ namespace Neba.Website.Application.Tournaments.TournamentRules;
 /// <summary>
 /// Handles queries to retrieve tournament rules documentation as HTML.
 /// </summary>
-/// <param name="storageService">Service for retrieving documents from configured sources.</param>
-internal sealed class GetTournamentRulesQueryHandler(IStorageService storageService)
+/// <remarks>
+/// Uses a cache-aside pattern: attempts to retrieve from storage first (fast path),
+/// then falls back to source and triggers background sync (slow path).
+/// </remarks>
+/// <param name="storageService">Service for retrieving documents from storage.</param>
+/// <param name="documentsService">Service for retrieving documents from source.</param>
+/// <param name="tournamentRulesSyncJob">Background job for syncing documents to storage.</param>
+/// <param name="logger">Logger for diagnostic information.</param>
+internal sealed class GetTournamentRulesQueryHandler(
+    IStorageService storageService,
+    IDocumentsService documentsService,
+    TournamentRulesSyncBackgroundJob tournamentRulesSyncJob,
+    ILogger<GetTournamentRulesQueryHandler> logger)
         : IQueryHandler<GetTournamentRulesQuery, DocumentDto>
 {
     private readonly IStorageService _storageService = storageService;
+    private readonly IDocumentsService _documentsService = documentsService;
+    private readonly TournamentRulesSyncBackgroundJob _tournamentRulesSyncJob = tournamentRulesSyncJob;
+    private readonly ILogger<GetTournamentRulesQueryHandler> _logger = logger;
+
     /// <summary>
     /// Retrieves the tournament rules document as HTML.
     /// </summary>
@@ -24,11 +40,46 @@ internal sealed class GetTournamentRulesQueryHandler(IStorageService storageServ
         GetTournamentRulesQuery request,
         CancellationToken cancellationToken)
     {
-        DocumentDto document = await _storageService.GetContentWithMetadataAsync(
+        // Fast path: try to get from storage cache
+        if (await _storageService.ExistsAsync(
             TournamentRulesConstants.ContainerName,
+            TournamentRulesConstants.FileName,
+            cancellationToken))
+        {
+            return await _storageService.GetContentWithMetadataAsync(
+                TournamentRulesConstants.ContainerName,
+                TournamentRulesConstants.FileName,
+                cancellationToken);
+        }
+
+        // Slow path: get from source and trigger background sync
+        _logger.LogRetrievingFromSource();
+
+        string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
             TournamentRulesConstants.DocumentKey,
             cancellationToken);
 
-        return document;
+        // Trigger background job to cache the document (fire-and-forget)
+        try
+        {
+            _tournamentRulesSyncJob.TriggerImmediateSync();
+            _logger.LogTriggeredBackgroundSync();
+        }
+#pragma warning disable CA1031 // Catching all exceptions is intentional to ensure resilience - background job failure should not break the request
+        catch (Exception ex)
+#pragma warning restore CA1031
+        {
+            _logger.LogFailedToTriggerBackgroundSync(ex);
+        }
+
+        return new DocumentDto
+        {
+            Content = documentHtml,
+            Metadata = new Dictionary<string, string>
+            {
+                ["LastUpdatedUtc"] = DateTimeOffset.UtcNow.ToString("o"),
+                ["LastUpdatedBy"] = "System"
+            }
+        };
     }
 }

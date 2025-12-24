@@ -1,4 +1,5 @@
 @using Neba.Web.Server.Notifications
+@using System.Globalization
 @implements IAsyncDisposable
 
 <script src="./Components/NebaDocument.razor.js" type="module"></script>
@@ -261,7 +262,7 @@
             return null;
         }
 
-        if (!DateTime.TryParse(lastUpdatedUtcStr, out var lastUpdatedUtc))
+        if (!DateTime.TryParse(lastUpdatedUtcStr, CultureInfo.CurrentCulture, out var lastUpdatedUtc))
         {
             return null;
         }
@@ -270,7 +271,7 @@
         var localTime = lastUpdatedUtc.ToLocalTime();
 
         // For now, authorization is always true
-        // TODO: Replace with actual authorization check when implemented
+        // Replace with actual authorization check when implemented
         var isAuthorized = true;
 
         if (isAuthorized && Metadata.TryGetValue("LastUpdatedBy", out var lastUpdatedBy))
