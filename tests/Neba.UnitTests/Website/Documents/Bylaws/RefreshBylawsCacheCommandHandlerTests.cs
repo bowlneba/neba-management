@@ -1,3 +1,4 @@
+using ErrorOr;
 using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents.Bylaws;
@@ -25,7 +26,7 @@ public sealed class RefreshBylawsCacheCommandHandlerTests
         var command = new RefreshBylawsCacheCommand();
 
         // Act
-        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
+        ErrorOr<string> result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.IsError.ShouldBeFalse();
@@ -47,7 +48,7 @@ public sealed class RefreshBylawsCacheCommandHandlerTests
         var command = new RefreshBylawsCacheCommand();
 
         // Act
-        var result = await _handler.HandleAsync(command, cts.Token);
+        ErrorOr<string> result = await _handler.HandleAsync(command, cts.Token);
 
         // Assert
         result.IsError.ShouldBeFalse();

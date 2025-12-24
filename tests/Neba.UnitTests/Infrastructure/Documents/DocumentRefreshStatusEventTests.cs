@@ -10,7 +10,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void FromStatus_WithStatusOnly_ShouldCreateEventWithDefaults()
     {
         // Arrange
-        var status = DocumentRefreshStatus.Retrieving;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
         var result = DocumentRefreshStatusEvent.FromStatus(status);
@@ -25,7 +25,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void FromStatus_WithStatusAndErrorMessage_ShouldCreateEventWithErrorMessage()
     {
         // Arrange
-        var status = DocumentRefreshStatus.Failed;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Failed;
         const string errorMessage = "Document retrieval failed";
 
         // Act
@@ -97,7 +97,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void Timestamp_ShouldBeImmutable()
     {
         // Arrange
-        var originalTime = DateTimeOffset.UtcNow;
+        DateTimeOffset originalTime = DateTimeOffset.UtcNow;
         var statusEvent = DocumentRefreshStatusEvent.FromStatus(DocumentRefreshStatus.Completed);
 
         // Act - try to modify (this should not compile if Timestamp is properly readonly)
@@ -129,7 +129,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void Events_ShouldBeEquatable()
     {
         // Arrange
-        var status = DocumentRefreshStatus.Completed;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Completed;
         var event1 = DocumentRefreshStatusEvent.FromStatus(status);
         var event2 = DocumentRefreshStatusEvent.FromStatus(status);
 
@@ -144,7 +144,7 @@ public sealed class DocumentRefreshStatusEventTests
     public void Event_ShouldHandleNullErrorMessageGracefully()
     {
         // Arrange
-        var status = DocumentRefreshStatus.Completed;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Completed;
 
         // Act
         var result = DocumentRefreshStatusEvent.FromStatus(status, null);

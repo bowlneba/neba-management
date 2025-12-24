@@ -23,7 +23,7 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         string? hubGroupName = null;
-        var status = DocumentRefreshStatus.Retrieving;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status);
@@ -39,7 +39,7 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         string? hubGroupName = string.Empty;
-        var status = DocumentRefreshStatus.Retrieving;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status);
@@ -53,7 +53,7 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         string? hubGroupName = "   ";
-        var status = DocumentRefreshStatus.Retrieving;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status);
@@ -67,14 +67,14 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         const string hubGroupName = "bylaws-refresh";
-        var status = DocumentRefreshStatus.Retrieving;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Retrieving;
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status);
 
         // Assert - Verify the event was written to the channel
-        var channel = _channels.GetOrCreateChannel("bylaws");
-        var readResult = await channel.Reader.ReadAsync();
+        Channel<DocumentRefreshStatusEvent> channel = _channels.GetOrCreateChannel("bylaws");
+        DocumentRefreshStatusEvent readResult = await channel.Reader.ReadAsync();
         readResult.Status.ShouldBe(status.Name);
         readResult.ErrorMessage.ShouldBeNull();
         readResult.Timestamp.ShouldBeInRange(DateTimeOffset.UtcNow.AddSeconds(-1), DateTimeOffset.UtcNow.AddSeconds(1));
@@ -85,15 +85,15 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         const string hubGroupName = "tournament-rules-refresh";
-        var status = DocumentRefreshStatus.Failed;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Failed;
         const string errorMessage = "Document not found";
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status, errorMessage);
 
         // Assert
-        var channel = _channels.GetOrCreateChannel("tournament-rules");
-        var readResult = await channel.Reader.ReadAsync();
+        Channel<DocumentRefreshStatusEvent> channel = _channels.GetOrCreateChannel("tournament-rules");
+        DocumentRefreshStatusEvent readResult = await channel.Reader.ReadAsync();
         readResult.Status.ShouldBe(status.Name);
         readResult.ErrorMessage.ShouldBe(errorMessage);
     }
@@ -103,15 +103,15 @@ public sealed class SseDocumentRefreshNotifierTests
     {
         // Arrange
         const string hubGroupName = "bylaws-refresh";
-        var status = DocumentRefreshStatus.Uploading;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Uploading;
         using var cts = new CancellationTokenSource();
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status, null, cts.Token);
 
         // Assert - The operation should complete successfully with the cancellation token
-        var channel = _channels.GetOrCreateChannel("bylaws");
-        var readResult = await channel.Reader.ReadAsync();
+        Channel<DocumentRefreshStatusEvent> channel = _channels.GetOrCreateChannel("bylaws");
+        DocumentRefreshStatusEvent readResult = await channel.Reader.ReadAsync();
         readResult.Status.ShouldBe(status.Name);
     }
 
@@ -124,14 +124,14 @@ public sealed class SseDocumentRefreshNotifierTests
     public async Task ExtractDocumentType_WithVariousInputs_ShouldExtractCorrectly(string hubGroupName, string expectedDocumentType)
     {
         // Arrange
-        var status = DocumentRefreshStatus.Completed;
+        DocumentRefreshStatus status = DocumentRefreshStatus.Completed;
 
         // Act
         await _notifier.NotifyStatusAsync(hubGroupName, status);
 
         // Assert
-        var channel = _channels.GetOrCreateChannel(expectedDocumentType);
-        var readResult = await channel.Reader.ReadAsync();
+        Channel<DocumentRefreshStatusEvent> channel = _channels.GetOrCreateChannel(expectedDocumentType);
+        DocumentRefreshStatusEvent readResult = await channel.Reader.ReadAsync();
         readResult.Status.ShouldBe(status.Name);
     }
 }

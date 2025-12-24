@@ -310,7 +310,7 @@ public sealed class AlertServiceTests
         // Arrange
         var service = new AlertService();
         var changeCount = 0;
-        service.OnChange += (sender, args) => changeCount++;
+        service.OnChange += (_, _) => changeCount++;
 
         // Act
         service.ShowInfo("Test message");
@@ -326,7 +326,7 @@ public sealed class AlertServiceTests
         var service = new AlertService();
         service.ShowInfo("Test message");
         var changeCount = 0;
-        service.OnChange += (sender, args) => changeCount++;
+        service.OnChange += (_, _) => changeCount++;
 
         // Act
         service.Clear();
@@ -341,7 +341,7 @@ public sealed class AlertServiceTests
         // Arrange
         var service = new AlertService();
         var changeCount = 0;
-        service.OnChange += (sender, args) => changeCount++;
+        service.OnChange += (_, _) => changeCount++;
 
         // Act
         service.ShowInfo("Message 1");
@@ -359,7 +359,7 @@ public sealed class AlertServiceTests
         // Arrange
         var service = new AlertService();
         object? capturedSender = null;
-        service.OnChange += (sender, args) => capturedSender = sender;
+        service.OnChange += (sender, _) => capturedSender = sender;
 
         // Act
         service.ShowInfo("Test message");
@@ -376,9 +376,9 @@ public sealed class AlertServiceTests
         var count1 = 0;
         var count2 = 0;
         var count3 = 0;
-        service.OnChange += (sender, args) => count1++;
-        service.OnChange += (sender, args) => count2++;
-        service.OnChange += (sender, args) => count3++;
+        service.OnChange += (_, _) => count1++;
+        service.OnChange += (_, _) => count2++;
+        service.OnChange += (_, _) => count3++;
 
         // Act
         service.ShowInfo("Test message");
@@ -397,7 +397,7 @@ public sealed class AlertServiceTests
 
         // Act
         service.ShowInfo("First message");
-        var firstAlert = service.CurrentAlert;
+        AlertItem? firstAlert = service.CurrentAlert;
         service.ShowSuccess("Second message");
 
         // Assert

@@ -1,6 +1,9 @@
 using System.Net.Mime;
 using System.Text;
+using Azure;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Neba.Application.Documents;
 using Neba.Infrastructure.Storage;
 using Neba.Tests.Storage;
 using Shouldly;
@@ -31,8 +34,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     /// </summary>
     private BlobClient GetBlobClient(string containerName, string blobName)
     {
-        var blobServiceClient = GetBlobServiceClient();
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        BlobServiceClient blobServiceClient = GetBlobServiceClient();
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         return containerClient.GetBlobClient(blobName);
     }
 
@@ -52,8 +55,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         // Clean up all test containers before disposing
-        var blobServiceClient = GetBlobServiceClient();
-        await foreach (var container in blobServiceClient.GetBlobContainersAsync())
+        BlobServiceClient blobServiceClient = GetBlobServiceClient();
+        await foreach (BlobContainerItem container in blobServiceClient.GetBlobContainersAsync())
         {
             await blobServiceClient.DeleteBlobContainerAsync(container.Name);
         }
@@ -169,7 +172,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify container was created
-        var containerClient = GetBlobServiceClient().GetBlobContainerClient(newContainerName);
+        BlobContainerClient containerClient = GetBlobServiceClient().GetBlobContainerClient(newContainerName);
         bool containerExists = await containerClient.ExistsAsync();
         containerExists.ShouldBeTrue();
     }
@@ -269,7 +272,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string expectedContent = "Content with metadata for retrieval";
         const string contentType = MediaTypeNames.Text.Plain;
-        var expectedMetadata = CreateSimple();
+        Dictionary<string, string> expectedMetadata = CreateSimple();
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -280,7 +283,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Act
-        var result = await _storageService.GetContentWithMetadataAsync(
+        DocumentDto result = await _storageService.GetContentWithMetadataAsync(
             TestContainerName,
             TestBlobName,
             CancellationToken.None);
@@ -310,7 +313,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Act
-        var result = await _storageService.GetContentWithMetadataAsync(
+        DocumentDto result = await _storageService.GetContentWithMetadataAsync(
             TestContainerName,
             TestBlobName,
             CancellationToken.None);
@@ -328,7 +331,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Test content";
         const string contentType = MediaTypeNames.Text.Plain;
-        var metadata = CreateDocument();
+        Dictionary<string, string> metadata = CreateDocument();
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -339,7 +342,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Act
-        var result = await _storageService.GetContentWithMetadataAsync(
+        DocumentDto result = await _storageService.GetContentWithMetadataAsync(
             TestContainerName,
             TestBlobName,
             CancellationToken.None);
@@ -354,7 +357,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Content with complex metadata";
         const string contentType = MediaTypeNames.Text.Plain;
-        var metadata = CreateWithSpecialCharacters();
+        Dictionary<string, string> metadata = CreateWithSpecialCharacters();
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -365,7 +368,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Act
-        var result = await _storageService.GetContentWithMetadataAsync(
+        DocumentDto result = await _storageService.GetContentWithMetadataAsync(
             TestContainerName,
             TestBlobName,
             CancellationToken.None);
@@ -406,7 +409,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Content for metadata update test";
         const string contentType = MediaTypeNames.Text.Plain;
-        var originalMetadata = CreateStatus("draft", "1.0");
+        Dictionary<string, string> originalMetadata = CreateStatus("draft", "1.0");
 
         await _storageService.UploadAsync(
             TestContainerName,
@@ -417,7 +420,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Update blob with new metadata
-        var updatedMetadata = CreateWithReviewer();
+        Dictionary<string, string> updatedMetadata = CreateWithReviewer();
         await _storageService.UploadAsync(
             TestContainerName,
             TestBlobName,
@@ -427,7 +430,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Act
-        var result = await _storageService.GetContentWithMetadataAsync(
+        DocumentDto result = await _storageService.GetContentWithMetadataAsync(
             TestContainerName,
             TestBlobName,
             CancellationToken.None);
@@ -715,7 +718,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Content with metadata";
         const string contentType = MediaTypeNames.Text.Plain;
-        var metadata = CreateSimple();
+        Dictionary<string, string> metadata = CreateSimple();
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -730,8 +733,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify metadata was stored by retrieving blob properties
-        var blobClient = GetBlobClient(TestContainerName, TestBlobName);
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, TestBlobName);
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.ShouldContainKeyAndValue("author", "TestUser");
         properties.Value.Metadata.ShouldContainKeyAndValue("version", "1.0");
@@ -745,7 +748,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string content = "Stream content with metadata";
         const string contentType = "application/octet-stream";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        var metadata = CreateDocument();
+        Dictionary<string, string> metadata = CreateDocument();
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -760,8 +763,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify metadata was stored
-        var blobClient = GetBlobClient(TestContainerName, TestBlobName);
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, TestBlobName);
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.ShouldContainKeyAndValue("documentType", "invoice");
         properties.Value.Metadata.ShouldContainKeyAndValue("year", "2025");
@@ -812,8 +815,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify blob was created with no metadata
-        var blobClient = GetBlobClient(TestContainerName, TestBlobName);
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, TestBlobName);
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.Count.ShouldBe(0);
     }
@@ -825,8 +828,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string content = "Content for metadata replacement test";
         const string contentType = MediaTypeNames.Text.Plain;
 
-        var originalMetadata = CreateStatus("draft", "1.0");
-        var updatedMetadata = CreateWithReviewer();
+        Dictionary<string, string> originalMetadata = CreateStatus("draft", "1.0");
+        Dictionary<string, string> updatedMetadata = CreateWithReviewer();
 
         // Upload with original metadata
         await _storageService.UploadAsync(
@@ -847,8 +850,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             CancellationToken.None);
 
         // Assert - Verify metadata was replaced
-        var blobClient = GetBlobClient(TestContainerName, TestBlobName);
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, TestBlobName);
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.ShouldContainKeyAndValue("status", "published");
         properties.Value.Metadata.ShouldContainKeyAndValue("version", "2.0");
@@ -862,7 +865,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Content with special metadata";
         const string contentType = MediaTypeNames.Text.Plain;
-        var metadata = CreateWithSpecialCharacters();
+        Dictionary<string, string> metadata = CreateWithSpecialCharacters();
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -877,8 +880,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify metadata values were stored correctly
-        var blobClient = GetBlobClient(TestContainerName, TestBlobName);
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, TestBlobName);
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.ShouldContainKeyAndValue("description", "Test with spaces and special chars: @#$%");
         properties.Value.Metadata.ShouldContainKeyAndValue("path", "/documents/2025/invoices");
@@ -894,20 +897,20 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string content = "Test content";
         const string contentType = MediaTypeNames.Text.Plain;
 
-        var metadata1 = CreateCategory("A");
-        var metadata2 = CreateCategory("B");
+        Dictionary<string, string> metadata1 = CreateCategory("A");
+        Dictionary<string, string> metadata2 = CreateCategory("B");
 
         // Act
         await _storageService.UploadAsync(TestContainerName, blob1Name, content, contentType, metadata1, CancellationToken.None);
         await _storageService.UploadAsync(TestContainerName, blob2Name, content, contentType, metadata2, CancellationToken.None);
 
         // Assert
-        var blob1Client = GetBlobClient(TestContainerName, blob1Name);
-        var properties1 = await blob1Client.GetPropertiesAsync();
+        BlobClient blob1Client = GetBlobClient(TestContainerName, blob1Name);
+        Response<BlobProperties> properties1 = await blob1Client.GetPropertiesAsync();
         properties1.Value.Metadata.ShouldContainKeyAndValue("category", "A");
 
-        var blob2Client = GetBlobClient(TestContainerName, blob2Name);
-        var properties2 = await blob2Client.GetPropertiesAsync();
+        BlobClient blob2Client = GetBlobClient(TestContainerName, blob2Name);
+        Response<BlobProperties> properties2 = await blob2Client.GetPropertiesAsync();
         properties2.Value.Metadata.ShouldContainKeyAndValue("category", "B");
     }
 
@@ -1011,7 +1014,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 #pragma warning restore CA5394
         using var stream = new MemoryStream(content);
         const string contentType = "video/mp4";
-        var metadata = CreateDocument();
+        Dictionary<string, string> metadata = CreateDocument();
 
         // Act
         string blobUri = await _storageService.LargeUploadAsync(
@@ -1026,8 +1029,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify metadata was stored
-        var blobClient = GetBlobClient(TestContainerName, "video-with-metadata.mp4");
-        var properties = await blobClient.GetPropertiesAsync();
+        BlobClient blobClient = GetBlobClient(TestContainerName, "video-with-metadata.mp4");
+        Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
 
         properties.Value.Metadata.ShouldContainKeyAndValue("documentType", "invoice");
         properties.Value.Metadata.ShouldContainKeyAndValue("year", "2025");
@@ -1057,7 +1060,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         blobUri.ShouldNotBeNullOrEmpty();
 
         // Verify container was created
-        var containerClient = GetBlobServiceClient().GetBlobContainerClient(newContainerName);
+        BlobContainerClient containerClient = GetBlobServiceClient().GetBlobContainerClient(newContainerName);
         bool containerExists = await containerClient.ExistsAsync();
         containerExists.ShouldBeTrue();
     }
@@ -1186,7 +1189,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const int fiveMegabytes = 5 * 1024 * 1024;
         byte[] content = new byte[fiveMegabytes];
 
-        var testCases = new[]
+        (string, string)[] testCases = new[]
         {
             ("video.mp4", "video/mp4"),
             ("document.pdf", "application/pdf"),
@@ -1194,7 +1197,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             ("data.json", "application/json")
         };
 
-        foreach (var (blobName, contentType) in testCases)
+        foreach ((string? blobName, string? contentType) in testCases)
         {
             using var stream = new MemoryStream(content);
 
@@ -1208,8 +1211,8 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
                 CancellationToken.None);
 
             // Assert
-            var blobClient = GetBlobClient(TestContainerName, blobName);
-            var properties = await blobClient.GetPropertiesAsync();
+            BlobClient blobClient = GetBlobClient(TestContainerName, blobName);
+            Response<BlobProperties> properties = await blobClient.GetPropertiesAsync();
             properties.Value.ContentType.ShouldBe(contentType);
         }
     }

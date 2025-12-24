@@ -16,35 +16,22 @@ namespace Neba.Application.Documents;
 /// and uploads it using <see cref="IStorageService"/>. Logging is performed
 /// at start and completion of the sync operation.
 /// </remarks>
-public sealed class SyncHtmlDocumentToStorageJobHandler
-    : IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>
+/// <remarks>
+/// Initializes a new instance of the <see cref="SyncHtmlDocumentToStorageJobHandler"/> class.
+/// </remarks>
+/// <param name="documentsService">Service for retrieving documents as HTML.</param>
+/// <param name="storageService">Service for uploading content to storage containers.</param>
+/// <param name="cache">Distributed cache for temporary storage.</param>
+/// <param name="notifier">Notifier for document refresh status updates.</param>
+/// <param name="logger">Logger used to record sync progress and results.</param>
+public sealed class SyncHtmlDocumentToStorageJobHandler(
+    IDocumentsService documentsService,
+    IStorageService storageService,
+    HybridCache cache,
+    IDocumentRefreshNotifier notifier,
+    ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
+        : IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>
 {
-    private readonly IDocumentsService _documentsService;
-    private readonly IStorageService _storageService;
-    private readonly HybridCache _cache;
-    private readonly IDocumentRefreshNotifier _notifier;
-    private readonly ILogger<SyncHtmlDocumentToStorageJobHandler> _logger;
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SyncHtmlDocumentToStorageJobHandler"/> class.
-    /// </summary>
-    /// <param name="documentsService">Service for retrieving documents as HTML.</param>
-    /// <param name="storageService">Service for uploading content to storage containers.</param>
-    /// <param name="cache">Distributed cache for temporary storage.</param>
-    /// <param name="notifier">Notifier for document refresh status updates.</param>
-    /// <param name="logger">Logger used to record sync progress and results.</param>
-    public SyncHtmlDocumentToStorageJobHandler(
-        IDocumentsService documentsService,
-        IStorageService storageService,
-        HybridCache cache,
-        IDocumentRefreshNotifier notifier,
-        ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
-    {
-        _documentsService = documentsService;
-        _storageService = storageService;
-        _cache = cache;
-        _notifier = notifier;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Executes the sync job: retrieves the document HTML and uploads it to the
@@ -74,11 +61,11 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
 
         try
         {
-            _logger.LogStartingHtmlDocumentSync();
+            logger.LogStartingHtmlDocumentSync();
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Retrieving, cancellationToken: cancellationToken);
 
-            string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
+            string documentHtml = await documentsService.GetDocumentAsHtmlAsync(
                 job.DocumentKey,
                 cancellationToken);
 
@@ -87,27 +74,27 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
             job.Metadata["LastUpdatedUtc"] = DateTimeOffset.UtcNow.ToString("o");
             job.Metadata["LastUpdatedBy"] = job.TriggeredBy;
 
-            string name = await _storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
+            string name = await storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
 
-            _logger.LogCompletedHtmlDocumentSync(name);
+            logger.LogCompletedHtmlDocumentSync(name);
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Completed, cancellationToken: cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(job.DocumentCacheKey))
             {
-                await _cache.RemoveAsync(job.DocumentCacheKey, cancellationToken);
+                await cache.RemoveAsync(job.DocumentCacheKey, cancellationToken);
             }
 
             // Clear job state after a short delay (allows late joiners to see final status)
             if (!string.IsNullOrWhiteSpace(job.CacheKey))
             {
                 await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-                await _cache.RemoveAsync(job.CacheKey, cancellationToken);
+                await cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogErrorDuringHtmlDocumentSync(ex);
+            logger.LogErrorDuringHtmlDocumentSync(ex);
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Failed, ex.Message, cancellationToken);
 
@@ -115,7 +102,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
             if (!string.IsNullOrWhiteSpace(job.CacheKey))
             {
                 await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-                await _cache.RemoveAsync(job.CacheKey, cancellationToken);
+                await cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
 
             throw;
@@ -130,7 +117,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
     {
         if (!string.IsNullOrWhiteSpace(job.CacheKey))
         {
-            DocumentRefreshJobState? existingState = await _cache.GetOrCreateAsync(
+            DocumentRefreshJobState? existingState = await cache.GetOrCreateAsync(
                 job.CacheKey,
                 _ => ValueTask.FromResult<DocumentRefreshJobState?>(null),
                 cancellationToken: CancellationToken.None);
@@ -144,12 +131,12 @@ public sealed class SyncHtmlDocumentToStorageJobHandler
                 ErrorMessage = message
             };
 
-            await _cache.SetAsync(job.CacheKey, state, new HybridCacheEntryOptions
+            await cache.SetAsync(job.CacheKey, state, new HybridCacheEntryOptions
             {
                 Expiration = TimeSpan.FromMinutes(10)
             }, cancellationToken: CancellationToken.None);
         }
 
-        await _notifier.NotifyStatusAsync(job.HubGroupName, status, message, cancellationToken);
+        await notifier.NotifyStatusAsync(job.HubGroupName, status, message, cancellationToken);
     }
 }

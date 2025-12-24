@@ -52,7 +52,7 @@ internal sealed class NotificationService : INotificationService, IDisposable
     /// <inheritdoc />
     public void ValidationFailure(string message, NotifyBehavior? overrideBehavior = null)
     {
-        var behavior = overrideBehavior ?? NotifyBehavior.AlertAndToast;
+        NotifyBehavior behavior = overrideBehavior ?? NotifyBehavior.AlertAndToast;
 
         var payload = new NotificationPayload(
             NotifySeverity.Error,

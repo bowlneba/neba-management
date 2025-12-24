@@ -9,7 +9,6 @@ namespace Neba.IntegrationTests.Website.Documents;
 public sealed class DocumentRefreshIntegrationTests(ITestOutputHelper output)
     : ApiTestsBase
 {
-    private readonly ITestOutputHelper _output = output;
     [Fact]
     public async Task RefreshBylaws_ShouldReturnJobId()
     {
@@ -89,12 +88,12 @@ public sealed class DocumentRefreshIntegrationTests(ITestOutputHelper output)
         catch (IOException ex)
         {
             // Expected when closing SSE stream - the HTTP client aborts the connection when disposing
-            _output.WriteLine($"[Expected] IOException during SSE stream cleanup: {ex.Message}");
+            output.WriteLine($"[Expected] IOException during SSE stream cleanup: {ex.Message}");
         }
         catch (HttpRequestException ex) when (ex.InnerException is IOException)
         {
             // Expected when closing SSE stream - inner IOException from HTTP layer
-            _output.WriteLine($"[Expected] HttpRequestException with IOException during SSE cleanup: {ex.Message}");
+            output.WriteLine($"[Expected] HttpRequestException with IOException during SSE cleanup: {ex.Message}");
         }
     }
 
@@ -137,12 +136,12 @@ public sealed class DocumentRefreshIntegrationTests(ITestOutputHelper output)
         catch (IOException ex)
         {
             // Expected when closing SSE stream - the HTTP client aborts the connection when disposing
-            _output.WriteLine($"[Expected] IOException during SSE stream cleanup: {ex.Message}");
+            output.WriteLine($"[Expected] IOException during SSE stream cleanup: {ex.Message}");
         }
         catch (HttpRequestException ex) when (ex.InnerException is IOException)
         {
             // Expected when closing SSE stream - inner IOException from HTTP layer
-            _output.WriteLine($"[Expected] HttpRequestException with IOException during SSE cleanup: {ex.Message}");
+            output.WriteLine($"[Expected] HttpRequestException with IOException during SSE cleanup: {ex.Message}");
         }
     }
 

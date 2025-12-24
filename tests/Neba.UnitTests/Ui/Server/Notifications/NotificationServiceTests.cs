@@ -385,7 +385,7 @@ public sealed class NotificationServiceTests
         // Arrange
         using var service = new NotificationService();
         var receivedCount = 0;
-        var subscription = service.Notifications.Subscribe(_ => receivedCount++);
+        IDisposable subscription = service.Notifications.Subscribe(_ => receivedCount++);
 
         // Act
         service.Info("First");

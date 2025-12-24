@@ -11,7 +11,6 @@ internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDoc
 {
     private readonly GoogleDocsCredentials _credentials = settings.Credentials;
     private readonly IReadOnlyCollection<GoogleDocument> _documents = settings.Documents;
-    private readonly DocumentMapper _documentMapper = documentMapper;
 
     public async Task<string> GetDocumentAsHtmlAsync(string documentName, CancellationToken cancellationToken)
     {
@@ -35,6 +34,6 @@ internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDoc
         DocumentsResource.GetRequest request = service.Documents.Get(documentId);
         Document document = await request.ExecuteAsync(cancellationToken);
 
-        return _documentMapper.ConvertToHtml(document);
+        return documentMapper.ConvertToHtml(document);
     }
 }

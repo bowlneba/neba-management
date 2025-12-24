@@ -25,10 +25,6 @@ internal sealed class GetTournamentRulesQueryHandler(
     ILogger<GetTournamentRulesQueryHandler> logger)
         : IQueryHandler<GetTournamentRulesQuery, DocumentDto>
 {
-    private readonly IStorageService _storageService = storageService;
-    private readonly IDocumentsService _documentsService = documentsService;
-    private readonly ITournamentRulesSyncBackgroundJob _tournamentRulesSyncJob = tournamentRulesSyncJob;
-    private readonly ILogger<GetTournamentRulesQueryHandler> _logger = logger;
 
     /// <summary>
     /// Retrieves the tournament rules document as HTML.
@@ -41,35 +37,35 @@ internal sealed class GetTournamentRulesQueryHandler(
         CancellationToken cancellationToken)
     {
         // Fast path: try to get from storage cache
-        if (await _storageService.ExistsAsync(
+        if (await storageService.ExistsAsync(
             TournamentRulesConstants.ContainerName,
             TournamentRulesConstants.FileName,
             cancellationToken))
         {
-            return await _storageService.GetContentWithMetadataAsync(
+            return await storageService.GetContentWithMetadataAsync(
                 TournamentRulesConstants.ContainerName,
                 TournamentRulesConstants.FileName,
                 cancellationToken);
         }
 
         // Slow path: get from source and trigger background sync
-        _logger.LogRetrievingFromSource();
+        logger.LogRetrievingFromSource();
 
-        string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
+        string documentHtml = await documentsService.GetDocumentAsHtmlAsync(
             TournamentRulesConstants.DocumentKey,
             cancellationToken);
 
         // Trigger background job to cache the document (fire-and-forget)
         try
         {
-            _tournamentRulesSyncJob.TriggerImmediateSync();
-            _logger.LogTriggeredBackgroundSync();
+            tournamentRulesSyncJob.TriggerImmediateSync();
+            logger.LogTriggeredBackgroundSync();
         }
 #pragma warning disable CA1031 // Catching all exceptions is intentional to ensure resilience - background job failure should not break the request
         catch (Exception ex)
 #pragma warning restore CA1031
         {
-            _logger.LogFailedToTriggerBackgroundSync(ex);
+            logger.LogFailedToTriggerBackgroundSync(ex);
         }
 
         return new DocumentDto

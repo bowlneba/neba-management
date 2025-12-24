@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Neba.Contracts;
 using Neba.Tests;
 using Neba.Web.Server.Components;
 using Neba.Web.Server.Services;
@@ -24,7 +25,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldRenderPageTitle()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<p>Rules content</p>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Rules content</p>");
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -42,7 +43,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldRenderPageDescription()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<p>Rules content</p>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Rules content</p>");
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -59,7 +60,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldCallGetTournamentRulesAsyncOnInitialization()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<h1>Tournament Rules</h1>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<h1>Tournament Rules</h1>");
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -77,7 +78,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     {
         // Arrange
         string rulesHtml = "<h1>Rule 1</h1><p>Description of rule 1</p>";
-        using var response = ApiResponseFactory.CreateDocumentResponse(rulesHtml);
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse(rulesHtml);
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -97,7 +98,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldDisplayErrorWhenApiCallFails()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<p>Error</p>", System.Net.HttpStatusCode.InternalServerError);
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Error</p>", System.Net.HttpStatusCode.InternalServerError);
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -137,7 +138,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldConfigureNebaDocumentWithCorrectParameters()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<h1>Rules</h1>");
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<h1>Rules</h1>");
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);
@@ -160,7 +161,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
     public async Task ShouldNotSetContentWhenApiReturnsNotFoundError()
     {
         // Arrange
-        using var response = ApiResponseFactory.CreateDocumentResponse("<p>Not found</p>", System.Net.HttpStatusCode.NotFound);
+        using TestApiResponse<DocumentResponse<string>> response = ApiResponseFactory.CreateDocumentResponse("<p>Not found</p>", System.Net.HttpStatusCode.NotFound);
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
             .ReturnsAsync(response.ApiResponse);

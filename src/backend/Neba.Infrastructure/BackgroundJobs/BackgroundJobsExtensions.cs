@@ -1,7 +1,6 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.BackgroundJobs;
@@ -88,7 +87,7 @@ internal static class BackgroundJobsExtensions
     {
         public WebApplication UseBackgroundJobsDashboard()
         {
-            // Only register dashboard if Hangfire is configured
+            // Only register the dashboard if Hangfire is configured
             // (allows tests to remove Hangfire services without breaking middleware)
             if (app.Services.GetService(typeof(JobStorage)) is not null)
             {
@@ -98,7 +97,7 @@ internal static class BackgroundJobsExtensions
                     DashboardTitle = "Background Jobs - API",
                     StatsPollingInterval = 5000,
                     DisplayStorageConnectionString = false,
-                    IsReadOnlyFunc = context => false
+                    IsReadOnlyFunc = _ => false
                 });
             }
 

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 
@@ -55,9 +56,9 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
         seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name.ToDisplayName());
 
-        foreach (var dto in seedBowlerResult)
+        foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
-            var expectedTitle = seedBowler.Titles.First(t =>
+            Title expectedTitle = seedBowler.Titles.First(t =>
                 t.Month == dto.TournamentMonth &&
                 t.Year == dto.TournamentYear &&
                 t.TournamentType == dto.TournamentType);
@@ -102,7 +103,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         // Assert
         result.Count.ShouldBe(expectedSummaries.Count);
 
-        foreach (var dto in result)
+        foreach (BowlerTitleSummaryDto dto in result)
         {
             var expectedSummary = expectedSummaries.First(s => s.BowlerId == dto.BowlerId);
 

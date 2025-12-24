@@ -76,8 +76,8 @@ public sealed class DocumentRefreshChannelsTests
 
         // Act & Assert
         // Should be able to write from multiple tasks
-        var writeTask1 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status1")));
-        var writeTask2 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status2")));
+        Task<bool> writeTask1 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status1")));
+        Task<bool> writeTask2 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status2")));
 
         var writeResults = await Task.WhenAll(writeTask1, writeTask2);
 
@@ -85,21 +85,21 @@ public sealed class DocumentRefreshChannelsTests
         writeResults[1].ShouldBeTrue();
 
         // Should be able to read from multiple readers
-        var readTask1 = Task.Run(async () =>
+        Task<DocumentRefreshStatusEvent?> readTask1 = Task.Run(async () =>
         {
             await channel.Reader.WaitToReadAsync();
-            channel.Reader.TryRead(out var item);
+            channel.Reader.TryRead(out DocumentRefreshStatusEvent? item);
             return item;
         });
 
-        var readTask2 = Task.Run(async () =>
+        Task<DocumentRefreshStatusEvent?> readTask2 = Task.Run(async () =>
         {
             await channel.Reader.WaitToReadAsync();
-            channel.Reader.TryRead(out var item);
+            channel.Reader.TryRead(out DocumentRefreshStatusEvent? item);
             return item;
         });
 
-        var readResults = await Task.WhenAll(readTask1, readTask2);
+        DocumentRefreshStatusEvent?[] readResults = await Task.WhenAll(readTask1, readTask2);
 
         readResults[0].ShouldNotBeNull();
         readResults[1].ShouldNotBeNull();

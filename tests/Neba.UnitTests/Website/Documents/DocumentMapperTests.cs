@@ -1,3 +1,4 @@
+using Google.Apis.Docs.v1.Data;
 using Neba.Infrastructure.Documents;
 using Neba.Tests.Website;
 
@@ -27,7 +28,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph("Hello world"));
 
         // Act
@@ -44,7 +45,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Heading("Tournament Rules", "HEADING_2"));
 
         // Act
@@ -68,7 +69,7 @@ public sealed class DocumentMapperTests
             Underline = true
         };
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph(("Hi", boldItalicUnderline)));
 
         // Act
@@ -85,7 +86,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph(("NEBA", GoogleDocsDocumentFactory.LinkToExternal(new Uri("https://example.com", UriKind.Absolute)))));
 
         // Act
@@ -103,7 +104,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("bylaws", docId, "/bylaws"));
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph((
                 "Bylaws",
                 GoogleDocsDocumentFactory.LinkToExternal(new Uri($"https://docs.google.com/document/d/{docId}/edit", UriKind.Absolute)))));
@@ -122,7 +123,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph(("Jump", GoogleDocsDocumentFactory.LinkToBookmark("bookmark-1"))));
 
         // Act
@@ -139,7 +140,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Heading("Section 1", "HEADING_3"),
             GoogleDocsDocumentFactory.Paragraph(("Section 1", GoogleDocsDocumentFactory.LinkToHeading("ignored-by-mapper"))));
 
@@ -161,7 +162,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Table(
                 tableData1,
                 tableData2));
@@ -181,12 +182,12 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-1";
-        var lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "One"),
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Two"));
@@ -206,12 +207,12 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-ordered";
-        var lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 3));
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 3));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Third"),
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Fourth"));
@@ -231,12 +232,12 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-reset";
-        var lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 1));
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "DECIMAL", 1));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "One"),
             GoogleDocsDocumentFactory.Paragraph("Break"),
@@ -264,12 +265,12 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-tabs";
-        var lists = GoogleDocsDocumentFactory.Lists((listId, 1, "BULLET", null));
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 1, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 1, "Col1\tCol2"),
             GoogleDocsDocumentFactory.BulletParagraph(listId, 1, "A\tB"),
@@ -293,14 +294,14 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-nested";
-        var lists = GoogleDocsDocumentFactory.Lists(
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists(
             (listId, 0, "BULLET", null),
             (listId, 1, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Parent"),
             GoogleDocsDocumentFactory.BulletParagraph(listId, 1, "Child"),
@@ -328,7 +329,7 @@ public sealed class DocumentMapperTests
         var mapper = new DocumentMapper(settings);
 
         // Unicode characters: ' (U+2018), ' (U+2019), " (U+201C), " (U+201D)
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph("It\u2019s the year\u2019s best \u201Cproduct\u201D with \u2018quotes\u2019."));
 
         // Act
@@ -346,7 +347,7 @@ public sealed class DocumentMapperTests
         var mapper = new DocumentMapper(settings);
 
         // Unicode characters: – (U+2013 en dash), — (U+2014 em dash), … (U+2026 ellipsis)
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph("2020\u20132024 \u2014 the years passed\u2026"));
 
         // Act
@@ -363,7 +364,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph("<script>alert(\u2019XSS\u2019)</script> & other < > characters"));
 
         // Act
@@ -380,7 +381,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Heading("Player\u2019s Guide", "HEADING_2"));
 
         // Act
@@ -395,12 +396,12 @@ public sealed class DocumentMapperTests
     {
         // Arrange
         string listId = "list-unicode";
-        var lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
+        IReadOnlyDictionary<string, List> lists = GoogleDocsDocumentFactory.Lists((listId, 0, "BULLET", null));
 
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.CreateWithLists(
+        Document document = GoogleDocsDocumentFactory.CreateWithLists(
             lists,
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "First item\u2019s content"),
             GoogleDocsDocumentFactory.BulletParagraph(listId, 0, "Second item \u2014 with dash"));
@@ -420,7 +421,7 @@ public sealed class DocumentMapperTests
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var mapper = new DocumentMapper(settings);
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph((
                 "Player\u2019s Guide",
                 GoogleDocsDocumentFactory.LinkToExternal(new Uri("https://example.com/guide", UriKind.Absolute)))));
@@ -441,7 +442,7 @@ public sealed class DocumentMapperTests
 
         var boldStyle = new Google.Apis.Docs.v1.Data.TextStyle { Bold = true };
 
-        var document = GoogleDocsDocumentFactory.Create(
+        Document document = GoogleDocsDocumentFactory.Create(
             GoogleDocsDocumentFactory.Paragraph(("This year\u2019s best", boldStyle)));
 
         // Act

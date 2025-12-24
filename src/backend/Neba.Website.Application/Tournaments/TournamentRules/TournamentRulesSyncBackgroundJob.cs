@@ -7,8 +7,6 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
 {
     public const string RecurringJobId = "sync-tournament-rules-to-storage";
 
-    private readonly IBackgroundJobScheduler _scheduler = scheduler;
-
     public void RegisterTournamentRulesSyncJob()
     {
         var job = new SyncHtmlDocumentToStorageJob
@@ -25,7 +23,7 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
         // Schedule to run monthly at 7:00 AM UTC on the 1st day of each month
         const string cronExpression = "0 7 1 * *";
 
-        _scheduler.AddOrUpdateRecurring(RecurringJobId, job, cronExpression);
+        scheduler.AddOrUpdateRecurring(RecurringJobId, job, cronExpression);
     }
 
     public string TriggerImmediateSync()
@@ -41,6 +39,6 @@ internal sealed class TournamentRulesSyncBackgroundJob(IBackgroundJobScheduler s
             TriggeredBy = "user"
         };
 
-        return _scheduler.Enqueue(job);
+        return scheduler.Enqueue(job);
     }
 }

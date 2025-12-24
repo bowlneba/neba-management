@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
 
@@ -7,18 +8,10 @@ namespace Neba.Infrastructure.Documents;
 /// SSE-based implementation of <see cref="IDocumentRefreshNotifier"/>.
 /// Writes status updates to document-specific channels for streaming to connected clients.
 /// </summary>
-internal sealed class SseDocumentRefreshNotifier : IDocumentRefreshNotifier
+internal sealed class SseDocumentRefreshNotifier(
+    DocumentRefreshChannels channels,
+    ILogger<SseDocumentRefreshNotifier> logger) : IDocumentRefreshNotifier
 {
-    private readonly DocumentRefreshChannels _channels;
-    private readonly ILogger<SseDocumentRefreshNotifier> _logger;
-
-    public SseDocumentRefreshNotifier(
-        DocumentRefreshChannels channels,
-        ILogger<SseDocumentRefreshNotifier> logger)
-    {
-        _channels = channels;
-        _logger = logger;
-    }
 
     /// <inheritdoc/>
     public async Task NotifyStatusAsync(
@@ -37,10 +30,10 @@ internal sealed class SseDocumentRefreshNotifier : IDocumentRefreshNotifier
 
         var statusEvent = DocumentRefreshStatusEvent.FromStatus(status, errorMessage);
 
-        var channel = _channels.GetOrCreateChannel(documentType);
+        Channel<DocumentRefreshStatusEvent> channel = channels.GetOrCreateChannel(documentType);
         await channel.Writer.WriteAsync(statusEvent, cancellationToken);
 
-        _logger.LogNotifiedChannel(documentType, status.Name);
+        logger.LogNotifiedChannel(documentType, status.Name);
     }
 
     /// <summary>

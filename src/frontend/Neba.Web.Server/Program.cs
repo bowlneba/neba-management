@@ -85,7 +85,7 @@ app.UseBackgroundJobsDashboard();
 // API endpoints for slide-over panel to fetch document content
 app.MapGet("/api/documents/bylaws", async (NebaApiService apiService) =>
 {
-    var result = await apiService.GetBylawsAsync();
+    ErrorOr<DocumentViewModel<MarkupString>> result = await apiService.GetBylawsAsync();
     return result.IsError
         ? Results.Problem(detail: result.FirstError.Description, statusCode: 500)
         : Results.Ok(new

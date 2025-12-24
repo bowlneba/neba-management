@@ -29,7 +29,7 @@ public static class BowlerTitleSummaryDtoFactory
         int? seed = null)
     {
         Faker<BowlerTitleSummaryDto> faker = new Bogus.Faker<BowlerTitleSummaryDto>()
-            .RuleFor(b => b.BowlerId, f => BowlerId.New())
+            .RuleFor(b => b.BowlerId, _ => BowlerId.New())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
             .RuleFor(b => b.TitleCount, f => f.Random.Int(0, 20));
 

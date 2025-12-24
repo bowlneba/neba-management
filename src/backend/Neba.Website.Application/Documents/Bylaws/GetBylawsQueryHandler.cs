@@ -23,10 +23,6 @@ internal sealed class GetBylawsQueryHandler(
     ILogger<GetBylawsQueryHandler> logger)
         : IQueryHandler<GetBylawsQuery, DocumentDto>
 {
-    private readonly IStorageService _storageService = storageService;
-    private readonly IDocumentsService _documentsService = documentsService;
-    private readonly IBylawsSyncBackgroundJob _bylawsSyncJob = bylawsSyncJob;
-    private readonly ILogger<GetBylawsQueryHandler> _logger = logger;
 
     /// <summary>
     /// Retrieves the organization bylaws document as HTML.
@@ -39,32 +35,32 @@ internal sealed class GetBylawsQueryHandler(
         CancellationToken cancellationToken)
     {
         // Fast path: try to get from storage cache
-        if (await _storageService.ExistsAsync(BylawsConstants.ContainerName, BylawsConstants.FileName, cancellationToken))
+        if (await storageService.ExistsAsync(BylawsConstants.ContainerName, BylawsConstants.FileName, cancellationToken))
         {
-            return await _storageService.GetContentWithMetadataAsync(
+            return await storageService.GetContentWithMetadataAsync(
                 BylawsConstants.ContainerName,
                 BylawsConstants.FileName,
                 cancellationToken);
         }
 
         // Slow path: get from source and trigger background sync
-        _logger.LogRetrievingFromSource();
+        logger.LogRetrievingFromSource();
 
-        string documentHtml = await _documentsService.GetDocumentAsHtmlAsync(
+        string documentHtml = await documentsService.GetDocumentAsHtmlAsync(
             BylawsConstants.DocumentKey,
             cancellationToken);
 
         // Trigger background job to cache the document (fire-and-forget)
         try
         {
-            _bylawsSyncJob.TriggerImmediateSync();
-            _logger.LogTriggeredBackgroundSync();
+            bylawsSyncJob.TriggerImmediateSync();
+            logger.LogTriggeredBackgroundSync();
         }
 #pragma warning disable CA1031 // Catching all exceptions is intentional to ensure resilience - background job failure should not break the request
         catch (Exception ex)
 #pragma warning restore CA1031
         {
-            _logger.LogFailedToTriggerBackgroundSync(ex);
+            logger.LogFailedToTriggerBackgroundSync(ex);
         }
 
         return new DocumentDto

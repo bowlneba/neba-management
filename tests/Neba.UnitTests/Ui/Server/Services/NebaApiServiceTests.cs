@@ -46,7 +46,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -84,7 +84,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -108,7 +108,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -230,7 +230,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<BowlerOfTheYearResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerOfTheYearAwardsAsync())
@@ -266,7 +266,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -292,7 +292,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -316,7 +316,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<TitleSummaryResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetTitlesSummaryAsync())
@@ -359,14 +359,14 @@ public sealed class NebaApiServiceTests
     {
         // Arrange
         var bowlerId = BowlerId.New();
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, bowlerName: "John Doe", titleCount: 5);
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, bowlerName: "John Doe", titleCount: 5);
 
         var apiResponseData = new Neba.Contracts.ApiResponse<BowlerTitlesResponse>
         {
             Data = bowlerTitles
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(apiResponseData);
+        using TestApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(apiResponseData);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesAsync(bowlerId))
@@ -391,7 +391,7 @@ public sealed class NebaApiServiceTests
             Data = BowlerTitlesResponseFactory.Create(titleCount: 1)
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(apiResponseData, HttpStatusCode.NotFound);
+        using TestApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>> apiResponse = ApiResponseFactory.CreateResponse(apiResponseData, HttpStatusCode.NotFound);
 
         _mockNebaApi
             .Setup(x => x.GetBowlerTitlesAsync(bowlerId))
@@ -463,7 +463,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -512,7 +512,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -550,7 +550,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -574,7 +574,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -696,7 +696,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighBlockAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighBlockAwardsAsync())
@@ -735,7 +735,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighAverageAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighAverageAwardsAsync())
@@ -774,7 +774,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighAverageAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighAverageAwardsAsync())
@@ -798,7 +798,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<HighAverageAwardResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetHighAverageAwardsAsync())
@@ -920,7 +920,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<HighAverageAwardResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetHighAverageAwardsAsync())
@@ -948,7 +948,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         const string htmlContent = "<h1>Tournament Rules</h1><p>These are the rules.</p>";
 
-        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
+        using TestApiResponse<DocumentResponse<string>> apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
@@ -968,7 +968,7 @@ public sealed class NebaApiServiceTests
         // Arrange
         const string htmlContent = "";
 
-        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
+        using TestApiResponse<DocumentResponse<string>> apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
@@ -986,7 +986,7 @@ public sealed class NebaApiServiceTests
     public async Task GetTournamentRulesAsync_ApiError_ReturnsError()
     {
         // Arrange
-        using var apiResponse = ApiResponseFactory.CreateDocumentResponse("", HttpStatusCode.InternalServerError);
+        using TestApiResponse<DocumentResponse<string>> apiResponse = ApiResponseFactory.CreateDocumentResponse("", HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
@@ -1082,7 +1082,7 @@ public sealed class NebaApiServiceTests
                 <p>For more information, contact the tournament director.</p>
             </div>";
 
-        using var apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
+        using TestApiResponse<DocumentResponse<string>> apiResponse = ApiResponseFactory.CreateDocumentResponse(htmlContent);
 
         _mockNebaApi
             .Setup(x => x.GetTournamentRulesAsync())
@@ -1117,7 +1117,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<TitleResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
@@ -1153,7 +1153,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<TitleResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
@@ -1177,7 +1177,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+        using TestApiResponse<CollectionResponse<TitleResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
 
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())
@@ -1229,7 +1229,7 @@ public sealed class NebaApiServiceTests
 
         };
 
-        using var apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+        using TestApiResponse<CollectionResponse<TitleResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
 
         _mockNebaApi
             .Setup(x => x.GetAllTitlesAsync())

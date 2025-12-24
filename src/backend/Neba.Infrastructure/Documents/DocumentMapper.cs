@@ -164,10 +164,10 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         bool hasNestedList = false;
         if (currentIndex + 1 < document.Body.Content.Count)
         {
-            var nextElement = document.Body.Content[currentIndex + 1];
+            StructuralElement nextElement = document.Body.Content[currentIndex + 1];
             if (nextElement.Paragraph?.Bullet != null)
             {
-                var nextBullet = nextElement.Paragraph.Bullet;
+                Bullet nextBullet = nextElement.Paragraph.Bullet;
                 int nextNestingLevel = nextBullet.NestingLevel ?? 0;
                 hasNestedList = nextBullet.ListId == listId && nextNestingLevel > nestingLevel;
             }
