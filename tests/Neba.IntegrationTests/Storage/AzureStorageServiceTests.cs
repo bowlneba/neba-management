@@ -97,7 +97,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Stream upload test content";
         const string contentType = "application/octet-stream";
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         // Act
         string blobUri = await _storageService.UploadAsync(
@@ -243,7 +243,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         byte[] expectedBytes = [0x01, 0x02, 0x03, 0x04, 0x05];
         const string contentType = "application/octet-stream";
 
-        using var uploadStream = new MemoryStream(expectedBytes);
+        await using var uploadStream = new MemoryStream(expectedBytes);
         await _storageService.UploadAsync(
             TestContainerName,
             TestBlobName,
@@ -258,7 +258,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             TestBlobName,
             CancellationToken.None);
 
-        using var memoryStream = new MemoryStream();
+        await using var memoryStream = new MemoryStream();
         await downloadStream.CopyToAsync(memoryStream);
         byte[] actualBytes = memoryStream.ToArray();
 
@@ -747,7 +747,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange
         const string content = "Stream content with metadata";
         const string contentType = "application/octet-stream";
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
         Dictionary<string, string> metadata = CreateDocument();
 
         // Act
@@ -927,7 +927,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 #pragma warning disable CA5394 // Random is acceptable for test data generation
         new Random(42).NextBytes(largeContent); // Seed for reproducibility
 #pragma warning restore CA5394
-        using var stream = new MemoryStream(largeContent);
+        await using var stream = new MemoryStream(largeContent);
         const string contentType = "application/octet-stream";
 
         // Act
@@ -953,7 +953,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             "large-file.bin",
             CancellationToken.None);
 
-        using var memoryStream = new MemoryStream();
+        await using var memoryStream = new MemoryStream();
         await downloadedStream.CopyToAsync(memoryStream);
         byte[] downloadedContent = memoryStream.ToArray();
 
@@ -974,7 +974,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             largeContent[i] = (byte)(i % 256);
         }
 
-        using var stream = new MemoryStream(largeContent);
+        await using var stream = new MemoryStream(largeContent);
         const string contentType = "application/octet-stream";
 
         // Act
@@ -995,7 +995,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             "multi-chunk-file.bin",
             CancellationToken.None);
 
-        using var memoryStream = new MemoryStream();
+        await using var memoryStream = new MemoryStream();
         await downloadedStream.CopyToAsync(memoryStream);
         byte[] downloadedContent = memoryStream.ToArray();
 
@@ -1012,7 +1012,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 #pragma warning disable CA5394 // Random is acceptable for test data generation
         new Random(123).NextBytes(content);
 #pragma warning restore CA5394
-        using var stream = new MemoryStream(content);
+        await using var stream = new MemoryStream(content);
         const string contentType = "video/mp4";
         Dictionary<string, string> metadata = CreateDocument();
 
@@ -1044,7 +1044,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string newContainerName = "large-upload-container";
         const int fiveMegabytes = 5 * 1024 * 1024;
         byte[] content = new byte[fiveMegabytes];
-        using var stream = new MemoryStream(content);
+        await using var stream = new MemoryStream(content);
         const string contentType = "application/octet-stream";
 
         // Act
@@ -1082,7 +1082,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         const string blobName = "overwrite-test.bin";
 
         // Upload original content
-        using (var stream = new MemoryStream(originalContent))
+        await using (var stream = new MemoryStream(originalContent))
         {
             await _storageService.LargeUploadAsync(
                 TestContainerName,
@@ -1094,7 +1094,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         }
 
         // Act - Upload updated content
-        using (var stream = new MemoryStream(updatedContent))
+        await using (var stream = new MemoryStream(updatedContent))
         {
             await _storageService.LargeUploadAsync(
                 TestContainerName,
@@ -1111,7 +1111,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             blobName,
             CancellationToken.None);
 
-        using var memoryStream = new MemoryStream();
+        await using var memoryStream = new MemoryStream();
         await downloadedStream.CopyToAsync(memoryStream);
         byte[] downloadedContent = memoryStream.ToArray();
 
@@ -1125,7 +1125,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Arrange - Upload a small file (less than one chunk) using UploadLargeAsync
         const string content = "Small content using large upload method";
         byte[] contentBytes = Encoding.UTF8.GetBytes(content);
-        using var stream = new MemoryStream(contentBytes);
+        await using var stream = new MemoryStream(contentBytes);
         const string contentType = MediaTypeNames.Text.Plain;
 
         // Act
@@ -1153,7 +1153,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     public async Task UploadLargeAsync_WithEmptyStream_ShouldCreateEmptyBlob()
     {
         // Arrange
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         const string contentType = "application/octet-stream";
 
         // Act
@@ -1177,7 +1177,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
             "empty-file.bin",
             CancellationToken.None);
 
-        using var memoryStream = new MemoryStream();
+        await using var memoryStream = new MemoryStream();
         await downloadedStream.CopyToAsync(memoryStream);
         memoryStream.ToArray().Length.ShouldBe(0);
     }
@@ -1199,7 +1199,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 
         foreach ((string? blobName, string? contentType) in testCases)
         {
-            using var stream = new MemoryStream(content);
+            await using var stream = new MemoryStream(content);
 
             // Act
             await _storageService.LargeUploadAsync(
