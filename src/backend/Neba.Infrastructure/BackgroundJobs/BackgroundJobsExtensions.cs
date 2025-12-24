@@ -88,14 +88,19 @@ internal static class BackgroundJobsExtensions
     {
         public WebApplication UseBackgroundJobsDashboard()
         {
-            app.UseHangfireDashboard("/background-jobs", new DashboardOptions
+            // Only register dashboard if Hangfire is configured
+            // (allows tests to remove Hangfire services without breaking middleware)
+            if (app.Services.GetService(typeof(JobStorage)) is not null)
             {
-                Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
-                DashboardTitle = "Background Jobs - API",
-                StatsPollingInterval = 5000,
-                DisplayStorageConnectionString = false,
-                IsReadOnlyFunc = context => false
-            });
+                app.UseHangfireDashboard("/background-jobs", new DashboardOptions
+                {
+                    Authorization = [new BackgroundJobDashboardAuthorizationFilter()],
+                    DashboardTitle = "Background Jobs - API",
+                    StatsPollingInterval = 5000,
+                    DisplayStorageConnectionString = false,
+                    IsReadOnlyFunc = context => false
+                });
+            }
 
             return app;
         }

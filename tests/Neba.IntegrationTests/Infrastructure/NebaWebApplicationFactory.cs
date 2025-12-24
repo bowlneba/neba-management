@@ -47,10 +47,15 @@ public sealed class NebaWebApplicationFactory
             logging.SetMinimumLevel(LogLevel.Warning);
         });
 
-        // Disable Hangfire background job server in tests to avoid shutdown timeouts
+        // Remove Hangfire entirely from tests - integration tests don't need background jobs
         builder.ConfigureServices(services =>
         {
-            // Remove Hangfire hosted service to prevent background processing during tests
+            // Remove all background job infrastructure to prevent initialization issues
+#pragma warning disable CA2263 // Prefer generic overload - can't use generic version for Hangfire types we don't reference
+            services.RemoveAll(typeof(Hangfire.JobStorage));
+            services.RemoveAll(typeof(Hangfire.IGlobalConfiguration));
+#pragma warning restore CA2263
+            services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
             services.RemoveAll<IHostedService>();
         });
     }
