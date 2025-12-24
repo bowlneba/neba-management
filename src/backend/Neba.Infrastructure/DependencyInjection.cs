@@ -30,6 +30,7 @@ public static class InfrastructureDependencyInjection
             ArgumentNullException.ThrowIfNull(config);
 
             return services
+                .AddCaching()
                 .AddKeyVault(config)
                 .AddGoogleDocs(config)
                 .AddBackgroundJobs(config)
@@ -78,6 +79,18 @@ public static class InfrastructureDependencyInjection
                     },
                     name: "Azure Key Vault",
                     tags: keyVaultTags);
+
+            return services;
+        }
+
+        private IServiceCollection AddCaching()
+        {
+            services.AddHybridCache(options =>
+            {
+                options.MaximumPayloadBytes = 1024 * 1024 * 10; // 10 MB
+                options.MaximumKeyLength = 512;
+                options.ReportTagMetrics = true;
+            });
 
             return services;
         }
