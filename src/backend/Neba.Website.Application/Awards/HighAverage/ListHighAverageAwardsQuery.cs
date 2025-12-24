@@ -1,3 +1,4 @@
+using Neba.Application.Caching;
 using Neba.Application.Messaging;
 
 namespace Neba.Website.Application.Awards.HighAverage;
@@ -9,4 +10,13 @@ namespace Neba.Website.Application.Awards.HighAverage;
 /// The query returns a read-only collection of <see cref="HighAverageAwardDto"/>.
 /// </remarks>
 public sealed record ListHighAverageAwardsQuery
-    : IQuery<IReadOnlyCollection<HighAverageAwardDto>>;
+    : ICachedQuery<IReadOnlyCollection<HighAverageAwardDto>>
+{
+    ///<inheritdoc />
+    public string Key
+        => CacheKeys.Awards.HighAverage();
+
+    ///<inheritdoc />
+    public IReadOnlyCollection<string> Tags
+        => CacheTags.Award(CacheTags.AwardTypes.HighAverage);
+}

@@ -54,6 +54,13 @@ public static class CacheKeys
         /// Type identifier for session data caching.
         /// </summary>
         public const string Session = "session";
+
+#pragma warning disable S3218 // Intentionally shadows the nested class name for API consistency
+        /// <summary>
+        /// Type identifier for awards-related caching.
+        /// </summary>
+        public const string Awards = "awards";
+#pragma warning restore S3218
     }
 
     /// <summary>
@@ -112,5 +119,33 @@ public static class CacheKeys
                 : baseKey;
         }
     }
-}
 
+    /// <summary>
+    /// Cache keys for awards-related caching.
+    /// </summary>
+#pragma warning disable CA1034 // Nested types are intentional for namespace organization
+    public static class Awards
+#pragma warning restore CA1034
+    {
+        /// <summary>
+        /// Generates a cache key for listing Bowler of the Year awards.
+        /// </summary>
+        /// <returns>Cache key in format: website:awards:bowler-of-the-year</returns>
+        public static string BowlerOfTheYear()
+            => $"{WebsiteContext}:{Types.Awards}:bowler-of-the-year";
+
+        /// <summary>
+        /// Generates a cache key for listing High Average awards.
+        /// </summary>
+        /// <returns>Cache key in format: website:awards:high-average</returns>
+        public static string HighAverage()
+            => $"{WebsiteContext}:{Types.Awards}:high-average";
+
+        /// <summary>
+        /// Generates a cache key for listing High Block (5-game) awards.
+        /// </summary>
+        /// <returns>Cache key in format: website:awards:high-block</returns>
+        public static string HighBlock()
+            => $"{WebsiteContext}:{Types.Awards}:high-block";
+    }
+}

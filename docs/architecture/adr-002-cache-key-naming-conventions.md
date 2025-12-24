@@ -7,7 +7,7 @@ title: ADR-002 - Cache Key Naming Conventions
 
 **Status**: Proposed
 
-**Date**: 2024-12-24
+**Date**: 2025-12-24
 
 **Context**: Caching Strategy Standardization
 

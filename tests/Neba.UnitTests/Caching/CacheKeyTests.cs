@@ -79,6 +79,20 @@ public class CacheKeyTests
         key.GetIdentifier().ShouldBe("doc-sync");
     }
 
+    [Fact(DisplayName = "AwardsListBowlerOfTheYearKey follows ADR-002 convention")]
+    public void AwardsListBowlerOfTheYearKey_FollowsConvention()
+    {
+        // Act
+        string key = CacheKeys.Awards.BowlerOfTheYear();
+
+        // Assert
+        key.ShouldBe("website:awards:bowler-of-the-year");
+        key.IsValidCacheKey().ShouldBeTrue();
+        key.GetContext().ShouldBe("website");
+        key.GetCacheType().ShouldBe("awards");
+        key.GetIdentifier().ShouldBe("bowler-of-the-year");
+    }
+
     [Fact(DisplayName = "QueryBuild creates valid key without parameters")]
     public void QueryBuild_WithoutParameters_CreatesValidKey()
     {
@@ -207,6 +221,7 @@ public class CacheKeyTests
     [InlineData("query")]
     [InlineData("job")]
     [InlineData("session")]
+    [InlineData("awards")]
     public void CacheKeysTypes_AreValid(string type)
     {
         // Assert
