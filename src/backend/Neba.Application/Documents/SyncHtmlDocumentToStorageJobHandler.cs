@@ -85,10 +85,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
                 await cache.RemoveAsync(job.DocumentCacheKey, cancellationToken);
             }
 
-            // Clear job state after a short delay (allows late joiners to see final status)
             if (!string.IsNullOrWhiteSpace(job.CacheKey))
             {
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
                 await cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
         }
@@ -98,10 +96,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Failed, ex.Message, cancellationToken);
 
-            // Keep failed state longer for debugging
             if (!string.IsNullOrWhiteSpace(job.CacheKey))
             {
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
                 await cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
 
