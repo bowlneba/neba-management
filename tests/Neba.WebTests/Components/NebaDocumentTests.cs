@@ -503,7 +503,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldNotRenderLastUpdatedFooterWhenMetadataIsNull()
+    public void ShouldNotRenderLastUpdatedBottomWhenMetadataIsNull()
     {
         // Arrange
         MarkupString content = new MarkupString("<p>Content</p>");
@@ -514,11 +514,11 @@ public sealed class NebaDocumentTests : TestContextWrapper
             .Add(p => p.Metadata, null));
 
         // Assert
-        cut.FindAll(".neba-document-last-updated-footer").ShouldBeEmpty();
+        cut.FindAll(".neba-document-last-updated-bottom").ShouldBeEmpty();
     }
 
     [Fact]
-    public void ShouldNotRenderLastUpdatedFooterWhenMetadataDoesNotContainLastUpdatedUtc()
+    public void ShouldNotRenderLastUpdatedBottomWhenMetadataDoesNotContainLastUpdatedUtc()
     {
         // Arrange
         MarkupString content = new MarkupString("<p>Content</p>");
@@ -533,11 +533,11 @@ public sealed class NebaDocumentTests : TestContextWrapper
             .Add(p => p.Metadata, metadata));
 
         // Assert
-        cut.FindAll(".neba-document-last-updated-footer").ShouldBeEmpty();
+        cut.FindAll(".neba-document-last-updated-bottom").ShouldBeEmpty();
     }
 
     [Fact]
-    public void ShouldRenderLastUpdatedFooterWithDateOnly()
+    public void ShouldRenderLastUpdatedBottomWithDateOnly()
     {
         // Arrange
         MarkupString content = new MarkupString("<p>Content</p>");
@@ -552,13 +552,13 @@ public sealed class NebaDocumentTests : TestContextWrapper
             .Add(p => p.Metadata, metadata));
 
         // Assert
-        IElement footer = cut.Find(".neba-document-last-updated-footer");
+        IElement footer = cut.Find(".neba-document-last-updated-bottom");
         footer.ShouldNotBeNull();
         footer.TextContent.ShouldContain("2024-01-15");
     }
 
     [Fact]
-    public void ShouldRenderLastUpdatedFooterWithDateAndUsername()
+    public void ShouldRenderLastUpdatedBottomWithDateAndUsername()
     {
         // Arrange
         MarkupString content = new MarkupString("<p>Content</p>");
@@ -574,7 +574,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
             .Add(p => p.Metadata, metadata));
 
         // Assert
-        IElement footer = cut.Find(".neba-document-last-updated-footer");
+        IElement footer = cut.Find(".neba-document-last-updated-bottom");
         footer.ShouldNotBeNull();
         footer.TextContent.ShouldContain("2024-01-15");
         footer.TextContent.ShouldContain("Admin User");
@@ -582,7 +582,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
     }
 
     [Fact]
-    public void ShouldNotRenderLastUpdatedFooterWhenDateIsInvalid()
+    public void ShouldNotRenderLastUpdatedBottomWhenDateIsInvalid()
     {
         // Arrange
         MarkupString content = new MarkupString("<p>Content</p>");
@@ -598,7 +598,7 @@ public sealed class NebaDocumentTests : TestContextWrapper
             .Add(p => p.Metadata, metadata));
 
         // Assert
-        cut.FindAll(".neba-document-last-updated-footer").ShouldBeEmpty();
+        cut.FindAll(".neba-document-last-updated-bottom").ShouldBeEmpty();
     }
 
     [Fact]
