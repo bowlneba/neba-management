@@ -44,7 +44,7 @@ public static class DocumentRefreshSseStreamHandler
         HybridCache cache,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        // Send the initial state if available from cache
+        // Send the initial state if available from cache, otherwise send a default "ready" state
         string cacheKey = $"{documentType}:refresh:current";
 
         DocumentRefreshJobState? state = await cache.GetOrCreateAsync(
@@ -56,6 +56,12 @@ public static class DocumentRefreshSseStreamHandler
         if (state is not null)
         {
             var initialEvent = DocumentRefreshStatusEvent.FromStatus(state.Status, state.ErrorMessage);
+            yield return initialEvent;
+        }
+        else
+        {
+            // No cached state means no refresh has been performed yet, send "Completed" as default
+            var initialEvent = DocumentRefreshStatusEvent.FromStatus(DocumentRefreshStatus.Completed.Name);
             yield return initialEvent;
         }
 
