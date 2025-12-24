@@ -65,7 +65,7 @@ public sealed class BylawsTests : TestContextWrapper
             .ReturnsAsync(response.ApiResponse);
 
         // Act
-        IRenderedComponent<Bylaws> _ = Render<Bylaws>();
+        Render<Bylaws>();
         await Task.Delay(50); // Wait for async initialization
 
         // Assert

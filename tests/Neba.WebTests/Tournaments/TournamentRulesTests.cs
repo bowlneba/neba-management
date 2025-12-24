@@ -65,7 +65,7 @@ public sealed class TournamentRulesTests : TestContextWrapper
             .ReturnsAsync(response.ApiResponse);
 
         // Act
-        IRenderedComponent<TournamentRules> _ = Render<TournamentRules>();
+        Render<TournamentRules>();
         await Task.Delay(50); // Wait for async initialization
 
         // Assert
