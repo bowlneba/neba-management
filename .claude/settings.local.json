@@ -91,7 +91,9 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de --stat)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show e7806de:tests/Neba.IntegrationTests/xunit.runner.json)",
       "Bash(touch:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..documentRefresh --oneline)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...documentRefresh --stat)"
     ],
     "deny": [],
     "ask": []
