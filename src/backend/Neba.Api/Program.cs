@@ -20,7 +20,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddLogging();
 
 builder.Services
-    .AddInfrastructure(builder.Configuration)
+    .AddInfrastructure(builder.Configuration, [
+        WebsiteApplicationAssemblyReference.Assembly
+        ])
     .AddWebsiteApplication()
     .AddWebsiteInfrastructure(builder.Configuration);
 

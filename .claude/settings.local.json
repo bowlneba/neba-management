@@ -97,7 +97,8 @@
       "Bash(./bin/Debug/net10.0/Neba.UnitTests)",
       "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Application/WebsiteApplicationDependencyInjection.cs)",
-      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)"
+      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

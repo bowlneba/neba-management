@@ -1,11 +1,5 @@
-using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Application.Documents;
 using Neba.Application.Messaging;
-using Neba.Website.Application.Awards.BowlerOfTheYear;
-using Neba.Website.Application.Awards.HighAverage;
-using Neba.Website.Application.Awards.HighBlock;
-using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Documents.Bylaws;
 using Neba.Website.Application.Tournaments.TournamentRules;
 
@@ -20,8 +14,14 @@ namespace Neba.Website.Application;
 /// Extension container that exposes registration helpers for the Website application layer.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Keep registrations for application-specific services (use cases, handlers, DTO mappers) here
 /// so the composition root can add the entire website application surface with a single call.
+/// </para>
+/// <para>
+/// Query handlers are registered automatically via Scrutor scanning in the Infrastructure layer
+/// This allows the CachedQueryHandlerDecorator to be applied automatically
+/// </para>
 /// </remarks>
 public static class WebsiteApplicationDependencyInjection
 {
@@ -34,40 +34,19 @@ public static class WebsiteApplicationDependencyInjection
         /// The same <see cref="IServiceCollection"/> instance to allow call chaining from the composition root.
         /// </returns>
         /// <remarks>
-        /// This method delegates to more specific registration helpers (e.g. <see cref="AddBowlersUseCases"/>).
+        /// This method delegates to more specific registration helpers (e.g. <see cref="AddTournamentsUseCases"/>).
         /// </remarks>
         public IServiceCollection AddWebsiteApplication()
         {
             services
-                .AddBowlersUseCases()
-                .AddAwardsUseCases()
                 .AddTournamentsUseCases()
                 .AddDocumentsUseCases();
 
             return services;
         }
 
-        private IServiceCollection AddBowlersUseCases()
-        {
-            services.AddScoped<IQueryHandler<BowlerTitlesQuery, ErrorOr<BowlerTitlesDto>>, BowlerTitlesQueryHandler>();
-            services.AddScoped<IQueryHandler<ListBowlerTitlesQuery, IReadOnlyCollection<BowlerTitleDto>>, ListBowlerTitlesQueryHandler>();
-            services.AddScoped<IQueryHandler<ListBowlerTitleSummariesQuery, IReadOnlyCollection<BowlerTitleSummaryDto>>, ListBowlerTitleSummariesQueryHandler>();
-
-            return services;
-        }
-
-        private IServiceCollection AddAwardsUseCases()
-        {
-            services.AddScoped<IQueryHandler<ListBowlerOfTheYearAwardsQuery, IReadOnlyCollection<BowlerOfTheYearAwardDto>>, ListBowlerOfTheYearAwardsQueryHandler>();
-            services.AddScoped<IQueryHandler<ListHigh5GameBlockAwardsQuery, IReadOnlyCollection<HighBlockAwardDto>>, ListHigh5GameBlockAwardsQueryHandler>();
-            services.AddScoped<IQueryHandler<ListHighAverageAwardsQuery, IReadOnlyCollection<HighAverageAwardDto>>, ListHighAverageAwardsQueryHandler>();
-
-            return services;
-        }
-
         private IServiceCollection AddTournamentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetTournamentRulesQuery, DocumentDto>, GetTournamentRulesQueryHandler>();
             services.AddScoped<ICommandHandler<RefreshTournamentRulesCacheCommand, string>, RefreshTournamentRulesCacheCommandHandler>();
             services.AddScoped<ITournamentRulesSyncBackgroundJob, TournamentRulesSyncBackgroundJob>();
             services.AddScoped<TournamentRulesSyncBackgroundJob>();
@@ -77,7 +56,6 @@ public static class WebsiteApplicationDependencyInjection
 
         private IServiceCollection AddDocumentsUseCases()
         {
-            services.AddScoped<IQueryHandler<GetBylawsQuery, DocumentDto>, GetBylawsQueryHandler>();
             services.AddScoped<ICommandHandler<RefreshBylawsCacheCommand, string>, RefreshBylawsCacheCommandHandler>();
             services.AddScoped<IBylawsSyncBackgroundJob, BylawsSyncBackgroundJob>();
             services.AddScoped<BylawsSyncBackgroundJob>();

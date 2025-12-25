@@ -1,8 +1,11 @@
+using System.Reflection;
 using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application.Messaging;
 using Neba.Infrastructure.BackgroundJobs;
+using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Storage;
 
@@ -21,16 +24,20 @@ public static class InfrastructureDependencyInjection
     extension(IServiceCollection services)
     {
         /// <summary>
-        /// Adds the infrastructure services to the dependency injection container.
+        /// Configures the application to use infrastructure services, including caching,
+        /// key vault, Google Docs integration, background jobs, document management,
+        /// and storage services.
         /// </summary>
-        /// <param name="config">The configuration manager containing application settings.</param>
-        /// <returns>The service collection for method chaining.</returns>
-        public IServiceCollection AddInfrastructure(IConfigurationManager config)
+        /// <param name="config">The configuration manager providing application settings.</param>
+        /// <param name="cachingAssemblies">Assemblies to scan for caching-related features.</param>
+        /// <returns>The updated service collection for method chaining.</returns>
+        public IServiceCollection AddInfrastructure(IConfigurationManager config, Assembly[] cachingAssemblies)
         {
             ArgumentNullException.ThrowIfNull(config);
+            ArgumentNullException.ThrowIfNull(cachingAssemblies);
 
             return services
-                .AddCaching()
+                .AddCaching(cachingAssemblies)
                 .AddKeyVault(config)
                 .AddGoogleDocs(config)
                 .AddBackgroundJobs(config)
@@ -83,14 +90,28 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        private IServiceCollection AddCaching()
+        // when we add more assemblies that we need to cache, we can change the parameter to IEnumerable<Assembly>
+        private IServiceCollection AddCaching(Assembly[] assemblies)
         {
+            if (assemblies.Length == 0)
+            {
+                return services;
+            }
+
             services.AddHybridCache(options =>
             {
                 options.MaximumPayloadBytes = 1024 * 1024 * 10; // 10 MB
                 options.MaximumKeyLength = 512;
                 options.ReportTagMetrics = true;
             });
+
+            services.Scan(scan => scan
+                .FromAssemblies(assemblies)
+                .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            services.Decorate(typeof(IQueryHandler<,>), typeof(CachedQueryHandlerDecorator<,>));
 
             return services;
         }
