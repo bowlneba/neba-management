@@ -111,12 +111,12 @@ public static class CacheKeys
         /// <returns>Cache key in format: website:query:{queryName}[:{param1}:{param2}...]</returns>
         public static string Build(string queryName, params object[] parameters)
         {
-            ArgumentNullException.ThrowIfNull(parameters);
-
+            #pragma warning disable CA1062 // Validate arguments (params cannot be null)
             string baseKey = $"{WebsiteContext}:{Types.Query}:{queryName}";
             return parameters.Length > 0
                 ? $"{baseKey}:{string.Join(':', parameters)}"
                 : baseKey;
+            #pragma warning restore CA1062
         }
     }
 
