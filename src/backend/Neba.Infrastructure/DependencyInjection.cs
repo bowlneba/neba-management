@@ -90,7 +90,6 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        // when we add more assemblies that we need to cache, we can change the parameter to IEnumerable<Assembly>
         private IServiceCollection AddCaching(Assembly[] assemblies)
         {
             if (assemblies.Length == 0)
