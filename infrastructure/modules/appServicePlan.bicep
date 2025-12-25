@@ -18,10 +18,10 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: name
   location: location
   tags: tags
+  kind: 'linux'
   sku: {
     name: sku
   }
-  kind: 'linux'
   properties: {
     reserved: true // Required for Linux
   }
