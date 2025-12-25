@@ -13,6 +13,8 @@ As GitHub Copilot, you must understand and apply the principles of effective pro
 
 Prompt engineering is the art and science of designing effective prompts for large language models (LLMs) and AI assistants like GitHub Copilot. Well-crafted prompts yield more accurate, safe, and useful outputs. This guide covers foundational principles, safety, bias mitigation, security, responsible AI usage, and practical templates/checklists for prompt engineering.
 
+Note: For repository-wide instruction files that apply to all languages, include language-specific guidance where relevant. For example, for Bicep templates follow the `Resource Property Order` guidance in `.github/instructions/bicep-code-best-practices.instructions.md` to avoid static analysis issues such as Sonar rule S6975 (decorators, parent/scope, name, location/extendedLocation, zones, sku, kind, scale, plan, identity, dependsOn, tags, properties).
+
 ### What is Prompt Engineering?
 
 Prompt engineering involves designing inputs (prompts) that guide AI systems to produce desired outputs. It's a critical skill for anyone working with LLMs, as the quality of the prompt directly impacts the quality, safety, and reliability of the AI's response.

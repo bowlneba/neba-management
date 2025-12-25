@@ -24,6 +24,7 @@
     "inheritdoc",
     "Instantiator",
     "LINQ",
+    "MediatR",
     "mmtt",
     "nameof",
     "Neba",

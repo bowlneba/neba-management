@@ -10,6 +10,8 @@ applyTo: '**'
 **Write code that speaks for itself. Comment only when necessary to explain WHY, not WHAT.**
 We do not need comments most of the time.
 
+Note: For language-agnostic instruction files and repository-wide guidance that also cover infrastructure files, follow language-specific guidance where applicable. For Bicep files, use the `Resource Property Order` in `.github/instructions/bicep-code-best-practices.instructions.md` to keep resource blocks predictable and to avoid Sonar rule S6975.
+
 ## Commenting Guidelines
 
 ### ❌ AVOID These Comment Types
