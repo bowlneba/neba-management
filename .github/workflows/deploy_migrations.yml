@@ -16,10 +16,6 @@ on:
         default: 'Production'
         type: string
 
-permissions:
-  id-token: write  # Required for OIDC authentication to read from Key Vault
-  contents: read
-
 env:
   DOTNET_VERSION: '10.0.x'
 
@@ -28,6 +24,9 @@ jobs:
     name: Migrate Website Database
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'Production' }}
+    permissions:
+      id-token: write  # Required for OIDC authentication to read from Key Vault
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
