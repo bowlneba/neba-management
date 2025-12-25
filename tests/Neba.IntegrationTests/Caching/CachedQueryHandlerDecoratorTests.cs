@@ -6,6 +6,14 @@ namespace Neba.IntegrationTests.Caching;
 
 public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
 {
+    public CachedQueryHandlerDecoratorTests()
+    {
+        // Clear static state from previous test runs to prevent test pollution
+        TestCachedQueryHandler.InvocationCounts.Clear();
+        TestCachedQueryWithTagsHandler.InvocationCounts.Clear();
+        TestCachedQueryWithExpiryHandler.InvocationCounts.Clear();
+    }
+
     [Fact]
     public async Task CachedQuery_FirstCall_ShouldExecuteHandler()
     {

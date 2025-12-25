@@ -55,6 +55,14 @@ public sealed class NebaCachingWebApplicationFactory(WebsiteDatabase database)
             services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
             services.AddScoped<Neba.Application.BackgroundJobs.IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
 
+            // Ensure each test gets a fresh distributed cache instance to avoid cache pollution between tests
+            services.RemoveAll<Microsoft.Extensions.Caching.Distributed.IDistributedCache>();
+            services.AddDistributedMemoryCache();
+
+            // Ensure each test gets a fresh HybridCache instance
+            services.RemoveAll<Microsoft.Extensions.Caching.Hybrid.HybridCache>();
+            services.AddHybridCache();
+
             // Register test query handlers for caching tests
             services.Scan(scan => scan
                 .FromAssemblyOf<NebaCachingWebApplicationFactory>()
