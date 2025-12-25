@@ -3,7 +3,7 @@ namespace Neba.Web.Server.HallOfFame;
 /// <summary>
 /// View model used by the Hall of Fame UI to display a single induction entry.
 /// </summary>
-public sealed record HallOfFameViewModel
+public sealed record HallOfFameInductionViewModel
 {
     /// <summary>
     /// The full display name of the bowler inducted into the Hall of Fame.
