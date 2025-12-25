@@ -1,3 +1,4 @@
+using Neba.Application.Caching;
 using Neba.Application.Messaging;
 
 namespace Neba.Website.Application.Bowlers.BowlerTitles;
@@ -6,4 +7,13 @@ namespace Neba.Website.Application.Bowlers.BowlerTitles;
 /// Query to retrieve a summary of titles for all bowlers.
 /// </summary>
 public sealed record ListBowlerTitleSummariesQuery
-    : IQuery<IReadOnlyCollection<BowlerTitleSummaryDto>>;
+    : ICachedQuery<IReadOnlyCollection<BowlerTitleSummaryDto>>
+{
+    ///<inheritdoc />
+    public string Key
+        => $"{CacheKeys.WebsiteContext}:{CacheKeys.Types.Query}:ListBowlerTitleSummariesQuery";
+
+    ///<inheritdoc />
+    public IReadOnlyCollection<string> Tags
+        => CacheTags.AllBowlers();
+}

@@ -119,6 +119,7 @@ jobs:
           DATABASE_WEB_PASSWORD: ${{ secrets.DATABASE_WEB_PASSWORD }}
           DATABASE_QUERY_PASSWORD: ${{ secrets.DATABASE_QUERY_PASSWORD }}
           DATABASE_JOBS_PASSWORD: ${{ secrets.DATABASE_JOBS_PASSWORD }}
+          DATABASE_CACHE_PASSWORD: ${{ secrets.DATABASE_CACHE_PASSWORD }}
         run: |
           echo "👥 Configuring database users and permissions..."
 
@@ -175,6 +176,15 @@ jobs:
                   ALTER ROLE "${{ vars.DATABASE_JOBS_USERNAME }}" WITH PASSWORD '$DATABASE_JOBS_PASSWORD';
               END IF;
 
+              -- Create cache user
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${{ vars.DATABASE_CACHE_USERNAME }}') THEN
+                  CREATE ROLE "${{ vars.DATABASE_CACHE_USERNAME }}"
+                      WITH LOGIN PASSWORD '$DATABASE_CACHE_PASSWORD'
+                      NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+              ELSE
+                  ALTER ROLE "${{ vars.DATABASE_CACHE_USERNAME }}" WITH PASSWORD '$DATABASE_CACHE_PASSWORD';
+              END IF;
+
               -- Future: Create additional app users (app_b, app_c, etc.) here
           END
           \$\$;
@@ -196,6 +206,7 @@ jobs:
           -- Ensure ownership didn't drift
           ALTER SCHEMA website OWNER TO "${{ vars.DATABASE_OWNER_USERNAME }}";
           ALTER SCHEMA hangfire OWNER TO "${{ vars.DATABASE_JOBS_USERNAME }}";
+          ALTER SCHEMA public OWNER TO "${{ vars.DATABASE_CACHE_USERNAME }}";
 
           /* ============================================================
              SCHEMA LOCKDOWN
@@ -205,8 +216,7 @@ jobs:
 
           REVOKE ALL ON SCHEMA hangfire FROM PUBLIC;
           REVOKE ALL ON SCHEMA website FROM PUBLIC;
-
-          -- Future: Revoke PUBLIC access from additional schemas here
+          REVOKE ALL ON SCHEMA public FROM PUBLIC;
 
           /* ============================================================
              SCHEMA VISIBILITY (USAGE)
@@ -216,6 +226,9 @@ jobs:
 
           GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_WEB_USERNAME }}";
           GRANT USAGE ON SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Cache user: USAGE and CREATE on public schema
+          GRANT USAGE, CREATE ON SCHEMA public TO "${{ vars.DATABASE_CACHE_USERNAME }}";
 
           -- Future: Grant USAGE to additional app users on their respective schemas
 
@@ -238,6 +251,19 @@ jobs:
 
           GRANT USAGE, SELECT
           ON ALL SEQUENCES IN SCHEMA website TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Cache user: CRUD on public schema
+          GRANT SELECT, INSERT, UPDATE, DELETE
+          ON ALL TABLES IN SCHEMA public TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          GRANT USAGE, SELECT, UPDATE
+          ON ALL SEQUENCES IN SCHEMA public TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          GRANT EXECUTE
+          ON ALL FUNCTIONS IN SCHEMA public TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          GRANT EXECUTE
+          ON ALL PROCEDURES IN SCHEMA public TO "${{ vars.DATABASE_CACHE_USERNAME }}";
 
           -- Future: Grant permissions to app_b on schema b, app_c on schema c, etc.
 
@@ -266,6 +292,23 @@ jobs:
           ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
           IN SCHEMA website
           GRANT USAGE, SELECT ON SEQUENCES TO "${{ vars.DATABASE_QUERY_USERNAME }}";
+
+          -- Public schema: cache user defaults
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA public
+          GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA public
+          GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA public
+          GRANT EXECUTE ON FUNCTIONS TO "${{ vars.DATABASE_CACHE_USERNAME }}";
+
+          ALTER DEFAULT PRIVILEGES FOR ROLE "${{ vars.DATABASE_OWNER_USERNAME }}"
+          IN SCHEMA public
+          GRANT EXECUTE ON ROUTINES TO "${{ vars.DATABASE_CACHE_USERNAME }}";
 
           -- Future: Add default privileges for additional schemas/users here
 

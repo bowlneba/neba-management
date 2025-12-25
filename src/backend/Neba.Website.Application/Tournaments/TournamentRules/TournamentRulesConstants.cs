@@ -1,3 +1,5 @@
+using Neba.Application.Caching;
+
 namespace Neba.Website.Application.Tournaments.TournamentRules;
 
 /// <summary>
@@ -20,4 +22,15 @@ public static class TournamentRulesConstants
     /// </summary>
     public const string FileName = "tournament-rules.html";
 
+    /// <summary>
+    /// Cache key for the tournament rules document content.
+    /// Follows ADR-002 naming convention: website:doc:tournament-rules:content
+    /// </summary>
+    public static string ContentCacheKey => CacheKeys.Documents.Content(DocumentKey);
+
+    /// <summary>
+    /// Cache key for tracking tournament rules document sync job state.
+    /// Follows ADR-002 naming convention: website:job:doc-sync:tournament-rules:current
+    /// </summary>
+    public static string JobStateCacheKey => CacheKeys.Documents.JobState(DocumentKey);
 }

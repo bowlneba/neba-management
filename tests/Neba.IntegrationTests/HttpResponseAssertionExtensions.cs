@@ -5,6 +5,7 @@ namespace Neba.IntegrationTests;
 
 internal static class HttpResponseAssertionExtensions
 {
+#pragma warning disable S1144
 #pragma warning disable S2325 // Extension methods should be static
     extension(HttpResponseMessage response)
     {

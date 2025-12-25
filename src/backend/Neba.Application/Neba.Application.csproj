@@ -5,7 +5,6 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
   </ItemGroup>
 
   <ItemGroup>

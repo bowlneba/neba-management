@@ -97,7 +97,15 @@
       "Bash(./bin/Debug/net10.0/Neba.UnitTests)",
       "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Application/WebsiteApplicationDependencyInjection.cs)",
-      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)"
+      "Bash(/Users/kippermand/Projects/bowlneba/neba-management/tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)",
+      "WebSearch",
+      "Bash(docker ps:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline --max-count=10)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show --stat c914453)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show c914453)",
+      "Bash(time dotnet test:*)",
+      "Bash(docker logs:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff tests/Neba.IntegrationTests/Infrastructure/NebaWebApplicationFactory.cs)"
     ],
     "deny": [],
     "ask": []

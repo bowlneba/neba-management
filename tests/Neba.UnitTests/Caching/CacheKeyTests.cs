@@ -1,0 +1,232 @@
+using Neba.Application.Caching;
+
+namespace Neba.UnitTests.Caching;
+
+public class CacheKeyTests
+{
+    [Theory(DisplayName = "IsValidCacheKey validates cache key format correctly")]
+    [InlineData("website:doc:bylaws:content", true)]
+    [InlineData("website:query:GetBowlerQuery:01ARZ3NDEK", true)]
+    [InlineData("api:job:import-scores:current", true)]
+    [InlineData("shared:session:user-prefs", true)]
+    [InlineData("invalid", false)]
+    [InlineData("too:short", false)]
+    [InlineData("", false)]
+    [InlineData("   ", false)]
+    [InlineData("has::empty::parts", false)]
+    public void IsValidCacheKey_ValidatesCorrectly(string key, bool expected)
+    {
+        // Act
+        bool result = key.IsValidCacheKey();
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
+    [Fact(DisplayName = "IsValidCacheKey rejects keys over 512 characters")]
+    public void IsValidCacheKey_RejectsLongKeys()
+    {
+        // Arrange
+        string longKey = $"website:query:GetData:{new string('x', 500)}";
+
+        // Act
+        bool result = longKey.IsValidCacheKey();
+
+        // Assert
+        result.ShouldBeFalse();
+        longKey.Length.ShouldBeGreaterThan(512);
+    }
+
+    [Fact(DisplayName = "DocumentContentKey follows ADR-002 convention")]
+    public void DocumentContentKey_FollowsConvention()
+    {
+        // Act
+        string key = CacheKeys.Documents.Content("bylaws");
+
+        // Assert
+        key.ShouldBe("website:doc:bylaws:content");
+        key.IsValidCacheKey().ShouldBeTrue();
+        key.GetContext().ShouldBe("website");
+        key.GetCacheType().ShouldBe("doc");
+        key.GetIdentifier().ShouldBe("bylaws");
+    }
+
+    [Fact(DisplayName = "DocumentMetadataKey follows ADR-002 convention")]
+    public void DocumentMetadataKey_FollowsConvention()
+    {
+        // Act
+        string key = CacheKeys.Documents.Metadata("tournament-rules");
+
+        // Assert
+        key.ShouldBe("website:doc:tournament-rules:metadata");
+        key.IsValidCacheKey().ShouldBeTrue();
+        key.GetContext().ShouldBe("website");
+        key.GetCacheType().ShouldBe("doc");
+        key.GetIdentifier().ShouldBe("tournament-rules");
+    }
+
+    [Fact(DisplayName = "DocumentJobStateKey follows ADR-002 convention")]
+    public void DocumentJobStateKey_FollowsConvention()
+    {
+        // Act
+        string key = CacheKeys.Documents.JobState("bylaws");
+
+        // Assert
+        key.ShouldBe("website:job:doc-sync:bylaws:current");
+        key.IsValidCacheKey().ShouldBeTrue();
+        key.GetContext().ShouldBe("website");
+        key.GetCacheType().ShouldBe("job");
+        key.GetIdentifier().ShouldBe("doc-sync");
+    }
+
+    [Fact(DisplayName = "AwardsListBowlerOfTheYearKey follows ADR-002 convention")]
+    public void AwardsListBowlerOfTheYearKey_FollowsConvention()
+    {
+        // Act
+        string key = CacheKeys.Awards.BowlerOfTheYear();
+
+        // Assert
+        key.ShouldBe("website:awards:bowler-of-the-year");
+        key.IsValidCacheKey().ShouldBeTrue();
+        key.GetContext().ShouldBe("website");
+        key.GetCacheType().ShouldBe("awards");
+        key.GetIdentifier().ShouldBe("bowler-of-the-year");
+    }
+
+    [Fact(DisplayName = "QueryBuild creates valid key without parameters")]
+    public void QueryBuild_WithoutParameters_CreatesValidKey()
+    {
+        // Act
+        string key = CacheKeys.Queries.Build("GetBylawsQuery");
+
+        // Assert
+        key.ShouldBe("website:query:GetBylawsQuery");
+        key.IsValidCacheKey().ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "QueryBuild creates valid key with single parameter")]
+    public void QueryBuild_WithSingleParameter_CreatesValidKey()
+    {
+        // Act
+        string key = CacheKeys.Queries.Build("GetBowlerQuery", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
+
+        // Assert
+        key.ShouldBe("website:query:GetBowlerQuery:01ARZ3NDEKTSV4RRFFQ69G5FAV");
+        key.IsValidCacheKey().ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "QueryBuild creates valid key with multiple parameters")]
+    public void QueryBuild_WithMultipleParameters_CreatesValidKey()
+    {
+        // Act
+        string key = CacheKeys.Queries.Build("GetSeasonStandingsQuery", "2024", "01ARZ3NDEK");
+
+        // Assert
+        key.ShouldBe("website:query:GetSeasonStandingsQuery:2024:01ARZ3NDEK");
+        key.IsValidCacheKey().ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "GetContext extracts correct context from key")]
+    public void GetContext_ExtractsCorrectContext()
+    {
+        // Arrange
+        string key = "website:doc:bylaws:content";
+
+        // Act
+        string context = key.GetContext();
+
+        // Assert
+        context.ShouldBe("website");
+    }
+
+    [Fact(DisplayName = "GetContext returns empty string for invalid key")]
+    public void GetContext_ReturnsEmptyForInvalidKey()
+    {
+        // Arrange
+        string key = "";
+
+        // Act
+        string context = key.GetContext();
+
+        // Assert
+        context.ShouldBeEmpty();
+    }
+
+    [Fact(DisplayName = "GetCacheType extracts correct type from key")]
+    public void GetCacheType_ExtractsCorrectType()
+    {
+        // Arrange
+        string key = "website:doc:bylaws:content";
+
+        // Act
+        string type = key.GetCacheType();
+
+        // Assert
+        type.ShouldBe("doc");
+    }
+
+    [Fact(DisplayName = "GetCacheType returns empty string for key with one part")]
+    public void GetCacheType_ReturnsEmptyForShortKey()
+    {
+        // Arrange
+        string key = "website";
+
+        // Act
+        string type = key.GetCacheType();
+
+        // Assert
+        type.ShouldBeEmpty();
+    }
+
+    [Fact(DisplayName = "GetIdentifier extracts correct identifier from key")]
+    public void GetIdentifier_ExtractsCorrectIdentifier()
+    {
+        // Arrange
+        string key = "website:doc:bylaws:content";
+
+        // Act
+        string identifier = key.GetIdentifier();
+
+        // Assert
+        identifier.ShouldBe("bylaws");
+    }
+
+    [Fact(DisplayName = "GetIdentifier returns empty string for key with two parts")]
+    public void GetIdentifier_ReturnsEmptyForShortKey()
+    {
+        // Arrange
+        string key = "website:doc";
+
+        // Act
+        string identifier = key.GetIdentifier();
+
+        // Assert
+        identifier.ShouldBeEmpty();
+    }
+
+    [Theory(DisplayName = "All CacheKeys constants produce valid keys")]
+    [InlineData("website")]
+    [InlineData("api")]
+    [InlineData("shared")]
+    public void CacheKeysConstants_AreValid(string context)
+    {
+        // Assert
+        context.ShouldNotBeNullOrWhiteSpace();
+        context.ShouldNotContain(':');
+        context.All(ch => char.IsLower(ch) || ch == '-').ShouldBeTrue();
+    }
+
+    [Theory(DisplayName = "All CacheKeys.Types constants produce valid type components")]
+    [InlineData("doc")]
+    [InlineData("query")]
+    [InlineData("job")]
+    [InlineData("session")]
+    [InlineData("awards")]
+    public void CacheKeysTypes_AreValid(string type)
+    {
+        // Assert
+        type.ShouldNotBeNullOrWhiteSpace();
+        type.ShouldNotContain(':');
+        type.All(ch => char.IsLower(ch) || ch == '-').ShouldBeTrue();
+    }
+}

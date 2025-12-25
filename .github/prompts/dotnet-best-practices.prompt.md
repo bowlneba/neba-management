@@ -42,7 +42,7 @@ Your task is to ensure .NET/C# code in ${selection} meets the best practices spe
 
 ## Testing Standards
 
-- Use MSTest framework with FluentAssertions for assertions
+- Use xUnit v3 with Shouldly for assertions
 - Follow AAA pattern (Arrange, Act, Assert)
 - Use Moq for mocking dependencies
 - Test both success and failure scenarios

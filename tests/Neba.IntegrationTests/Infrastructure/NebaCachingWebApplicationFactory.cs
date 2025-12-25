@@ -10,10 +10,10 @@ using Neba.Tests.Website;
 namespace Neba.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// Custom WebApplicationFactory for integration testing that configures the test database.
-/// Each test class should create its own instance of WebsiteDatabase and pass it to this factory.
+/// WebApplicationFactory specifically for caching integration tests.
+/// Unlike NebaWebApplicationFactory, this DOES apply the caching decorator to test caching functionality.
 /// </summary>
-public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
+public sealed class NebaCachingWebApplicationFactory(WebsiteDatabase database)
         : WebApplicationFactory<IApiAssemblyMarker>
 {
 
@@ -52,64 +52,18 @@ public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
             services.RemoveAll<IHostedService>();
 
             // Replace real background job scheduler with no-op implementation
-            // (allows background job classes to be constructed without actually scheduling jobs)
             services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
             services.AddScoped<Neba.Application.BackgroundJobs.IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
 
-            // Replace HybridCache with no-op implementation to avoid serialization issues
-            // The CachedQueryHandlerDecorator will work but won't actually cache anything
-            services.RemoveAll<Microsoft.Extensions.Caching.Hybrid.HybridCache>();
-            services.AddSingleton<Microsoft.Extensions.Caching.Hybrid.HybridCache, NoOpHybridCache>();
-
             // Register test query handlers for caching tests
             services.Scan(scan => scan
-                .FromAssemblyOf<NebaWebApplicationFactory>()
+                .FromAssemblyOf<NebaCachingWebApplicationFactory>()
                 .AddClasses(classes => classes.AssignableTo(typeof(Neba.Application.Messaging.IQueryHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            // Apply caching decorator to ALL handlers (including test handlers) for caching tests
+            services.Decorate(typeof(Neba.Application.Messaging.IQueryHandler<,>), typeof(Neba.Infrastructure.Caching.CachedQueryHandlerDecorator<,>));
         });
-    }
-}
-
-/// <summary>
-/// No-op implementation of HybridCache for testing that bypasses caching entirely.
-/// </summary>
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes - instantiated by DI
-internal sealed class NoOpHybridCache : Microsoft.Extensions.Caching.Hybrid.HybridCache
-#pragma warning restore CA1812
-{
-    public override ValueTask<T> GetOrCreateAsync<TState, T>(
-        string key,
-        TState state,
-        Func<TState, CancellationToken, ValueTask<T>> factory,
-        Microsoft.Extensions.Caching.Hybrid.HybridCacheEntryOptions? options = null,
-        IEnumerable<string>? tags = null,
-        CancellationToken cancellationToken = default)
-    {
-        // Always call the factory - never cache
-        return factory(state, cancellationToken);
-    }
-
-    public override ValueTask SetAsync<T>(
-        string key,
-        T value,
-        Microsoft.Extensions.Caching.Hybrid.HybridCacheEntryOptions? options = null,
-        IEnumerable<string>? tags = null,
-        CancellationToken cancellationToken = default)
-    {
-        // No-op
-        return ValueTask.CompletedTask;
-    }
-
-    public override ValueTask RemoveAsync(string key, CancellationToken cancellationToken = default)
-    {
-        // No-op
-        return ValueTask.CompletedTask;
-    }
-
-    public override ValueTask RemoveByTagAsync(string tag, CancellationToken cancellationToken = default)
-    {
-        // No-op
-        return ValueTask.CompletedTask;
     }
 }

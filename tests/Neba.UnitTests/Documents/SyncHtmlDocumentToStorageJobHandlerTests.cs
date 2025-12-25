@@ -342,7 +342,6 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
-        // Verify cache removal was called (after the 1 minute delay in the actual code)
         _mockCache.Verify(c => c.RemoveAsync("job-cache-key", TestContext.Current.CancellationToken), Times.Once);
     }
 

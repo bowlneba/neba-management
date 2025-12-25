@@ -95,7 +95,7 @@ applyTo: '**/*.cs'
 - Demonstrate how to mock dependencies for effective testing.
 - Show how to test authentication and authorization logic.
 - Explain test-driven development principles as applied to API development.
-- Prefer xUnit with FluentAssertions to align with this repository's existing tests.
+- Prefer xUnit with Shouldly to align with this repository's existing tests.
 
 ## Performance Optimization
 

@@ -6,6 +6,7 @@
     <RootNamespace>Neba.UnitTests</RootNamespace>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <NoWarn>CA1859</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
