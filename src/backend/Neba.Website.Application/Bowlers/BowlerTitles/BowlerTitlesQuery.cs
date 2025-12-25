@@ -18,7 +18,7 @@ public sealed record BowlerTitlesQuery
 
     ///<inheritdoc />
     public string Key
-        => $"{CacheKeys.WebsiteContext}:{CacheKeys.Types.Query}:BowlerTitlesQuery:{BowlerId}";
+        => $"{CacheKeys.WebsiteContext}:{CacheKeys.Types.Query}:BowlerTitlesQuery:{BowlerId.Value}";
 
     ///<inheritdoc />
     public IReadOnlyCollection<string> Tags
