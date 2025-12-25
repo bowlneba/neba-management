@@ -25,6 +25,9 @@ on:
       DATABASE_JOBS_PASSWORD:
         description: 'PostgreSQL Hangfire jobs user password'
         required: true
+      DATABASE_CACHE_PASSWORD:
+        description: 'PostgreSQL cache user password'
+        required: true
       GOOGLE_DOCS_CLIENT_EMAIL:
         description: 'Google Docs service account client email'
         required: false

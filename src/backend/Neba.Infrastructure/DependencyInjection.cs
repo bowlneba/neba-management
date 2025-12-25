@@ -37,7 +37,7 @@ public static class InfrastructureDependencyInjection
             ArgumentNullException.ThrowIfNull(cachingAssemblies);
 
             return services
-                .AddCaching(cachingAssemblies)
+                .AddCaching(config, cachingAssemblies)
                 .AddKeyVault(config)
                 .AddGoogleDocs(config)
                 .AddBackgroundJobs(config)
@@ -90,12 +90,22 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        private IServiceCollection AddCaching(Assembly[] assemblies)
+        private IServiceCollection AddCaching(IConfiguration config, Assembly[] assemblies)
         {
             if (assemblies.Length == 0)
             {
                 return services;
             }
+
+            services.AddDistributedPostgresCache(options =>
+            {
+                options.ConnectionString = config.GetConnectionString("cache")
+                    ?? throw new InvalidOperationException("Cache connection string is not configured.");
+
+                options.SchemaName = "public";
+                options.TableName = "distributed_cache";
+                options.CreateIfNotExists = true;
+            });
 
             services.AddHybridCache(options =>
             {
