@@ -147,7 +147,7 @@ internal sealed class TestCachedQueryHandler : IQueryHandler<TestCachedQuery, Te
 #pragma warning restore CA1812
 {
     // Static dictionary to track invocations across decorator boundaries
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQuery query, CancellationToken cancellationToken)
     {
@@ -177,7 +177,7 @@ public sealed record TestCachedQueryWithTags(string CacheKey, IReadOnlyCollectio
 internal sealed class TestCachedQueryWithTagsHandler : IQueryHandler<TestCachedQueryWithTags, TestResponse>
 #pragma warning restore CA1812
 {
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQueryWithTags query, CancellationToken cancellationToken)
     {
@@ -205,7 +205,7 @@ public sealed record TestCachedQueryWithExpiry(string CacheKey) : ICachedQuery<T
 internal sealed class TestCachedQueryWithExpiryHandler : IQueryHandler<TestCachedQueryWithExpiry, TestResponse>
 #pragma warning restore CA1812
 {
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQueryWithExpiry query, CancellationToken cancellationToken)
     {
