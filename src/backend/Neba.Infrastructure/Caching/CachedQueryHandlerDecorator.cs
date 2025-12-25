@@ -6,11 +6,12 @@ namespace Neba.Infrastructure.Caching;
 
 internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
     : IQueryHandler<TQuery, TResponse>
-      where TQuery : ICachedQuery<TResponse>
+      where TQuery : IQuery<TResponse>
 {
     private readonly IQueryHandler<TQuery, TResponse> _innerHandler;
     private readonly HybridCache _cache;
     private readonly ILogger<CachedQueryHandlerDecorator<TQuery, TResponse>> _logger;
+    private readonly bool _isCacheable;
 
     public CachedQueryHandlerDecorator(
         IQueryHandler<TQuery, TResponse> innerHandler,
@@ -20,11 +21,19 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
         _innerHandler = innerHandler;
         _cache = cache;
         _logger = logger;
+        _isCacheable = typeof(ICachedQuery<TResponse>).IsAssignableFrom(typeof(TQuery));
     }
 
     public async Task<TResponse> HandleAsync(TQuery query, CancellationToken cancellationToken)
     {
-        string cacheKey = query.Key;
+        // Fast path: non-cached queries bypass caching entirely
+        if (!_isCacheable || query is not ICachedQuery<TResponse> cachedQuery)
+        {
+            return await _innerHandler.HandleAsync(query, cancellationToken);
+        }
+
+        // Cached path: use HybridCache
+        string cacheKey = cachedQuery.Key;
 
         return await _cache.GetOrCreateAsync(
             cacheKey,
@@ -39,9 +48,9 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
             },
             options: new HybridCacheEntryOptions
             {
-                Expiration = query.Expiry
+                Expiration = cachedQuery.Expiry
             },
-            tags: query.Tags,
+            tags: cachedQuery.Tags,
             cancellationToken: cancellationToken);
     }
 }
