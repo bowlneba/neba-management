@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Messaging;
 using Neba.IntegrationTests.Infrastructure;
-using Shouldly;
 
 namespace Neba.IntegrationTests.Caching;
 

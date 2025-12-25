@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Website.Domain.Awards;
+namespace Neba.Domain.Awards;
 
 /// <summary>
 /// Categories used to group bowlers for Bowler of the Year awards, allowing recognition across different

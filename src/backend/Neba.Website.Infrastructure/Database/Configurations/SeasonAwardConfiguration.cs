@@ -1,6 +1,7 @@
 using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Awards;

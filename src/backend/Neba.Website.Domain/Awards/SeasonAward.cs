@@ -1,4 +1,5 @@
 using Neba.Domain;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Website.Domain.Bowlers;
 
@@ -22,7 +23,7 @@ public sealed class SeasonAward
     public SeasonAward()
         : base(SeasonAwardId.New())
     {
-        AwardType = SeasonAwardType.s_default;
+        AwardType = SeasonAwardType.Default();
     }
 
     /// <summary>

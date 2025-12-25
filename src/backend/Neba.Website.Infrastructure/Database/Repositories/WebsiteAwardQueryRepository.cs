@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Domain.Awards;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
-using Neba.Website.Domain.Awards;
 
 namespace Neba.Website.Infrastructure.Database.Repositories;
 

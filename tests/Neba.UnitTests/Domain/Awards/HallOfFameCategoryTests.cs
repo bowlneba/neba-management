@@ -1,6 +1,6 @@
 using Neba.Domain;
 
-namespace Neba.UnitTests.Domain;
+namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class HallOfFameCategoryTests
 {
@@ -19,6 +19,20 @@ public sealed class HallOfFameCategoryTests
         category[0].Name.ShouldBe(expectedName);
         category[0].Value.ShouldBe(expectedValue);
 
+    }
+
+    [Fact(DisplayName = "Hall of Fame Category List Contains All Categories")]
+    public void HallOfFameCategory_ListContainsAllCategories()
+    {
+        // Arrange & Act
+        IReadOnlyCollection<HallOfFameCategory> categories = HallOfFameCategory.List;
+
+        // Assert
+        categories.Count.ShouldBe(4);
+        categories.ShouldContain(HallOfFameCategory.None);
+        categories.ShouldContain(HallOfFameCategory.SuperiorPerformance);
+        categories.ShouldContain(HallOfFameCategory.MeritoriousService);
+        categories.ShouldContain(HallOfFameCategory.FriendOfNeba);
     }
 
     [Fact(DisplayName = "Hall of Fame Category Combination Works Correctly")]

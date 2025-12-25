@@ -1,6 +1,7 @@
-using Neba.Website.Domain.Awards;
 
-namespace Neba.UnitTests.Website.Awards.BowlerOfTheYear;
+using Neba.Domain.Awards;
+
+namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class BowlerOfTheYearCategoryTests
 {

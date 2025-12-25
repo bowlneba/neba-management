@@ -1,5 +1,5 @@
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
-using Neba.Website.Domain.Awards;
 
 namespace Neba.Website.Application.Awards.BowlerOfTheYear;
 

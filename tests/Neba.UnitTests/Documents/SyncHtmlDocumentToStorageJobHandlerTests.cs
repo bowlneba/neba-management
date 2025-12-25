@@ -2,7 +2,6 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Application.Documents;
 using Neba.Application.Storage;
-using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Documents;
 

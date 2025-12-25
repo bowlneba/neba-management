@@ -1,4 +1,3 @@
-using System.Data;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
