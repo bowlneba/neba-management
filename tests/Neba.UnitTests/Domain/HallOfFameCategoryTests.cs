@@ -1,0 +1,39 @@
+using Neba.Domain;
+
+namespace Neba.UnitTests.Domain;
+
+public sealed class HallOfFameCategoryTests
+{
+    [Theory(DisplayName = "Hall of Fame Categories Have Correct Names and Values")]
+    [InlineData("None", 0)]
+    [InlineData("SuperiorPerformance", 1)]
+    [InlineData("MeritoriousService", 2)]
+    [InlineData("FriendOfNeba", 4)]
+    public void HallOfFameCategory_HasCorrectNameAndValue(string expectedName, int expectedValue)
+    {
+        // Arrange & Act
+        var category = HallOfFameCategory.FromValue(expectedValue).ToList();
+
+        // Assert
+        category.Count.ShouldBe(1);
+        category[0].Name.ShouldBe(expectedName);
+        category[0].Value.ShouldBe(expectedValue);
+
+    }
+
+    [Fact(DisplayName = "Hall of Fame Category Combination Works Correctly")]
+    public void HallOfFameCategory_CombinationWorksCorrectly()
+    {
+        // Arrange
+        int combinedCategory = HallOfFameCategory.SuperiorPerformance | HallOfFameCategory.FriendOfNeba;
+
+        // Act
+        var categories = HallOfFameCategory.FromValue(combinedCategory).ToList();
+
+        // Assert
+        combinedCategory.ShouldBe(5);
+        categories.Count.ShouldBe(2);
+        categories.ShouldContain(HallOfFameCategory.SuperiorPerformance);
+        categories.ShouldContain(HallOfFameCategory.FriendOfNeba);
+    }
+}
