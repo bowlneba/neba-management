@@ -28,7 +28,7 @@ public sealed class HallOfFameCategoryTests
         int combinedCategory = HallOfFameCategory.SuperiorPerformance | HallOfFameCategory.FriendOfNeba;
 
         // Act
-        var categories = HallOfFameCategory.FromValue(combinedCategory).ToList();
+        List<HallOfFameCategory> categories = [.. HallOfFameCategory.FromValue(combinedCategory)];
 
         // Assert
         combinedCategory.ShouldBe(5);
