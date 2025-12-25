@@ -65,7 +65,7 @@ public static class CacheTags
         [
             CacheKeys.WebsiteContext,
             $"{CacheKeys.WebsiteContext}:bowlers",
-            $"{CacheKeys.WebsiteContext}:bowler:{bowlerId}"
+            $"{CacheKeys.WebsiteContext}:bowler:{bowlerId.Value}"
         ];
 
     /// <summary>
