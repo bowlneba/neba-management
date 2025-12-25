@@ -14,7 +14,7 @@ public abstract class CachingTestsBase
     protected WebsiteDatabase Database { get; private set; } = null!;
     protected NebaCachingWebApplicationFactory Factory { get; private set; } = null!;
 
-    public async ValueTask InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         Database = new WebsiteDatabase();
         await Database.InitializeAsync();
@@ -22,7 +22,7 @@ public abstract class CachingTestsBase
         Factory = new NebaCachingWebApplicationFactory(Database);
     }
 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         await Factory.DisposeAsync();
         await Database.DisposeAsync();

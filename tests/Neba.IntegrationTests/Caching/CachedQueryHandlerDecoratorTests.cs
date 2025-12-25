@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Messaging;
 using Neba.IntegrationTests.Infrastructure;
@@ -6,8 +7,15 @@ namespace Neba.IntegrationTests.Caching;
 
 public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
 {
-    public CachedQueryHandlerDecoratorTests()
+    public override async ValueTask InitializeAsync()
     {
+        await base.InitializeAsync();
+
+        // Clear all cached data from previous test runs using wildcard tag
+        // This invalidates ALL HybridCache entries, ensuring test isolation
+        HybridCache cache = Factory.Services.GetRequiredService<HybridCache>();
+        await cache.RemoveByTagAsync("*");
+
         // Clear static state from previous test runs to prevent test pollution
         TestCachedQueryHandler.InvocationCounts.Clear();
         TestCachedQueryWithTagsHandler.InvocationCounts.Clear();
