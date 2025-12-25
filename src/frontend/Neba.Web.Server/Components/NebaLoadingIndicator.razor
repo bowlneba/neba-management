@@ -77,92 +77,102 @@
     {
         if (IsVisible && !_shouldShow)
         {
-            // Loading started - begin delay before showing
-            if (_delayCancellation != null)
-            {
-                _delayCancellation.Cancel();
-                _delayCancellation.Dispose();
-            }
-            _delayCancellation = new CancellationTokenSource();
-
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(DelayMs, _delayCancellation.Token);
-                    _shouldShow = true;
-                    _shownAt = DateTime.UtcNow;
-                    await InvokeAsync(StateHasChanged);
-                }
-                catch (TaskCanceledException)
-                {
-                    // Delay was cancelled - loading finished before delay expired
-                }
-            });
+            HandleLoadingStarted();
         }
         else if (!IsVisible)
         {
-            // Loading finished - cancel delay timer if still running
-            if (_delayCancellation != null)
+            HandleLoadingFinished();
+        }
+    }
+
+    private void HandleLoadingStarted()
+    {
+        // Loading started - begin delay before showing
+        if (_delayCancellation != null)
+        {
+            _delayCancellation.Cancel();
+            _delayCancellation.Dispose();
+        }
+        _delayCancellation = new CancellationTokenSource();
+
+        _ = Task.Run(async () =>
+        {
+            try
             {
-                _delayCancellation.Cancel();
-                _delayCancellation.Dispose();
-                _delayCancellation = null;
+                await Task.Delay(DelayMs, _delayCancellation.Token);
+                _shouldShow = true;
+                _shownAt = DateTime.UtcNow;
+                await InvokeAsync(StateHasChanged);
             }
-
-            if (_shouldShow)
+            catch (TaskCanceledException)
             {
-                // Indicator is currently shown - check minimum display time
-                if (_shownAt.HasValue)
+                // Delay was cancelled - loading finished before delay expired
+            }
+        });
+    }
+
+    private void HandleLoadingFinished()
+    {
+        // Loading finished - cancel delay timer if still running
+        if (_delayCancellation != null)
+        {
+            _delayCancellation.Cancel();
+            _delayCancellation.Dispose();
+            _delayCancellation = null;
+        }
+
+        if (_shouldShow)
+        {
+            // Indicator is currently shown - check minimum display time
+            if (_shownAt.HasValue)
+            {
+                var elapsed = (DateTime.UtcNow - _shownAt.Value).TotalMilliseconds;
+                var remaining = MinimumDisplayMs - elapsed;
+
+                if (remaining > 0)
                 {
-                    var elapsed = (DateTime.UtcNow - _shownAt.Value).TotalMilliseconds;
-                    var remaining = MinimumDisplayMs - elapsed;
-
-                    if (remaining > 0)
+                    // Wait for minimum display time in background
+                    if (_minimumDisplayCancellation != null)
                     {
-                        // Wait for minimum display time in background
-                        if (_minimumDisplayCancellation != null)
+                        _minimumDisplayCancellation.Cancel();
+                        _minimumDisplayCancellation.Dispose();
+                    }
+                    _minimumDisplayCancellation = new CancellationTokenSource();
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
                         {
-                            _minimumDisplayCancellation.Cancel();
-                            _minimumDisplayCancellation.Dispose();
+                            await Task.Delay((int)remaining, _minimumDisplayCancellation.Token);
+                            _shouldShow = false;
+                            _shownAt = null;
+                            await InvokeAsync(StateHasChanged);
                         }
-                        _minimumDisplayCancellation = new CancellationTokenSource();
-
-                        _ = Task.Run(async () =>
+                        catch (TaskCanceledException)
                         {
-                            try
-                            {
-                                await Task.Delay((int)remaining, _minimumDisplayCancellation.Token);
-                                _shouldShow = false;
-                                _shownAt = null;
-                                await InvokeAsync(StateHasChanged);
-                            }
-                            catch (TaskCanceledException)
-                            {
-                                // Cancellation is expected
-                            }
-                        });
-                    }
-                    else
-                    {
-                        // Minimum time already elapsed
-                        _shouldShow = false;
-                        _shownAt = null;
-                    }
+                            // Cancellation is expected
+                        }
+                    });
                 }
                 else
                 {
-                    // Indicator shown but no timestamp (shouldn't happen)
+                    // Minimum time already elapsed
                     _shouldShow = false;
                     _shownAt = null;
                 }
             }
             else
             {
-                // Never shown, ensure state is clean
+                // Indicator shown but no timestamp (shouldn't happen)
                 _shouldShow = false;
                 _shownAt = null;
             }
+        }
+        else
+        {
+            // Never shown, ensure state is clean
+            _shouldShow = false;
+            _shownAt = null;
         }
     }
 
