@@ -1,3 +1,4 @@
+using Neba.Application.Messaging;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 
@@ -34,5 +35,15 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
 
         // Assert
         summaries.ShouldBeEquivalentTo(seedSummaries);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new ListBowlerTitleSummariesQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerTitleSummaryDto>>>();
     }
 }

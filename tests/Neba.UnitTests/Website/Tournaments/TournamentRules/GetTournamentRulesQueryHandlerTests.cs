@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Application.Documents;
+using Neba.Application.Messaging;
 using Neba.Application.Storage;
 using Neba.Tests.Documents;
 using Neba.Website.Application.Tournaments.TournamentRules;
@@ -112,5 +113,15 @@ public sealed class GetTournamentRulesQueryHandlerTests
         result.Metadata.ShouldContainKey("LastUpdatedUtc");
         result.Metadata.ShouldContainKey("LastUpdatedBy");
         _tournamentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new GetTournamentRulesQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<DocumentDto>>();
     }
 }

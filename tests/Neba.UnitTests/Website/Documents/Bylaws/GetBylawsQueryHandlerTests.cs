@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Application.Documents;
+using Neba.Application.Messaging;
 using Neba.Application.Storage;
 using Neba.Tests.Documents;
 using Neba.Website.Application.Documents.Bylaws;
@@ -112,5 +113,15 @@ public sealed class GetBylawsQueryHandlerTests
         result.Metadata.ShouldContainKey("LastUpdatedUtc");
         result.Metadata.ShouldContainKey("LastUpdatedBy");
         _documentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("bylaws", TestContext.Current.CancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new GetBylawsQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<DocumentDto>>();
     }
 }

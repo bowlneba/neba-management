@@ -1,4 +1,5 @@
-﻿using Neba.Tests.Website;
+﻿using Neba.Application.Messaging;
+using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
@@ -34,5 +35,15 @@ public sealed class ListBowlerTitlesQueryHandlerTests
 
         // Assert
         titles.ShouldBeEquivalentTo(seedTitles);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new ListBowlerTitlesQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerTitleDto>>>();
     }
 }

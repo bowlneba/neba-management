@@ -1,3 +1,4 @@
+using Neba.Application.Messaging;
 using Neba.Tests.Website;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.HighBlock;
@@ -34,5 +35,15 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
 
         // Assert
         result.ShouldBeEquivalentTo(highBlockAwardDto);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new ListHigh5GameBlockAwardsQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<HighBlockAwardDto>>>();
     }
 }

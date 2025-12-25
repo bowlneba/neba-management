@@ -1,3 +1,4 @@
+using Neba.Application.Messaging;
 using Neba.Tests.Website;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.HighAverage;
@@ -34,5 +35,15 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
 
         // Assert
         actual.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new ListHighAverageAwardsQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<HighAverageAwardDto>>>();
     }
 }

@@ -1,4 +1,5 @@
 using ErrorOr;
+using Neba.Application.Messaging;
 using Neba.Domain.Identifiers;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers;
@@ -60,5 +61,15 @@ public sealed class BowlerTitlesQueryHandlerTests
         // Assert
         result.IsError.ShouldBeFalse();
         result.Value.ShouldBe(bowler);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new BowlerTitlesQuery { BowlerId = BowlerId.New() };
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<ErrorOr<BowlerTitlesDto>>>();
     }
 }

@@ -1,3 +1,4 @@
+using Neba.Application.Messaging;
 using Neba.Tests.Website;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
@@ -33,5 +34,15 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
 
         // Assert
         awards.ShouldBeEquivalentTo(expectedAwards);
+    }
+
+    [Fact]
+    public void Query_ShouldImplementICachedQuery()
+    {
+        // Arrange & Act
+        var query = new ListBowlerOfTheYearAwardsQuery();
+
+        // Assert
+        query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerOfTheYearAwardDto>>>();
     }
 }

@@ -55,6 +55,16 @@ public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
             // (allows background job classes to be constructed without actually scheduling jobs)
             services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
             services.AddScoped<Neba.Application.BackgroundJobs.IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
+
+            // Register test query handlers for caching tests
+            services.Scan(scan => scan
+                .FromAssemblyOf<NebaWebApplicationFactory>()
+                .AddClasses(classes => classes.AssignableTo(typeof(Neba.Application.Messaging.IQueryHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            // Apply caching decorator to test handlers
+            services.Decorate(typeof(Neba.Application.Messaging.IQueryHandler<,>), typeof(Neba.Infrastructure.Caching.CachedQueryHandlerDecorator<,>));
         });
     }
 }
