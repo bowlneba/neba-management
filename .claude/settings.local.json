@@ -105,7 +105,9 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show c914453)",
       "Bash(time dotnet test:*)",
       "Bash(docker logs:*)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff tests/Neba.IntegrationTests/Infrastructure/NebaWebApplicationFactory.cs)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff tests/Neba.IntegrationTests/Infrastructure/NebaWebApplicationFactory.cs)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline --all -20 -- \"src/frontend/Neba.Web.Server/Components/NebaLoadingIndicator.razor\")",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management show:*)"
     ],
     "deny": [],
     "ask": []

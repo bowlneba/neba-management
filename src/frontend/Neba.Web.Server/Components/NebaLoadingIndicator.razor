@@ -75,14 +75,19 @@
 
     protected override void OnParametersSet()
     {
-        if (IsVisible && !_shouldShow)
+        if (!IsVisible)
+        {
+            // If loading is not visible, ensure indicator is hidden
+            HandleLoadingFinished();
+
+            return;
+        }
+
+        if (!_shouldShow)
         {
             HandleLoadingStarted();
         }
-        else if (!IsVisible)
-        {
-            HandleLoadingFinished();
-        }
+        // else: indicator already showing, continue displaying
     }
 
     private void HandleLoadingStarted()

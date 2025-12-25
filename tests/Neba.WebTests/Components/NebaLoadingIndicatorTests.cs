@@ -241,4 +241,27 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         // Assert
         clickedCount.ShouldBe(3);
     }
+
+    [Fact]
+    public void ShouldContinueDisplayingWhenAlreadyVisibleAndRemainsVisible()
+    {
+        // Arrange - Start with IsVisible=true
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)); // No delay for testing
+
+        // Wait for initial render
+        WaitForLoadingIndicator(cut);
+        IElement initialOverlay = cut.Find(".neba-loading-overlay");
+        initialOverlay.ShouldNotBeNull();
+
+        // Act - Update parameters with IsVisible still true (simulates indicator already showing)
+        cut.SetParametersAndRender(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0));
+
+        // Assert - Indicator should still be visible, not hidden
+        IElement overlayAfterUpdate = cut.Find(".neba-loading-overlay");
+        overlayAfterUpdate.ShouldNotBeNull();
+    }
 }
