@@ -17,11 +17,11 @@ param tags object = {}
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: name
   location: location
-  tags: tags
   sku: {
     name: sku
   }
   kind: 'linux'
+  tags: tags
   properties: {
     reserved: true // Required for Linux
   }

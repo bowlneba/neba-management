@@ -35,6 +35,9 @@ This project contains custom instruction files in `.github/instructions/` that p
 ### Infrastructure & DevOps
 
 - [.github/instructions/bicep-code-best-practices.instructions.md](.github/instructions/bicep-code-best-practices.instructions.md) - Azure Bicep templates
+	- Note: Follow the `Resource Property Order` guidance in the Bicep instructions to avoid Sonar rule S6975 (consistent ordering: decorators, resource parent/scope/name/location/zones/sku/kind/scale/plan/identity/dependsOn/tags/properties).
+	- Note: Follow the `Resource Property Order` guidance in the Bicep instructions to avoid Sonar rule S6975 (consistent ordering: decorators, resource parent/scope/name/location/zones/sku/kind/scale/plan/identity/dependsOn/tags/properties).
+	  Any other decorated elements not listed there should be placed before the resource object and after the other decorators. Any other elements not listed there should be placed before the `properties` object for the resource.
 - [.github/instructions/github-actions.ci-cd-best-practices.instructions.md](.github/instructions/github-actions.ci-cd-best-practices.instructions.md) - GitHub Actions workflows
 
 ### Documentation

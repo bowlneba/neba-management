@@ -52,3 +52,28 @@ applyTo: '**/*.bicep'
 ## Documentation
 
 -   Include helpful // comments within your Bicep files to improve readability
+
+## Resource Property Order
+
+-   To avoid static analysis issues (for example Sonar rule S6975) and keep resources consistent, declare Bicep resource and decorator members in the following recommended order:
+
+	1. `@description` (decorators on params/outputs)
+	2. `@batchSize` (if used)
+	3. `resource` symbolic declaration (the resource block itself)
+	   - `parent` (if a child resource)
+	   - `scope` (if scoped to a resource/group/subscription/management group)
+	   - `name`
+	   - `location` / `extendedLocation`
+	   - `zones`
+	   - `sku`
+	   - `kind`
+	   - `scale`
+	   - `plan`
+	   - `identity`
+	   - `dependsOn`
+	   - `tags`
+	   - `properties`
+
+	Keep properties grouped logically (e.g., `sku` object before `kind`), and prefer explicit ordering rather than arbitrary placement to make diffs and reviews easier.
+
+-   Any other decorated elements not listed here should be placed before the resource object and after the other decorators. Any other elements not listed here should be placed before the `properties` object for the resource. This keeps resource blocks predictable for linters and static analysis tools.

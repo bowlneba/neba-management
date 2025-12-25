@@ -40,7 +40,6 @@ Organize code into layers with clear dependency rules (dependencies point inward
 - **DTOs**: Data transfer objects for crossing boundaries
 - **Interfaces**: Repository interfaces, external service interfaces (defined here, implemented in Infrastructure)
 - **Validators**: Input validation using FluentValidation
-- **Mapping Profiles**: AutoMapper or Mapster profiles
 
 ### 3. Infrastructure Layer (External - Depends on Application & Domain)
 

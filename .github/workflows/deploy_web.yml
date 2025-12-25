@@ -16,10 +16,6 @@ on:
         default: 'Production'
         type: string
 
-permissions:
-  id-token: write  # Required for OIDC authentication
-  contents: read
-
 env:
   DOTNET_VERSION: '10.0.x'
   AZURE_WEBAPP_PACKAGE_PATH: 'src/frontend/Neba.Web.Server'
@@ -29,6 +25,8 @@ jobs:
     name: Build Web App
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'Production' }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -85,6 +83,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment: ${{ inputs.environment || 'Production' }}
+    permissions:
+      id-token: write  # Required for OIDC authentication
+      contents: read
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v6

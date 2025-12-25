@@ -20,7 +20,7 @@ public static class SeasonAwardFactory
         };
     }
 
-    public static SeasonAward BogusBowlerOfTheYear(BowlerId bowlerId, int? seed = null)
+    public static SeasonAward BogusBowlerOfTheYear(int? seed = null)
         => BogusBowlerOfTheYear(1, seed).Single();
 
     public static IReadOnlyCollection<SeasonAward> BogusBowlerOfTheYear(

@@ -12,7 +12,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query = new TestCachedQuery("test-key-1");
 
@@ -30,7 +30,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query = new TestCachedQuery("test-key-2");
 
@@ -71,7 +71,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query1 = new TestCachedQuery("test-key-3a");
         var query2 = new TestCachedQuery("test-key-3b");
@@ -98,7 +98,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithTags, TestResponse>>();
+        IQueryHandler<TestCachedQueryWithTags, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithTags, TestResponse>>();
 
         var query = new TestCachedQueryWithTags("test-key-4", ["tag1", "tag2"]);
 
@@ -117,7 +117,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithExpiry, TestResponse>>();
+        IQueryHandler<TestCachedQueryWithExpiry, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithExpiry, TestResponse>>();
 
         var query = new TestCachedQueryWithExpiry("test-key-5");
 
@@ -147,7 +147,7 @@ internal sealed class TestCachedQueryHandler : IQueryHandler<TestCachedQuery, Te
 #pragma warning restore CA1812
 {
     // Static dictionary to track invocations across decorator boundaries
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQuery query, CancellationToken cancellationToken)
     {
@@ -177,7 +177,7 @@ public sealed record TestCachedQueryWithTags(string CacheKey, IReadOnlyCollectio
 internal sealed class TestCachedQueryWithTagsHandler : IQueryHandler<TestCachedQueryWithTags, TestResponse>
 #pragma warning restore CA1812
 {
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQueryWithTags query, CancellationToken cancellationToken)
     {
@@ -205,7 +205,7 @@ public sealed record TestCachedQueryWithExpiry(string CacheKey) : ICachedQuery<T
 internal sealed class TestCachedQueryWithExpiryHandler : IQueryHandler<TestCachedQueryWithExpiry, TestResponse>
 #pragma warning restore CA1812
 {
-    public static readonly Dictionary<string, int> InvocationCounts = new();
+    public static readonly Dictionary<string, int> InvocationCounts = [];
 
     public Task<TestResponse> HandleAsync(TestCachedQueryWithExpiry query, CancellationToken cancellationToken)
     {

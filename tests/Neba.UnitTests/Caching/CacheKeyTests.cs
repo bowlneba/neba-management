@@ -130,7 +130,7 @@ public class CacheKeyTests
     public void GetContext_ExtractsCorrectContext()
     {
         // Arrange
-        string key = "website:doc:bylaws:content";
+        const string key = "website:doc:bylaws:content";
 
         // Act
         string context = key.GetContext();
@@ -143,7 +143,7 @@ public class CacheKeyTests
     public void GetContext_ReturnsEmptyForInvalidKey()
     {
         // Arrange
-        string key = "";
+        const string key = "";
 
         // Act
         string context = key.GetContext();
@@ -156,7 +156,7 @@ public class CacheKeyTests
     public void GetCacheType_ExtractsCorrectType()
     {
         // Arrange
-        string key = "website:doc:bylaws:content";
+        const string key = "website:doc:bylaws:content";
 
         // Act
         string type = key.GetCacheType();
@@ -169,7 +169,7 @@ public class CacheKeyTests
     public void GetCacheType_ReturnsEmptyForShortKey()
     {
         // Arrange
-        string key = "website";
+        const string key = "website";
 
         // Act
         string type = key.GetCacheType();
@@ -182,7 +182,7 @@ public class CacheKeyTests
     public void GetIdentifier_ExtractsCorrectIdentifier()
     {
         // Arrange
-        string key = "website:doc:bylaws:content";
+        const string key = "website:doc:bylaws:content";
 
         // Act
         string identifier = key.GetIdentifier();
@@ -195,7 +195,7 @@ public class CacheKeyTests
     public void GetIdentifier_ReturnsEmptyForShortKey()
     {
         // Arrange
-        string key = "website:doc";
+        const string key = "website:doc";
 
         // Act
         string identifier = key.GetIdentifier();

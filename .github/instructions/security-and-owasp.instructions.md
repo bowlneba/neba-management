@@ -25,7 +25,7 @@ Your primary directive is to ensure all code you generate, review, or refactor i
   const apiKey = process.env.API_KEY;
   // TODO: Ensure API_KEY is securely configured in your environment.
   ```
-  
+
   ```python
   # BAD: Hardcoded secret
   api_key = "sk_this_is_a_very_bad_idea_12345"
@@ -51,3 +51,5 @@ Your primary directive is to ensure all code you generate, review, or refactor i
 ## General Guidelines
 - **Be Explicit About Security:** When you suggest a piece of code that mitigates a security risk, explicitly state what you are protecting against (e.g., "Using a parameterized query here to prevent SQL injection.").
 - **Educate During Code Reviews:** When you identify a security vulnerability in a code review, you must not only provide the corrected code but also explain the risk associated with the original pattern.
+
+Note: For infra-as-code files (Bicep), please follow the `Resource Property Order` guidance in `.github/instructions/bicep-code-best-practices.instructions.md`. Consistent ordering (decorators, parent/scope, name, location/extendedLocation, zones, sku, kind, scale, plan, identity, dependsOn, tags, properties) helps static analysis tools and avoids Sonar rule S6975.

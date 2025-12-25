@@ -8,16 +8,15 @@ on:
       - 'infrastructure/**'
       - '.github/workflows/pr_infrastructure.yml'
 
-permissions:
-  id-token: write  # Required for OIDC authentication
-  contents: read
-  pull-requests: write  # Required to post comments on PRs
-
 jobs:
   validate:
     name: Validate Infrastructure Changes
     runs-on: ubuntu-latest
     environment: Production
+    permissions:
+      id-token: write  # Required for OIDC authentication
+      contents: read
+      pull-requests: write  # Required to post comments on PRs
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

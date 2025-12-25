@@ -46,15 +46,21 @@ param startupCommand string = ''
 @description('Tags to apply to the resource')
 param tags object = {}
 
+@description('IP security restrictions for the site (array of objects). Leave empty for none.')
+param ipSecurityRestrictions array = []
+
+@description('SCM IP security restrictions for the site (array of objects). Leave empty for none.')
+param scmIpSecurityRestrictions array = []
+
 // App Service resource
 resource appService 'Microsoft.Web/sites@2024-11-01' = {
   name: name
   location: location
-  tags: tags
   kind: 'app,linux'
   identity: {
     type: 'SystemAssigned'
   }
+  tags: tags
   properties: {
     serverFarmId: appServicePlanId
     httpsOnly: true
@@ -87,8 +93,8 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
         allowedOrigins: corsAllowedOrigins
         supportCredentials: false
       }
-      ipSecurityRestrictions: []
-      scmIpSecurityRestrictions: []
+      ipSecurityRestrictions: length(ipSecurityRestrictions) > 0 ? ipSecurityRestrictions : null
+      scmIpSecurityRestrictions: length(scmIpSecurityRestrictions) > 0 ? scmIpSecurityRestrictions : null
       scmIpSecurityRestrictionsUseMain: false
     }
   }
