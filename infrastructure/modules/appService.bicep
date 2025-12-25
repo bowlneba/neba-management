@@ -51,10 +51,10 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
   name: name
   location: location
   tags: tags
-  kind: 'app,linux'
   identity: {
     type: 'SystemAssigned'
   }
+  kind: 'app,linux'
   properties: {
     serverFarmId: appServicePlanId
     httpsOnly: true
