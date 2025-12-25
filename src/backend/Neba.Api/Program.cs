@@ -49,7 +49,10 @@ app
     .UseOpenApi()
     .UseHealthChecks();
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
 
 // Enable CORS
 app.UseCors();
@@ -62,5 +65,11 @@ app.Services.InitializeWebsiteBackgroundJobs();
 
 // Future API endpoints will be added here
 app.MapWebsiteEndpoints();
+
+#if DEBUG
+
+app.MapGet("/", () => "Neba API is running...");
+
+#endif
 
 await app.RunAsync();
