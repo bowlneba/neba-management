@@ -1,4 +1,4 @@
-﻿﻿using Neba.Application.Caching;
+﻿using Neba.Application.Caching;
 using Neba.Application.Messaging;
 
 namespace Neba.Website.Application.Bowlers.BowlerTitles;

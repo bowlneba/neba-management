@@ -5,8 +5,8 @@ namespace Neba.Application.Caching;
 /// </summary>
 internal static class CacheKeyExtensions
 {
-    #pragma warning disable S1144 // Unused private method is intentional for extension method syntax
-    #pragma warning disable S2325 // Method could be static is intentional for extension method syntax
+#pragma warning disable S1144 // Unused private method is intentional for extension method syntax
+#pragma warning disable S2325 // Method could be static is intentional for extension method syntax
 
     extension(string key)
     {
