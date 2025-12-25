@@ -92,7 +92,7 @@ src/backend/
 
 (This section covers technical, quality-of-life, and operational improvements. Name subject to change.)
 
-- [ ] API Caching
+- [x] API Caching
 - [x] Health Checks
 - [x] SonarCloud Integration
 - [x] Background Jobs
