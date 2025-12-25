@@ -32,57 +32,54 @@ $$;
 
 -- Grant privileges using dynamic SQL to safely handle identifiers
 DO $$
-DECLARE
-    schema_name TEXT := :'schema_name';
-    username TEXT := :'username';
 BEGIN
     -- Grant schema usage
     EXECUTE format(
         'GRANT USAGE ON SCHEMA %I TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant CRUD permissions on all existing tables
     EXECUTE format(
         'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA %I TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant CRUD permissions on all future tables
     EXECUTE format(
         'ALTER DEFAULT PRIVILEGES IN SCHEMA %I GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant usage on all sequences (for auto-increment columns)
     EXECUTE format(
         'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA %I TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant usage on all future sequences
     EXECUTE format(
         'ALTER DEFAULT PRIVILEGES IN SCHEMA %I GRANT USAGE, SELECT ON SEQUENCES TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant execute on all functions (if needed for stored procedures)
     EXECUTE format(
         'GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA %I TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 
     -- Grant execute on all future functions
     EXECUTE format(
         'ALTER DEFAULT PRIVILEGES IN SCHEMA %I GRANT EXECUTE ON FUNCTIONS TO %I',
-        schema_name,
-        username
+        :'schema_name',
+        :'username'
     );
 END
 $$;
