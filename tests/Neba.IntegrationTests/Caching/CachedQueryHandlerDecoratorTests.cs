@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace Neba.IntegrationTests.Caching;
 
-public sealed class CachedQueryHandlerDecoratorTests : ApiTestsBase
+public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
 {
     [Fact]
     public async Task CachedQuery_FirstCall_ShouldExecuteHandler()

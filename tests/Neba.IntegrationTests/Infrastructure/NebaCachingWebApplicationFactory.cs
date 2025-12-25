@@ -10,10 +10,10 @@ using Neba.Tests.Website;
 namespace Neba.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// Custom WebApplicationFactory for integration testing that configures the test database.
-/// Each test class should create its own instance of WebsiteDatabase and pass it to this factory.
+/// WebApplicationFactory specifically for caching integration tests.
+/// Unlike NebaWebApplicationFactory, this DOES apply the caching decorator to test caching functionality.
 /// </summary>
-public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
+public sealed class NebaCachingWebApplicationFactory(WebsiteDatabase database)
         : WebApplicationFactory<IApiAssemblyMarker>
 {
 
@@ -52,19 +52,18 @@ public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
             services.RemoveAll<IHostedService>();
 
             // Replace real background job scheduler with no-op implementation
-            // (allows background job classes to be constructed without actually scheduling jobs)
             services.RemoveAll<Neba.Application.BackgroundJobs.IBackgroundJobScheduler>();
             services.AddScoped<Neba.Application.BackgroundJobs.IBackgroundJobScheduler, NoOpBackgroundJobScheduler>();
 
             // Register test query handlers for caching tests
             services.Scan(scan => scan
-                .FromAssemblyOf<NebaWebApplicationFactory>()
+                .FromAssemblyOf<NebaCachingWebApplicationFactory>()
                 .AddClasses(classes => classes.AssignableTo(typeof(Neba.Application.Messaging.IQueryHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-            // NOTE: Caching decorator is NOT applied in integration tests to avoid serialization timeouts
-            // with large collections. Caching functionality is tested separately in CachedQueryHandlerDecoratorTests.
+            // Apply caching decorator to ALL handlers (including test handlers) for caching tests
+            services.Decorate(typeof(Neba.Application.Messaging.IQueryHandler<,>), typeof(Neba.Infrastructure.Caching.CachedQueryHandlerDecorator<,>));
         });
     }
 }
