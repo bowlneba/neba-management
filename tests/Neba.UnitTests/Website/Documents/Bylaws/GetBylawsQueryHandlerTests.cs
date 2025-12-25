@@ -9,6 +9,8 @@ namespace Neba.UnitTests.Website.Documents.Bylaws;
 
 public sealed class GetBylawsQueryHandlerTests
 {
+    private static readonly string[] ExpectedDocumentTags = ["website", "website:documents", "website:document:bylaws"];
+
     private readonly Mock<IStorageService> _storageServiceMock;
     private readonly Mock<IDocumentsService> _documentsServiceMock;
     private readonly Mock<IBylawsSyncBackgroundJob> _bylawsSyncJobMock;
@@ -123,5 +125,54 @@ public sealed class GetBylawsQueryHandlerTests
 
         // Assert
         query.ShouldBeAssignableTo<ICachedQuery<DocumentDto>>();
+    }
+
+    [Fact]
+    public void Query_CacheKey_ShouldFollowConvention()
+    {
+        // Arrange
+        var query = new GetBylawsQuery();
+
+        // Act
+        string key = query.Key;
+
+        // Assert
+        key.ShouldBe("website:doc:bylaws:content");
+        key.ShouldSatisfyAllConditions(
+            k => k.ShouldNotBeNullOrWhiteSpace(),
+            k => k.Length.ShouldBeLessThanOrEqualTo(512),
+            k => k.Split(':').Length.ShouldBeGreaterThanOrEqualTo(3),
+            k => k.Split(':').ShouldAllBe(p => !string.IsNullOrWhiteSpace(p))
+        );
+        key.Split(':')[0].ShouldBe("website");
+        key.Split(':')[1].ShouldBe("doc");
+        key.Split(':')[2].ShouldBe("bylaws");
+        key.Split(':')[3].ShouldBe("content");
+    }
+
+    [Fact]
+    public void Query_CacheExpiry_ShouldBe30Days()
+    {
+        // Arrange
+        var query = new GetBylawsQuery();
+
+        // Act
+        TimeSpan expiry = query.Expiry;
+
+        // Assert
+        expiry.ShouldBe(TimeSpan.FromDays(30));
+    }
+
+    [Fact]
+    public void Query_CacheTags_ShouldIncludeDocumentHierarchy()
+    {
+        // Arrange
+        var query = new GetBylawsQuery();
+
+        // Act
+        IReadOnlyCollection<string> tags = query.Tags;
+
+        // Assert
+        tags.ShouldBeEquivalentTo(ExpectedDocumentTags);
     }
 }

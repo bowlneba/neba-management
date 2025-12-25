@@ -6,6 +6,8 @@ namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 
 public sealed class ListBowlerTitleSummariesQueryHandlerTests
 {
+    private static readonly string[] ExpectedAllBowlersTags = ["website", "website:bowlers"];
+
     private readonly Mock<IWebsiteTitleQueryRepository> _mockWebsiteTitleQueryRepository;
 
     private readonly ListBowlerTitleSummariesQueryHandler _queryHandler;
@@ -45,5 +47,55 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
 
         // Assert
         query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerTitleSummaryDto>>>();
+    }
+
+    [Fact]
+    public void Query_CacheKey_ShouldFollowConvention()
+    {
+        // Arrange
+        var query = new ListBowlerTitleSummariesQuery();
+
+        // Act
+        string key = query.Key;
+
+        // Assert
+        key.ShouldBe("website:query:ListBowlerTitleSummariesQuery");
+        key.ShouldSatisfyAllConditions(
+            k => k.ShouldNotBeNullOrWhiteSpace(),
+            k => k.Length.ShouldBeLessThanOrEqualTo(512),
+            k => k.Split(':').Length.ShouldBeGreaterThanOrEqualTo(3),
+            k => k.Split(':').ShouldAllBe(p => !string.IsNullOrWhiteSpace(p))
+        );
+        key.Split(':')[0].ShouldBe("website");
+        key.Split(':')[1].ShouldBe("query");
+        key.Split(':')[2].ShouldBe("ListBowlerTitleSummariesQuery");
+        key.Split(':').Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public void Query_CacheExpiry_ShouldBeDefault7Days()
+    {
+        // Arrange
+        var query = new ListBowlerTitleSummariesQuery();
+
+        // Act & Assert
+        ICachedQuery<IReadOnlyCollection<BowlerTitleSummaryDto>> cachedQuery = query;
+        TimeSpan expiry = cachedQuery.Expiry;
+
+        // Assert
+        expiry.ShouldBe(TimeSpan.FromDays(7));
+    }
+
+    [Fact]
+    public void Query_CacheTags_ShouldIncludeAllBowlersHierarchy()
+    {
+        // Arrange
+        var query = new ListBowlerTitleSummariesQuery();
+
+        // Act
+        IReadOnlyCollection<string> tags = query.Tags;
+
+        // Assert
+        tags.ShouldBeEquivalentTo(ExpectedAllBowlersTags);
     }
 }

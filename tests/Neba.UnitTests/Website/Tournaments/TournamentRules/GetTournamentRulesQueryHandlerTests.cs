@@ -9,6 +9,8 @@ namespace Neba.UnitTests.Website.Tournaments.TournamentRules;
 
 public sealed class GetTournamentRulesQueryHandlerTests
 {
+    private static readonly string[] ExpectedDocumentTags = ["website", "website:documents", "website:document:tournament-rules"];
+
     private readonly Mock<IStorageService> _storageServiceMock;
     private readonly Mock<IDocumentsService> _tournamentsServiceMock;
     private readonly Mock<ITournamentRulesSyncBackgroundJob> _tournamentRulesSyncJobMock;
@@ -123,5 +125,54 @@ public sealed class GetTournamentRulesQueryHandlerTests
 
         // Assert
         query.ShouldBeAssignableTo<ICachedQuery<DocumentDto>>();
+    }
+
+    [Fact]
+    public void Query_CacheKey_ShouldFollowConvention()
+    {
+        // Arrange
+        var query = new GetTournamentRulesQuery();
+
+        // Act
+        string key = query.Key;
+
+        // Assert
+        key.ShouldBe("website:doc:tournament-rules:content");
+        key.ShouldSatisfyAllConditions(
+            k => k.ShouldNotBeNullOrWhiteSpace(),
+            k => k.Length.ShouldBeLessThanOrEqualTo(512),
+            k => k.Split(':').Length.ShouldBeGreaterThanOrEqualTo(3),
+            k => k.Split(':').ShouldAllBe(p => !string.IsNullOrWhiteSpace(p))
+        );
+        key.Split(':')[0].ShouldBe("website");
+        key.Split(':')[1].ShouldBe("doc");
+        key.Split(':')[2].ShouldBe("tournament-rules");
+        key.Split(':')[3].ShouldBe("content");
+    }
+
+    [Fact]
+    public void Query_CacheExpiry_ShouldBe30Days()
+    {
+        // Arrange
+        var query = new GetTournamentRulesQuery();
+
+        // Act
+        TimeSpan expiry = query.Expiry;
+
+        // Assert
+        expiry.ShouldBe(TimeSpan.FromDays(30));
+    }
+
+    [Fact]
+    public void Query_CacheTags_ShouldIncludeDocumentHierarchy()
+    {
+        // Arrange
+        var query = new GetTournamentRulesQuery();
+
+        // Act
+        IReadOnlyCollection<string> tags = query.Tags;
+
+        // Assert
+        tags.ShouldBeEquivalentTo(ExpectedDocumentTags);
     }
 }
