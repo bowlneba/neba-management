@@ -121,7 +121,7 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 			throw new InvalidOperationException($"Software Non Champion has a website id: {websiteBowler.Id} {websiteBowler.Name.First} {websiteBowler.Name.Last}");
 		}
 
-		mergedBowlers.Add(new(new Ulid(Guid.NewGuid()), manualMatch.websiteId, manualMatch.softwareId, softwareBowler.Name, websiteBowler?.Name));
+		mergedBowlers.Add(new(Guid.AsUlid(), manualMatch.websiteId, manualMatch.softwareId, softwareBowler.Name, websiteBowler?.Name));
 		softwareBowlers.Remove(softwareBowler);
 
 		if (websiteBowler is not null)
@@ -146,7 +146,7 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 			}
 
 			(Ulid bowlerId, int? websiteId, int softwareId, HumanName softwareName, HumanName websiteName) mergedBowler
-				= new(new Ulid(Guid.NewGuid()), websiteBowler.Id, softwareBowler.Id, softwareBowler.Name, websiteBowler.Name);
+				= new(Guid.AsUlid(), websiteBowler.Id, softwareBowler.Id, softwareBowler.Name, websiteBowler.Name);
 			websiteBowlers.Remove(websiteBowler);
 
 			mergedBowlers.Add(mergedBowler);
@@ -167,12 +167,12 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 		}
 
 		// no website match
-		mergedBowlers.Add(new(new Ulid(Guid.NewGuid()), null, softwareBowler.Id, softwareBowler.Name, null));
+		mergedBowlers.Add(new(Guid.AsUlid(), null, softwareBowler.Id, softwareBowler.Name, null));
 	}
 
 	foreach (var websiteBowler in websiteBowlers)
 	{
-		mergedBowlers.Add(new(new Ulid(Guid.NewGuid()), websiteBowler.Id, null, null, websiteBowler.Name));
+		mergedBowlers.Add(new(Guid.AsUlid(), websiteBowler.Id, null, null, websiteBowler.Name));
 	}
 
 
@@ -238,7 +238,7 @@ public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, 
 	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
 	.Select(row => new Titles
 	{
-		DomainId = new Ulid(Guid.NewGuid()).ToString(),
+		DomainId = Guid.AsUlid().ToString(),
 		BowlerId = bowlerIdByBowlerDomainId[bowlerIdByWebsiteId[row.Field<int>("ChampionId")]],
 		Month = row.Field<DateTime>("TitleDate").Month,
 		Year = row.Field<DateTime>("TitleDate").Year,
@@ -345,7 +345,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			var bowler = websiteBowlers.Single();
 			var record = new SeasonAwards
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 				BowlerOfTheYearCategory = category,
@@ -366,7 +366,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 			var bowler = softwareBowlers.Single();
 			var record = new SeasonAwards
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 				BowlerOfTheYearCategory = category,
@@ -384,7 +384,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 
 			var manualRecord = new SeasonAwards
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				AwardType = SeasonAwardType.BowlerOfTheYear,
 				BowlerId = bowlerIdByBowlerDomainId[manualBowler.Value],
 				BowlerOfTheYearCategory = category,
@@ -401,7 +401,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 		var newBowlerName = new HumanName(bowlerName);
 		var newBowler = new Bowlers
 		{
-			DomainId = new Ulid(Guid.NewGuid()).ToString(),
+			DomainId = Guid.AsUlid().ToString(),
 			FirstName = newBowlerName.First,
 			MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
 			LastName = newBowlerName.Last,
@@ -419,7 +419,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 
 		var record = new SeasonAwards
 		{
-			DomainId = new Ulid(Guid.NewGuid()).ToString(),
+			DomainId = Guid.AsUlid().ToString(),
 			AwardType = SeasonAwardType.BowlerOfTheYear,
 			BowlerId = newBowler.Id,
 			BowlerOfTheYearCategory = category,
@@ -453,7 +453,7 @@ public async Task MigrateHighBlockAsync(
 				{
 					SeasonAwards.Add(new()
 					{
-						DomainId = new Ulid(Guid.NewGuid()).ToString(),
+						DomainId = Guid.AsUlid().ToString(),
 						AwardType = SeasonAwardType.High5GameBlock,
 						BowlerId = bowlerIdByBowlerDomainId[bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Steve Hardy", StringComparison.OrdinalIgnoreCase)).Value],
 						Season = highBlock.year,
@@ -466,7 +466,7 @@ public async Task MigrateHighBlockAsync(
 				{
 					SeasonAwards.Add(new()
 					{
-						DomainId = new Ulid(Guid.NewGuid()).ToString(),
+						DomainId = Guid.AsUlid().ToString(),
 						AwardType = SeasonAwardType.High5GameBlock,
 						BowlerId = bowlerIdByBowlerDomainId[bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Mark Blanchette", StringComparison.OrdinalIgnoreCase)).Value],
 						Season = highBlock.year,
@@ -483,7 +483,7 @@ public async Task MigrateHighBlockAsync(
 				var bowler = websiteBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
-					DomainId = new Ulid(Guid.NewGuid()).ToString(),
+					DomainId = Guid.AsUlid().ToString(),
 					AwardType = SeasonAwardType.High5GameBlock,
 					BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 					Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
@@ -504,7 +504,7 @@ public async Task MigrateHighBlockAsync(
 				var bowler = softwareBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
-					DomainId = new Ulid(Guid.NewGuid()).ToString(),
+					DomainId = Guid.AsUlid().ToString(),
 					AwardType = SeasonAwardType.High5GameBlock,
 					BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 					Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
@@ -522,7 +522,7 @@ public async Task MigrateHighBlockAsync(
 				
 				SeasonAwards.Add(new()
 				{
-					DomainId = new Ulid(Guid.NewGuid()).ToString(),
+					DomainId = Guid.AsUlid().ToString(),
 					AwardType = SeasonAwardType.High5GameBlock,
 					BowlerId = bowlerIdByBowlerDomainId[bowlerId],
 					Season = highBlock.year,
@@ -537,7 +537,7 @@ public async Task MigrateHighBlockAsync(
 			var newBowlerName = new HumanName(highBlock.name);
 			var newBowler = new Bowlers
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				FirstName = newBowlerName.First,
 				MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
 				LastName = newBowlerName.Last,
@@ -555,7 +555,7 @@ public async Task MigrateHighBlockAsync(
 
 			var record = new SeasonAwards
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				AwardType = SeasonAwardType.High5GameBlock,
 				BowlerId = newBowler.Id,
 				Season = highBlock.year.StartsWith("2020") ? "2020-2021" : highBlock.year,
@@ -596,7 +596,7 @@ public async Task MigrateHighAverageAsync(
 				var bowler = websiteBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
-					DomainId = new Ulid(Guid.NewGuid()).ToString(),
+					DomainId = Guid.AsUlid().ToString(),
 					AwardType = SeasonAwardType.HighAverage,
 					BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 					Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
@@ -619,7 +619,7 @@ public async Task MigrateHighAverageAsync(
 				var bowler = softwareBowlerMatches.Single();
 				var record = new SeasonAwards
 				{
-					DomainId = new Ulid(Guid.NewGuid()).ToString(),
+					DomainId = Guid.AsUlid().ToString(),
 					AwardType = SeasonAwardType.HighAverage,
 					BowlerId = bowlerIdByBowlerDomainId[bowler.Value],
 					Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
@@ -638,7 +638,7 @@ public async Task MigrateHighAverageAsync(
 			var newBowlerName = new HumanName(highAverage.name);
 			var newBowler = new Bowlers
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				FirstName = newBowlerName.First,
 				MiddleName = string.IsNullOrWhiteSpace(newBowlerName.Middle) ? null : newBowlerName.Middle,
 				LastName = newBowlerName.Last,
@@ -656,7 +656,7 @@ public async Task MigrateHighAverageAsync(
 
 			var record = new SeasonAwards
 			{
-				DomainId = new Ulid(Guid.NewGuid()).ToString(),
+				DomainId = Guid.AsUlid().ToString(),
 				AwardType = SeasonAwardType.HighAverage,
 				BowlerId = newBowler.Id,
 				Season = highAverage.year.StartsWith("2020") ? "2020-2021" : highAverage.year,
@@ -1931,3 +1931,14 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 };
 
 #endregion
+
+static class IdExtensions
+{
+	extension(Guid)
+	{
+		public static Ulid AsUlid()
+		{
+			return new Ulid(Guid.NewGuid());
+		}
+	}
+}
