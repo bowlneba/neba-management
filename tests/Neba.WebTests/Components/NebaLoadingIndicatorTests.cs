@@ -256,12 +256,146 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         initialOverlay.ShouldNotBeNull();
 
         // Act - Update parameters with IsVisible still true (simulates indicator already showing)
-        cut.SetParametersAndRender(parameters => parameters
+        cut.Render(parameters => parameters
             .Add(p => p.IsVisible, true)
             .Add(p => p.DelayMs, 0));
 
         // Assert - Indicator should still be visible, not hidden
         IElement overlayAfterUpdate = cut.Find(".neba-loading-overlay");
         overlayAfterUpdate.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void HandleLoadingFinished_ShouldHideIndicator_WhenLoadingFinishesBeforeDelayExpires()
+    {
+        // Arrange - Start with IsVisible=true and a delay
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 500)); // 500ms delay
+
+        // Act - Immediately set IsVisible to false before delay expires
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Indicator should not be shown (delay was cancelled)
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void HandleLoadingFinished_ShouldWaitMinimumDisplayTime_WhenLoadingFinishesQuicklyAfterShown()
+    {
+        // Arrange - Start with IsVisible=true, no delay, but with minimum display time
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay
+            .Add(p => p.MinimumDisplayMs, 500)); // 500ms minimum display
+
+        // Wait for indicator to show
+        WaitForLoadingIndicator(cut);
+        cut.Find(".neba-loading-overlay").ShouldNotBeNull();
+
+        // Act - Set IsVisible to false immediately after it appears
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Indicator should still be visible (waiting for minimum display time)
+        cut.Find(".neba-loading-overlay").ShouldNotBeNull();
+
+        // Wait for minimum display time to elapse
+        cut.WaitForState(() => cut.FindAll(".neba-loading-overlay").Count == 0, timeout: TimeSpan.FromSeconds(2));
+
+        // Assert - Indicator should now be hidden
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task HandleLoadingFinished_ShouldHideImmediately_WhenMinimumDisplayTimeAlreadyElapsed()
+    {
+        // Arrange - Start with IsVisible=true, no delay, with minimum display time
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0) // No delay
+            .Add(p => p.MinimumDisplayMs, 100)); // 100ms minimum display
+
+        // Wait for indicator to show
+        WaitForLoadingIndicator(cut);
+        cut.Find(".neba-loading-overlay").ShouldNotBeNull();
+
+        // Wait for minimum display time to elapse
+        await Task.Delay(150); // Wait longer than MinimumDisplayMs
+
+        // Act - Set IsVisible to false after minimum time has elapsed
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Indicator should be hidden immediately (no waiting needed)
+        await cut.WaitForStateAsync(() => cut.FindAll(".neba-loading-overlay").Count == 0, timeout: TimeSpan.FromSeconds(1));
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void HandleLoadingFinished_ShouldCleanupState_WhenIndicatorNeverShown()
+    {
+        // Arrange - Start with IsVisible=false
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - No indicator should be rendered
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+
+        // Act - Set IsVisible to false again (cleanup should handle gracefully)
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Still no indicator
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void HandleLoadingFinished_ShouldCancelPreviousMinimumDisplayTimer_WhenCalledMultipleTimes()
+    {
+        // Arrange - Start with IsVisible=true, no delay, with minimum display time
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)
+            .Add(p => p.MinimumDisplayMs, 1000)); // 1 second minimum display
+
+        // Wait for indicator to show
+        WaitForLoadingIndicator(cut);
+
+        // Act - Toggle IsVisible false then true then false quickly
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, true));
+
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Should eventually hide without throwing exceptions
+        cut.WaitForState(() => cut.FindAll(".neba-loading-overlay").Count == 0, timeout: TimeSpan.FromSeconds(3));
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void HandleLoadingFinished_ShouldHandleZeroMinimumDisplayTime()
+    {
+        // Arrange - Start with IsVisible=true, no delay, zero minimum display time
+        IRenderedComponent<NebaLoadingIndicator> cut = Render<NebaLoadingIndicator>(parameters => parameters
+            .Add(p => p.IsVisible, true)
+            .Add(p => p.DelayMs, 0)
+            .Add(p => p.MinimumDisplayMs, 0)); // Zero minimum display
+
+        // Wait for indicator to show
+        WaitForLoadingIndicator(cut);
+
+        // Act - Set IsVisible to false
+        cut.Render(parameters => parameters
+            .Add(p => p.IsVisible, false));
+
+        // Assert - Should hide immediately
+        cut.WaitForState(() => cut.FindAll(".neba-loading-overlay").Count == 0, timeout: TimeSpan.FromSeconds(1));
+        cut.FindAll(".neba-loading-overlay").ShouldBeEmpty();
     }
 }

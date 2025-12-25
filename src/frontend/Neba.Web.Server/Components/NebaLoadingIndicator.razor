@@ -118,67 +118,81 @@
 
     private void HandleLoadingFinished()
     {
-        // Loading finished - cancel delay timer if still running
+        CancelDelayTimer();
+
+        if (_shouldShow)
+        {
+            HandleShownIndicatorFinish();
+        }
+        else
+        {
+            // Never shown, ensure state is clean
+            ResetIndicatorState();
+        }
+    }
+
+    private void CancelDelayTimer()
+    {
         if (_delayCancellation != null)
         {
             _delayCancellation.Cancel();
             _delayCancellation.Dispose();
             _delayCancellation = null;
         }
+    }
 
-        if (_shouldShow)
+    private void HandleShownIndicatorFinish()
+    {
+        if (!_shownAt.HasValue)
         {
-            // Indicator is currently shown - check minimum display time
-            if (_shownAt.HasValue)
-            {
-                var elapsed = (DateTime.UtcNow - _shownAt.Value).TotalMilliseconds;
-                var remaining = MinimumDisplayMs - elapsed;
+            // Indicator shown but no timestamp (shouldn't happen)
+            ResetIndicatorState();
+            return;
+        }
 
-                if (remaining > 0)
-                {
-                    // Wait for minimum display time in background
-                    if (_minimumDisplayCancellation != null)
-                    {
-                        _minimumDisplayCancellation.Cancel();
-                        _minimumDisplayCancellation.Dispose();
-                    }
-                    _minimumDisplayCancellation = new CancellationTokenSource();
+        var elapsed = (DateTime.UtcNow - _shownAt.Value).TotalMilliseconds;
+        var remaining = MinimumDisplayMs - elapsed;
 
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            await Task.Delay((int)remaining, _minimumDisplayCancellation.Token);
-                            _shouldShow = false;
-                            _shownAt = null;
-                            await InvokeAsync(StateHasChanged);
-                        }
-                        catch (TaskCanceledException)
-                        {
-                            // Cancellation is expected
-                        }
-                    });
-                }
-                else
-                {
-                    // Minimum time already elapsed
-                    _shouldShow = false;
-                    _shownAt = null;
-                }
-            }
-            else
-            {
-                // Indicator shown but no timestamp (shouldn't happen)
-                _shouldShow = false;
-                _shownAt = null;
-            }
+        if (remaining > 0)
+        {
+            ScheduleDelayedHide((int)remaining);
         }
         else
         {
-            // Never shown, ensure state is clean
-            _shouldShow = false;
-            _shownAt = null;
+            // Minimum time already elapsed
+            ResetIndicatorState();
         }
+    }
+
+    private void ScheduleDelayedHide(int delayMs)
+    {
+        // Cancel any existing minimum display timer
+        if (_minimumDisplayCancellation != null)
+        {
+            _minimumDisplayCancellation.Cancel();
+            _minimumDisplayCancellation.Dispose();
+        }
+        _minimumDisplayCancellation = new CancellationTokenSource();
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(delayMs, _minimumDisplayCancellation.Token);
+                ResetIndicatorState();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (TaskCanceledException)
+            {
+                // Cancellation is expected
+            }
+        });
+    }
+
+    private void ResetIndicatorState()
+    {
+        _shouldShow = false;
+        _shownAt = null;
     }
 
     private async Task HandleOverlayClick()
