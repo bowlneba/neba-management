@@ -12,7 +12,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query = new TestCachedQuery("test-key-1");
 
@@ -30,7 +30,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query = new TestCachedQuery("test-key-2");
 
@@ -71,7 +71,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
+        IQueryHandler<TestCachedQuery, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQuery, TestResponse>>();
 
         var query1 = new TestCachedQuery("test-key-3a");
         var query2 = new TestCachedQuery("test-key-3b");
@@ -98,7 +98,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithTags, TestResponse>>();
+        IQueryHandler<TestCachedQueryWithTags, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithTags, TestResponse>>();
 
         var query = new TestCachedQueryWithTags("test-key-4", ["tag1", "tag2"]);
 
@@ -117,7 +117,7 @@ public sealed class CachedQueryHandlerDecoratorTests : CachingTestsBase
     {
         // Arrange
         using IServiceScope scope = Factory.Services.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithExpiry, TestResponse>>();
+        IQueryHandler<TestCachedQueryWithExpiry, TestResponse> handler = scope.ServiceProvider.GetRequiredService<IQueryHandler<TestCachedQueryWithExpiry, TestResponse>>();
 
         var query = new TestCachedQueryWithExpiry("test-key-5");
 
