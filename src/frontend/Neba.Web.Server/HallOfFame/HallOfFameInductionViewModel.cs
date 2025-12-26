@@ -21,4 +21,10 @@ public sealed record HallOfFameInductionViewModel
     /// (for example, "Superior Performance", "Meritorious Service").
     /// </summary>
     public required IReadOnlyList<string> Categories { get; init; }
+
+    /// <summary>
+    /// URL of the bowler's photo, if available.
+    /// </summary>
+    /// <value></value>
+    public Uri? PhotoUrl { get; init; }
 }
