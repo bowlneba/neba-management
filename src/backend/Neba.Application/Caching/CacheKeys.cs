@@ -148,5 +148,13 @@ public static class CacheKeys
         /// <returns>Cache key in format: website:awards:high-block</returns>
         public static string HighBlock()
             => $"{WebsiteContext}:{Types.Awards}:high-block";
+
+        /// <summary>
+        /// Generates a cache key for listing Hall of Fame inductions.
+        /// </summary>
+        /// <returns>Cache key in format: website:awards:hall-of-fame
+        /// </returns>
+        public static string HallOfFameInductions()
+            => $"{WebsiteContext}:{Types.Awards}:hall-of-fame-inductions";
     }
 }
