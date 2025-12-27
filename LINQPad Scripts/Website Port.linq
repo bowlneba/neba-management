@@ -38,6 +38,7 @@ async Task Main()
 {
 	SeasonAwards.RemoveRange(SeasonAwards);
 	Titles.RemoveRange(Titles);
+	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
 	Bowlers.RemoveRange(Bowlers);
 	
 	await SaveChangesAsync();
@@ -46,26 +47,29 @@ async Task Main()
 	
 	var bowlerIdByBowlerDomainId = Bowlers.ToDictionary(b => Ulid.Parse(b.DomainId), b => b.Id);
 	
-	var bowlerIdsBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b => b.bowlerId);
-	var bowlerIdsByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.bowlerId);
+	var bowlerDomainIdsBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b => b.bowlerId);
+	var bowlerDomainIdsByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.bowlerId);
 	
 	var softwareNamesBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b=> b.softwareName);
 	var websiteNamesByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.websiteName!);
 
 	var bowlerIdsByWebsiteName = (from bowlerNameByWebsiteId in websiteNamesByWebsiteId
-								  from bowlerIdByWebsiteId in bowlerIdsByWebsiteId
+								  from bowlerIdByWebsiteId in bowlerDomainIdsByWebsiteId
 								  where bowlerNameByWebsiteId.Key == bowlerIdByWebsiteId.Key
-								  select new KeyValuePair<HumanName, Ulid>(websiteNamesByWebsiteId[bowlerIdByWebsiteId.Key], bowlerIdsByWebsiteId[bowlerIdByWebsiteId.Key])).ToList();
+								  select new KeyValuePair<HumanName, Ulid>(websiteNamesByWebsiteId[bowlerIdByWebsiteId.Key], bowlerDomainIdsByWebsiteId[bowlerIdByWebsiteId.Key])).ToList();
 
-	var bowlerIdsBySoftwareName = (from bowlerNameBySoftwareId in softwareNamesBySoftwareId
-								   from bowlerIdBySoftwareId in bowlerIdsBySoftwareId
-								   where bowlerNameBySoftwareId.Key == bowlerIdBySoftwareId.Key
-								   select new KeyValuePair<HumanName, Ulid>(softwareNamesBySoftwareId[bowlerIdBySoftwareId.Key]!, bowlerIdsBySoftwareId[bowlerIdBySoftwareId.Key])).ToList();
+	var bowlerDomainIdsBySoftwareName = (from bowlerNameBySoftwareId in softwareNamesBySoftwareId
+								   from bowlerDomainIdBySoftwareId in bowlerDomainIdsBySoftwareId
+								   where bowlerNameBySoftwareId.Key == bowlerDomainIdBySoftwareId.Key
+								   select new KeyValuePair<HumanName, Ulid>(softwareNamesBySoftwareId[bowlerDomainIdBySoftwareId.Key]!, bowlerDomainIdsBySoftwareId[bowlerDomainIdBySoftwareId.Key])).ToList();
+								   
+	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
-	await MigrateTitlesAsync(bowlerIdsByWebsiteId, bowlerIdByBowlerDomainId);
-	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
-	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
-	await MigrateHighAverageAsync(bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+	await MigrateHallOfFame(bowlerIdsBySoftwareId);
+	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
+	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
+	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
+	await MigrateHighAverageAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	
 	"Migration Complete".Dump();
 }
@@ -261,8 +265,8 @@ public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, 
 #region Awards
 
 public async Task MigrateBowlerOfTheYears(
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsByWebsiteName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsBySoftwareName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsBySoftwareName,
 	Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
 {
 	var bowlerOfTheYearsTask = BowlerOfTheYearScraper.ScrapeAsync(@"https://www.bowlneba.com/history/bowler-of-the-year/");
@@ -289,42 +293,42 @@ public async Task MigrateBowlerOfTheYears(
 
 	foreach (var bowlerOfTheYear in bowlerOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Open, bowlerOfTheYear.year, bowlerOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Open, bowlerOfTheYear.year, bowlerOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Bowler of the Year Migrated".Dump();
 
 	foreach (var womanOfTheYear in womanOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Woman, womanOfTheYear.year, womanOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Woman, womanOfTheYear.year, womanOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Woman Bowler of the Year Migrated".Dump();
 
 	foreach (var seniorOfTheYear in seniorOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Senior, seniorOfTheYear.year, seniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Senior, seniorOfTheYear.year, seniorOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Senior Bowler of the Year Migrated".Dump();
 
 	foreach (var superSeniorOfTheYear in superSeniorOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.SuperSenior, superSeniorOfTheYear.year, superSeniorOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.SuperSenior, superSeniorOfTheYear.year, superSeniorOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Super Senior Bowler of the Year Migrated".Dump();
 
 	foreach (var rookieOfTheYear in rookieOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Rookie, rookieOfTheYear.year, rookieOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Rookie, rookieOfTheYear.year, rookieOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Rookie Bowler of the Year Migrated".Dump();
 
 	foreach (var youthOfTheYear in youthOfTheYears)
 	{
-		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Youth, youthOfTheYear.year, youthOfTheYear.name, bowlerIdsByWebsiteName, bowlerIdsBySoftwareName, bowlerIdByBowlerDomainId);
+		await MigrateBowlerOfTheYear(BowlerOfTheYearCategory.Youth, youthOfTheYear.year, youthOfTheYear.name, bowlerDomainIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	}
 
 	"Youth Bowler of the Year Migrated".Dump();
@@ -333,12 +337,12 @@ public async Task MigrateBowlerOfTheYears(
 }
 
 public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, string year, string bowlerName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsByWebsiteName, IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsBySoftwareName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsByWebsiteName, IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsBySoftwareName,
 	Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
 {
-	var websiteBowlers = bowlerIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+	var websiteBowlers = bowlerDomainIdsByWebsiteName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
-	var softwareBowlers = bowlerIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+	var softwareBowlers = bowlerDomainIdsBySoftwareName.Where(b => bowlerName.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 		&& bowlerName.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 
 	if (websiteBowlers.Any())
@@ -387,7 +391,7 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 	{
 		if (bowlerName.Contains("Brust") || bowlerName.Contains("Bissmann"))
 		{
-			var manualBowler = bowlerIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
+			var manualBowler = bowlerDomainIdsBySoftwareName.Single(b => b.Key.Last == bowlerName.Split(' ')[1]);
 
 			var manualRecord = new SeasonAwards
 			{
@@ -439,17 +443,17 @@ public async Task MigrateBowlerOfTheYear(BowlerOfTheYearCategory category, strin
 
 
 public async Task MigrateHighBlockAsync(
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsByWebsiteName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsBySoftwareName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsBySoftwareName,
 	Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
 {
 	var highBlocks = await HighBlockScraper.ScrapeAsync(@"https://www.bowlneba.com/history/high-block/");
 
 	foreach (var highBlock in highBlocks)
 	{
-		var websiteBowlerMatches = bowlerIdsByWebsiteName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var websiteBowlerMatches = bowlerDomainIdsByWebsiteName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
-		var softwareBowlerMatches = bowlerIdsBySoftwareName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var softwareBowlerMatches = bowlerDomainIdsBySoftwareName.Where(b => highBlock.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highBlock.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 
 		if (websiteBowlerMatches.Any())
@@ -462,7 +466,7 @@ public async Task MigrateHighBlockAsync(
 					{
 						DomainId = Guid.AsDomainId(),
 						AwardType = SeasonAwardType.High5GameBlock,
-						BowlerId = bowlerIdByBowlerDomainId[bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Steve Hardy", StringComparison.OrdinalIgnoreCase)).Value],
+						BowlerId = bowlerIdByBowlerDomainId[bowlerDomainIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Steve Hardy", StringComparison.OrdinalIgnoreCase)).Value],
 						Season = highBlock.year,
 						HighBlockScore = highBlock.score
 					});
@@ -475,7 +479,7 @@ public async Task MigrateHighBlockAsync(
 					{
 						DomainId = Guid.AsDomainId(),
 						AwardType = SeasonAwardType.High5GameBlock,
-						BowlerId = bowlerIdByBowlerDomainId[bowlerIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Mark Blanchette", StringComparison.OrdinalIgnoreCase)).Value],
+						BowlerId = bowlerIdByBowlerDomainId[bowlerDomainIdsByWebsiteName.Single(b => b.Key.FullName.Trim().Equals("Mark Blanchette", StringComparison.OrdinalIgnoreCase)).Value],
 						Season = highBlock.year,
 						HighBlockScore = highBlock.score
 					});
@@ -525,7 +529,7 @@ public async Task MigrateHighBlockAsync(
 		{
 			if (highBlock.name.Contains("Michaue")) //typo on website
 			{
-				var bowlerId = bowlerIdsBySoftwareName.Single(b => b.Key.First == "Russ" && b.Key.Last == "Michaud").Value;
+				var bowlerId = bowlerDomainIdsBySoftwareName.Single(b => b.Key.First == "Russ" && b.Key.Last == "Michaud").Value;
 
 				SeasonAwards.Add(new()
 				{
@@ -579,17 +583,17 @@ public async Task MigrateHighBlockAsync(
 }
 
 public async Task MigrateHighAverageAsync(
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsByWebsiteName,
-	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerIdsBySoftwareName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsByWebsiteName,
+	IReadOnlyCollection<KeyValuePair<HumanName, Ulid>> bowlerDomainIdsBySoftwareName,
 	Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
 {
 	var highAverages = await HighAverageScraper.ScrapeAsync(@"https://www.bowlneba.com/history/high-average/");
 
 	foreach (var highAverage in highAverages)
 	{
-		var websiteBowlerMatches = bowlerIdsByWebsiteName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var websiteBowlerMatches = bowlerDomainIdsByWebsiteName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highAverage.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
-		var softwareBowlerMatches = bowlerIdsBySoftwareName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
+		var softwareBowlerMatches = bowlerDomainIdsBySoftwareName.Where(b => highAverage.name.Contains(b.Key.First, StringComparison.OrdinalIgnoreCase)
 			&& highAverage.name.Contains(b.Key.Last, StringComparison.OrdinalIgnoreCase));
 
 		if (websiteBowlerMatches.Any())
@@ -679,6 +683,42 @@ public async Task MigrateHighAverageAsync(
 	await SaveChangesAsync();
 
 	"High Average Migrated".Dump();
+}
+
+#endregion
+
+#region Hall of Fame
+
+public async Task MigrateHallOfFame(Dictionary<int, int> bowlerIdBySoftwareId)
+{
+	var categoryConversion = new Dictionary<int, int>
+	{
+		{100, 1},
+		{200, 2}
+	};
+	
+	var hallOfFameDataTable = await QuerySoftwareDatabaseAsync("SELECT * FROM dbo.HallOfFame");
+
+	var hallOfFameSoftwareEntries = hallOfFameDataTable.AsEnumerable()
+		.Select(row => new
+		{
+			SoftwareId = row.Field<int>("BowlerId"),
+			Category = row.Field<int>("Category"),
+			Year = row.Field<int>("Year")
+		}).ToList();
+
+	var hallOfFameInductions = hallOfFameSoftwareEntries.Select(entry =>
+		new HallOfFameInductions
+		{
+			DomainId = Guid.AsDomainId(),
+			BowlerId = bowlerIdBySoftwareId[entry.SoftwareId],
+			Category = categoryConversion[entry.Category],
+			InductionYear = entry.Year
+		});
+		
+	HallsOfFameInductions.AddRange(hallOfFameInductions);
+	
+	await SaveChangesAsync();
 }
 
 #endregion
