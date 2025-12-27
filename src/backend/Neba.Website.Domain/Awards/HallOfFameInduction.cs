@@ -9,12 +9,12 @@ namespace Neba.Website.Domain.Awards;
 /// Represents an induction into the Hall of Fame.
 /// </summary>
 /// <remarks>
-/// This aggregate is the domain root for a Hall of Fame entry and
+/// This entity is the domain root for a Hall of Fame entry and
 /// uses a strongly-typed <see cref="HallOfFameId"/> (ULID) as its identifier.
-/// Keep business logic for induction events and rules on this aggregate.
+/// Keep business logic for induction events and rules on this entity.
 /// </remarks>
 public sealed class HallOfFameInduction
-    : Aggregate<HallOfFameId>
+    : Entity<HallOfFameId>
 {
     /// <summary>
     /// Initializes a new instance of <see cref="HallOfFameInduction"/>
@@ -33,6 +33,11 @@ public sealed class HallOfFameInduction
     /// The inducted <see cref="Bowler"/> for this Hall of Fame entry.
     /// </summary>
     internal Bowler Bowler { get; init; } = null!;
+
+    /// <summary>
+    /// The photo associated with this induction.
+    /// </summary>
+    public StoredFile Photo { get; init; } = null!;
 
     /// <summary>
     /// The categories associated with this induction.

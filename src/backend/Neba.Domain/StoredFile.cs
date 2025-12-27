@@ -29,10 +29,22 @@ public sealed record StoredFile
     /// Initializes a new instance of the <see cref="StoredFile"/> record with default values.
     /// </summary>
     public StoredFile()
+        : this(
+            location: string.Empty,
+            fileName: string.Empty,
+            contentType: string.Empty,
+            sizeInBytes: 0)
+    { }
+
+    private StoredFile(
+        string location,
+        string fileName,
+        string contentType,
+        long sizeInBytes)
     {
-        Location = string.Empty;
-        FileName = string.Empty;
-        ContentType = string.Empty;
-        SizeInBytes = 0;
+        Location = location;
+        FileName = fileName;
+        ContentType = contentType;
+        SizeInBytes = sizeInBytes;
     }
 }

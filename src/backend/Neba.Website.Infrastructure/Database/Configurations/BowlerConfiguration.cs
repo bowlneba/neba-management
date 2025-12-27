@@ -81,5 +81,10 @@ internal sealed class BowlerConfiguration
             .WithOne(seasonAward => seasonAward.Bowler)
             .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(bowler => bowler.HallOfFameInductions)
+            .WithOne(induction => induction.Bowler)
+            .HasForeignKey(ForeignKeyName)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
