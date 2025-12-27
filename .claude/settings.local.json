@@ -111,7 +111,8 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline --all -10 -- \"infrastructure/database/setup-schema-user.sql\")",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management stash pop)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management checkout:*)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management stash drop)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management stash drop)",
+      "Bash(dotnet ef migrations add:*)"
     ],
     "deny": [],
     "ask": []

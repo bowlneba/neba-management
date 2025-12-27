@@ -27,6 +27,10 @@ internal sealed class HallOfFameInductionConfiguration
             .HasIndex(induction => induction.Id)
             .IsUnique();
 
+        builder.Property(induction => induction.Year)
+            .HasColumnName("induction_year")
+            .IsRequired();
+
         builder.OwnsStoredFile(induction => induction.Photo,
             locationColumnName: "photo_location",
             fileNameColumnName: "photo_file_name",
@@ -37,5 +41,9 @@ internal sealed class HallOfFameInductionConfiguration
             .HasColumnName("category")
             .HasConversion<HallOfFameCategoryValueConverter>()
             .IsRequired();
+
+        builder.HasIndex(induction => induction.Year);
+
+        builder.HasAlternateKey(nameof(HallOfFameInduction.Year), BowlerConfiguration.ForeignKeyName);
     }
 }

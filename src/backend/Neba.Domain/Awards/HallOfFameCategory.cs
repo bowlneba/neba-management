@@ -41,4 +41,8 @@ public sealed class HallOfFameCategory
     private HallOfFameCategory(string name, int value)
         : base(name, value)
     { }
+
+    private HallOfFameCategory()
+        : base(string.Empty, 0)
+    { }
 }

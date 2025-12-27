@@ -37,7 +37,7 @@ public sealed class HallOfFameInduction
     /// <summary>
     /// The photo associated with this induction.
     /// </summary>
-    public StoredFile Photo { get; init; } = null!;
+    public StoredFile? Photo { get; init; }
 
     /// <summary>
     /// The categories associated with this induction.
