@@ -35,5 +35,4 @@ public sealed record StoredFile
         ContentType = string.Empty;
         SizeInBytes = 0;
     }
-
 }
