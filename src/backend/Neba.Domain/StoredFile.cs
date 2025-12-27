@@ -8,12 +8,12 @@ public sealed record StoredFile
     /// <summary>
     /// Gets the storage location or path of the file (for example, a blob URI or filesystem path).
     /// </summary>
-    public string Location { get; init; }
+    public string Container { get; init; }
 
     /// <summary>
     /// Gets the original or stored file name including extension.
     /// </summary>
-    public string FileName { get; init; }
+    public string Path { get; init; }
 
     /// <summary>
     /// Gets the MIME content type of the file (for example, "image/png").
@@ -42,8 +42,8 @@ public sealed record StoredFile
         string contentType,
         long sizeInBytes)
     {
-        Location = location;
-        FileName = fileName;
+        Container = location;
+        Path = fileName;
         ContentType = contentType;
         SizeInBytes = sizeInBytes;
     }

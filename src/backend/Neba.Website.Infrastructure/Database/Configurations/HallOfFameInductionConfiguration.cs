@@ -32,8 +32,8 @@ internal sealed class HallOfFameInductionConfiguration
             .IsRequired();
 
         builder.OwnsStoredFile(induction => induction.Photo,
-            locationColumnName: "photo_location",
-            fileNameColumnName: "photo_file_name",
+            containerColumnName: "photo_container",
+            filePathColumnName: "photo_file_path",
             contentTypeColumnName: "photo_content_type",
             sizeInBytesColumnName: "photo_size_in_bytes");
 
