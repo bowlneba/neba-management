@@ -719,6 +719,8 @@ public async Task MigrateHallOfFame(Dictionary<int, int> bowlerIdBySoftwareId)
 	HallsOfFameInductions.AddRange(hallOfFameInductions);
 	
 	await SaveChangesAsync();
+	
+	"Hall of Famers Migrated".Dump();
 }
 
 #endregion
