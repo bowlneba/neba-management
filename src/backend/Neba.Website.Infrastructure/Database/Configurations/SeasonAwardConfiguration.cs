@@ -15,11 +15,7 @@ internal sealed class SeasonAwardConfiguration
     {
         builder.ToTable("season_awards", WebsiteDbContext.DefaultSchema);
 
-        builder.Property<int>("db_id")
-            .HasColumnName("id")
-            .UseIdentityAlwaysColumn();
-
-        builder.HasKey("db_id");
+        builder.ConfigureShadowId();
 
         builder.Property(seasonAward => seasonAward.Id)
             .IsUlid<SeasonAwardId, SeasonAwardId.EfCoreValueConverter>();
