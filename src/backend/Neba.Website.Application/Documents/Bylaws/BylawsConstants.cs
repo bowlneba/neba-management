@@ -8,9 +8,9 @@ namespace Neba.Website.Application.Documents.Bylaws;
 public static class BylawsConstants
 {
     /// <summary>
-    /// The name of the container (or blob/container) where bylaws documents are stored.
+    /// The container where bylaws documents are stored.
     /// </summary>
-    public const string ContainerName = "documents";
+    public const string Container = "documents";
 
     /// <summary>
     /// The logical name of the bylaws document resource.
@@ -18,9 +18,9 @@ public static class BylawsConstants
     public const string DocumentKey = "bylaws";
 
     /// <summary>
-    /// The filename used when the bylaws are persisted as an HTML file.
+    /// The path within the container where the bylaws HTML file is stored.
     /// </summary>
-    public const string FileName = "bylaws.html";
+    public const string Path = "bylaws.html";
 
     /// <summary>
     /// Cache key for the bylaws document content.

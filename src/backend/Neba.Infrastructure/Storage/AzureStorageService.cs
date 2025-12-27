@@ -13,17 +13,17 @@ internal sealed class AzureStorageService(BlobServiceClient blobServiceClient, A
         : IStorageService
 {
 
-    public async Task<string> UploadAsync(string containerName, string blobName, string content, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
+    public async Task<string> UploadAsync(string container, string path, string content, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
     {
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        return await UploadAsync(containerName, blobName, stream, contentType, metadata, cancellationToken);
+        return await UploadAsync(container, path, stream, contentType, metadata, cancellationToken);
     }
 
-    public async Task<string> UploadAsync(string containerName, string blobName, Stream contentStream, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
+    public async Task<string> UploadAsync(string container, string path, Stream contentStream, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = await GetOrCreateContainerAsync(container, cancellationToken);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         var uploadOptions = new BlobUploadOptions
         {
@@ -36,10 +36,10 @@ internal sealed class AzureStorageService(BlobServiceClient blobServiceClient, A
         return blobClient.Name;
     }
 
-    public async Task<string> LargeUploadAsync(string containerName, string blobName, Stream content, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
+    public async Task<string> LargeUploadAsync(string container, string path, Stream content, string contentType, IDictionary<string, string>? metadata = null, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
-        BlockBlobClient blockBlobClient = containerClient.GetBlockBlobClient(blobName);
+        BlobContainerClient containerClient = await GetOrCreateContainerAsync(container, cancellationToken);
+        BlockBlobClient blockBlobClient = containerClient.GetBlockBlobClient(path);
 
         List<string> blockIds = [];
         byte[] buffer = ArrayPool<byte>.Shared.Rent(settings.UploadChunkSizeBytes);
@@ -74,20 +74,20 @@ internal sealed class AzureStorageService(BlobServiceClient blobServiceClient, A
         return blockBlobClient.Name;
     }
 
-    public async Task<Stream> GetStreamAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task<Stream> GetStreamAsync(string container, string path, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         Response<BlobDownloadStreamingResult> downloadResponse = await blobClient.DownloadStreamingAsync(cancellationToken: cancellationToken);
 
         return downloadResponse.Value.Content;
     }
 
-    public async Task<string> GetContentAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task<string> GetContentAsync(string container, string path, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         // NOTE: `DownloadContentAsync` will throw Azure.RequestFailedException
         // with Status == 404 when the blob is missing. If callers expect a
@@ -99,10 +99,10 @@ internal sealed class AzureStorageService(BlobServiceClient blobServiceClient, A
         return downloadResponse.Value.Content.ToString();
     }
 
-    public async Task<DocumentDto> GetContentWithMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task<DocumentDto> GetContentWithMetadataAsync(string container, string path, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         Response<BlobDownloadResult> downloadResponse = await blobClient.DownloadContentAsync(cancellationToken);
 
@@ -115,25 +115,33 @@ internal sealed class AzureStorageService(BlobServiceClient blobServiceClient, A
         return contentWithMetadata;
     }
 
-    public async Task<bool> ExistsAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string container, string path, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         return await blobClient.ExistsAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string containerName, string blobName, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(string container, string path, CancellationToken cancellationToken = default)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
 
         await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
     }
 
-    private async Task<BlobContainerClient> GetOrCreateContainerAsync(string containerName, CancellationToken cancellationToken)
+    public Uri GetBlobUri(string container, string path)
     {
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
+        BlobClient blobClient = containerClient.GetBlobClient(path);
+
+        return blobClient.Uri;
+    }
+
+    private async Task<BlobContainerClient> GetOrCreateContainerAsync(string container, CancellationToken cancellationToken)
+    {
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);
         await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
         return containerClient;

@@ -8,9 +8,9 @@ namespace Neba.Website.Application.Tournaments.TournamentRules;
 public static class TournamentRulesConstants
 {
     /// <summary>
-    /// The name of the container (or blob/container) where tournament rules documents are stored.
+    /// The container where tournament rules documents are stored.
     /// </summary>
-    public const string ContainerName = "tournaments";
+    public const string Container = "tournaments";
 
     /// <summary>
     /// The logical name of the tournament rules document resource.
@@ -18,9 +18,9 @@ public static class TournamentRulesConstants
     public const string DocumentKey = "tournament-rules";
 
     /// <summary>
-    /// The filename used when the tournament rules are persisted as an HTML file.
+    /// The path within the container where the tournament rules HTML file is stored.
     /// </summary>
-    public const string FileName = "tournament-rules.html";
+    public const string Path = "tournament-rules.html";
 
     /// <summary>
     /// Cache key for the tournament rules document content.

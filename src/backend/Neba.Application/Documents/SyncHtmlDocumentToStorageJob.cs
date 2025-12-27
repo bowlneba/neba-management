@@ -14,14 +14,14 @@ public sealed record SyncHtmlDocumentToStorageJob
     public required string DocumentKey { get; init; }
 
     /// <summary>
-    /// The name of the storage container where the document will be uploaded.
+    /// The storage container where the document will be uploaded.
     /// </summary>
-    public required string ContainerName { get; init; }
+    public required string Container { get; init; }
 
     /// <summary>
-    /// The filename to use when storing the document in the container.
+    /// The path within the container where the document will be stored.
     /// </summary>
-    public required string DocumentName { get; init; }
+    public required string Path { get; init; }
 
     /// <summary>
     /// Optional metadata to associate with the stored document.

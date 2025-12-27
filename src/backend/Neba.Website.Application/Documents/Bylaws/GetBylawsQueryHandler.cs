@@ -35,11 +35,11 @@ internal sealed class GetBylawsQueryHandler(
         CancellationToken cancellationToken)
     {
         // Fast path: try to get from storage cache
-        if (await storageService.ExistsAsync(BylawsConstants.ContainerName, BylawsConstants.FileName, cancellationToken))
+        if (await storageService.ExistsAsync(BylawsConstants.Container, BylawsConstants.Path, cancellationToken))
         {
             return await storageService.GetContentWithMetadataAsync(
-                BylawsConstants.ContainerName,
-                BylawsConstants.FileName,
+                BylawsConstants.Container,
+                BylawsConstants.Path,
                 cancellationToken);
         }
 

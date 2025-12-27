@@ -52,8 +52,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html"
+            Container = "documents",
+            Path = "bylaws.html"
         };
 
         // Act
@@ -82,8 +82,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = documentKey!,
-            ContainerName = "documents",
-            DocumentName = "bylaws.html"
+            Container = "documents",
+            Path = "bylaws.html"
         };
 
         // Act & Assert
@@ -97,42 +97,42 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task ExecuteAsync_ShouldThrowArgumentException_WhenContainerNameIsNullOrWhitespace(string? containerName)
+    public async Task ExecuteAsync_ShouldThrowArgumentException_WhenContainerIsNullOrWhitespace(string? containerName)
     {
         // Arrange
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = containerName!,
-            DocumentName = "bylaws.html"
+            Container = containerName!,
+            Path = "bylaws.html"
         };
 
         // Act & Assert
         ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
-        Assert.Contains("ContainerName", exception.Message);
+        Assert.Contains("Container", exception.Message);
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task ExecuteAsync_ShouldThrowArgumentException_WhenDocumentNameIsNullOrWhitespace(string? documentName)
+    public async Task ExecuteAsync_ShouldThrowArgumentException_WhenPathIsNullOrWhitespace(string? documentName)
     {
         // Arrange
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = documentName!
+            Container = "documents",
+            Path = documentName!
         };
 
         // Act & Assert
         ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             _job.ExecuteAsync(job, TestContext.Current.CancellationToken));
 
-        Assert.Contains("DocumentName", exception.Message);
+        Assert.Contains("Path", exception.Message);
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             DocumentCacheKey = "document-cache-key"
         };
 
@@ -193,8 +193,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             CacheKey = "job-cache-key"
         };
 
@@ -232,8 +232,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             TriggeredBy = triggeredBy
         };
 
@@ -269,8 +269,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             HubGroupName = "test-group"
         };
 
@@ -302,8 +302,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             HubGroupName = "test-group"
         };
 
@@ -332,8 +332,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             CacheKey = "job-cache-key"
         };
 
@@ -369,8 +369,8 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = "bylaws",
-            ContainerName = "documents",
-            DocumentName = "bylaws.html",
+            Container = "documents",
+            Path = "bylaws.html",
             CacheKey = cacheKey,
             TriggeredBy = triggeredBy
         };
