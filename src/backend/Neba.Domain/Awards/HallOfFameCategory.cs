@@ -24,19 +24,19 @@ public sealed class HallOfFameCategory
     /// Indicates superior performance recognition.
     /// This flag has the value <c>1</c> (bit 0).
     /// </summary>
-    public static readonly HallOfFameCategory SuperiorPerformance = new(nameof(SuperiorPerformance), 1 << 0);
+    public static readonly HallOfFameCategory SuperiorPerformance = new("Superior Performance", 1 << 0);
 
     /// <summary>
     /// Indicates meritorious service recognition.
     /// This flag has the value <c>2</c> (bit 1).
     /// </summary>
-    public static readonly HallOfFameCategory MeritoriousService = new(nameof(MeritoriousService), 1 << 1);
+    public static readonly HallOfFameCategory MeritoriousService = new("Meritorious Service", 1 << 1);
 
     /// <summary>
     /// Indicates a friend of NEBA recognition.
     /// This flag has the value <c>4</c> (bit 2).
     /// </summary>
-    public static readonly HallOfFameCategory FriendOfNeba = new(nameof(FriendOfNeba), 1 << 2);
+    public static readonly HallOfFameCategory FriendOfNeba = new("Friend of NEBA", 1 << 2);
 
     private HallOfFameCategory(string name, int value)
         : base(name, value)

@@ -6,9 +6,9 @@ public sealed class HallOfFameCategoryTests
 {
     [Theory(DisplayName = "Hall of Fame Categories Have Correct Names and Values")]
     [InlineData("None", 0)]
-    [InlineData("SuperiorPerformance", 1)]
-    [InlineData("MeritoriousService", 2)]
-    [InlineData("FriendOfNeba", 4)]
+    [InlineData("Superior Performance", 1)]
+    [InlineData("Meritorious Service", 2)]
+    [InlineData("Friend Of NEBA", 4)]
     public void HallOfFameCategory_HasCorrectNameAndValue(string expectedName, int expectedValue)
     {
         // Arrange & Act

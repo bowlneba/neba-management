@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Neba.Domain.Awards;
 using Neba.Tests.Website;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Domain.Bowlers;
@@ -168,6 +169,52 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
             dto.Average.ShouldBe(expectedAward.Average);
             dto.Games.ShouldBe(expectedAward.Games);
             dto.Tournaments.ShouldBe(expectedAward.Tournaments);
+        }
+    }
+
+    [Fact]
+    public async Task ListHallOfFameInductionsAsync_ShouldReturnAllInductions()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(_database.ConnectionString)
+                .Options);
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1990);
+        await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
+
+        await websiteDbContext.SaveChangesAsync();
+
+        var expectedInductions = await websiteDbContext.HallOfFameInductions
+            .AsNoTracking()
+            .Select(induction => new
+            {
+                induction.Id,
+                BowlerName = induction.Bowler.Name,
+                induction.Year,
+                induction.Photo,
+                induction.Categories
+            })
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        WebsiteAwardQueryRepository repository = new(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<HallOfFameInductionDto> result
+            = await repository.ListHallOfFameInductionsAsync(CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(expectedInductions.Count);
+
+        foreach (HallOfFameInductionDto dto in result)
+        {
+            var expectedInduction = expectedInductions.First(i => i.BowlerName == dto.BowlerName && i.Year == dto.Year);
+
+            dto.BowlerName.ShouldBe(expectedInduction.BowlerName);
+            dto.Year.ShouldBe(expectedInduction.Year);
+            dto.Photo.ShouldBe(expectedInduction.Photo);
+            dto.Categories.ShouldBe(expectedInduction.Categories);
         }
     }
 }

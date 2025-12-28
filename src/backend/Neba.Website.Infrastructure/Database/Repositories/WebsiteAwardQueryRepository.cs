@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Neba.Domain.Awards;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 
@@ -61,4 +62,16 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
 
         return awards;
     }
+
+    public async Task<IReadOnlyCollection<HallOfFameInductionDto>> ListHallOfFameInductionsAsync(CancellationToken cancellationToken)
+        => await dbContext.HallOfFameInductions
+            .AsNoTracking()
+            .Select(induction => new HallOfFameInductionDto
+            {
+                Year = induction.Year,
+                BowlerName = induction.Bowler.Name,
+                Photo = induction.Photo,
+                Categories = induction.Categories
+            })
+            .ToListAsync(cancellationToken);
 }

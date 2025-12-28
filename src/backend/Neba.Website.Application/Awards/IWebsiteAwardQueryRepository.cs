@@ -1,4 +1,5 @@
 using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 
@@ -29,4 +30,11 @@ public interface IWebsiteAwardQueryRepository
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="HighAverageAwardDto"/>.</returns>
     Task<IReadOnlyCollection<HighAverageAwardDto>> ListHighAverageAwardsAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Asynchronously retrieves a collection of all Hall of Fame inductions.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a read-only collection of <see cref="HallOfFameInductionDto"/>.</returns>
+    Task<IReadOnlyCollection<HallOfFameInductionDto>> ListHallOfFameInductionsAsync(CancellationToken cancellationToken);
 }

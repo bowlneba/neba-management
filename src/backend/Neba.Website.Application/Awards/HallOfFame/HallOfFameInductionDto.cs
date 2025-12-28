@@ -15,7 +15,12 @@ public sealed record HallOfFameInductionDto
     /// <summary>
     /// The full name of the inducted bowler.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
+
+    /// <summary>
+    /// The photo associated with this induction.
+    /// </summary>
+    public StoredFile? Photo { get; init; }
 
     /// <summary>
     /// A public URI pointing to the bowler's photo.
