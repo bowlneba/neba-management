@@ -18,7 +18,7 @@ public sealed class SseDocumentRefreshNotifierTests
         _notifier = new SseDocumentRefreshNotifier(_channels, _loggerMock.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns early when hub group name is null")]
     public async Task NotifyStatusAsync_WithNullHubGroupName_ShouldReturnEarly()
     {
         // Arrange
@@ -34,7 +34,7 @@ public sealed class SseDocumentRefreshNotifierTests
         _loggerMock.Verify(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns early when hub group name is empty")]
     public async Task NotifyStatusAsync_WithEmptyHubGroupName_ShouldReturnEarly()
     {
         // Arrange
@@ -48,7 +48,7 @@ public sealed class SseDocumentRefreshNotifierTests
         _loggerMock.Verify(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns early when hub group name is whitespace")]
     public async Task NotifyStatusAsync_WithWhitespaceHubGroupName_ShouldReturnEarly()
     {
         // Arrange
@@ -62,7 +62,7 @@ public sealed class SseDocumentRefreshNotifierTests
         _loggerMock.Verify(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Extracts document type from hub group name and notifies status")]
     public async Task NotifyStatusAsync_WithValidHubGroupName_ShouldExtractDocumentTypeAndNotify()
     {
         // Arrange
@@ -80,7 +80,7 @@ public sealed class SseDocumentRefreshNotifierTests
         readResult.Timestamp.ShouldBeInRange(DateTimeOffset.UtcNow.AddSeconds(-1), DateTimeOffset.UtcNow.AddSeconds(1));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Includes error message in status event when provided")]
     public async Task NotifyStatusAsync_WithErrorMessage_ShouldIncludeErrorInEvent()
     {
         // Arrange
@@ -98,7 +98,7 @@ public sealed class SseDocumentRefreshNotifierTests
         readResult.ErrorMessage.ShouldBe(errorMessage);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Respects cancellation token during notification")]
     public async Task NotifyStatusAsync_WithCancellation_ShouldRespectCancellationToken()
     {
         // Arrange
@@ -115,7 +115,7 @@ public sealed class SseDocumentRefreshNotifierTests
         readResult.Status.ShouldBe(status.Name);
     }
 
-    [Theory]
+    [Theory(DisplayName = "Extracts document type correctly from various hub group name formats")]
     [InlineData("bylaws-refresh", "bylaws")]
     [InlineData("tournament-rules-refresh", "tournament-rules")]
     [InlineData("documents-refresh", "documents")]

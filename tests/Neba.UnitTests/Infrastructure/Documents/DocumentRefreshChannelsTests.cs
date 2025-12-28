@@ -7,7 +7,7 @@ public sealed class DocumentRefreshChannelsTests
 {
     private readonly DocumentRefreshChannels _channels = new();
 
-    [Fact]
+    [Fact(DisplayName = "Creates a new channel when document type does not exist")]
     public void GetOrCreateChannel_WithNewDocumentType_ShouldCreateChannel()
     {
         // Arrange
@@ -22,7 +22,7 @@ public sealed class DocumentRefreshChannelsTests
         channel.Writer.ShouldNotBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns the same channel when document type already exists")]
     public void GetOrCreateChannel_WithSameDocumentType_ShouldReturnSameChannel()
     {
         // Arrange
@@ -36,7 +36,7 @@ public sealed class DocumentRefreshChannelsTests
         channel1.ShouldBeSameAs(channel2);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns different channels for different document types")]
     public void GetOrCreateChannel_WithDifferentDocumentTypes_ShouldReturnDifferentChannels()
     {
         // Arrange
@@ -51,7 +51,7 @@ public sealed class DocumentRefreshChannelsTests
         channel1.ShouldNotBeSameAs(channel2);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Creates an unbounded channel that accepts unlimited items")]
     public void GetOrCreateChannel_ShouldCreateUnboundedChannel()
     {
         // Arrange
@@ -67,7 +67,7 @@ public sealed class DocumentRefreshChannelsTests
         writeResult.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Supports concurrent access from multiple readers and writers")]
     public async Task GetOrCreateChannel_ShouldSupportMultipleReadersAndWriters()
     {
         // Arrange

@@ -12,7 +12,7 @@ namespace Neba.UnitTests.Website;
 
 public sealed class BowlersTitlesMappingExtensionsTests
 {
-    [Fact]
+    [Fact(DisplayName = "Maps bowler ID from BowlerTitleDto to response model")]
     public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerId()
     {
         // Arrange
@@ -26,7 +26,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerId.ShouldBe(bowlerId);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from BowlerTitleDto to response model")]
     public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerName()
     {
         // Arrange
@@ -39,7 +39,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps tournament month from BowlerTitleDto to response model")]
     public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentMonth()
     {
         // Arrange
@@ -53,7 +53,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.TournamentMonth.ShouldBe(tournamentMonth);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps tournament year from BowlerTitleDto to response model")]
     public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentYear()
     {
         // Arrange
@@ -67,7 +67,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.TournamentYear.ShouldBe(tournamentYear);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps tournament type from BowlerTitleDto to response model")]
     public void BowlerTitleDto_ToResponseModel_ShouldMapTournamentType()
     {
         // Arrange
@@ -81,7 +81,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.TournamentType.ShouldBe(tournamentType.Name);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler ID from BowlerTitlesDto correctly")]
     public void BowlerTitlesDto_ToResponseModel_MapsBowlerIdCorrectly()
     {
         // Arrange
@@ -95,7 +95,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerId.ShouldBe(bowlerId);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from BowlerTitlesDto correctly")]
     public void BowlerTitlesDto_ToResponseModel_MapsBowlerNameCorrectly()
     {
         // Arrange
@@ -108,7 +108,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps titles collection from BowlerTitlesDto correctly")]
     public void BowlerTitlesDto_ToResponseModel_MapsTitlesCorrectly()
     {
         // Arrange
@@ -134,7 +134,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         }
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler ID from BowlerTitleSummaryDto correctly")]
     public void BowlerTitleSummaryDto_ToResponseModel_MapsBowlerIdCorrectly()
     {
         // Arrange
@@ -148,7 +148,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerId.ShouldBe(bowlerId);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from BowlerTitleSummaryDto correctly")]
     public void BowlerTitleSummaryDto_ToResponseModel_MapsBowlerNameCorrectly()
     {
         // Arrange
@@ -161,7 +161,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
         response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps title count from BowlerTitleSummaryDto correctly")]
     public void BowlerTitleSummaryDto_ToResponseModel_MapsTitleCountCorrectly()
     {
         // Arrange

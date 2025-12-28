@@ -21,7 +21,7 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
             _websiteAwardQueryRepositoryMock.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns list of bowler of the year awards")]
     public async Task HandleAsync_ShouldReturnAwardsList()
     {
         // Arrange
@@ -38,7 +38,7 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
         awards.ShouldBeEquivalentTo(expectedAwards);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -48,7 +48,7 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerOfTheYearAwardDto>>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -71,7 +71,7 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
         key.Split(':').Length.ShouldBe(3);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 7 days")]
     public void Query_CacheExpiry_ShouldBeDefault7Days()
     {
         // Arrange
@@ -85,7 +85,7 @@ public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(7));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include award hierarchy")]
     public void Query_CacheTags_ShouldIncludeAwardHierarchy()
     {
         // Arrange

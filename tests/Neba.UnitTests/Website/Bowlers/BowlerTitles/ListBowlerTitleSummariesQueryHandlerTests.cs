@@ -20,7 +20,7 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
             _mockWebsiteTitleQueryRepository.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns all bowlers titles summary")]
     public async Task HandleAsync_ShouldReturnAllBowlersTitlesSummary()
     {
         // Arrange
@@ -39,7 +39,7 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         summaries.ShouldBeEquivalentTo(seedSummaries);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -49,7 +49,7 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<BowlerTitleSummaryDto>>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -72,7 +72,7 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         key.Split(':').Length.ShouldBe(3);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 7 days")]
     public void Query_CacheExpiry_ShouldBeDefault7Days()
     {
         // Arrange
@@ -86,7 +86,7 @@ public sealed class ListBowlerTitleSummariesQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(7));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include all bowlers hierarchy")]
     public void Query_CacheTags_ShouldIncludeAllBowlersHierarchy()
     {
         // Arrange

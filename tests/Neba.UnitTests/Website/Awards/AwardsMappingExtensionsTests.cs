@@ -10,7 +10,7 @@ namespace Neba.UnitTests.Website.Awards;
 
 public sealed class AwardsMappingExtensionsTests
 {
-    [Fact]
+    [Fact(DisplayName = "Maps year from HallOfFameInductionDto to response model")]
     public void HallOfFameInductionDto_ToResponseModel_ShouldMapYear()
     {
         // Arrange
@@ -24,7 +24,7 @@ public sealed class AwardsMappingExtensionsTests
         response.Year.ShouldBe(year);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name to display name in response model")]
     public void HallOfFameInductionDto_ToResponseModel_ShouldMapBowlerNameToDisplayName()
     {
         // Arrange
@@ -39,7 +39,7 @@ public sealed class AwardsMappingExtensionsTests
         response.BowlerName.ShouldBe("John Doe");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps photo URI from dto to response model")]
     public void HallOfFameInductionDto_ToResponseModel_ShouldMapPhotoUri()
     {
         // Arrange
@@ -55,7 +55,7 @@ public sealed class AwardsMappingExtensionsTests
         response.PhotoUrl.ShouldBe(photoUri);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps null photo URL when photo is null")]
     public void HallOfFameInductionDto_ToResponseModel_WithNullPhoto_ShouldMapNullPhotoUrl()
     {
         // Arrange
@@ -68,7 +68,7 @@ public sealed class AwardsMappingExtensionsTests
         response.PhotoUrl.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps category enums to category names")]
     public void HallOfFameInductionDto_ToResponseModel_ShouldMapCategoriesToNames()
     {
         // Arrange
@@ -85,7 +85,7 @@ public sealed class AwardsMappingExtensionsTests
         response.Categories.ShouldContain("Meritorious Service");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps single category correctly")]
     public void HallOfFameInductionDto_ToResponseModel_WithSingleCategory_ShouldMapCorrectly()
     {
         // Arrange
@@ -100,7 +100,7 @@ public sealed class AwardsMappingExtensionsTests
         response.Categories.Single().ShouldBe("Friend of NEBA");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps all properties correctly from dto to response")]
     public void HallOfFameInductionDto_ToResponseModel_ShouldMapAllPropertiesCorrectly()
     {
         // Arrange

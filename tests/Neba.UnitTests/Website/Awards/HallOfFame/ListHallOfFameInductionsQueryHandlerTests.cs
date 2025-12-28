@@ -22,7 +22,7 @@ public sealed class ListHallOfFameInductionsQueryHandlerTests
             _storageServiceMock.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns Hall of Fame inductions with photo URIs")]
     public async Task HandleAsync_ShouldReturnInductionsWithPhotoUris()
     {
         // Arrange

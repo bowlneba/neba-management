@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Domain;
 
 public sealed class AggregateTests
 {
-    [Fact]
+    [Fact(DisplayName = "Aggregate should be an Entity")]
     public void Aggregate_ShouldBeAnEntity()
     {
         // Arrange

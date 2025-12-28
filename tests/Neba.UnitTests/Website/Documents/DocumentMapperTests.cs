@@ -6,7 +6,7 @@ namespace Neba.UnitTests.Website.Documents;
 
 public sealed class DocumentMapperTests
 {
-    [Fact]
+    [Fact(DisplayName = "Converts empty document to empty string")]
     public void ConvertToHtml_EmptyDocument_ReturnsEmptyString()
     {
         // Arrange
@@ -21,7 +21,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders plain paragraph as HTML")]
     public void ConvertToHtml_PlainParagraph_RendersParagraph()
     {
         // Arrange
@@ -38,7 +38,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p>Hello world</p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Assigns stable ID to heading paragraphs")]
     public void ConvertToHtml_HeadingParagraph_AssignsStableId()
     {
         // Arrange
@@ -55,7 +55,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<h2 id='tournament-rules'>Tournament Rules</h2>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders inline formatting with strong, em, and underline tags")]
     public void ConvertToHtml_InlineFormatting_RendersStrongEmUnderline()
     {
         // Arrange
@@ -79,7 +79,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><u><em><strong>Hi</strong></em></u></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Adds target and rel attributes to external links")]
     public void ConvertToHtml_ExternalLink_AddsTargetAndRel()
     {
         // Arrange
@@ -96,7 +96,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><a href='https://example.com/' target='_blank' rel='noopener noreferrer'>NEBA</a></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps cross-document links to routes with modal attribute")]
     public void ConvertToHtml_CrossDocumentLink_MapsToRouteAndAddsModalAttribute()
     {
         // Arrange
@@ -116,7 +116,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><a href='/bylaws' data-modal='true'>Bylaws</a></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders bookmark links with correct href")]
     public void ConvertToHtml_BookmarkLink_RendersBookmarkHref()
     {
         // Arrange
@@ -133,7 +133,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><a href='#bookmark-1'>Jump</a></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Uses heading map for anchor href in heading links")]
     public void ConvertToHtml_HeadingLink_UsesHeadingMapForAnchorHref()
     {
         // Arrange
@@ -152,7 +152,7 @@ public sealed class DocumentMapperTests
         html.ShouldContain("<p><a href='#section-1'>Section 1</a></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders table with rows and cells")]
     public void ConvertToHtml_Table_RendersTableRowsAndCells()
     {
         // Arrange
@@ -177,7 +177,7 @@ public sealed class DocumentMapperTests
         html.ShouldContain("</table>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders unordered list with ul and li tags")]
     public void ConvertToHtml_UnorderedList_RendersUlAndLi()
     {
         // Arrange
@@ -202,7 +202,7 @@ public sealed class DocumentMapperTests
         html.ShouldEndWith("</ul>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Renders ordered list with type and start attributes")]
     public void ConvertToHtml_OrderedListWithStartNumber_RendersOlTypeAndStart()
     {
         // Arrange
@@ -227,7 +227,7 @@ public sealed class DocumentMapperTests
         html.ShouldEndWith("</ol>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Resets list counter after non-list block")]
     public void ConvertToHtml_ListCounterResetsAfterNonListBlock()
     {
         // Arrange
@@ -260,7 +260,7 @@ public sealed class DocumentMapperTests
         html.Split("</ol>\n").Length.ShouldBe(3);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts tab-separated list items to indented table")]
     public void ConvertToHtml_TabSeparatedListItems_AreConvertedToIndentedTable()
     {
         // Arrange
@@ -289,7 +289,7 @@ public sealed class DocumentMapperTests
         html.ShouldContain("<p>After</p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Produces valid parent-child structure for nested lists")]
     public void ConvertToHtml_NestedUnorderedList_ProducesValidParentChildStructure()
     {
         // Arrange
@@ -321,7 +321,7 @@ public sealed class DocumentMapperTests
         html.ShouldContain("  <li>Sibling</li>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts smart quotes and apostrophes to HTML entities")]
     public void ConvertToHtml_SmartQuotesAndApostrophes_AreConvertedToHtmlEntities()
     {
         // Arrange
@@ -339,7 +339,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p>It&#8217;s the year&#8217;s best &#8220;product&#8221; with &#8216;quotes&#8217;.</p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts dashes and ellipsis to HTML entities")]
     public void ConvertToHtml_DashesAndEllipsis_AreConvertedToHtmlEntities()
     {
         // Arrange
@@ -357,7 +357,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p>2020&#8211;2024 &#8212; the years passed&#8230;</p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "HTML encodes special characters")]
     public void ConvertToHtml_HtmlSpecialCharacters_AreHtmlEncoded()
     {
         // Arrange
@@ -374,7 +374,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p>&lt;script&gt;alert(&#8217;XSS&#8217;)&lt;/script&gt; &amp; other &lt; &gt; characters</p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Normalizes unicode in headings with correct IDs")]
     public void ConvertToHtml_UnicodeInHeadings_AreNormalizedWithCorrectIds()
     {
         // Arrange
@@ -391,7 +391,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<h2 id='players-guide'>Player&#8217;s Guide</h2>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Normalizes unicode in lists")]
     public void ConvertToHtml_UnicodeInLists_AreNormalized()
     {
         // Arrange
@@ -414,7 +414,7 @@ public sealed class DocumentMapperTests
         html.ShouldContain("  <li>Second item &#8212; with dash</li>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Normalizes unicode in link text but not URL")]
     public void ConvertToHtml_UnicodeInLinks_TextIsNormalizedButUrlIsNot()
     {
         // Arrange
@@ -433,7 +433,7 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><a href='https://example.com/guide' target='_blank' rel='noopener noreferrer'>Player&#8217;s Guide</a></p>\n");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Normalizes unicode in formatted text while preserving formatting")]
     public void ConvertToHtml_UnicodeInFormattedText_AreNormalizedWithFormatting()
     {
         // Arrange

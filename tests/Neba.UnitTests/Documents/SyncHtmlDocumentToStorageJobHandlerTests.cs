@@ -29,7 +29,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
             NullLogger<SyncHtmlDocumentToStorageJobHandler>.Instance);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Gets document and uploads to storage")]
     public async Task ExecuteAsync_ShouldGetDocumentAndUploadToStorage()
     {
         // Arrange
@@ -64,7 +64,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         _mockStorageService.VerifyAll();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ArgumentNullException when job is null")]
     public async Task ExecuteAsync_ShouldThrowArgumentNullException_WhenJobIsNull()
     {
         // Act & Assert
@@ -72,7 +72,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
             _job.ExecuteAsync(null!, TestContext.Current.CancellationToken));
     }
 
-    [Theory]
+    [Theory(DisplayName = "Throws ArgumentException when document key is null or whitespace")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
@@ -93,7 +93,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         Assert.Contains("DocumentKey", exception.Message);
     }
 
-    [Theory]
+    [Theory(DisplayName = "Throws ArgumentException when container is null or whitespace")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
@@ -114,7 +114,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         Assert.Contains("Container", exception.Message);
     }
 
-    [Theory]
+    [Theory(DisplayName = "Throws ArgumentException when path is null or whitespace")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
@@ -135,7 +135,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         Assert.Contains("Path", exception.Message);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Removes document cache key when provided")]
     public async Task ExecuteAsync_ShouldRemoveDocumentCacheKey_WhenProvided()
     {
         // Arrange
@@ -170,7 +170,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         _mockCache.Verify(c => c.RemoveAsync("document-cache-key", TestContext.Current.CancellationToken), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Removes cache key after delay when provided")]
     public async Task ExecuteAsync_ShouldRemoveCacheKey_AfterDelay_WhenProvided()
     {
         // Arrange
@@ -205,7 +205,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         _mockCache.Verify(c => c.RemoveAsync("job-cache-key", TestContext.Current.CancellationToken), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Updates metadata with LastUpdatedUtc and TriggeredBy")]
     public async Task ExecuteAsync_ShouldUpdateMetadata_WithLastUpdatedUtcAndTriggeredBy()
     {
         // Arrange
@@ -246,7 +246,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         Assert.Equal(triggeredBy, capturedMetadata["LastUpdatedBy"]);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Updates status throughout execution")]
     public async Task ExecuteAsync_ShouldUpdateStatusThroughoutExecution()
     {
         // Arrange
@@ -289,7 +289,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
             Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Handles exceptions and updates status to failed")]
     public async Task ExecuteAsync_ShouldHandleException_AndUpdateStatusToFailed()
     {
         // Arrange
@@ -319,7 +319,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
             Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Keeps failed state longer when cache key is provided")]
     public async Task ExecuteAsync_ShouldKeepFailedStateLonger_WhenCacheKeyProvided()
     {
         // Arrange
@@ -344,7 +344,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandlerTests
         _mockCache.Verify(c => c.RemoveAsync("job-cache-key", TestContext.Current.CancellationToken), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Stores job state in cache when cache key is provided")]
     public async Task ExecuteAsync_ShouldStoreJobStateInCache_WhenCacheKeyProvided()
     {
         // Arrange

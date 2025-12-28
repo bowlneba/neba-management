@@ -28,7 +28,7 @@ public sealed class NebaApiServiceTests
         _sut = new NebaApiService(_mockNebaApi.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns grouped Bowler of the Year awards on successful response")]
     public async Task GetBowlerOfTheYearAwardsAsync_SuccessfulResponse_ReturnsGroupedAwards()
     {
         // Arrange - Create awards for multiple seasons with multiple categories
@@ -74,7 +74,7 @@ public sealed class NebaApiServiceTests
         awardsList[1].WinnersByCategory.ShouldContain(kvp => kvp.Key == "Senior" && kvp.Value == "Alice Brown");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty collection when API returns empty response")]
     public async Task GetBowlerOfTheYearAwardsAsync_EmptyResponse_ReturnsEmptyCollection()
     {
         // Arrange
@@ -98,7 +98,7 @@ public sealed class NebaApiServiceTests
         result.Value.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when API call fails")]
     public async Task GetBowlerOfTheYearAwardsAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -122,7 +122,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when API response content is null")]
     public async Task GetBowlerOfTheYearAwardsAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -144,7 +144,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when API exception is thrown")]
     public async Task GetBowlerOfTheYearAwardsAsync_ApiException_ReturnsError()
     {
         // Arrange
@@ -164,7 +164,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns network error when HTTP request exception is thrown")]
     public async Task GetBowlerOfTheYearAwardsAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
@@ -180,7 +180,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns timeout error when task is canceled")]
     public async Task GetBowlerOfTheYearAwardsAsync_TaskCanceledException_ReturnsTimeoutError()
     {
         // Arrange
@@ -196,7 +196,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns unexpected error for unhandled exceptions")]
     public async Task GetBowlerOfTheYearAwardsAsync_UnexpectedException_ReturnsUnexpectedError()
     {
         // Arrange
@@ -212,7 +212,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Orders Bowler of the Year awards by season in descending order")]
     public async Task GetBowlerOfTheYearAwardsAsync_OrdersBySeasonDescending()
     {
         // Arrange - Create awards in non-sorted order
@@ -250,7 +250,7 @@ public sealed class NebaApiServiceTests
 
     #region GetTitlesSummaryAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns title summaries on successful response")]
     public async Task GetTitlesSummaryAsync_SuccessfulResponse_ReturnsTitleSummaries()
     {
         // Arrange
@@ -282,7 +282,7 @@ public sealed class NebaApiServiceTests
         result.Value.ShouldContain(x => x.BowlerName == "Jane Smith");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty collection when no title summaries exist")]
     public async Task GetTitlesSummaryAsync_EmptyResponse_ReturnsEmptyCollection()
     {
         // Arrange
@@ -306,7 +306,7 @@ public sealed class NebaApiServiceTests
         result.Value.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when titles summary API call fails")]
     public async Task GetTitlesSummaryAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -329,7 +329,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when titles summary response content is null")]
     public async Task GetTitlesSummaryAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -354,7 +354,7 @@ public sealed class NebaApiServiceTests
 
     #region GetBowlerTitlesAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns bowler titles on successful response")]
     public async Task GetBowlerTitlesAsync_SuccessfulResponse_ReturnsBowlerTitles()
     {
         // Arrange
@@ -381,7 +381,7 @@ public sealed class NebaApiServiceTests
         // BowlerTitlesViewModel does not have BowlerId property
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when bowler titles API call fails")]
     public async Task GetBowlerTitlesAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -404,7 +404,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when bowler titles response content is null")]
     public async Task GetBowlerTitlesAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -426,7 +426,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns network error when bowler titles request fails")]
     public async Task GetBowlerTitlesAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
@@ -446,7 +446,7 @@ public sealed class NebaApiServiceTests
 
     #region GetHighBlockAwardsAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns grouped high block awards on successful response")]
     public async Task GetHighBlockAwardsAsync_SuccessfulResponse_ReturnsGroupedAwards()
     {
         // Arrange - Create awards for multiple seasons with different scores
@@ -495,7 +495,7 @@ public sealed class NebaApiServiceTests
         awardsList[2].Bowlers.First().ShouldBe("Bob Johnson");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Groups bowlers together when scores are tied")]
     public async Task GetHighBlockAwardsAsync_TiedScores_GroupsBowlersTogether()
     {
         // Arrange - Create awards with tied scores in same season
@@ -540,7 +540,7 @@ public sealed class NebaApiServiceTests
         bowlersList[1].ShouldBe("John Doe");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty collection when no high block awards exist")]
     public async Task GetHighBlockAwardsAsync_EmptyResponse_ReturnsEmptyCollection()
     {
         // Arrange
@@ -564,7 +564,7 @@ public sealed class NebaApiServiceTests
         result.Value.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high block awards API call fails")]
     public async Task GetHighBlockAwardsAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -588,7 +588,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high block awards response content is null")]
     public async Task GetHighBlockAwardsAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -610,7 +610,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high block awards API exception is thrown")]
     public async Task GetHighBlockAwardsAsync_ApiException_ReturnsError()
     {
         // Arrange
@@ -631,7 +631,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns network error when high block awards request fails")]
     public async Task GetHighBlockAwardsAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
@@ -647,7 +647,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns timeout error when high block awards task is canceled")]
     public async Task GetHighBlockAwardsAsync_TaskCanceledException_ReturnsTimeoutError()
     {
         // Arrange
@@ -663,7 +663,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns unexpected error for unhandled high block awards exceptions")]
     public async Task GetHighBlockAwardsAsync_UnexpectedException_ReturnsUnexpectedError()
     {
         // Arrange
@@ -679,7 +679,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Orders high block awards by season in descending order")]
     public async Task GetHighBlockAwardsAsync_OrdersBySeasonDescending()
     {
         // Arrange - Create awards in non-sorted order
@@ -719,7 +719,7 @@ public sealed class NebaApiServiceTests
 
     #region GetHighAverageAwardsAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns high average awards ordered by season descending")]
     public async Task GetHighAverageAwardsAsync_SuccessfulResponse_ReturnsAwardsOrderedBySeasonDescending()
     {
         // Arrange
@@ -765,7 +765,7 @@ public sealed class NebaApiServiceTests
         awardsList[2].BowlerName.ShouldBe("Bob Johnson");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty collection when no high average awards exist")]
     public async Task GetHighAverageAwardsAsync_EmptyResponse_ReturnsEmptyCollection()
     {
         // Arrange
@@ -789,7 +789,7 @@ public sealed class NebaApiServiceTests
         result.Value.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high average awards API call fails")]
     public async Task GetHighAverageAwardsAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -813,7 +813,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high average awards response content is null")]
     public async Task GetHighAverageAwardsAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -835,7 +835,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when high average awards API exception is thrown")]
     public async Task GetHighAverageAwardsAsync_ApiException_ReturnsError()
     {
         // Arrange
@@ -855,7 +855,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns network error when high average awards request fails")]
     public async Task GetHighAverageAwardsAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
@@ -871,7 +871,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns timeout error when high average awards task is canceled")]
     public async Task GetHighAverageAwardsAsync_TaskCanceledException_ReturnsTimeoutError()
     {
         // Arrange
@@ -887,7 +887,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns unexpected error for unhandled high average awards exceptions")]
     public async Task GetHighAverageAwardsAsync_UnexpectedException_ReturnsUnexpectedError()
     {
         // Arrange
@@ -903,7 +903,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Orders high average awards by season in descending order")]
     public async Task GetHighAverageAwardsAsync_OrdersBySeasonDescending()
     {
         // Arrange - Create awards in non-sorted order
@@ -943,7 +943,7 @@ public sealed class NebaApiServiceTests
 
     #region GetTournamentRulesAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns tournament rules as markup string on successful response")]
     public async Task GetTournamentRulesAsync_SuccessfulResponse_ReturnsMarkupString()
     {
         // Arrange
@@ -963,7 +963,7 @@ public sealed class NebaApiServiceTests
         result.Value.Content.Value.ShouldBe(htmlContent);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty markup string when tournament rules content is empty")]
     public async Task GetTournamentRulesAsync_EmptyContent_ReturnsEmptyMarkupString()
     {
         // Arrange
@@ -983,7 +983,7 @@ public sealed class NebaApiServiceTests
         result.Value.Content.Value.ShouldBe(string.Empty);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when tournament rules API call fails")]
     public async Task GetTournamentRulesAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -1000,7 +1000,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
-    [Fact]
+    [Fact(DisplayName = "Returns error when tournament rules API exception is thrown")]
     public async Task GetTournamentRulesAsync_ApiException_ReturnsError()
     {
         // Arrange
@@ -1020,7 +1020,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns network error when tournament rules request fails")]
     public async Task GetTournamentRulesAsync_HttpRequestException_ReturnsNetworkError()
     {
         // Arrange
@@ -1036,7 +1036,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns timeout error when tournament rules task is canceled")]
     public async Task GetTournamentRulesAsync_TaskCanceledException_ReturnsTimeoutError()
     {
         // Arrange
@@ -1052,7 +1052,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns unexpected error for unhandled tournament rules exceptions")]
     public async Task GetTournamentRulesAsync_UnexpectedException_ReturnsUnexpectedError()
     {
         // Arrange
@@ -1068,7 +1068,7 @@ public sealed class NebaApiServiceTests
         result.Errors.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns correct markup string for complex HTML content")]
     public async Task GetTournamentRulesAsync_ComplexHtmlContent_ReturnsCorrectMarkupString()
     {
         // Arrange
@@ -1101,7 +1101,7 @@ public sealed class NebaApiServiceTests
 
     #region GetTitlesByYearAsync Tests
 
-    [Fact]
+    [Fact(DisplayName = "Returns titles grouped by year on successful response")]
     public async Task GetTitlesByYearAsync_SuccessfulResponse_ReturnsTitlesGroupedByYear()
     {
         // Arrange
@@ -1144,7 +1144,7 @@ public sealed class NebaApiServiceTests
         titlesList[1].Titles.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns empty collection when no titles exist")]
     public async Task GetTitlesByYearAsync_EmptyResponse_ReturnsEmptyCollection()
     {
         // Arrange
@@ -1168,7 +1168,7 @@ public sealed class NebaApiServiceTests
         result.Value.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when titles by year API call fails")]
     public async Task GetTitlesByYearAsync_ApiError_ReturnsError()
     {
         // Arrange
@@ -1191,7 +1191,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns error when titles by year response content is null")]
     public async Task GetTitlesByYearAsync_NullContent_ReturnsError()
     {
         // Arrange
@@ -1212,7 +1212,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Orders titles by year and month in descending order")]
     public async Task GetTitlesByYearAsync_OrdersByYearDescendingAndMonthDescending()
     {
         // Arrange

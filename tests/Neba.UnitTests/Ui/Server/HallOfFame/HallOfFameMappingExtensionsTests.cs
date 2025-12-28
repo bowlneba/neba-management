@@ -6,7 +6,7 @@ namespace Neba.UnitTests.Ui.Server.HallOfFame;
 
 public sealed class HallOfFameMappingExtensionsTests
 {
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from HallOfFameInductionResponse to view model")]
     public void HallOfFameInductionResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange
@@ -20,7 +20,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.BowlerName.ShouldBe(bowlerName);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps induction year from HallOfFameInductionResponse to view model")]
     public void HallOfFameInductionResponse_ToViewModel_ShouldMapInductionYear()
     {
         // Arrange
@@ -34,7 +34,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.InductionYear.ShouldBe(year);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps categories from HallOfFameInductionResponse to view model")]
     public void HallOfFameInductionResponse_ToViewModel_ShouldMapCategories()
     {
         // Arrange
@@ -51,7 +51,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.Categories.ShouldContain("Meritorious Service");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps single category correctly to view model")]
     public void HallOfFameInductionResponse_ToViewModel_WithSingleCategory_ShouldMapCorrectly()
     {
         // Arrange
@@ -66,7 +66,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.Categories.Single().ShouldBe("Friend of NEBA");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps photo URL when present in response")]
     public void HallOfFameInductionResponse_ToViewModel_WithPhotoUrl_ShouldMapPhotoUrl()
     {
         // Arrange
@@ -80,7 +80,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.PhotoUrl.ShouldBe(photoUrl);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps null photo URL when not present in response")]
     public void HallOfFameInductionResponse_ToViewModel_WithNullPhotoUrl_ShouldMapNullPhotoUrl()
     {
         // Arrange
@@ -93,7 +93,7 @@ public sealed class HallOfFameMappingExtensionsTests
         viewModel.PhotoUrl.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps all properties from response to view model correctly")]
     public void HallOfFameInductionResponse_ToViewModel_ShouldMapAllPropertiesCorrectly()
     {
         // Arrange

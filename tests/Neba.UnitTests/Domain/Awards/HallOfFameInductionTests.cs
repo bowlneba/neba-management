@@ -8,7 +8,7 @@ namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class HallOfFameInductionTests
 {
-    [Fact]
+    [Fact(DisplayName = "Constructor should generate valid HallOfFameId")]
     public void Constructor_ShouldGenerateValidHallOfFameId()
     {
         // Act
@@ -18,7 +18,7 @@ public sealed class HallOfFameInductionTests
         induction.Id.Value.ShouldNotBe(Ulid.Empty);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Constructor should generate unique IDs")]
     public void Constructor_ShouldGenerateUniqueIds()
     {
         // Act
@@ -29,7 +29,7 @@ public sealed class HallOfFameInductionTests
         induction1.Id.ShouldNotBe(induction2.Id);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Categories default value should be empty collection")]
     public void Categories_DefaultValue_ShouldBeEmptyCollection()
     {
         // Act
@@ -40,7 +40,7 @@ public sealed class HallOfFameInductionTests
         induction.Categories.ShouldBeEmpty();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Categories should be read-only collection")]
     public void Categories_ShouldBeReadOnlyCollection()
     {
         // Act
@@ -53,7 +53,7 @@ public sealed class HallOfFameInductionTests
         induction.Categories.ShouldBeAssignableTo<IReadOnlyCollection<HallOfFameCategory>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Photo default value should be null")]
     public void Photo_DefaultValue_ShouldBeNull()
     {
         // Act
@@ -63,7 +63,7 @@ public sealed class HallOfFameInductionTests
         induction.Photo.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Photo can be set to StoredFile")]
     public void Photo_CanBeSetToStoredFile()
     {
         // Arrange
@@ -80,7 +80,7 @@ public sealed class HallOfFameInductionTests
         induction.Photo.ShouldBe(photo);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Year can be initialized")]
     public void Year_CanBeInitialized()
     {
         // Arrange
@@ -96,7 +96,7 @@ public sealed class HallOfFameInductionTests
         induction.Year.ShouldBe(year);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Categories can be initialized with multiple categories")]
     public void Categories_CanBeInitializedWithMultipleCategories()
     {
         // Arrange
@@ -114,7 +114,7 @@ public sealed class HallOfFameInductionTests
         induction.Categories.ShouldContain(HallOfFameCategory.MeritoriousService);
     }
 
-    [Fact]
+    [Fact(DisplayName = "All properties can be initialized together")]
     public void AllProperties_CanBeInitializedTogether()
     {
         // Arrange
@@ -138,7 +138,7 @@ public sealed class HallOfFameInductionTests
         induction.Categories.Single().ShouldBe(HallOfFameCategory.FriendOfNeba);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Two inductions with same ID should be equal")]
     public void Equality_TwoInductionsWithSameId_ShouldBeEqual()
     {
         // Arrange
@@ -159,7 +159,7 @@ public sealed class HallOfFameInductionTests
         induction1.GetHashCode().ShouldBe(induction2.GetHashCode());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Two inductions with different IDs should not be equal")]
     public void Equality_TwoInductionsWithDifferentIds_ShouldNotBeEqual()
     {
         // Arrange

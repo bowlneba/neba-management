@@ -24,7 +24,7 @@ public sealed class BowlerTitlesQueryHandlerTests
             _mockWebsiteBowlerQueryRepository.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns bowler not found error when bowler does not exist")]
     public async Task HandleAsync_ShouldReturnBowlerNotFoundError_WhenBowlerDoesNotExist()
     {
         // Arrange
@@ -47,7 +47,7 @@ public sealed class BowlerTitlesQueryHandlerTests
         Console.WriteLine(result.FirstError);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns bowler titles when bowler exists")]
     public async Task HandleAsync_ShouldReturnBowlerTitlesDto_WhenBowlerExists()
     {
         // Arrange
@@ -66,7 +66,7 @@ public sealed class BowlerTitlesQueryHandlerTests
         result.Value.ShouldBe(bowler);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -76,7 +76,7 @@ public sealed class BowlerTitlesQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<ErrorOr<BowlerTitlesDto>>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -100,7 +100,7 @@ public sealed class BowlerTitlesQueryHandlerTests
         key.Split(':')[3].ShouldBe("01ARZ3NDEKTSV4RRFFQ69G5FAV");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 7 days")]
     public void Query_CacheExpiry_ShouldBeDefault7Days()
     {
         // Arrange
@@ -114,7 +114,7 @@ public sealed class BowlerTitlesQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(7));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include bowler hierarchy")]
     public void Query_CacheTags_ShouldIncludeBowlerHierarchy()
     {
         // Arrange

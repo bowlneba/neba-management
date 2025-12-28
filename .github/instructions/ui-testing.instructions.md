@@ -190,6 +190,7 @@ Avoid:
 - Ensure responsive coverage for any layout-sensitive change
 - Validate accessibility behaviors (tab order, focus management)
 - Require deterministic selectors (data-testid > CSS selectors)
+- **REQUIRED: All bUnit tests must include DisplayName attributes** on `[Fact]` and `[Theory]` attributes that clearly describe what is being tested
 
 ## 9. CI Integration Strategy (High Level)
 

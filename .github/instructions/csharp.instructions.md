@@ -91,6 +91,10 @@ applyTo: '**/*.cs'
 - Guide users through creating unit tests.
 - Follow the Arrange-Act-Assert (AAA) structure adding "Arrange/Act/Assert" comments; use whitespace to delineate phases when helpful.
 - Copy existing style in nearby files for test method names and capitalization.
+- **REQUIRED: All `[Fact]` and `[Theory]` attributes MUST include a `DisplayName` parameter** that clearly describes what the test validates in human-readable language.
+  - Good: `[Fact(DisplayName = "Creates event with default values when only status is provided")]`
+  - Bad: `[Fact]` (missing DisplayName)
+  - The DisplayName should describe the behavior being tested, not just restate the method name.
 - Explain integration testing approaches for API endpoints.
 - Demonstrate how to mock dependencies for effective testing.
 - Show how to test authentication and authorization logic.

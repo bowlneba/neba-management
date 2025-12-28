@@ -7,7 +7,7 @@ public sealed class HallOfFameCategoryValueConverterTests
 {
     private readonly HallOfFameCategoryValueConverter _converter = new();
 
-    [Fact]
+    [Fact(DisplayName = "Converts Superior Performance category to correct provider value")]
     public void ConvertToProvider_SingleCategory_SuperiorPerformance_ReturnsCorrectValue()
     {
         // Arrange
@@ -20,7 +20,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(1); // SuperiorPerformance has value 1
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts Meritorious Service category to correct provider value")]
     public void ConvertToProvider_SingleCategory_MeritoriousService_ReturnsCorrectValue()
     {
         // Arrange
@@ -33,7 +33,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(2); // MeritoriousService has value 2
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts Friend of NEBA category to correct provider value")]
     public void ConvertToProvider_SingleCategory_FriendOfNeba_ReturnsCorrectValue()
     {
         // Arrange
@@ -46,7 +46,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(4); // FriendOfNeba has value 4
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts multiple categories to correct combined provider value")]
     public void ConvertToProvider_MultipleCategories_SuperiorAndMeritorious_ReturnsCorrectValue()
     {
         // Arrange
@@ -59,7 +59,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(3); // 1 | 2 = 3
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts Superior Performance and Friend of NEBA to correct provider value")]
     public void ConvertToProvider_MultipleCategories_SuperiorAndFriend_ReturnsCorrectValue()
     {
         // Arrange
@@ -72,7 +72,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(5); // 1 | 4 = 5
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts all three categories to correct combined provider value")]
     public void ConvertToProvider_AllThreeCategories_ReturnsCorrectValue()
     {
         // Arrange
@@ -85,7 +85,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(7); // 1 | 2 | 4 = 7
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts empty category collection to zero")]
     public void ConvertToProvider_EmptyCollection_ReturnsZero()
     {
         // Arrange
@@ -98,7 +98,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 1 to Superior Performance category")]
     public void ConvertFromProvider_Value1_ReturnsSuperiorPerformance()
     {
         // Arrange
@@ -112,7 +112,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.Single().ShouldBe(HallOfFameCategory.SuperiorPerformance);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 2 to Meritorious Service category")]
     public void ConvertFromProvider_Value2_ReturnsMeritoriousService()
     {
         // Arrange
@@ -126,7 +126,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.Single().ShouldBe(HallOfFameCategory.MeritoriousService);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 4 to Friend of NEBA category")]
     public void ConvertFromProvider_Value4_ReturnsFriendOfNeba()
     {
         // Arrange
@@ -140,7 +140,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.Single().ShouldBe(HallOfFameCategory.FriendOfNeba);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 3 to Superior Performance and Meritorious Service")]
     public void ConvertFromProvider_Value3_ReturnsSuperiorAndMeritorious()
     {
         // Arrange
@@ -155,7 +155,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldContain(HallOfFameCategory.MeritoriousService);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 5 to Superior Performance and Friend of NEBA")]
     public void ConvertFromProvider_Value5_ReturnsSuperiorAndFriend()
     {
         // Arrange
@@ -170,7 +170,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldContain(HallOfFameCategory.FriendOfNeba);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 7 to all three categories")]
     public void ConvertFromProvider_Value7_ReturnsAllThreeCategories()
     {
         // Arrange
@@ -186,7 +186,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.ShouldContain(HallOfFameCategory.FriendOfNeba);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Converts provider value 0 to None category")]
     public void ConvertFromProvider_Value0_ReturnsNoneCategory()
     {
         // Arrange
@@ -200,7 +200,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.Single().ShouldBe(HallOfFameCategory.None);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maintains value through round-trip conversion for single category")]
     public void RoundTrip_SingleCategory_MaintainsValue()
     {
         // Arrange
@@ -215,7 +215,7 @@ public sealed class HallOfFameCategoryValueConverterTests
         result.Single().ShouldBe(HallOfFameCategory.MeritoriousService);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maintains value through round-trip conversion for multiple categories")]
     public void RoundTrip_MultipleCategories_MaintainsValue()
     {
         // Arrange

@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Tournaments;
 
 public sealed class TournamentTypeTests
 {
-    [Fact]
+    [Fact(DisplayName = "TournamentType should have 14 different tournament types")]
     public void TournamentType_ShouldHave14DifferentTournamentTypes()
     {
         // Arrange & Act
@@ -14,7 +14,7 @@ public sealed class TournamentTypeTests
         tournamentTypes.Count.ShouldBe(14);
     }
 
-    [Theory]
+    [Theory(DisplayName = "TournamentType should have correct properties")]
     [InlineData("Singles", 10, 1, true)]
     [InlineData("Doubles", 20, 2, true)]
     [InlineData("Trios", 30, 3, true)]

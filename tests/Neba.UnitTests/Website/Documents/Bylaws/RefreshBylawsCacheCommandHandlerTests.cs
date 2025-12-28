@@ -14,7 +14,7 @@ public sealed class RefreshBylawsCacheCommandHandlerTests
         _handler = new RefreshBylawsCacheCommandHandler(_bylawsSyncJobMock.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Triggers immediate sync and returns job ID")]
     public async Task HandleAsync_ShouldTriggerImmediateSyncAndReturnJobId()
     {
         // Arrange
@@ -34,7 +34,7 @@ public sealed class RefreshBylawsCacheCommandHandlerTests
         _bylawsSyncJobMock.Verify(j => j.TriggerImmediateSync(), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Respects cancellation token during execution")]
     public async Task HandleAsync_WithCancellation_ShouldRespectCancellationToken()
     {
         // Arrange

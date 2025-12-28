@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Domain;
 
 public sealed class EntityTests
 {
-    [Fact]
+    [Fact(DisplayName = "Entities with same ID should be equal")]
     public void EntitiesWithSameId_ShouldBeEqual()
     {
         // Arrange
@@ -19,7 +19,7 @@ public sealed class EntityTests
         entity1.GetHashCode().ShouldBe(entity2.GetHashCode());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Entities with different IDs should not be equal")]
     public void EntitiesWithDifferentIds_ShouldNotBeEqual()
     {
         // Arrange
