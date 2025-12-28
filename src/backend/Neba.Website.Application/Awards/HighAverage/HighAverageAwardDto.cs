@@ -1,3 +1,4 @@
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Website.Application.Awards.HighAverage;
@@ -20,7 +21,7 @@ public sealed record HighAverageAwardDto
     /// <summary>
     /// The full name of the bowler who received the award.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
 
     /// <summary>
     /// The bowler's average for the season.

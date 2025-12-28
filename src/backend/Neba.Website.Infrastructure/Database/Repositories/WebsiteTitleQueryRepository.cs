@@ -13,7 +13,7 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
             .Select(title => new BowlerTitleDto
             {
                 BowlerId = title.Bowler.Id,
-                BowlerName = title.Bowler.Name.ToDisplayName(),
+                BowlerName = title.Bowler.Name,
                 TournamentMonth = title.Month,
                 TournamentYear = title.Year,
                 TournamentType = title.TournamentType
@@ -27,7 +27,7 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
             .Select(group => new BowlerTitleSummaryDto
             {
                 BowlerId = group.Key.Id,
-                BowlerName = group.Key.Name.ToDisplayName(),
+                BowlerName = group.Key.Name,
                 TitleCount = group.Count()
             })
             .ToListAsync(cancellationToken);

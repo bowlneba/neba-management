@@ -77,7 +77,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         // Assert
         result.ShouldNotBeNull();
         result!.BowlerId.ShouldBe(seedBowler.Id);
-        result.BowlerName.ShouldBe(seedBowler.Name.ToDisplayName());
+        result.BowlerName.ShouldBe(seedBowler.Name);
         result.Titles.Count.ShouldBe(seedBowler.Titles.Count);
 
         for (int i = 0; i < result.Titles.Count; i++)

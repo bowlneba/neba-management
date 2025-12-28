@@ -1,4 +1,5 @@
 using Bogus;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 
@@ -10,13 +11,13 @@ public static class BowlerTitleSummaryDtoFactory
 
     public static BowlerTitleSummaryDto Create(
         BowlerId? bowlerId = null,
-        string? bowlerName = null,
+        Name? bowlerName = null,
         int? titleCount = null)
     {
         return new BowlerTitleSummaryDto
         {
             BowlerId = bowlerId ?? BowlerId.New(),
-            BowlerName = bowlerName ?? BowlerName,
+            BowlerName = bowlerName ?? NameFactory.Create(),
             TitleCount = titleCount ?? 5
         };
     }
@@ -30,7 +31,7 @@ public static class BowlerTitleSummaryDtoFactory
     {
         Faker<BowlerTitleSummaryDto> faker = new Bogus.Faker<BowlerTitleSummaryDto>()
             .RuleFor(b => b.BowlerId, _ => BowlerId.New())
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
+            .RuleFor(b => b.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(b => b.TitleCount, f => f.Random.Int(0, 20));
 
         if (seed.HasValue)

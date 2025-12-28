@@ -17,7 +17,7 @@ public sealed record BowlerTitleDto
     /// <summary>
     /// Gets the full name of the bowler.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
 
     /// <summary>
     /// Gets the month in which the title was won.

@@ -30,14 +30,13 @@ public sealed class BowlersTitlesMappingExtensionsTests
     public void BowlerTitleDto_ToResponseModel_ShouldMapBowlerName()
     {
         // Arrange
-        const string bowlerName = "John Doe";
-        BowlerTitleDto dto = BowlerTitleDtoFactory.Create(bowlerName: bowlerName);
+        BowlerTitleDto dto = BowlerTitleDtoFactory.Create();
 
         // Act
         TitleResponse response = dto.ToResponseModel();
 
         // Assert
-        response.BowlerName.ShouldBe(bowlerName);
+        response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
     [Fact]
@@ -100,14 +99,13 @@ public sealed class BowlersTitlesMappingExtensionsTests
     public void BowlerTitlesDto_ToResponseModel_MapsBowlerNameCorrectly()
     {
         // Arrange
-        const string bowlerName = "Jane Smith";
-        BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(bowlerName: bowlerName);
+        BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create();
 
         // Act
         BowlerTitlesResponse response = dto.ToResponseModel();
 
         // Assert
-        response.BowlerName.ShouldBe(bowlerName);
+        response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
     [Fact]
@@ -154,14 +152,13 @@ public sealed class BowlersTitlesMappingExtensionsTests
     public void BowlerTitleSummaryDto_ToResponseModel_MapsBowlerNameCorrectly()
     {
         // Arrange
-        const string bowlerName = "Alice Johnson";
-        BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create(bowlerName: bowlerName);
+        BowlerTitleSummaryDto dto = BowlerTitleSummaryDtoFactory.Create();
 
         // Act
         TitleSummaryResponse response = dto.ToResponseModel();
 
         // Assert
-        response.BowlerName.ShouldBe(bowlerName);
+        response.BowlerName.ShouldBe(dto.BowlerName.ToDisplayName());
     }
 
     [Fact]

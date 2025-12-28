@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bogus;
+using Neba.Domain;
 using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
@@ -11,7 +12,7 @@ public static class BowlerOfTheYearAwardDtoFactory
     public const string BowlerName = "Jane Smith";
 
     public static BowlerOfTheYearAwardDto Create(
-        string? bowlerName = null,
+        Name? bowlerName = null,
         string? season = null,
         BowlerOfTheYearCategory? category = null,
         BowlerId? bowlerId = null)
@@ -19,7 +20,7 @@ public static class BowlerOfTheYearAwardDtoFactory
         return new BowlerOfTheYearAwardDto
         {
             Id = SeasonAwardId.New(),
-            BowlerName = bowlerName ?? BowlerName,
+            BowlerName = bowlerName ?? NameFactory.Create(),
             Season = season ?? "2024-2025",
             Category = category ?? BowlerOfTheYearCategory.Open,
             BowlerId = bowlerId ?? BowlerId.New()
@@ -35,7 +36,7 @@ public static class BowlerOfTheYearAwardDtoFactory
     {
         Faker<BowlerOfTheYearAwardDto> faker = new Faker<BowlerOfTheYearAwardDto>()
             .RuleFor(boy => boy.Id, _ => SeasonAwardId.New())
-            .RuleFor(boy => boy.BowlerName, f => f.Person.FullName)
+            .RuleFor(boy => boy.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
             .RuleFor(boy => boy.Category, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()))
             .RuleFor(boy => boy.BowlerId, _ => BowlerId.New());

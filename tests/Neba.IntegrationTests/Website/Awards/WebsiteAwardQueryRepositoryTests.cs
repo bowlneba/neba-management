@@ -49,7 +49,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
             .Select(award => new
             {
                 award.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 award.Season,
                 award.BowlerOfTheYearCategory
             })
@@ -95,7 +95,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
             .Select(award => new
             {
                 award.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 award.Season,
                 HighBlockScore = award.HighBlockScore ?? -1
             })
@@ -141,7 +141,7 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
             .Select(award => new
             {
                 award.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 award.Season,
                 Average = award.Average ?? -1,
                 Games = award.SeasonTotalGames,

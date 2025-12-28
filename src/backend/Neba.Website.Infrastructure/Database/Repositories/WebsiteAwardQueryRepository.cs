@@ -19,7 +19,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             {
                 Id = award.Id,
                 BowlerId = award.Bowler.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 Season = award.Season,
                 Category = award.BowlerOfTheYearCategory!
             })
@@ -32,7 +32,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             .Select(award => new HighBlockAwardDto
             {
                 Id = award.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 Season = award.Season,
                 Score = award.HighBlockScore ?? -1
             })
@@ -46,7 +46,7 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
             .Select(award => new HighAverageAwardDto
             {
                 Id = award.Id,
-                BowlerName = award.Bowler.Name.ToDisplayName(),
+                BowlerName = award.Bowler.Name,
                 Season = award.Season,
                 Average = award.Average ?? -1,
                 Games = award.SeasonTotalGames,

@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bogus;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Website.Application.Awards.HighBlock;
 
@@ -10,14 +11,14 @@ public static class HighBlockAwardDtoFactory
     public const string BowlerName = "John Doe";
 
     public static HighBlockAwardDto Create(
-        string? bowlerName = null,
+        Name? bowlerName = null,
         string? season = null,
         int? score = null
     )
         => new()
         {
             Id = SeasonAwardId.New(),
-            BowlerName = bowlerName ?? BowlerName,
+            BowlerName = bowlerName ?? NameFactory.Create(),
             Season = season ?? "2023",
             Score = score ?? 1300
         };
@@ -31,7 +32,7 @@ public static class HighBlockAwardDtoFactory
     {
         Faker<HighBlockAwardDto>? faker = new Faker<HighBlockAwardDto>()
             .RuleFor(award => award.Id, _ => SeasonAwardId.New())
-            .RuleFor(award => award.BowlerName, f => f.Name.FullName())
+            .RuleFor(award => award.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
             .RuleFor(award => award.Score, f => f.Random.Int(1200, 1350));
 

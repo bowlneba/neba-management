@@ -18,7 +18,7 @@ internal static class AwardsMappingExtensions
         {
             return new BowlerOfTheYearResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Category = dto.Category.Name
             };
@@ -32,7 +32,7 @@ internal static class AwardsMappingExtensions
             return new BowlerTitlesResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
                     Month = title.Month,
@@ -50,7 +50,7 @@ internal static class AwardsMappingExtensions
             return new TitleSummaryResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 TitleCount = dto.TitleCount
             };
         }
@@ -62,7 +62,7 @@ internal static class AwardsMappingExtensions
         {
             return new HighBlockAwardResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Score = dto.Score
             };
@@ -75,7 +75,7 @@ internal static class AwardsMappingExtensions
         {
             return new HighAverageAwardResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Average = dto.Average,
                 Games = dto.Games,

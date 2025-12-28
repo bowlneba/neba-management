@@ -12,7 +12,7 @@ public static class BowlerTitleDtoFactory
 
     public static BowlerTitleDto Create(
         BowlerId? bowlerId = null,
-        string? bowlerName = null,
+        Name? bowlerName = null,
         Month? tournamentMonth = null,
         int? tournamentYear = null,
         TournamentType? tournamentType = null
@@ -20,7 +20,7 @@ public static class BowlerTitleDtoFactory
             => new()
             {
                 BowlerId = bowlerId ?? BowlerId.New(),
-                BowlerName = bowlerName ?? BowlerName,
+                BowlerName = bowlerName ?? NameFactory.Create(),
                 TournamentMonth = tournamentMonth ?? Month.January,
                 TournamentYear = tournamentYear ?? 2020,
                 TournamentType = tournamentType ?? TournamentType.Singles
@@ -36,7 +36,7 @@ public static class BowlerTitleDtoFactory
     {
         Faker<BowlerTitleDto> faker = new Faker<BowlerTitleDto>()
             .RuleFor(bowler => bowler.BowlerId, _ => BowlerId.New())
-            .RuleFor(bowler => bowler.BowlerName, f => f.Name.FullName())
+            .RuleFor(bowler => bowler.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(bowler => bowler.TournamentMonth, f => f.PickRandom(Month.List.ToArray()))
             .RuleFor(bowler => bowler.TournamentYear, f => f.Date.Past(70).Year)
             .RuleFor(bowler => bowler.TournamentType, f => f.PickRandom(TournamentType.List.ToArray()));

@@ -1,3 +1,4 @@
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Website.Application.Bowlers.BowlerTitles;
@@ -15,7 +16,7 @@ public sealed record BowlerTitleSummaryDto
     /// <summary>
     /// The full name of the bowler.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
 
     /// <summary>
     /// The total number of titles won by the bowler.
