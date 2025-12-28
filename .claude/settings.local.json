@@ -125,7 +125,10 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline --all -5 -- \"src/backend/Neba.Website.Contracts/Titles/TitleResponse.cs\")",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Infrastructure/Database/Repositories/WebsiteTitleQueryRepository.cs\")",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Endpoints/Bowlers/TitlesMappingExtensions.cs\")",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Application/Bowlers/BowlerTitles/BowlerTitleSummaryDto.cs\")"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Application/Bowlers/BowlerTitles/BowlerTitleSummaryDto.cs\")",
+      "Bash(dotnet nuget list:*)",
+      "Bash(timeout 60 dotnet test:*)",
+      "Bash(do echo \"Request $i:\")"
     ],
     "deny": [],
     "ask": []

@@ -10,4 +10,25 @@ internal static partial class CachedQueryHandlerDecoratorLogMessages
     public static partial void LogCacheMiss(
         this ILogger logger,
         string cacheKey);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Skipping cache for key '{CacheKey}' due to error result")]
+    public static partial void LogErrorResultNotCached(
+        this ILogger logger,
+        string cacheKey);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Unwrapping ErrorOr value for cache storage: key '{CacheKey}'")]
+    public static partial void LogUnwrappingErrorOr(
+        this ILogger logger,
+        string cacheKey);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Rewrapping cached value into ErrorOr: key '{CacheKey}'")]
+    public static partial void LogRewrappingErrorOr(
+        this ILogger logger,
+        string cacheKey);
 }
