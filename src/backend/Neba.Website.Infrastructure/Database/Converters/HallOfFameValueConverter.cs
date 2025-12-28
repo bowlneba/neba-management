@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Neba.Domain;
+using Neba.Domain.Awards;
 
 namespace Neba.Website.Infrastructure.Database.Converters;
 

@@ -1,4 +1,5 @@
 ﻿using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Application.Bowlers.BowlerTitles;
@@ -80,6 +81,20 @@ internal static class AwardsMappingExtensions
                 Average = dto.Average,
                 Games = dto.Games,
                 Tournaments = dto.Tournaments
+            };
+        }
+    }
+
+    extension(HallOfFameInductionDto dto)
+    {
+        public HallOfFameInductionResponse ToResponseModel()
+        {
+            return new HallOfFameInductionResponse
+            {
+                Year = dto.Year,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                PhotoUrl = dto.PhotoUri,
+                Categories = dto.Categories.Select(cat => cat.Name).ToList()
             };
         }
     }

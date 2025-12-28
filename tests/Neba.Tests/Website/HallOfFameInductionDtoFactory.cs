@@ -1,5 +1,6 @@
 using Bogus;
 using Neba.Domain;
+using Neba.Domain.Awards;
 using Neba.Website.Application.Awards.HallOfFame;
 
 namespace Neba.Tests.Website;

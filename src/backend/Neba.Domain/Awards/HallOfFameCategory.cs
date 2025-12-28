@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Domain;
+namespace Neba.Domain.Awards;
 
 /// <summary>
 /// Represents one or more Hall of Fame categories for a person or entity.
@@ -42,6 +42,10 @@ public sealed class HallOfFameCategory
         : base(name, value)
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HallOfFameCategory"/> class
+    /// with default values.
+    /// </summary>
     private HallOfFameCategory()
         : base(string.Empty, 0)
     { }

@@ -1,4 +1,5 @@
 using Neba.Domain;
+using Neba.Domain.Awards;
 
 namespace Neba.Website.Application.Awards.HallOfFame;
 
