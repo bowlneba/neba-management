@@ -114,7 +114,11 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management stash drop)",
       "Bash(dotnet ef migrations add:*)",
       "Bash(psql:*)",
-      "Bash(dotnet add:*)"
+      "Bash(dotnet add:*)",
+      "Bash(for i in {1..3})",
+      "Bash(do echo \"=== Run $i ===\")",
+      "Bash(for i in 1 2 3)",
+      "Bash(do echo \"Run $i:\")"
     ],
     "deny": [],
     "ask": []

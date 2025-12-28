@@ -61,7 +61,12 @@ public abstract class ApiTestsBase
         using IServiceScope scope = Factory.Services.CreateScope();
         WebsiteDbContext context = scope.ServiceProvider.GetRequiredService<WebsiteDbContext>();
         await seedAction(context);
-        await context.SaveChangesAsync();
+
+        // Only save if there are pending changes and no save was already called
+        if (context.ChangeTracker.HasChanges())
+        {
+            await context.SaveChangesAsync();
+        }
     }
 
     /// <summary>

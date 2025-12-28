@@ -23,13 +23,14 @@ internal static class AwardsEndpoints
     {
         public IEndpointRouteBuilder MapAwardsEndpoints()
         {
+            app.MapHallOfFameInductionsEndpoint();
+
             RouteGroupBuilder awardGroup = app.MapGroup("/awards");
 
             awardGroup
                 .MapGetBowlerOfTheYearWinnersEndpoint()
                 .MapHighBlockAwardWinnersEndpoint()
-                .MapHighAverageAwardWinnersEndpoint()
-                .MapHallOfFameInductionsEndpoint();
+                .MapHighAverageAwardWinnersEndpoint();
 
             return app;
         }

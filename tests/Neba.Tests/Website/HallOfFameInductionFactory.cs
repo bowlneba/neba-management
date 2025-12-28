@@ -25,8 +25,29 @@ public static class HallOfFameInductionFactory
         int count,
         int? seed = null)
     {
+        if (count == 0)
+        {
+            return [];
+        }
+
+        // Track used years to ensure uniqueness per bowler (alternate key constraint)
+        HashSet<int> usedYears = [];
+
         Bogus.Faker<HallOfFameInduction> faker = new Bogus.Faker<HallOfFameInduction>()
-            .RuleFor(hof => hof.Year, f => f.Date.Past(60).Year)
+            .RuleFor(hof => hof.Year, f =>
+            {
+                // Generate unique years for this bowler to satisfy (Year, bowler_id) alternate key
+                int year;
+                int attempts = 0;
+                do
+                {
+                    year = f.Date.Past(60).Year;
+                    attempts++;
+                } while (usedYears.Contains(year) && attempts < 100);
+
+                usedYears.Add(year);
+                return year;
+            })
             .RuleFor(hof => hof.Photo, f => StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f))
             .RuleFor(hof => hof.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1,2)).ToList());
 
