@@ -25,7 +25,7 @@ public sealed record HallOfFameInductionDto
     /// <summary>
     /// A public URI pointing to the bowler's photo.
     /// </summary>
-    public Uri? PhotoUri { get; init; }
+    public Uri? PhotoUri { get; internal set; }
 
     /// <summary>
     /// The categories associated with this induction.
