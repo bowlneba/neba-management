@@ -6,7 +6,7 @@ namespace Neba.Website.Application.Awards.HallOfFame;
 /// <summary>
 /// Query to retrieve a list of Hall of Fame inductions.
 /// </summary>
-public sealed record GetHallOfFameInductionsQuery
+public sealed record ListHallOfFameInductionsQuery
     : ICachedQuery<IReadOnlyCollection<HallOfFameInductionDto>>
 {
     /// <inheritdoc/>
