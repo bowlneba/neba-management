@@ -310,6 +310,7 @@ A tournament is stat-eligible if:
 - `ApplicationId` - Legacy identifier from the existing organization management software (used for data migration; maintained for historical reference)
 - `Titles` - Read-only collection of championship titles won by the bowler
 - `SeasonAwards` - Read-only collection of season awards earned by the bowler
+- `HallOfFameInductions` - Read-only collection of Hall of Fame inductions for the bowler
 
 **Aggregate Boundary:**
 
@@ -317,11 +318,13 @@ The Bowler is an aggregate root containing:
 
 - **Title entities:** Championships won in tournaments
 - **SeasonAward entities:** Season-level achievements (BOTY, High Average, High Block)
+- **HallOfFameInduction entities:** Hall of Fame recognitions for superior performance, meritorious service, or friend of NEBA
 
 **Invariants maintained:**
 
 - All titles belong to this specific bowler
 - All season awards belong to this specific bowler
+- All Hall of Fame inductions belong to this specific bowler
 - Bowler identity is immutable once created
 
 **Future Properties:**
@@ -350,7 +353,7 @@ Privacy rules for public website vs admin access will be defined when member man
 - Public data: Name, titles, awards, possibly city/state for tournament results
 - Private data: Contact information, detailed address, financial information (e.g., for 1099 reporting)
 
-**Related Terms:** Title, SeasonAward, Name, Tournament of Champions
+**Related Terms:** Title, SeasonAward, HallOfFameInduction, Name, Tournament of Champions
 
 **Code Reference:** `src/backend/Neba.Domain/Bowlers/Bowler.cs`
 
@@ -466,6 +469,7 @@ Standard calendar months with numeric values 1-12:
 **Entities within boundary:**
 - Title (child entity)
 - SeasonAward (child entity)
+- HallOfFameInduction (child entity)
 
 **Invariants:**
 
@@ -514,6 +518,8 @@ Standard calendar months with numeric values 1-12:
 
 ## Related Documentation
 
+- [Hall of Fame]({{ '/ubiquitous-language/hall-of-fame' | relative_url }}) - Hall of Fame inductions and categories
+- [Technical Building Blocks]({{ '/ubiquitous-language/technical-building-blocks' | relative_url }}) - Core domain infrastructure and cross-cutting concepts
 - [Bowlers Domain]({{ '/ubiquitous-language/bowlers' | relative_url }}) (Coming Soon - when we expand bowler entity)
 - [Domain Models]({{ '/domain-models' | relative_url }}) (Coming Soon)
 - [Business Rules]({{ '/business-rules' | relative_url }}) (Coming Soon)
