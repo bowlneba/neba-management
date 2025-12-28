@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 using Neba.Domain;
 
-namespace Neba.UnitTests.Domain.Awards;
+namespace Neba.UnitTests.Domain;
 
 public sealed class SmartFlagEnumJsonConverterTests
 {
