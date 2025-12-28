@@ -1,6 +1,10 @@
 @page "/hall-of-fame"
 @using Neba.Web.Server.HallOfFame
 @using Neba.Web.Server.Components
+@using Neba.Web.Server.Notifications
+
+@inject NebaApiService NebaApiService
+
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Hall of Fame - NEBA</PageTitle>
@@ -8,13 +12,27 @@
     <meta name="description" content="NEBA Hall of Fame honoring excellence in bowling. View inductees by year and category including Superior Performance, Meritorious Service, and Friend of NEBA." />
 </HeadContent>
 
-<NebaLoadingIndicator IsVisible="_isLoading" Text="Loading Hall of Fame..." Scope="LoadingIndicatorScope.Page" />
+<div class="hall-of-fame-container">
+    <h1 class="page-title">Hall of Fame</h1>
+    <p class="page-subtitle">Honoring Excellence in Bowling</p>
 
-@if (!_isLoading && _inductionsByYear != null)
-{
-    <div class="hall-of-fame-container">
-        <h1 class="page-title">Hall of Fame</h1>
-        <p class="page-subtitle">Honoring Excellence in Bowling</p>
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Hall of Fame"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading Hall of Fame..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    @if (!_isLoading && _inductionsByYear != null && _inductionsByYear.Count > 0)
+    {
 
         @foreach (var yearGroup in _inductionsByYear.OrderBy(g => g.Year))
         {
@@ -124,23 +142,23 @@
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
-#pragma warning disable S1075 // Strings should not be hardcoded
     private bool _isLoading = true;
     private List<YearGroup>? _inductionsByYear;
+    private string? _errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Simulate loading with 2500ms delay
-            await Task.Delay(2500);
-
-            // Generate fake data
-            _inductionsByYear = GenerateFakeData();
+            _inductionsByYear = await GetHallOfFameInductionsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load Hall of Fame data: {ex.Message}";
         }
         finally
         {
@@ -148,39 +166,18 @@
         }
     }
 
-    private List<YearGroup> GenerateFakeData()
+    private async Task<List<YearGroup>> GetHallOfFameInductionsAsync()
     {
-        #pragma warning disable S1075 // Strings should not be hardcoded
-        var allInductees = new List<HallOfFameInductionViewModel>
+        var allInducteesResult = await NebaApiService.GetHallOfFameInductionsAsync();
+
+        if (allInducteesResult.IsError)
         {
-            // Class of 2025
-            new() { BowlerName = "John Anderson", InductionYear = 2025, Categories = new[] { "Superior Performance" }, PhotoUrl = TestDataUris.JohnAndersonPhoto },
-            new() { BowlerName = "Sarah Mitchell", InductionYear = 2025, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Robert Thompson", InductionYear = 2025, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Michael Davis", InductionYear = 2025, Categories = new[] { "Superior Performance", "Meritorious Service" } },
-            new() { BowlerName = "Jennifer Wilson", InductionYear = 2025, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "David Brown", InductionYear = 2025, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Patricia Garcia", InductionYear = 2025, Categories = new[] { "Meritorious Service" } },
-            new() { BowlerName = "James Rodriguez", InductionYear = 2025, Categories = new[] { "Meritorious Service" } },
-            new() { BowlerName = "Linda Martinez", InductionYear = 2025, Categories = new[] { "Meritorious Service" } },
-            new() { BowlerName = "Thomas Lee", InductionYear = 2025, Categories = new[] { "Friend of NEBA" } },
-            new() { BowlerName = "Barbara White", InductionYear = 2025, Categories = new[] { "Friend of NEBA" } },
+            var error = allInducteesResult.FirstError;
+            _errorMessage = $"Failed to load Hall of Fame data: {error.Description}";
+            return [];
+        }
 
-            // Class of 2022
-            new() { BowlerName = "Christopher Taylor", InductionYear = 2022, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Nancy Jackson", InductionYear = 2022, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Mark Williams", InductionYear = 2022, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Elizabeth Harris", InductionYear = 2022, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Daniel Clark", InductionYear = 2022, Categories = new[] { "Meritorious Service" } },
-            new() { BowlerName = "Susan Lewis", InductionYear = 2022, Categories = new[] { "Meritorious Service" } },
-
-            // Class of 2020
-            new() { BowlerName = "William Turner", InductionYear = 2020, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Margaret Collins", InductionYear = 2020, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Richard Moore", InductionYear = 2020, Categories = new[] { "Superior Performance" } },
-            new() { BowlerName = "Carol Bennett", InductionYear = 2020, Categories = new[] { "Meritorious Service" } },
-        };
-        #pragma warning restore S1075
+        var allInductees = allInducteesResult.Value;
 
         // Group by year
         return allInductees
@@ -242,6 +239,4 @@
         public string Category { get; set; } = string.Empty;
         public List<HallOfFameInductionViewModel> Inductees { get; set; } = new();
     }
-
-#pragma warning restore S1075
 }

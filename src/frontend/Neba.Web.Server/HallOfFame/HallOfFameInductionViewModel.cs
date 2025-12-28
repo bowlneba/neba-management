@@ -20,7 +20,7 @@ public sealed record HallOfFameInductionViewModel
     /// Multiple categories may be present; these are the display strings
     /// (for example, "Superior Performance", "Meritorious Service").
     /// </summary>
-    public required IReadOnlyList<string> Categories { get; init; }
+    public required IReadOnlyCollection<string> Categories { get; init; }
 
     /// <summary>
     /// URL of the bowler's photo, if available.
