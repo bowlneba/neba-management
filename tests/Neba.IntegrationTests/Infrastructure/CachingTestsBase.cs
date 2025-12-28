@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Tests.Website;
+using Neba.Tests.Infrastructure;
 using Neba.Website.Infrastructure.Database;
 
 namespace Neba.IntegrationTests.Infrastructure;
@@ -11,12 +11,12 @@ namespace Neba.IntegrationTests.Infrastructure;
 public abstract class CachingTestsBase
     : IAsyncLifetime
 {
-    protected WebsiteDatabase Database { get; private set; } = null!;
+    protected DatabaseContainer Database { get; private set; } = null!;
     protected NebaCachingWebApplicationFactory Factory { get; private set; } = null!;
 
     public virtual async ValueTask InitializeAsync()
     {
-        Database = new WebsiteDatabase();
+        Database = new DatabaseContainer();
         await Database.InitializeAsync();
 
         Factory = new NebaCachingWebApplicationFactory(Database);

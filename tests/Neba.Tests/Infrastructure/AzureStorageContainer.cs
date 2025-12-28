@@ -1,10 +1,10 @@
 using Testcontainers.Azurite;
 
-namespace Neba.Tests.Storage;
+namespace Neba.Tests.Infrastructure;
 
 /// <summary>
 /// Manages the lifecycle of an Azurite container for integration testing Azure Storage functionality.
-/// Follows the same pattern as WebsiteDatabase for database testing.
+/// Follows the same pattern as DatabaseContainer for database testing.
 /// </summary>
 public sealed class AzureStorageContainer : IAsyncLifetime
 {

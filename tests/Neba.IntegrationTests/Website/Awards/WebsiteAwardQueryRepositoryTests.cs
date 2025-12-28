@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Domain.Awards;
+using Neba.Tests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
 using Neba.Website.Application.Awards.HallOfFame;
@@ -13,14 +14,14 @@ namespace Neba.IntegrationTests.Website.Awards;
 
 public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
 {
-    private WebsiteDatabase _database = null!;
+    private DatabaseContainer _database = null!;
 
     /// <summary>
     /// Called before each test class - initializes a fresh database container.
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        _database = new WebsiteDatabase();
+        _database = new DatabaseContainer();
         await _database.InitializeAsync();
     }
 

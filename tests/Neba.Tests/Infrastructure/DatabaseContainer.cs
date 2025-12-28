@@ -2,13 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Neba.Website.Infrastructure.Database;
 using Testcontainers.PostgreSql;
 
-namespace Neba.Tests.Website;
+namespace Neba.Tests.Infrastructure;
 
 /// <summary>
 /// Provides a PostgreSQL test database using Testcontainers for repository and integration tests.
 /// Each test class creates its own isolated database instance for true parallel execution.
 /// </summary>
-public sealed class WebsiteDatabase
+public sealed class DatabaseContainer
     : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()

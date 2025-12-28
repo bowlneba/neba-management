@@ -5,7 +5,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Neba.Application.Documents;
 using Neba.Infrastructure.Storage;
-using Neba.Tests.Storage;
+using Neba.Tests.Infrastructure;
 using static Neba.Tests.Storage.BlobMetadataFactory;
 
 namespace Neba.IntegrationTests.Storage;

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Neba.Tests.Website;
+using Neba.Tests.Infrastructure;
 using Neba.Website.Infrastructure.Database;
 
 namespace Neba.IntegrationTests.Infrastructure;
@@ -16,7 +16,7 @@ public abstract class ApiTestsBase
     /// Gets the test database instance for this test class.
     /// Each test class gets a fresh PostgreSQL container.
     /// </summary>
-    protected WebsiteDatabase Database { get; private set; } = null!;
+    protected DatabaseContainer Database { get; private set; } = null!;
 
     /// <summary>
     /// Gets the web application factory for creating HTTP clients.
@@ -28,7 +28,7 @@ public abstract class ApiTestsBase
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        Database = new WebsiteDatabase();
+        Database = new DatabaseContainer();
         await Database.InitializeAsync();
 
         Factory = new NebaWebApplicationFactory(Database);

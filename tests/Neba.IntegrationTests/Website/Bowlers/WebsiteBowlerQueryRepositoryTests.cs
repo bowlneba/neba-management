@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Neba.Domain.Identifiers;
+using Neba.Tests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Tournaments;
@@ -12,14 +13,14 @@ namespace Neba.IntegrationTests.Website.Bowlers;
 
 public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
 {
-    private WebsiteDatabase _database = null!;
+    private DatabaseContainer _database = null!;
 
     /// <summary>
     /// Called before each test class - initializes a fresh database container.
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        _database = new WebsiteDatabase();
+        _database = new DatabaseContainer();
         await _database.InitializeAsync();
     }
 

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neba.Api;
-using Neba.Tests.Website;
+using Neba.Tests.Infrastructure;
 
 namespace Neba.IntegrationTests.Infrastructure;
 
@@ -13,7 +13,7 @@ namespace Neba.IntegrationTests.Infrastructure;
 /// WebApplicationFactory specifically for caching integration tests.
 /// Unlike NebaWebApplicationFactory, this DOES apply the caching decorator to test caching functionality.
 /// </summary>
-public sealed class NebaCachingWebApplicationFactory(WebsiteDatabase database)
+public sealed class NebaCachingWebApplicationFactory(DatabaseContainer database)
         : WebApplicationFactory<IApiAssemblyMarker>
 {
 
