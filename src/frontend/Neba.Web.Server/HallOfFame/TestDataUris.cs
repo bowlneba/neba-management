@@ -7,10 +7,6 @@ namespace Neba.Web.Server.HallOfFame;
 /// intentionally kept in a separate C# file so analyzer suppressions
 /// can be applied locally and reverted when real data is available.
 /// </summary>
-/// <summary>
-/// Temporary test URIs used by the Hall of Fame page. These are defined
-/// separately so the Sonar rule suppression is local and easy to remove.
-/// </summary>
 public static class TestDataUris
 {
     /// <summary>
