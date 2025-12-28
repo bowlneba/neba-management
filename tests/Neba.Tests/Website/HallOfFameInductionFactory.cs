@@ -15,7 +15,7 @@ public static class HallOfFameInductionFactory
             {
                 Year = year ?? 2024,
                 Photo = photo,
-                Categories = categories ?? [ HallOfFameCategory.SuperiorPerformance ]
+                Categories = categories ?? [HallOfFameCategory.SuperiorPerformance]
             };
 
     public static HallOfFameInduction Bogus(int? seed = null)
@@ -49,7 +49,7 @@ public static class HallOfFameInductionFactory
                 return year;
             })
             .RuleFor(hof => hof.Photo, f => StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f))
-            .RuleFor(hof => hof.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1,2)).ToList());
+            .RuleFor(hof => hof.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList());
 
         if (seed.HasValue)
         {

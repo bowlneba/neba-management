@@ -16,8 +16,8 @@ public static class TestDataUris
     /// <summary>
     /// A temporary photo URI used for the John Anderson fake inductee.
     /// </summary>
-    #pragma warning disable S1075 // Strings should not be hardcoded
+#pragma warning disable S1075 // Strings should not be hardcoded
     public static readonly Uri JohnAndersonPhoto = new(
         "https://media.gettyimages.com/id/155395933/photo/retro-bowler.jpg?s=2048x2048&w=gi&k=20&c=bgEkWewpbShIBnBWnco_69NAKSoZ3bVPC43UBfs-eeU=");
-    #pragma warning restore S1075
+#pragma warning restore S1075
 }

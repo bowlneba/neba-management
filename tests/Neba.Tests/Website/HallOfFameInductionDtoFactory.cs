@@ -17,7 +17,7 @@ public static class HallOfFameInductionDtoFactory
                 Year = year ?? 2024,
                 BowlerName = bowlerName ?? NameFactory.Create("John", "Doe"),
                 Photo = photo,
-                Categories = categories ?? [ HallOfFameCategory.SuperiorPerformance ]
+                Categories = categories ?? [HallOfFameCategory.SuperiorPerformance]
             };
 
     public static HallOfFameInductionDto Bogus(int? seed = null)
@@ -31,7 +31,7 @@ public static class HallOfFameInductionDtoFactory
             .RuleFor(dto => dto.Year, f => f.Date.Past(60).Year)
             .RuleFor(dto => dto.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(dto => dto.Photo, f => StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f))
-            .RuleFor(dto => dto.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1,2)).ToList());
+            .RuleFor(dto => dto.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList());
 
         if (seed.HasValue)
         {
