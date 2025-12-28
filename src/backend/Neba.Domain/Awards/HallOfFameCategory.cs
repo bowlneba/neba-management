@@ -52,3 +52,10 @@ public sealed class HallOfFameCategory
         : base(string.Empty, 0)
     { }
 }
+
+/// <summary>
+/// JSON converter for <see cref="HallOfFameCategory"/> to support serialization and deserialization.
+/// </summary>
+public sealed class HallOfFameCategoryJsonConverter : SmartFlagEnumJsonConverter<HallOfFameCategory>
+{
+}
