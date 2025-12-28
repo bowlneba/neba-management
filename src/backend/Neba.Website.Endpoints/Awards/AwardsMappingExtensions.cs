@@ -34,6 +34,7 @@ internal static class AwardsMappingExtensions
             {
                 BowlerId = dto.BowlerId,
                 BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
                     Month = title.Month,
@@ -52,6 +53,7 @@ internal static class AwardsMappingExtensions
             {
                 BowlerId = dto.BowlerId,
                 BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 TitleCount = dto.TitleCount
             };
         }

@@ -14,7 +14,8 @@ internal static class BowlerTitleMappingExtensions
             {
                 BowlerId = response.BowlerId,
                 BowlerName = response.BowlerName,
-                TitleCount = response.TitleCount
+                TitleCount = response.TitleCount,
+                HallOfFame = response.HallOfFame
             };
     }
 
@@ -27,8 +28,7 @@ internal static class BowlerTitleMappingExtensions
                 BowlerName = response.BowlerName,
                 TournamentMonth = response.TournamentMonth.Value,
                 TournamentYear = response.TournamentYear,
-                TournamentType = response.TournamentType,
-                HallOfFame = false // Will be set later when we have Hall of Fame data
+                TournamentType = response.TournamentType
             };
 
         public TitleViewModel ToTitleViewModel()

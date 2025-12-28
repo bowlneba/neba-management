@@ -11,12 +11,14 @@ public static class TitleSummaryResponseFactory
     public static TitleSummaryResponse Create(
         BowlerId? bowlerId = null,
         string? bowlerName = null,
+        bool? hallOfFame = null,
         int? titleCount = null)
         => new()
         {
             BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? BowlerName,
-            TitleCount = titleCount ?? 5
+            TitleCount = titleCount ?? 5,
+            HallOfFame = hallOfFame ?? false
         };
 
     public static TitleSummaryResponse Bogus(int? seed = null)
@@ -29,6 +31,7 @@ public static class TitleSummaryResponseFactory
         Faker<TitleSummaryResponse> faker = new Faker<TitleSummaryResponse>()
             .RuleFor(b => b.BowlerId, _ => BowlerId.New())
             .RuleFor(b => b.BowlerName, f => f.Name.FullName())
+            .RuleFor(b => b.HallOfFame, f => f.Random.Bool())
             .RuleFor(b => b.TitleCount, f => f.Random.Int(0, 20));
 
         if (seed.HasValue)

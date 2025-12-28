@@ -74,7 +74,7 @@ src/backend/
 - [x] High Block
 - [x] Organization Bylaws
 - [x] Tournament Rules
-- [ ] Hall of Fame (including HOF indicator for champions)
+- [x] Hall of Fame (including HOF indicator for champions)
 - [ ] Bowling Centers
 - [ ] Tournaments
 - [ ] News

@@ -1,4 +1,6 @@
-﻿using Neba.Domain;
+﻿using System.Text.Json.Serialization;
+using Ardalis.SmartEnum.SystemTextJson;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Website.Domain.Tournaments;
 
@@ -22,6 +24,7 @@ public sealed record BowlerTitleDto
     /// <summary>
     /// Gets the month in which the title was won.
     /// </summary>
+    [JsonConverter(typeof(SmartEnumValueConverter<Month, int>))]
     public required Month TournamentMonth { get; init; }
 
     /// <summary>
@@ -32,5 +35,6 @@ public sealed record BowlerTitleDto
     /// <summary>
     /// Gets the type of tournament in which the title was won.
     /// </summary>
+    [JsonConverter(typeof(SmartEnumValueConverter<TournamentType, int>))]
     public required TournamentType TournamentType { get; init; }
 }

@@ -23,4 +23,9 @@ public sealed record BowlerTitlesDto
     /// Gets the collection of titles won by the bowler, including month, year, and tournament type for each title.
     /// </summary>
     public required IReadOnlyCollection<TitleDto> Titles { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the bowler is inducted into the Hall of Fame.
+    /// </summary>
+    public required bool HallOfFame { get; init; }
 }

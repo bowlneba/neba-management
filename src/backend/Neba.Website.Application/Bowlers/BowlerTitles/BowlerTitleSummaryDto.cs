@@ -22,4 +22,9 @@ public sealed record BowlerTitleSummaryDto
     /// The total number of titles won by the bowler.
     /// </summary>
     public required int TitleCount { get; init; }
+
+    /// <summary>
+    /// Indicates whether the bowler is inducted into the Hall of Fame.
+    /// </summary>
+    public required bool HallOfFame { get; init; }
 }

@@ -120,7 +120,12 @@
       "Bash(for i in 1 2 3)",
       "Bash(do echo \"Run $i:\")",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame --stat)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..hallOfFame --oneline)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..hallOfFame --oneline)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Contracts/Titles/TitleResponse.cs)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline --all -5 -- \"src/backend/Neba.Website.Contracts/Titles/TitleResponse.cs\")",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Infrastructure/Database/Repositories/WebsiteTitleQueryRepository.cs\")",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Endpoints/Bowlers/TitlesMappingExtensions.cs\")",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...hallOfFame -- \"src/backend/Neba.Website.Application/Bowlers/BowlerTitles/BowlerTitleSummaryDto.cs\")"
     ],
     "deny": [],
     "ask": []

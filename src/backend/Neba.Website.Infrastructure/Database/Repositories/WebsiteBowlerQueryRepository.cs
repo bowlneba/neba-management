@@ -18,6 +18,7 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
+                HallOfFame = bowler.HallOfFameInductions.Any(),
                 Titles = bowler.Titles
                     .OrderBy(title => title.Year)
                     .ThenBy(title => title.Month)

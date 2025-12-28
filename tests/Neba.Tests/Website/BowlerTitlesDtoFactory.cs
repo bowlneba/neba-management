@@ -13,12 +13,14 @@ public static class BowlerTitlesDtoFactory
     public static BowlerTitlesDto Create(
         BowlerId? bowlerId = null,
         Name? bowlerName = null,
+        bool? hallOfFame = null,
         IReadOnlyCollection<TitleDto>? titles = null
     )
         => new()
         {
             BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? NameFactory.Create(),
+            HallOfFame = hallOfFame ?? false,
             Titles = titles ?? TitleDtoFactory.Bogus(1)
         };
 
@@ -33,7 +35,8 @@ public static class BowlerTitlesDtoFactory
         Faker<BowlerTitlesDto> faker = new Faker<BowlerTitlesDto>()
             .RuleFor(bowler => bowler.BowlerId, _ => BowlerId.New())
             .RuleFor(bowler => bowler.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(bowler => bowler.Titles, f => TitleDtoFactory.Bogus(f.Random.Int(0, 5), seed));
+            .RuleFor(bowler => bowler.Titles, f => TitleDtoFactory.Bogus(f.Random.Int(0, 5), seed))
+            .RuleFor(bowler => bowler.HallOfFame, f => f.Random.Bool());
 
         if (seed.HasValue)
         {

@@ -29,23 +29,27 @@ public static class BowlerTitlesResponseFactory
     public static BowlerTitlesResponse Create(
         BowlerId? bowlerId = null,
         string? bowlerName = null,
-        int? titleCount = null)
+        int? titleCount = null,
+        bool? hallOfFame = null)
         => new()
         {
             BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? "John Doe",
-            Titles = BowlerTitleResponseFactory.Bogus(titleCount ?? 5)
+            Titles = BowlerTitleResponseFactory.Bogus(titleCount ?? 5),
+            HallOfFame = hallOfFame ?? false
         };
 
     public static BowlerTitlesResponse Create(
         BowlerId? bowlerId = null,
         string? bowlerName = null,
+        bool? hallOfFame = null,
         IReadOnlyCollection<BowlerTitleResponse>? titles = null)
     {
         return new()
         {
             BowlerId = bowlerId ?? BowlerId.New(),
             BowlerName = bowlerName ?? "John Doe",
+            HallOfFame = hallOfFame ?? false,
             Titles = titles ?? BowlerTitleResponseFactory.Bogus(5)
         };
     }
