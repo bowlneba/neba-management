@@ -55,11 +55,16 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
         string cacheKey,
         CancellationToken cancellationToken)
     {
-        // Try to get from cache (caching inner type T, not ErrorOr<T>)
-        object? cachedValue = await _cache.GetOrCreateAsync<object>(
+        // Track whether factory was called and capture error result if needed
+        bool factoryCalled = false;
+        TResponse? errorResult = default;
+
+        // Try to get cached value (caching inner type T, not ErrorOr<T>)
+        object? cachedValue = await _cache.GetOrCreateAsync<object?>(
             cacheKey,
             async cancel =>
             {
+                factoryCalled = true;
                 _logger.LogCacheMiss(cacheKey);
 
                 TResponse response = await _innerHandler.HandleAsync((TQuery)cachedQuery, cancel);
@@ -68,7 +73,8 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
                 if (ErrorOrCacheHelper.IsError(response!))
                 {
                     _logger.LogErrorResultNotCached(cacheKey);
-                    return null!;
+                    errorResult = response; // Save error to avoid double execution
+                    return null;
                 }
 
                 // Unwrap and cache inner value
@@ -82,10 +88,19 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
             tags: cachedQuery.Tags,
             cancellationToken: cancellationToken);
 
-        // If null, we hit an error case - re-execute to get the error result
+        // Handle null result (error or cache miss)
         if (cachedValue is null)
         {
-            return await _innerHandler.HandleAsync((TQuery)cachedQuery, cancellationToken);
+            if (factoryCalled)
+            {
+                // Factory executed and returned error - return saved result (avoid double execution)
+                return errorResult!;
+            }
+            else
+            {
+                // Cache hit with null from previous error (real HybridCache) - re-execute
+                return await _innerHandler.HandleAsync((TQuery)cachedQuery, cancellationToken);
+            }
         }
 
         // HybridCache deserializes as JsonElement when using object type

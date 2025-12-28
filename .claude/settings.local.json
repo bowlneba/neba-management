@@ -129,7 +129,8 @@
       "Bash(dotnet nuget list:*)",
       "Bash(timeout 60 dotnet test:*)",
       "Bash(do echo \"Request $i:\")",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management status)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management status)",
+      "Bash(iconv:*)"
     ],
     "deny": [],
     "ask": []
