@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Neba.Domain.Awards;
@@ -11,6 +12,7 @@ namespace Neba.Domain.Awards;
 /// <c>SuperiorPerformance | FriendOfNeba</c>). Use <see cref="SmartFlagEnum{T}"/>
 /// helpers or bitwise operations to test membership.
 /// </remarks>
+[JsonConverter(typeof(HallOfFameCategoryJsonConverter))]
 public sealed class HallOfFameCategory
     : SmartFlagEnum<HallOfFameCategory>
 {
