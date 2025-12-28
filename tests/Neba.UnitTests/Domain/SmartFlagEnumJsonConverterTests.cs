@@ -107,16 +107,16 @@ public sealed class SmartFlagEnumJsonConverterTests
     }
 
     [Fact(DisplayName = "Should throw JsonException for invalid enum value")]
-    public void Deserialize_InvalidEnumValue_ShouldThrowJsonException()
+    public void Deserialize_InvalidEnumValue_ShouldThrowSmartEnumException()
     {
         // Arrange
         const string json = "999"; // Invalid flag value
 
         // Act & Assert
-        JsonException exception = Should.Throw<JsonException>(() =>
+        SmartEnumNotFoundException exception = Should.Throw<SmartEnumNotFoundException>(() =>
             JsonSerializer.Deserialize<TestFlagEnum>(json, _jsonOptions));
 
-        exception.Message.ShouldContain("Invalid TestFlagEnum value: 999");
+        exception.Message.ShouldContain("No TestFlagEnum with Value 999 found.");
     }
 
     [Fact(DisplayName = "Should throw JsonException for object without Value property")]
