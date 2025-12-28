@@ -14,7 +14,8 @@ internal static class HallOfFameMappingExtensions
             {
                 BowlerName = dto.BowlerName,
                 InductionYear = dto.Year,
-                Categories = dto.Categories
+                Categories = dto.Categories,
+                PhotoUrl = dto.PhotoUrl
             };
         }
     }
