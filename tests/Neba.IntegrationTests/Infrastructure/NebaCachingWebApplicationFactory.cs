@@ -21,6 +21,7 @@ public sealed class NebaCachingWebApplicationFactory(WebsiteDatabase database)
     {
         builder.UseSetting("ConnectionStrings:website", database.ConnectionString);
         builder.UseSetting("ConnectionStrings:hangfire", database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:cache", database.ConnectionString);
 
         // Configure Hangfire settings for integration tests
         builder.UseSetting("Hangfire:WorkerCount", "1");
