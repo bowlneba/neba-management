@@ -207,6 +207,4 @@ internal sealed class TestFlagEnum : SmartFlagEnum<TestFlagEnum>
 /// JSON converter for TestFlagEnum.
 /// </summary>
 internal sealed class TestFlagEnumJsonConverter
-    : SmartFlagEnumJsonConverter<TestFlagEnum>
-{
-}
+    : SmartFlagEnumJsonConverter<TestFlagEnum>;

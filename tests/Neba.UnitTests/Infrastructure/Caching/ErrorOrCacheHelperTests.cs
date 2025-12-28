@@ -107,7 +107,7 @@ public sealed class ErrorOrCacheHelperTests
     public void WrapValue_ShouldMaintainValueEquality()
     {
         // Arrange
-        string originalValue = "test string";
+        const string originalValue = "test string";
         Type innerType = typeof(string);
 
         // Act
