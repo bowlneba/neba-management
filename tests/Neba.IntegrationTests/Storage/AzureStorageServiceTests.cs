@@ -1335,9 +1335,12 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         // Act
         Uri uri = _storageService.GetBlobUri(container, path);
 
-        // Assert - Verify the URI can be used to access the blob
-        BlobClient blobClient = new(uri);
-        bool exists = await blobClient.ExistsAsync();
+        // Assert - Verify the URI points to the correct blob by comparing with an authenticated client
+        BlobClient authenticatedBlobClient = GetBlobClient(container, path);
+        uri.ShouldBe(authenticatedBlobClient.Uri);
+
+        // Verify the blob exists using the authenticated client
+        bool exists = await authenticatedBlobClient.ExistsAsync();
         exists.ShouldBeTrue();
     }
 
