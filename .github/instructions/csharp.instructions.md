@@ -94,7 +94,22 @@ applyTo: '**/*.cs'
 - **REQUIRED: All `[Fact]` and `[Theory]` attributes MUST include a `DisplayName` parameter** that clearly describes what the test validates in human-readable language.
   - Good: `[Fact(DisplayName = "Creates event with default values when only status is provided")]`
   - Bad: `[Fact]` (missing DisplayName)
-  - The DisplayName should describe the behavior being tested, not just restate the method name.
+  - DisplayName should be a concise, human-readable sentence explaining what behavior is being tested, not a restatement of the method name.
+  - Examples:
+    - `[Fact(DisplayName = "Rejects null email address")]`
+    - `[Theory(DisplayName = "Calculates correct tax for all income brackets")]`
+- **For parameterized tests: All `[InlineData(...)]` attributes within a `[Theory]` MUST include a `TestDisplayName` parameter** to clearly identify each individual test case.
+  - Good: `[InlineData(NotifySeverity.Error, "error", TestDisplayName = "Error severity applies error class")]`
+  - Bad: `[InlineData(NotifySeverity.Error, "error")]` (missing TestDisplayName)
+  - TestDisplayName should be a simple, human-readable sentence explaining the specific test case, WITHOUT including the test method name.
+  - Examples of good TestDisplayName values:
+    - "Valid key with doc type"
+    - "Empty string returns false"
+    - "Null parameter is rejected"
+    - "January properties are correct"
+  - Examples of bad TestDisplayName values (avoid):
+    - "IsValidCacheKey_ValidatesCorrectly: Valid key" (includes method name)
+    - "ShouldApplyCorrectSeverityClass: Error => error" (includes method name)
 - Explain integration testing approaches for API endpoints.
 - Demonstrate how to mock dependencies for effective testing.
 - Show how to test authentication and authorization logic.

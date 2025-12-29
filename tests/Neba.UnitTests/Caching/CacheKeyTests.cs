@@ -4,16 +4,16 @@ namespace Neba.UnitTests.Caching;
 
 public class CacheKeyTests
 {
-    [Theory(DisplayName = "IsValidCacheKey validates cache key format correctly")]
-    [InlineData("website:doc:bylaws:content", true)]
-    [InlineData("website:query:GetBowlerQuery:01ARZ3NDEK", true)]
-    [InlineData("api:job:import-scores:current", true)]
-    [InlineData("shared:session:user-prefs", true)]
-    [InlineData("invalid", false)]
-    [InlineData("too:short", false)]
-    [InlineData("", false)]
-    [InlineData("   ", false)]
-    [InlineData("has::empty::parts", false)]
+    [Theory(DisplayName = "Validates cache key format correctly")]
+    [InlineData("website:doc:bylaws:content", true, TestDisplayName = "Valid key with doc type")]
+    [InlineData("website:query:GetBowlerQuery:01ARZ3NDEK", true, TestDisplayName = "Valid key with query type")]
+    [InlineData("api:job:import-scores:current", true, TestDisplayName = "Valid key with api context")]
+    [InlineData("shared:session:user-prefs", true, TestDisplayName = "Valid key with shared context")]
+    [InlineData("invalid", false, TestDisplayName = "Invalid single word")]
+    [InlineData("too:short", false, TestDisplayName = "Invalid too short")]
+    [InlineData("", false, TestDisplayName = "Invalid empty string")]
+    [InlineData("   ", false, TestDisplayName = "Invalid whitespace only")]
+    [InlineData("has::empty::parts", false, TestDisplayName = "Invalid empty parts")]
     public void IsValidCacheKey_ValidatesCorrectly(string key, bool expected)
     {
         // Act
@@ -204,10 +204,10 @@ public class CacheKeyTests
         identifier.ShouldBeEmpty();
     }
 
-    [Theory(DisplayName = "All CacheKeys constants produce valid keys")]
-    [InlineData("website")]
-    [InlineData("api")]
-    [InlineData("shared")]
+    [Theory(DisplayName = "All context constants produce valid keys")]
+    [InlineData("website", TestDisplayName = "Website context is valid")]
+    [InlineData("api", TestDisplayName = "API context is valid")]
+    [InlineData("shared", TestDisplayName = "Shared context is valid")]
     public void CacheKeysConstants_AreValid(string context)
     {
         // Assert
@@ -216,12 +216,12 @@ public class CacheKeyTests
         context.All(ch => char.IsLower(ch) || ch == '-').ShouldBeTrue();
     }
 
-    [Theory(DisplayName = "All CacheKeys.Types constants produce valid type components")]
-    [InlineData("doc")]
-    [InlineData("query")]
-    [InlineData("job")]
-    [InlineData("session")]
-    [InlineData("awards")]
+    [Theory(DisplayName = "All type constants produce valid components")]
+    [InlineData("doc", TestDisplayName = "Doc type is valid")]
+    [InlineData("query", TestDisplayName = "Query type is valid")]
+    [InlineData("job", TestDisplayName = "Job type is valid")]
+    [InlineData("session", TestDisplayName = "Session type is valid")]
+    [InlineData("awards", TestDisplayName = "Awards type is valid")]
     public void CacheKeysTypes_AreValid(string type)
     {
         // Assert

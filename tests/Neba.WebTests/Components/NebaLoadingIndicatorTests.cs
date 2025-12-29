@@ -202,10 +202,10 @@ public sealed class NebaLoadingIndicatorTests : TestContextWrapper
         contentWrapper.ShouldNotBeNull();
     }
 
-    [Theory]
-    [InlineData("Loading your data...")]
-    [InlineData("Please wait")]
-    [InlineData("Processing request")]
+    [Theory(DisplayName = "Renders different text values in loading indicator")]
+    [InlineData("Loading your data...", TestDisplayName = "Renders Loading your data text")]
+    [InlineData("Please wait", TestDisplayName = "Renders Please wait text")]
+    [InlineData("Processing request", TestDisplayName = "Renders Processing request text")]
     public void ShouldRenderDifferentTextValues(string text)
     {
         // Arrange & Act

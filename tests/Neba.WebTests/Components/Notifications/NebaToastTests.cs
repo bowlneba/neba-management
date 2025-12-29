@@ -53,12 +53,12 @@ public sealed class NebaToastTests : TestContextWrapper
         cut.FindAll(".neba-toast-title").ShouldBeEmpty();
     }
 
-    [Theory]
-    [InlineData(NotifySeverity.Error, "error")]
-    [InlineData(NotifySeverity.Warning, "warning")]
-    [InlineData(NotifySeverity.Success, "success")]
-    [InlineData(NotifySeverity.Info, "info")]
-    [InlineData(NotifySeverity.Normal, "normal")]
+    [Theory(DisplayName = "Applies correct severity class for toast")]
+    [InlineData(NotifySeverity.Error, "error", TestDisplayName = "Error severity applies error class")]
+    [InlineData(NotifySeverity.Warning, "warning", TestDisplayName = "Warning severity applies warning class")]
+    [InlineData(NotifySeverity.Success, "success", TestDisplayName = "Success severity applies success class")]
+    [InlineData(NotifySeverity.Info, "info", TestDisplayName = "Info severity applies info class")]
+    [InlineData(NotifySeverity.Normal, "normal", TestDisplayName = "Normal severity applies normal class")]
     public void ShouldApplyCorrectSeverityClass(NotifySeverity severity, string expectedClass)
     {
         // Arrange
@@ -73,12 +73,12 @@ public sealed class NebaToastTests : TestContextWrapper
         toastElement.ClassList.ShouldContain($"neba-toast-{expectedClass}");
     }
 
-    [Theory]
-    [InlineData(NotifySeverity.Error, "assertive")]
-    [InlineData(NotifySeverity.Warning, "assertive")]
-    [InlineData(NotifySeverity.Success, "polite")]
-    [InlineData(NotifySeverity.Info, "polite")]
-    [InlineData(NotifySeverity.Normal, "polite")]
+    [Theory(DisplayName = "Sets correct ARIA live value for toast based on severity")]
+    [InlineData(NotifySeverity.Error, "assertive", TestDisplayName = "Error severity sets assertive aria-live")]
+    [InlineData(NotifySeverity.Warning, "assertive", TestDisplayName = "Warning severity sets assertive aria-live")]
+    [InlineData(NotifySeverity.Success, "polite", TestDisplayName = "Success severity sets polite aria-live")]
+    [InlineData(NotifySeverity.Info, "polite", TestDisplayName = "Info severity sets polite aria-live")]
+    [InlineData(NotifySeverity.Normal, "polite", TestDisplayName = "Normal severity sets polite aria-live")]
     public void ShouldSetCorrectAriaLive(NotifySeverity severity, string expectedAriaLive)
     {
         // Arrange

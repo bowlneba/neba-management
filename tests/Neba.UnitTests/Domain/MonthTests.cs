@@ -14,19 +14,19 @@ public sealed class MonthTests
         months.Count.ShouldBe(12);
     }
 
-    [Theory(DisplayName = "Month should have correct properties for each month")]
-    [InlineData("January", 1, "Jan")]
-    [InlineData("February", 2, "Feb")]
-    [InlineData("March", 3, "Mar")]
-    [InlineData("April", 4, "Apr")]
-    [InlineData("May", 5, "May")]
-    [InlineData("June", 6, "Jun")]
-    [InlineData("July", 7, "Jul")]
-    [InlineData("August", 8, "Aug")]
-    [InlineData("September", 9, "Sep")]
-    [InlineData("October", 10, "Oct")]
-    [InlineData("November", 11, "Nov")]
-    [InlineData("December", 12, "Dec")]
+    [Theory(DisplayName = "Has correct properties for each month")]
+    [InlineData("January", 1, "Jan", TestDisplayName = "January properties are correct")]
+    [InlineData("February", 2, "Feb", TestDisplayName = "February properties are correct")]
+    [InlineData("March", 3, "Mar", TestDisplayName = "March properties are correct")]
+    [InlineData("April", 4, "Apr", TestDisplayName = "April properties are correct")]
+    [InlineData("May", 5, "May", TestDisplayName = "May properties are correct")]
+    [InlineData("June", 6, "Jun", TestDisplayName = "June properties are correct")]
+    [InlineData("July", 7, "Jul", TestDisplayName = "July properties are correct")]
+    [InlineData("August", 8, "Aug", TestDisplayName = "August properties are correct")]
+    [InlineData("September", 9, "Sep", TestDisplayName = "September properties are correct")]
+    [InlineData("October", 10, "Oct", TestDisplayName = "October properties are correct")]
+    [InlineData("November", 11, "Nov", TestDisplayName = "November properties are correct")]
+    [InlineData("December", 12, "Dec", TestDisplayName = "December properties are correct")]
     public void Month_ShouldHaveCorrectProperties(string expectedName, int expectedValue, string expectedShort)
     {
         // Arrange

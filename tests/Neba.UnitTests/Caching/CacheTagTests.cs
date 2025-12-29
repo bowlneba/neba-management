@@ -157,17 +157,17 @@ public sealed class CacheTagTests
     }
 
     [Theory(DisplayName = "All tags follow ADR-003 format")]
-    [InlineData("website")]
-    [InlineData("website:documents")]
-    [InlineData("website:document:bylaws")]
-    [InlineData("website:bowlers")]
-    [InlineData("website:bowler:01ARZ3NDEK")]
-    [InlineData("website:tournaments")]
-    [InlineData("website:tournament:01ARZ3NDEK")]
-    [InlineData("website:awards")]
-    [InlineData("website:award:bowler-of-the-year")]
-    [InlineData("website:jobs")]
-    [InlineData("website:job:doc-sync:bylaws")]
+    [InlineData("website", TestDisplayName = "Context level tag is valid")]
+    [InlineData("website:documents", TestDisplayName = "Type level documents tag is valid")]
+    [InlineData("website:document:bylaws", TestDisplayName = "Entity level document tag is valid")]
+    [InlineData("website:bowlers", TestDisplayName = "Type level bowlers tag is valid")]
+    [InlineData("website:bowler:01ARZ3NDEK", TestDisplayName = "Entity level bowler tag is valid")]
+    [InlineData("website:tournaments", TestDisplayName = "Type level tournaments tag is valid")]
+    [InlineData("website:tournament:01ARZ3NDEK", TestDisplayName = "Entity level tournament tag is valid")]
+    [InlineData("website:awards", TestDisplayName = "Type level awards tag is valid")]
+    [InlineData("website:award:bowler-of-the-year", TestDisplayName = "Entity level award tag is valid")]
+    [InlineData("website:jobs", TestDisplayName = "Type level jobs tag is valid")]
+    [InlineData("website:job:doc-sync:bylaws", TestDisplayName = "Entity level job tag is valid")]
     public void CacheTags_FollowAdr003Format(string tag)
     {
         // Arrange & Act

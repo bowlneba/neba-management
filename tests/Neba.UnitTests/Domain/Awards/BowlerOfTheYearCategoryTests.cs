@@ -15,13 +15,13 @@ public sealed class BowlerOfTheYearCategoryTests
         categories.Count.ShouldBe(6);
     }
 
-    [Theory(DisplayName = "BowlerOfTheYearCategory should have correct name and value")]
-    [InlineData("Bowler of the Year", 1)]
-    [InlineData("Woman Bowler of the Year", 2)]
-    [InlineData("Senior Bowler of the Year", 50)]
-    [InlineData("Super Senior Bowler of the Year", 60)]
-    [InlineData("Rookie of the Year", 10)]
-    [InlineData("Youth Bowler of the Year", 20)]
+    [Theory(DisplayName = "Has correct name and value for all categories")]
+    [InlineData("Bowler of the Year", 1, TestDisplayName = "Bowler of the Year category is correct")]
+    [InlineData("Woman Bowler of the Year", 2, TestDisplayName = "Woman Bowler of the Year category is correct")]
+    [InlineData("Senior Bowler of the Year", 50, TestDisplayName = "Senior Bowler of the Year category is correct")]
+    [InlineData("Super Senior Bowler of the Year", 60, TestDisplayName = "Super Senior Bowler of the Year category is correct")]
+    [InlineData("Rookie of the Year", 10, TestDisplayName = "Rookie of the Year category is correct")]
+    [InlineData("Youth Bowler of the Year", 20, TestDisplayName = "Youth Bowler of the Year category is correct")]
     public void BowlerOfTheYearCategory_ShouldHaveCorrectNameAndValue(string expectedName, int expectedValue)
     {
         // Arrange & Act

@@ -49,12 +49,12 @@ public sealed class NebaAlertTests : TestContextWrapper
         cut.FindAll(".neba-alert-title").ShouldBeEmpty();
     }
 
-    [Theory]
-    [InlineData(NotifySeverity.Error, "error")]
-    [InlineData(NotifySeverity.Warning, "warning")]
-    [InlineData(NotifySeverity.Success, "success")]
-    [InlineData(NotifySeverity.Info, "info")]
-    [InlineData(NotifySeverity.Normal, "normal")]
+    [Theory(DisplayName = "Applies correct severity class for alert")]
+    [InlineData(NotifySeverity.Error, "error", TestDisplayName = "Error severity applies error class")]
+    [InlineData(NotifySeverity.Warning, "warning", TestDisplayName = "Warning severity applies warning class")]
+    [InlineData(NotifySeverity.Success, "success", TestDisplayName = "Success severity applies success class")]
+    [InlineData(NotifySeverity.Info, "info", TestDisplayName = "Info severity applies info class")]
+    [InlineData(NotifySeverity.Normal, "normal", TestDisplayName = "Normal severity applies normal class")]
     public void ShouldApplyCorrectSeverityClass(NotifySeverity severity, string expectedClass)
     {
         // Arrange & Act
@@ -67,10 +67,10 @@ public sealed class NebaAlertTests : TestContextWrapper
         alertElement.ClassList.ShouldContain($"neba-alert-{expectedClass}");
     }
 
-    [Theory]
-    [InlineData(AlertVariant.Filled, "filled")]
-    [InlineData(AlertVariant.Outlined, "outlined")]
-    [InlineData(AlertVariant.Dense, "dense")]
+    [Theory(DisplayName = "Applies correct variant class for alert")]
+    [InlineData(AlertVariant.Filled, "filled", TestDisplayName = "Filled variant applies filled class")]
+    [InlineData(AlertVariant.Outlined, "outlined", TestDisplayName = "Outlined variant applies outlined class")]
+    [InlineData(AlertVariant.Dense, "dense", TestDisplayName = "Dense variant applies dense class")]
     public void ShouldApplyCorrectVariantClass(AlertVariant variant, string expectedClass)
     {
         // Arrange & Act
@@ -97,12 +97,12 @@ public sealed class NebaAlertTests : TestContextWrapper
         alertElement.ClassList.ShouldContain("neba-alert-filled");
     }
 
-    [Theory]
-    [InlineData(NotifySeverity.Error, "alert")]
-    [InlineData(NotifySeverity.Warning, "alert")]
-    [InlineData(NotifySeverity.Success, "status")]
-    [InlineData(NotifySeverity.Info, "status")]
-    [InlineData(NotifySeverity.Normal, "status")]
+    [Theory(DisplayName = "Sets correct ARIA role for alert based on severity")]
+    [InlineData(NotifySeverity.Error, "alert", TestDisplayName = "Error severity sets alert role")]
+    [InlineData(NotifySeverity.Warning, "alert", TestDisplayName = "Warning severity sets alert role")]
+    [InlineData(NotifySeverity.Success, "status", TestDisplayName = "Success severity sets status role")]
+    [InlineData(NotifySeverity.Info, "status", TestDisplayName = "Info severity sets status role")]
+    [InlineData(NotifySeverity.Normal, "status", TestDisplayName = "Normal severity sets status role")]
     public void ShouldSetCorrectAriaRole(NotifySeverity severity, string expectedRole)
     {
         // Arrange & Act
