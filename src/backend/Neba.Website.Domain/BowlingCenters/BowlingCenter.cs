@@ -43,4 +43,9 @@ public sealed class BowlingCenter
     /// Id for bowling center in legacy website system.
     /// </summary>
     public int? WebsiteId { get; internal init; }
+
+    /// <summary>
+    /// Id for bowling center in legacy application system.
+    /// </summary>
+    public int? ApplicationId { get; internal set; }
 }
