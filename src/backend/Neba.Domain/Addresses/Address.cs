@@ -47,6 +47,11 @@ public sealed partial record Address
     public Coordinates? Coordinates { get; internal init; }
 
     /// <summary>
+    /// Gets an empty <see cref="Address"/> instance.
+    /// </summary>
+    public static Address Empty { get; } = new Address();
+
+    /// <summary>
     /// Creates a new <see cref="Address"/> for a United States address.
     /// </summary>
     /// <param name="street">Street address (required).</param>
