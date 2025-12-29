@@ -5,6 +5,7 @@ namespace Neba.Domain.Addresses;
 /// <summary>
 /// Provides utilities to calculate distances between two <see cref="Address"/> instances.
 /// Uses the Haversine formula to compute great-circle distances.
+/// Uses double precision for trigonometric calculations, then converts to decimal for financial precision.
 /// </summary>
 public static class AddressDistanceCalculator
 {
@@ -33,6 +34,7 @@ public static class AddressDistanceCalculator
             return AddressDistanceCalculatorErrors.AddressMissingCoordinates;
         }
 
+        // Use double for trigonometric calculations (standard for geographic calculations)
         double latitude1Radians = address1.Coordinates.Latitude * (Math.PI / 180);
         double longitude1Radians = address1.Coordinates.Longitude * (Math.PI / 180);
         double latitude2Radians = address2.Coordinates.Latitude * (Math.PI / 180);
@@ -41,13 +43,18 @@ public static class AddressDistanceCalculator
         double deltaLatitude = latitude2Radians - latitude1Radians;
         double deltaLongitude = longitude2Radians - longitude1Radians;
 
-        double haversineComponent = Math.Pow(Math.Sin(deltaLatitude / 2), 2) +
-                                    (Math.Cos(latitude1Radians) * Math.Cos(latitude2Radians) *
-                                    Math.Pow(Math.Sin(deltaLongitude / 2), 2));
+        double sinDeltaLatitude = Math.Sin(deltaLatitude / 2);
+        double sinDeltaLongitude = Math.Sin(deltaLongitude / 2);
+        double cosLatitude1 = Math.Cos(latitude1Radians);
+        double cosLatitude2 = Math.Cos(latitude2Radians);
+
+        double haversineComponent = Math.Pow(sinDeltaLatitude, 2) +
+                                    (cosLatitude1 * cosLatitude2 * Math.Pow(sinDeltaLongitude, 2));
 
         double centralAngle = 2 * Math.Asin(Math.Sqrt(haversineComponent));
         double distanceMiles = EarthRadiusInMiles * centralAngle;
 
+        // Convert to decimal with full precision
         return (decimal)distanceMiles;
     }
 

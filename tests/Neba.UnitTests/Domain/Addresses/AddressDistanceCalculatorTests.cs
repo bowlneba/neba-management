@@ -34,7 +34,8 @@ public sealed class AddressDistanceCalculatorTests
             empireStateAddress.Value,
             willisTowerAddress.Value);
 
-        // Assert - Approximately 712.72 miles with ±2 mile tolerance for 35-mile rule
+        // Assert - Approximately 712.72 miles. Decimal precision for return value ensures financial accuracy
+        // but trigonometric calculations use standard double precision (industry standard for geographic math)
         result.IsError.ShouldBeFalse();
         result.Value.ShouldBeGreaterThan(710m);
         result.Value.ShouldBeLessThan(715m);
@@ -260,7 +261,8 @@ public sealed class AddressDistanceCalculatorTests
             empireStateAddress.Value,
             willisTowerAddress.Value);
 
-        // Assert - Approximately 1147.01 kilometers with ±3 km tolerance for 35-mile rule
+        // Assert - Approximately 1147.01 kilometers. Decimal precision for return value ensures financial accuracy
+        // but trigonometric calculations use standard double precision (industry standard for geographic math)
         result.IsError.ShouldBeFalse();
         result.Value.ShouldBeGreaterThan(1144m);
         result.Value.ShouldBeLessThan(1150m);
