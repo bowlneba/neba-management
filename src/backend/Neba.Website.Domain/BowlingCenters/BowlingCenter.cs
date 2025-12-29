@@ -33,4 +33,14 @@ public sealed class BowlingCenter
     /// The physical address of the bowling center.
     /// </summary>
     public Address Address { get; internal init; } = Address.Empty;
+
+    /// <summary>
+    /// Indicator if the bowling center has been closed
+    /// </summary>
+    public bool IsClosed { get; internal init; }
+
+    /// <summary>
+    /// Id for bowling center in legacy website system.
+    /// </summary>
+    public int? WebsiteId { get; internal init; }
 }
