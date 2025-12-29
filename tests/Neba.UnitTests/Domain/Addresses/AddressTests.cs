@@ -57,10 +57,11 @@ public sealed class AddressTests
         result.Value.Coordinates.ShouldBe(coordinates);
     }
 
-    [Theory(DisplayName = "Creates valid US address with different ZIP code formats")]
-    [InlineData("12345", TestDisplayName = "5-digit ZIP code is valid")]
-    [InlineData("12345-6789", TestDisplayName = "ZIP+4 format is valid")]
-    public void CreateUsAddress_WithValidZipCodeFormats_ReturnsAddress(string zipCode)
+    [Theory(DisplayName = "Creates valid US address with different ZIP code formats and normalizes them")]
+    [InlineData("12345", "12345", TestDisplayName = "5-digit ZIP code is valid and unchanged")]
+    [InlineData("12345-6789", "12345-6789", TestDisplayName = "ZIP+4 format with dash is valid and unchanged")]
+    [InlineData("123456789", "12345-6789", TestDisplayName = "ZIP+4 format without dash is normalized with dash")]
+    public void CreateUsAddress_WithValidZipCodeFormats_ReturnsAddress(string inputZipCode, string expectedZipCode)
     {
         // Arrange
         const string street = "789 Elm St";
@@ -68,11 +69,11 @@ public sealed class AddressTests
         UsState state = UsState.Oregon;
 
         // Act
-        ErrorOr<Address> result = Address.Create(street, null, city, state, zipCode);
+        ErrorOr<Address> result = Address.Create(street, null, city, state, inputZipCode);
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.PostalCode.ShouldBe(zipCode);
+        result.Value.PostalCode.ShouldBe(expectedZipCode);
     }
 
     [Fact(DisplayName = "Rejects US address with null state")]
@@ -221,12 +222,13 @@ public sealed class AddressTests
         result.Value.Coordinates.ShouldBe(coordinates);
     }
 
-    [Theory(DisplayName = "Creates valid Canadian address with different postal code formats")]
-    [InlineData("K1A 0B1", TestDisplayName = "Postal code with space is valid")]
-    [InlineData("K1A0B1", TestDisplayName = "Postal code without space is valid")]
-    [InlineData("k1a 0b1", TestDisplayName = "Lowercase postal code is valid")]
-    [InlineData("K1a 0B1", TestDisplayName = "Mixed case postal code is valid")]
-    public void CreateCanadianAddress_WithValidPostalCodeFormats_ReturnsAddress(string postalCode)
+    [Theory(DisplayName = "Creates valid Canadian address with different postal code formats and normalizes them")]
+    [InlineData("K1A 0B1", "K1A 0B1", TestDisplayName = "Postal code with space is valid and unchanged")]
+    [InlineData("K1A0B1", "K1A 0B1", TestDisplayName = "Postal code without space is normalized with space")]
+    [InlineData("k1a 0b1", "K1A 0B1", TestDisplayName = "Lowercase postal code is normalized to uppercase with space")]
+    [InlineData("K1a 0B1", "K1A 0B1", TestDisplayName = "Mixed case postal code is normalized to uppercase")]
+    [InlineData("k1a0b1", "K1A 0B1", TestDisplayName = "Lowercase without space is normalized to uppercase with space")]
+    public void CreateCanadianAddress_WithValidPostalCodeFormats_ReturnsAddress(string inputPostalCode, string expectedPostalCode)
     {
         // Arrange
         const string street = "789 Pine Rd";
@@ -234,21 +236,21 @@ public sealed class AddressTests
         CanadianProvince province = CanadianProvince.Ontario;
 
         // Act
-        ErrorOr<Address> result = Address.Create(street, null, city, province, postalCode);
+        ErrorOr<Address> result = Address.Create(street, null, city, province, inputPostalCode);
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.PostalCode.ShouldBe(postalCode.ToUpperInvariant());
+        result.Value.PostalCode.ShouldBe(expectedPostalCode);
     }
 
-    [Fact(DisplayName = "Normalizes Canadian postal code to uppercase")]
-    public void CreateCanadianAddress_WithLowercasePostalCode_NormalizesToUppercase()
+    [Fact(DisplayName = "Normalizes Canadian postal code to uppercase with space")]
+    public void CreateCanadianAddress_WithLowercasePostalCode_NormalizesToUppercaseWithSpace()
     {
         // Arrange
         const string street = "123 Maple St";
         const string city = "Toronto";
         CanadianProvince province = CanadianProvince.Ontario;
-        const string postalCode = "m5h 2n2";
+        const string postalCode = "m5h2n2";
 
         // Act
         ErrorOr<Address> result = Address.Create(street, null, city, province, postalCode);

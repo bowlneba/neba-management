@@ -101,7 +101,7 @@ public sealed partial record Address
             City = city,
             Region = state.Value,
             Country = Country.UnitedStates,
-            PostalCode = zipCode,
+            PostalCode = NormalizeZipCode(zipCode),
             Coordinates = coordinates
         };
     }
@@ -157,7 +157,7 @@ public sealed partial record Address
             City = city,
             Region = province.Value,
             Country = Country.Canada,
-            PostalCode = postalCode.ToUpperInvariant(),
+            PostalCode = NormalizeCanadianPostalCode(postalCode),
             Coordinates = coordinates
         };
     }
@@ -168,13 +168,34 @@ public sealed partial record Address
         return ZipCodeRegex().IsMatch(zipCode);
     }
 
-    [GeneratedRegex(@"^\d{5}(-\d{4})?$")]
+    private static string NormalizeZipCode(string zipCode)
+    {
+        // Remove any existing dash
+        string digitsOnly = zipCode.Replace("-", string.Empty, StringComparison.Ordinal);
+
+        // If 9 digits, format as 12345-6789
+        // If 5 digits, return as-is
+        return digitsOnly.Length == 9
+            ? $"{digitsOnly[..5]}-{digitsOnly[5..]}"
+            : digitsOnly;
+    }
+
+    [GeneratedRegex(@"^\d{5}(-?\d{4})?$")]
     private static partial Regex ZipCodeRegex();
 
     private static bool IsValidCanadianPostalCode(string postalCode)
     {
         // Simple Canadian postal code validation: A1A 1A1 or A1A1A1
         return CanadianPostalCodeRegex().IsMatch(postalCode);
+    }
+
+    private static string NormalizeCanadianPostalCode(string postalCode)
+    {
+        // Remove any existing spaces and convert to uppercase
+        string normalized = postalCode.Replace(" ", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
+
+        // Insert space after 3rd character: A1A 1A1
+        return $"{normalized[..3]} {normalized[3..]}";
     }
 
     [GeneratedRegex(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] ?\d[ABCEGHJ-NPRSTV-Z]\d$",
