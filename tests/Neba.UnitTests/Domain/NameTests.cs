@@ -6,7 +6,7 @@ namespace Neba.UnitTests.Domain;
 
 public sealed class NameTests
 {
-    [Theory]
+    [Theory(DisplayName = "Create should return an error when first name is null or whitespace")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
@@ -22,7 +22,7 @@ public sealed class NameTests
 #nullable enable
     }
 
-    [Theory]
+    [Theory(DisplayName = "Create should return an error when last name is null or whitespace")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
@@ -39,7 +39,7 @@ public sealed class NameTests
 #nullable enable
     }
 
-    [Fact]
+    [Fact(DisplayName = "Create should return multiple errors when first and last name are invalid")]
     public void Create_ShouldReturnMultipleErrors_WhenFirstAndLastNameAreInvalid()
     {
         // Arrange
@@ -55,7 +55,7 @@ public sealed class NameTests
         result.Errors.ShouldContain(NameErrors.LastNameRequired);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Create should return Name when valid first and last name provided")]
     public void Create_ShouldReturnName_WhenValidFirstAndLastNameProvided()
     {
         // Act
@@ -72,7 +72,7 @@ public sealed class NameTests
         name.Nickname.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Create should return Name when all values are provided")]
     public void Create_ShouldReturnName_WhenAllValuesAreProvided()
     {
         // Act
@@ -95,7 +95,7 @@ public sealed class NameTests
         name.Nickname.ShouldBe(NameFactory.Nickname);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToLegalName should return correct format when only first and last name provided")]
     public void ToLegalName_ShouldReturnCorrectFormat_WhenOnlyFirstAndLastNameProvided()
     {
         // Arrange
@@ -110,7 +110,7 @@ public sealed class NameTests
         legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToLegalName should return correct format when middle initial is provided")]
     public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleInitialIsProvided()
     {
         // Arrange
@@ -126,7 +126,7 @@ public sealed class NameTests
         legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleName} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToLegalName should return correct format when suffix is provided")]
     public void ToLegalName_ShouldReturnCorrectFormat_WhenSuffixIsProvided()
     {
         // Arrange
@@ -142,7 +142,7 @@ public sealed class NameTests
         legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.LastName}, {NameFactory.Suffix}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToLegalName should return correct format when middle name and suffix are provided")]
     public void ToLegalName_ShouldReturnCorrectFormat_WhenMiddleNameAndSuffixAreProvided()
     {
         // Arrange
@@ -159,7 +159,7 @@ public sealed class NameTests
         legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.MiddleName} {NameFactory.LastName}, {NameFactory.Suffix}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToLegalName should return correct format when nickname is provided")]
     public void ToLegalName_ShouldReturnCorrectFormat_WhenNicknameIsProvided()
     {
         // Arrange
@@ -175,7 +175,7 @@ public sealed class NameTests
         legalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToDisplayName should return correct format when nickname is provided")]
     public void ToDisplayName_ShouldReturnCorrectFormat_WhenNicknameIsProvided()
     {
         // Arrange
@@ -191,7 +191,7 @@ public sealed class NameTests
         displayName.ShouldBe($"{NameFactory.Nickname} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToDisplayName should return correct format when nickname is not provided")]
     public void ToDisplayName_ShouldReturnCorrectFormat_WhenNicknameIsNotProvided()
     {
         // Arrange
@@ -206,7 +206,7 @@ public sealed class NameTests
         displayName.ShouldBe($"{NameFactory.FirstName} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToDisplayName should return correct format when all values are provided")]
     public void ToDisplayName_ShouldReturnCorrectFormat_WhenAllValuesAreProvided()
     {
         // Arrange
@@ -224,7 +224,7 @@ public sealed class NameTests
         displayName.ShouldBe($"{NameFactory.Nickname} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToFormalName should return correct format when all values are provided")]
     public void ToFormalName_ShouldReturnCorrectFormat_WhenAllValuesAreProvided()
     {
         // Arrange
@@ -242,7 +242,7 @@ public sealed class NameTests
         formalName.ShouldBe($"{NameFactory.FirstName} {NameFactory.LastName}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ToString should return legal name")]
     public void ToString_ShouldReturnLegalName()
     {
         // Arrange

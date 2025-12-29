@@ -5,6 +5,7 @@ using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Neba.Domain.Identifiers;
 using Neba.Web.Server.Documents;
+using Neba.Web.Server.HallOfFame;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Website.Contracts.Awards;
@@ -132,6 +133,23 @@ internal class NebaApiService(INebaApi nebaApi)
 
         return result.Value.Items
             .OrderByDescending(dto => dto.Season)
+            .Select(dto => dto.ToViewModel())
+            .ToList()
+            .AsReadOnly();
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<HallOfFameInductionViewModel>>> GetHallOfFameInductionsAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<HallOfFameInductionResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetHallOfFameInductionsAsync);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .OrderByDescending(dto => dto.Year)
             .Select(dto => dto.ToViewModel())
             .ToList()
             .AsReadOnly();

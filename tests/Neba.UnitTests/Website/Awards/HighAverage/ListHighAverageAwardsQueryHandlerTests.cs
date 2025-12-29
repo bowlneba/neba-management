@@ -20,7 +20,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
         _handler = new ListHighAverageAwardsQueryHandler(_mockRepository.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns high average awards when repository returns data")]
     public async Task Handle_ShouldReturnExpectedResult_WhenRepositoryReturnsData()
     {
         // Arrange
@@ -39,7 +39,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
         actual.ShouldBeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -49,7 +49,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<HighAverageAwardDto>>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -72,7 +72,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
         key.Split(':').Length.ShouldBe(3);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 7 days")]
     public void Query_CacheExpiry_ShouldBeDefault7Days()
     {
         // Arrange
@@ -86,7 +86,7 @@ public sealed class ListHighAverageAwardsQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(7));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include award hierarchy")]
     public void Query_CacheTags_ShouldIncludeAwardHierarchy()
     {
         // Arrange

@@ -37,6 +37,7 @@ public sealed class Bowler
     {
         Titles = [];
         SeasonAwards = [];
+        HallOfFameInductions = [];
     }
 
     /// <summary>
@@ -48,4 +49,6 @@ public sealed class Bowler
     /// Gets the read-only collection of season awards earned by the bowler (BOTY, High Average, High Block).
     /// </summary>
     internal IReadOnlyCollection<SeasonAward> SeasonAwards { get; init; }
+
+    internal IReadOnlyCollection<HallOfFameInduction> HallOfFameInductions { get; init; }
 }

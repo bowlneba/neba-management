@@ -20,7 +20,7 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
         _handler = new ListHigh5GameBlockAwardsQueryHandler(_mockRepository.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns high 5-game block awards")]
     public async Task HandleAsync_ShouldReturnExpectedResult()
     {
         // Arrange
@@ -39,7 +39,7 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
         result.ShouldBeEquivalentTo(highBlockAwardDto);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -49,7 +49,7 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<IReadOnlyCollection<HighBlockAwardDto>>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -72,7 +72,7 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
         key.Split(':').Length.ShouldBe(3);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 7 days")]
     public void Query_CacheExpiry_ShouldBeDefault7Days()
     {
         // Arrange
@@ -86,7 +86,7 @@ public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(7));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include award hierarchy")]
     public void Query_CacheTags_ShouldIncludeAwardHierarchy()
     {
         // Arrange

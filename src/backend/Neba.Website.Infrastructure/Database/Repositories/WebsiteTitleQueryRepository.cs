@@ -13,7 +13,7 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
             .Select(title => new BowlerTitleDto
             {
                 BowlerId = title.Bowler.Id,
-                BowlerName = title.Bowler.Name.ToDisplayName(),
+                BowlerName = title.Bowler.Name,
                 TournamentMonth = title.Month,
                 TournamentYear = title.Year,
                 TournamentType = title.TournamentType
@@ -23,12 +23,13 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
     public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListTitleSummariesAsync(CancellationToken cancellationToken)
         => await dbContext.Titles
             .AsNoTracking()
-            .GroupBy(title => new { title.Bowler.Id, title.Bowler.Name })
+            .GroupBy(title => title.Bowler.Id)
             .Select(group => new BowlerTitleSummaryDto
             {
-                BowlerId = group.Key.Id,
-                BowlerName = group.Key.Name.ToDisplayName(),
-                TitleCount = group.Count()
+                BowlerId = group.Key,
+                BowlerName = group.First().Bowler.Name,
+                TitleCount = group.Count(),
+                HallOfFame = group.First().Bowler.HallOfFameInductions.Any()
             })
             .ToListAsync(cancellationToken);
 }

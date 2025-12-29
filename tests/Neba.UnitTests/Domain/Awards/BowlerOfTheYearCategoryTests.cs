@@ -1,10 +1,11 @@
-using Neba.Website.Domain.Awards;
 
-namespace Neba.UnitTests.Website.Awards.BowlerOfTheYear;
+using Neba.Domain.Awards;
+
+namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class BowlerOfTheYearCategoryTests
 {
-    [Fact]
+    [Fact(DisplayName = "BowlerOfTheYearCategory should have six categories")]
     public void BowlerOfTheYearCategory_ShouldHaveSixCategories()
     {
         // Arrange & Act
@@ -14,7 +15,7 @@ public sealed class BowlerOfTheYearCategoryTests
         categories.Count.ShouldBe(6);
     }
 
-    [Theory]
+    [Theory(DisplayName = "BowlerOfTheYearCategory should have correct name and value")]
     [InlineData("Bowler of the Year", 1)]
     [InlineData("Woman Bowler of the Year", 2)]
     [InlineData("Senior Bowler of the Year", 50)]

@@ -15,11 +15,7 @@ internal sealed class TitleConfiguration
     {
         builder.ToTable("titles", WebsiteDbContext.DefaultSchema);
 
-        builder.Property<int>("db_id")
-            .HasColumnName("id")
-            .UseIdentityAlwaysColumn();
-
-        builder.HasKey("db_id");
+        builder.ConfigureShadowId();
 
         builder.HasIndex(title => new { title.Year, title.Month });
 

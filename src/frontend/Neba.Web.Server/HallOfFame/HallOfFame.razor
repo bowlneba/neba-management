@@ -1,0 +1,242 @@
+@page "/hall-of-fame"
+@using Neba.Web.Server.HallOfFame
+@using Neba.Web.Server.Components
+@using Neba.Web.Server.Notifications
+
+@inject NebaApiService NebaApiService
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Hall of Fame - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="NEBA Hall of Fame honoring excellence in bowling. View inductees by year and category including Superior Performance, Meritorious Service, and Friend of NEBA." />
+</HeadContent>
+
+<div class="hall-of-fame-container">
+    <h1 class="page-title">Hall of Fame</h1>
+    <p class="page-subtitle">Honoring Excellence in Bowling</p>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Hall of Fame"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading Hall of Fame..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    @if (!_isLoading && _inductionsByYear != null && _inductionsByYear.Count > 0)
+    {
+
+        @foreach (var yearGroup in _inductionsByYear.OrderBy(g => g.Year))
+        {
+            <div class="year-section">
+                <div class="year-header">Class of @yearGroup.Year</div>
+
+                @* Single-category sections *@
+                @foreach (var categoryGroup in yearGroup.InducteesByCategory.OrderBy(c => GetCategoryOrder(c.Category)))
+                {
+                    var singleCategoryInductees = categoryGroup.Inductees.Where(i => i.Categories.Count == 1).ToList();
+                    @if (singleCategoryInductees.Any())
+                    {
+                        <div class="category-section">
+                            <div class="category-title">@categoryGroup.Category</div>
+                            <div class="inductees-photo-grid">
+                                @foreach (var inductee in singleCategoryInductees.OrderBy(i => i.BowlerName))
+                                {
+                                    <div class="inductee-item">
+                                        <div class="inductee-photo" style="@GetPhotoStyle(inductee)">
+                                            @if (inductee.PhotoUrl is null)
+                                            {
+                                                @GetInitials(inductee.BowlerName)
+                                            }
+                                        </div>
+                                        <div class="inductee-name">@inductee.BowlerName</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+                @* Combined section (multi-category inductees) *@
+                @{
+                    var combinedInductees = yearGroup.InducteesByCategory
+                        .SelectMany(c => c.Inductees)
+                        .Where(i => i.Categories.Count > 1)
+                        .Distinct()
+                        .ToList();
+                }
+                @if (combinedInductees.Any())
+                {
+                    <div class="category-section">
+                        <div class="category-title">Combined</div>
+                        <div class="inductees-photo-grid">
+                            @foreach (var inductee in combinedInductees.OrderBy(i => i.BowlerName))
+                            {
+                                <div class="inductee-item">
+                                    <div class="inductee-photo" style="@GetPhotoStyle(inductee)">
+                                        @if (inductee.PhotoUrl is null)
+                                        {
+                                            @GetInitials(inductee.BowlerName)
+                                        }
+                                    </div>
+                                    <div class="inductee-name">@inductee.BowlerName</div>
+                                    <div class="combined-categories">
+                                        @string.Join(" • ", inductee.Categories)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Eligibility Criteria -->
+        <div class="criteria-section">
+            <h2 class="criteria-title">Eligibility & Criteria</h2>
+            <div class="criteria-box criteria-main">
+                <h3>Superior Performance Category</h3>
+                <p style="margin-bottom: 0.5rem;">To be eligible for the NEBA Hall of Fame Superior Performance category, a bowler must meet the following criteria:</p>
+                <p><strong>• Must have been a NEBA member for a minimum of 10 years</strong></p>
+                <p><strong>• Must have won titles or Bowler of Year awards in 3 or more different years</strong></p>
+                <p><strong>• Must accumulate 36 NEBA Hall of Fame points based on the following:</strong></p>
+            </div>
+
+            <div class="criteria-boxes">
+                <div class="criteria-box">
+                    <h3>Bowler of the Year Awards</h3>
+                    <p>12 points - Bowler of the Year</p>
+                    <p>2 points - Senior Bowler of the Year</p>
+                    <p>2 points - Super Senior Bowler of the Year</p>
+                    <p>2 points - Woman Bowler of the Year</p>
+                    <p>2 points - Rookie of the Year</p>
+                </div>
+                <div class="criteria-box">
+                    <h3>Tournament Titles</h3>
+                    <p>6 points - Singles Title</p>
+                    <p>6 points - TOC Title</p>
+                    <p>6 points - Doubles Title</p>
+                    <p>6 points - Points Leader/Invitational Title</p>
+                    <p>6 points - NEBA Masters Title</p>
+                    <p>3 points - Over/Under Title</p>
+                    <p>2 points - Non-Champions Title</p>
+                    <p>2 points - Senior Title</p>
+                    <p>2 points - NEBA Trios Title</p>
+                </div>
+            </div>
+            <div class="criteria-boxes" style="margin-top: 1.5rem;">
+                <div class="criteria-box">
+                    <h3>Legacy Titles</h3>
+                    <p style="font-style: italic; color: #666; margin-bottom: 0.75rem;">Bowlers may have also accumulated points based on the following:</p>
+                    <p>12 points - NEBA Singles Title (prior to 1991)</p>
+                    <p>3 points - NEBA High-Roller Title</p>
+                    <p>2 points - NEBA Over 40 Title</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+    private List<YearGroup>? _inductionsByYear;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _inductionsByYear = await GetHallOfFameInductionsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load Hall of Fame data: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task<List<YearGroup>> GetHallOfFameInductionsAsync()
+    {
+        var allInducteesResult = await NebaApiService.GetHallOfFameInductionsAsync();
+
+        if (allInducteesResult.IsError)
+        {
+            var error = allInducteesResult.FirstError;
+            _errorMessage = $"Failed to load Hall of Fame data: {error.Description}";
+            return [];
+        }
+
+        var allInductees = allInducteesResult.Value;
+
+        // Group by year
+        return allInductees
+            .GroupBy(i => i.InductionYear)
+            .Select(yearGroup => new YearGroup
+            {
+                Year = yearGroup.Key,
+                InducteesByCategory = yearGroup
+                    .SelectMany(i => i.Categories.Select(c => new { Category = c, Inductee = i }))
+                    .GroupBy(x => x.Category)
+                    .Select(catGroup => new CategoryGroup
+                    {
+                        Category = catGroup.Key,
+                        Inductees = catGroup.Select(x => x.Inductee).ToList()
+                    })
+                    .ToList()
+            })
+            .ToList();
+    }
+
+    private static string GetInitials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+        {
+            return $"{parts[0][0]}{parts[^1][0]}";
+        }
+        return parts.Length > 0 ? parts[0][0].ToString() : "?";
+    }
+
+    private static string GetPhotoStyle(HallOfFameInductionViewModel inductee)
+    {
+        if (inductee.PhotoUrl is not null)
+        {
+            return $"background-image: url('{inductee.PhotoUrl}'); background-size: cover; background-position: center;";
+        }
+        return string.Empty;
+    }
+
+    private static int GetCategoryOrder(string category)
+    {
+        return category switch
+        {
+            "Superior Performance" => 1,
+            "Meritorious Service" => 2,
+            "Friend of NEBA" => 3,
+            _ => 99
+        };
+    }
+
+    private sealed class YearGroup
+    {
+        public int Year { get; set; }
+        public List<CategoryGroup> InducteesByCategory { get; set; } = new();
+    }
+
+    private sealed class CategoryGroup
+    {
+        public string Category { get; set; } = string.Empty;
+        public List<HallOfFameInductionViewModel> Inductees { get; set; } = new();
+    }
+}

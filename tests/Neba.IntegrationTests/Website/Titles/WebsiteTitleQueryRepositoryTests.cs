@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Tests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Domain.Bowlers;
@@ -10,14 +11,14 @@ namespace Neba.IntegrationTests.Website.Titles;
 
 public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
 {
-    private WebsiteDatabase _database = null!;
+    private DatabaseContainer _database = null!;
 
     /// <summary>
     /// Called before each test class - initializes a fresh database container.
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        _database = new WebsiteDatabase();
+        _database = new DatabaseContainer();
         await _database.InitializeAsync();
     }
 
@@ -54,7 +55,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
 
         var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
         seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
-        seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name.ToDisplayName());
+        seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name);
 
         foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
@@ -64,7 +65,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
                 t.TournamentType == dto.TournamentType);
 
             dto.BowlerId.ShouldBe(seedBowler.Id);
-            dto.BowlerName.ShouldBe(seedBowler.Name.ToDisplayName());
+            dto.BowlerName.ShouldBe(seedBowler.Name);
             dto.TournamentMonth.ShouldBe(expectedTitle.Month);
             dto.TournamentYear.ShouldBe(expectedTitle.Year);
             dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
@@ -89,7 +90,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
             .Select(bowler => new
             {
                 BowlerId = bowler.Id,
-                BowlerName = bowler.Name.ToDisplayName(),
+                BowlerName = bowler.Name,
                 TitleCount = bowler.Titles.Count
             })
             .ToList();
@@ -112,7 +113,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
             dto.TitleCount.ShouldBe(expectedSummary.TitleCount);
         }
 
-        result.ShouldAllBe(dto => !string.IsNullOrEmpty(dto.BowlerName));
+        result.ShouldAllBe(dto => dto.BowlerName != null);
         result.ShouldAllBe(dto => dto.TitleCount > 0);
     }
 }

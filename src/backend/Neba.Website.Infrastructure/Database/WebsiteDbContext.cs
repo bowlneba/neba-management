@@ -21,6 +21,9 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
     public DbSet<SeasonAward> SeasonAwards
         => Set<SeasonAward>();
 
+    public DbSet<HallOfFameInduction> HallOfFameInductions
+        => Set<HallOfFameInduction>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(DefaultSchema);
@@ -28,5 +31,6 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
         modelBuilder.ApplyConfiguration(new TitleConfiguration());
         modelBuilder.ApplyConfiguration(new SeasonAwardConfiguration());
+        modelBuilder.ApplyConfiguration(new HallOfFameInductionConfiguration());
     }
 }

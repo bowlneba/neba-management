@@ -5,15 +5,15 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neba.Api;
-using Neba.Tests.Website;
+using Neba.Tests.Infrastructure;
 
 namespace Neba.IntegrationTests.Infrastructure;
 
 /// <summary>
 /// Custom WebApplicationFactory for integration testing that configures the test database.
-/// Each test class should create its own instance of WebsiteDatabase and pass it to this factory.
+/// Each test class should create its own instance of DatabaseContainer and pass it to this factory.
 /// </summary>
-public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
+public sealed class NebaWebApplicationFactory(DatabaseContainer database)
         : WebApplicationFactory<IApiAssemblyMarker>
 {
 
@@ -21,6 +21,7 @@ public sealed class NebaWebApplicationFactory(WebsiteDatabase database)
     {
         builder.UseSetting("ConnectionStrings:website", database.ConnectionString);
         builder.UseSetting("ConnectionStrings:hangfire", database.ConnectionString);
+        builder.UseSetting("ConnectionStrings:cache", database.ConnectionString);
 
         // Configure Hangfire settings for integration tests
         builder.UseSetting("Hangfire:WorkerCount", "1");

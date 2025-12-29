@@ -35,4 +35,10 @@ public sealed record TitleSummaryResponse
     /// </summary>
     /// <example>5</example>
     public required int TitleCount { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the bowler is inducted into the Hall of Fame.
+    /// </summary>
+    /// <example>true</example>
+    public required bool HallOfFame { get; init; }
 }

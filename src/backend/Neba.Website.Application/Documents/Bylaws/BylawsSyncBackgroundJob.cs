@@ -12,8 +12,8 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = BylawsConstants.DocumentKey,
-            ContainerName = BylawsConstants.ContainerName,
-            DocumentName = BylawsConstants.FileName,
+            Container = BylawsConstants.Container,
+            Path = BylawsConstants.Path,
             HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
             CacheKey = BylawsConstants.JobStateCacheKey,
             DocumentCacheKey = BylawsConstants.ContentCacheKey,
@@ -31,8 +31,8 @@ internal sealed class BylawsSyncBackgroundJob(IBackgroundJobScheduler scheduler)
         var job = new SyncHtmlDocumentToStorageJob
         {
             DocumentKey = BylawsConstants.DocumentKey,
-            ContainerName = BylawsConstants.ContainerName,
-            DocumentName = BylawsConstants.FileName,
+            Container = BylawsConstants.Container,
+            Path = BylawsConstants.Path,
             HubGroupName = $"{BylawsConstants.DocumentKey}-refresh",
             CacheKey = BylawsConstants.JobStateCacheKey,
             DocumentCacheKey = BylawsConstants.ContentCacheKey,

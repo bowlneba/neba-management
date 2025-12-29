@@ -28,7 +28,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
             NullLogger<GetTournamentRulesQueryHandler>.Instance);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns document from storage when it exists")]
     public async Task HandleAsync_WhenDocumentExistsInStorage_ShouldReturnFromStorage()
     {
         // Arrange
@@ -55,7 +55,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         _tournamentRulesSyncJobMock.Verify(bj => bj.TriggerImmediateSync(), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Retrieves document from source and triggers background sync when not in storage")]
     public async Task HandleAsync_WhenDocumentNotInStorage_ShouldRetrieveFromSourceAndTriggerBackgroundSync()
     {
         // Arrange
@@ -87,7 +87,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         _tournamentRulesSyncJobMock.Verify(bj => bj.TriggerImmediateSync(), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns document even when background sync fails")]
     public async Task HandleAsync_WhenBackgroundSyncFails_ShouldStillReturnDocument()
     {
         // Arrange
@@ -117,7 +117,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         _tournamentsServiceMock.Verify(ds => ds.GetDocumentAsHtmlAsync("tournament-rules", TestContext.Current.CancellationToken), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query implements ICachedQuery interface")]
     public void Query_ShouldImplementICachedQuery()
     {
         // Arrange & Act
@@ -127,7 +127,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         query.ShouldBeAssignableTo<ICachedQuery<DocumentDto>>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache key follows naming convention")]
     public void Query_CacheKey_ShouldFollowConvention()
     {
         // Arrange
@@ -150,7 +150,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         key.Split(':')[3].ShouldBe("content");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache expiry is 30 days")]
     public void Query_CacheExpiry_ShouldBe30Days()
     {
         // Arrange
@@ -163,7 +163,7 @@ public sealed class GetTournamentRulesQueryHandlerTests
         expiry.ShouldBe(TimeSpan.FromDays(30));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Query cache tags include document hierarchy")]
     public void Query_CacheTags_ShouldIncludeDocumentHierarchy()
     {
         // Arrange

@@ -37,7 +37,10 @@ public sealed record Name
     /// </summary>
     public string? Nickname { get; init; }
 
-    internal Name()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Name"/> value object with default values.
+    /// </summary>
+    public Name()
     { }
 
     /// <summary>

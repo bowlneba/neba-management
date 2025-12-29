@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Domain;
 
 public sealed class MonthTests
 {
-    [Fact]
+    [Fact(DisplayName = "Month should have 12 different months")]
     public void Month_ShouldHave12DifferentMonths()
     {
         // Arrange & Act
@@ -14,7 +14,7 @@ public sealed class MonthTests
         months.Count.ShouldBe(12);
     }
 
-    [Theory]
+    [Theory(DisplayName = "Month should have correct properties for each month")]
     [InlineData("January", 1, "Jan")]
     [InlineData("February", 2, "Feb")]
     [InlineData("March", 3, "Mar")]

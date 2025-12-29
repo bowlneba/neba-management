@@ -124,8 +124,9 @@ public static class CacheKeys
     /// Cache keys for awards-related caching.
     /// </summary>
 #pragma warning disable CA1034 // Nested types are intentional for namespace organization
+#pragma warning disable CA1724 // Type name conflicts with namespace but provides better API organization
     public static class Awards
-#pragma warning restore CA1034
+#pragma warning restore CA1034, CA1724
     {
         /// <summary>
         /// Generates a cache key for listing Bowler of the Year awards.
@@ -147,5 +148,13 @@ public static class CacheKeys
         /// <returns>Cache key in format: website:awards:high-block</returns>
         public static string HighBlock()
             => $"{WebsiteContext}:{Types.Awards}:high-block";
+
+        /// <summary>
+        /// Generates a cache key for listing Hall of Fame inductions.
+        /// </summary>
+        /// <returns>Cache key in format: website:awards:hall-of-fame
+        /// </returns>
+        public static string HallOfFameInductions()
+            => $"{WebsiteContext}:{Types.Awards}:hall-of-fame-inductions";
     }
 }

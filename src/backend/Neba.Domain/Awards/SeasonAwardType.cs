@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Website.Domain.Awards;
+namespace Neba.Domain.Awards;
 
 /// <summary>
 /// The types of season awards that can be earned by NEBA bowlers, each recognizing different aspects of competitive excellence.
@@ -9,7 +9,12 @@ namespace Neba.Website.Domain.Awards;
 public sealed class SeasonAwardType
     : SmartEnum<SeasonAwardType>
 {
-    internal static readonly SeasonAwardType s_default = new("default", 0);
+    internal static readonly SeasonAwardType s_none = new("none", 0);
+
+    /// <summary>
+    /// Default value for SeasonAwardType.
+    /// </summary>
+    public static SeasonAwardType Default() => s_none;
 
     /// <summary>
     /// Awarded to the bowler(s) with the best overall performance during the season, determined by a points system

@@ -2,10 +2,10 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Neba.Contracts;
+using Neba.Domain.Awards;
 using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Awards;
-using Neba.Website.Domain.Awards;
 using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Awards;
@@ -271,6 +271,92 @@ public sealed class AwardsIntegrationTests
             award.BowlerName.ShouldNotBeNullOrWhiteSpace();
             award.Season.ShouldNotBeNullOrWhiteSpace();
             award.Average.ShouldBeGreaterThan(0);
+        }
+    }
+
+    [Fact]
+    public async Task ListHallOfFameInductions_ShouldReturnExpectedResults()
+    {
+        // Arrange
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
+
+        int totalInductions = await ExecuteAsync(async context
+            => await context.Bowlers.AsNoTracking()
+                .SelectMany(b => b.HallOfFameInductions)
+                .CountAsync());
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/hall-of-fame", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<HallOfFameInductionResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HallOfFameInductionResponse>>();
+
+        result.ShouldNotBeNull();
+
+        result.Items.Count.ShouldBe(totalInductions);
+        result.TotalItems.ShouldBe(totalInductions);
+    }
+
+    [Fact]
+    public async Task ListHallOfFameInductions_WithNoData_ShouldReturnEmptyCollection()
+    {
+        // Arrange
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/hall-of-fame", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        CollectionResponse<HallOfFameInductionResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HallOfFameInductionResponse>>();
+
+        result.ShouldNotBeNull();
+        result.Items.Count.ShouldBe(0);
+        result.TotalItems.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task ListHallOfFameInductions_ShouldIncludeAllRequiredFields()
+    {
+        // Arrange
+        await SeedAsync(async context =>
+                {
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
+                    context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+                });
+
+        using HttpClient httpClient = Factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/hall-of-fame", UriKind.Relative));
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        CollectionResponse<HallOfFameInductionResponse>? result
+            = await response.Content.ReadFromJsonAsync<CollectionResponse<HallOfFameInductionResponse>>();
+
+        result.ShouldNotBeNull();
+
+        // Verify each induction has all required fields populated
+        foreach (HallOfFameInductionResponse induction in result.Items)
+        {
+            induction.BowlerName.ShouldNotBeNullOrWhiteSpace();
+            induction.Year.ShouldBeGreaterThan(0);
+            induction.Categories.ShouldNotBeNull();
+            induction.Categories.Count.ShouldBeGreaterThan(0);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Website.Application.Awards.HighBlock;
@@ -20,7 +21,7 @@ public sealed record HighBlockAwardDto
     /// <summary>
     /// Gets the name of the bowler who received the award.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
 
     /// <summary>
     /// Gets the score that qualified for the High Block award.

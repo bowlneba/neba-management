@@ -1,5 +1,6 @@
+using Neba.Domain;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
-using Neba.Website.Domain.Awards;
 
 namespace Neba.Website.Application.Awards.BowlerOfTheYear;
 
@@ -21,7 +22,7 @@ public sealed record BowlerOfTheYearAwardDto
     /// <summary>
     /// The name of the bowler who received the award.
     /// </summary>
-    public required string BowlerName { get; init; }
+    public required Name BowlerName { get; init; }
 
     /// <summary>
     /// The season in which the award was given (e.g., "2024-2025").

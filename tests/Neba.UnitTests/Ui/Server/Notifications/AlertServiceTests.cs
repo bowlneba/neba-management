@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Ui.Server.Notifications;
 
 public sealed class AlertServiceTests
 {
-    [Fact]
+    [Fact(DisplayName = "Current alert is initially null")]
     public void CurrentAlert_InitiallyNull()
     {
         // Arrange & Act
@@ -14,7 +14,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowNormal sets current alert with normal severity")]
     public void ShowNormal_SetsCurrentAlertWithNormalSeverity()
     {
         // Arrange
@@ -36,7 +36,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Options.Dismissible.ShouldBe(true);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowNormal with title sets the title property")]
     public void ShowNormal_WithTitle_SetsTitle()
     {
         // Arrange
@@ -52,7 +52,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Title.ShouldBe("Test title");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowNormal applies configuration options correctly")]
     public void ShowNormal_WithConfiguration_AppliesConfiguration()
     {
         // Arrange
@@ -73,7 +73,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Options.Dismissible.ShouldBe(false);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowNormal with persist flag sets persistence correctly")]
     public void ShowNormal_WithPersistAcrossNavigation_SetsPersistence()
     {
         // Arrange
@@ -87,7 +87,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.PersistAcrossNavigation.ShouldBe(true);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowInfo sets current alert with info severity")]
     public void ShowInfo_SetsCurrentAlertWithInfoSeverity()
     {
         // Arrange
@@ -102,7 +102,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Message.ShouldBe("Info message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowInfo with all parameters sets all properties")]
     public void ShowInfo_WithAllParameters_SetsAllProperties()
     {
         // Arrange
@@ -120,7 +120,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Options.Variant.ShouldBe(AlertVariant.Dense);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowSuccess sets current alert with success severity")]
     public void ShowSuccess_SetsCurrentAlertWithSuccessSeverity()
     {
         // Arrange
@@ -135,7 +135,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Message.ShouldBe("Success message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowSuccess with title sets the title property")]
     public void ShowSuccess_WithTitle_SetsTitle()
     {
         // Arrange
@@ -151,7 +151,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Title.ShouldBe("Success!");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowWarning sets current alert with warning severity")]
     public void ShowWarning_SetsCurrentAlertWithWarningSeverity()
     {
         // Arrange
@@ -166,7 +166,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Message.ShouldBe("Warning message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowWarning applies configuration options correctly")]
     public void ShowWarning_WithConfiguration_AppliesConfiguration()
     {
         // Arrange
@@ -181,7 +181,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Options.Variant.ShouldBe(AlertVariant.Outlined);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowError sets current alert with error severity")]
     public void ShowError_SetsCurrentAlertWithErrorSeverity()
     {
         // Arrange
@@ -196,7 +196,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Message.ShouldBe("Error message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowError with all parameters sets all properties")]
     public void ShowError_WithAllParameters_SetsAllProperties()
     {
         // Arrange
@@ -214,7 +214,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Options.Dismissible.ShouldBe(false);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowValidation with messages sets validation alert")]
     public void ShowValidation_WithMessages_SetsValidationAlert()
     {
         // Arrange
@@ -235,7 +235,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ValidationMessages[1].ShouldBe("Field2 is invalid");
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowValidation with custom title uses the provided title")]
     public void ShowValidation_WithCustomTitle_UsesCustomTitle()
     {
         // Arrange
@@ -252,7 +252,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ValidationMessages.Count.ShouldBe(2);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowValidation with title first parameter sets validation alert")]
     public void ShowValidation_WithTitleFirst_SetsValidationAlert()
     {
         // Arrange
@@ -269,7 +269,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ValidationMessages.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Clear sets current alert to null")]
     public void Clear_SetsCurrentAlertToNull()
     {
         // Arrange
@@ -284,7 +284,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Clear does not throw when no alert exists")]
     public void Clear_WhenNoAlert_DoesNotThrow()
     {
         // Arrange
@@ -295,7 +295,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "OnChange event is triggered when alert is shown")]
     public void OnChange_TriggeredWhenAlertShown()
     {
         // Arrange
@@ -310,7 +310,7 @@ public sealed class AlertServiceTests
         changeCount.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "OnChange event is triggered when alert is cleared")]
     public void OnChange_TriggeredWhenAlertCleared()
     {
         // Arrange
@@ -326,7 +326,7 @@ public sealed class AlertServiceTests
         changeCount.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "OnChange event is triggered multiple times for multiple operations")]
     public void OnChange_TriggeredMultipleTimes()
     {
         // Arrange
@@ -344,7 +344,7 @@ public sealed class AlertServiceTests
         changeCount.ShouldBe(4);
     }
 
-    [Fact]
+    [Fact(DisplayName = "OnChange event sender is the AlertService instance")]
     public void OnChange_SenderIsAlertService()
     {
         // Arrange
@@ -359,7 +359,7 @@ public sealed class AlertServiceTests
         capturedSender.ShouldBe(service);
     }
 
-    [Fact]
+    [Fact(DisplayName = "OnChange event notifies all subscribers")]
     public void OnChange_MultipleSubscribers_AllNotified()
     {
         // Arrange
@@ -380,7 +380,7 @@ public sealed class AlertServiceTests
         count3.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Showing multiple alerts replaces the current alert")]
     public void ShowMultipleAlerts_ReplacesCurrentAlert()
     {
         // Arrange
@@ -398,7 +398,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.Message.ShouldBe("Second message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Alert options OnCloseIconClicked handler can be set")]
     public async Task AlertOptions_OnCloseIconClicked_CanBeSet()
     {
         // Arrange
@@ -424,7 +424,7 @@ public sealed class AlertServiceTests
         clickHandlerCalled.ShouldBe(true);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowNormal with all variants sets the correct variant")]
     public void ShowNormal_WithAllVariants_SetsCorrectVariant()
     {
         // Arrange
@@ -443,7 +443,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert!.Options.Variant.ShouldBe(AlertVariant.Dense);
     }
 
-    [Fact]
+    [Fact(DisplayName = "ShowValidation with empty messages sets empty list")]
     public void ShowValidation_WithEmptyMessages_SetsEmptyList()
     {
         // Arrange
@@ -459,7 +459,7 @@ public sealed class AlertServiceTests
         service.CurrentAlert.ValidationMessages.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "All severity methods set the correct severity")]
     public void AllSeverityMethods_SetCorrectSeverity()
     {
         // Arrange

@@ -15,7 +15,7 @@ internal static class TitlesMappingExtensions
             return new TitleResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 TournamentMonth = dto.TournamentMonth,
                 TournamentYear = dto.TournamentYear,
                 TournamentType = dto.TournamentType.Name
@@ -30,7 +30,8 @@ internal static class TitlesMappingExtensions
             return new BowlerTitlesResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
                     Month = title.Month,
@@ -48,7 +49,8 @@ internal static class TitlesMappingExtensions
             return new TitleSummaryResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 TitleCount = dto.TitleCount
             };
         }

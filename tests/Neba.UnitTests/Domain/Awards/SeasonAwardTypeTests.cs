@@ -1,10 +1,11 @@
-using Neba.Website.Domain.Awards;
 
-namespace Neba.UnitTests.Website.Awards;
+using Neba.Domain.Awards;
+
+namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class SeasonAwardTypeTests
 {
-    [Fact]
+    [Fact(DisplayName = "SeasonAwardType should have correct number of awards")]
     public void SeasonAwardType_ShouldHaveCorrectNumberOfAwards()
     {
         // Arrange
@@ -17,7 +18,7 @@ public sealed class SeasonAwardTypeTests
         actualCount.ShouldBe(expectedCount);
     }
 
-    [Theory]
+    [Theory(DisplayName = "SeasonAwardType should have correct name and value")]
     [InlineData("Bowler of the Year", 1)]
     [InlineData("High Average", 2)]
     [InlineData("High 5-Game Block", 3)]

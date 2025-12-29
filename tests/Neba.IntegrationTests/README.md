@@ -6,7 +6,7 @@ This project contains integration tests for the Neba API using ASP.NET Core's `W
 
 - **IntegrationTestBase**: Base class that provides database and web application factory setup
 - **NebaWebApplicationFactory**: Custom `WebApplicationFactory` that configures the test database
-- **WebsiteDatabase**: Provides a PostgreSQL test database using Testcontainers (from Neba.Tests project)
+- **DatabaseContainer**: Provides a PostgreSQL test database using Testcontainers (from Neba.Tests project)
 
 ## Writing Integration Tests
 

@@ -13,17 +13,9 @@ internal sealed class BowlerConfiguration
 
     public void Configure(EntityTypeBuilder<Bowler> builder)
     {
-
-        // set up shadow primary int key and update foreign keys to use it
-        // make the BowlerId a unique index instead (and do the same for other entity configurations)
-
         builder.ToTable("bowlers", WebsiteDbContext.DefaultSchema);
 
-        builder.Property<int>("db_id")
-            .HasColumnName("id")
-            .UseIdentityAlwaysColumn();
-
-        builder.HasKey("db_id");
+        builder.ConfigureShadowId();
 
         builder
             .Property(bowler => bowler.Id)
@@ -87,6 +79,11 @@ internal sealed class BowlerConfiguration
 
         builder.HasMany(bowler => bowler.SeasonAwards)
             .WithOne(seasonAward => seasonAward.Bowler)
+            .HasForeignKey(ForeignKeyName)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(bowler => bowler.HallOfFameInductions)
+            .WithOne(induction => induction.Bowler)
             .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
     }

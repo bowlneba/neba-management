@@ -4,7 +4,7 @@ namespace Neba.UnitTests.Ui.Server.Notifications;
 
 public sealed class NotificationServiceTests
 {
-    [Fact]
+    [Fact(DisplayName = "Publishes notification with info severity")]
     public void Info_PublishesNotificationWithInfoSeverity()
     {
         // Arrange
@@ -23,7 +23,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.ToastOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes info notification with title and behavior")]
     public void Info_WithTitleAndBehavior_PublishesNotificationWithAllProperties()
     {
         // Arrange
@@ -42,7 +42,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.AlertAndToast);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes notification with success severity")]
     public void Success_PublishesNotificationWithSuccessSeverity()
     {
         // Arrange
@@ -61,7 +61,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.ToastOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes success notification with title and behavior")]
     public void Success_WithTitleAndBehavior_PublishesNotificationWithAllProperties()
     {
         // Arrange
@@ -80,7 +80,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.AlertOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes notification with warning severity")]
     public void Warning_PublishesNotificationWithWarningSeverity()
     {
         // Arrange
@@ -99,7 +99,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.ToastOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes warning notification with title and behavior")]
     public void Warning_WithTitleAndBehavior_PublishesNotificationWithAllProperties()
     {
         // Arrange
@@ -118,7 +118,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.AlertAndToast);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes notification with error severity")]
     public void Error_PublishesNotificationWithErrorSeverity()
     {
         // Arrange
@@ -137,7 +137,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.ToastOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes error notification with title and behavior")]
     public void Error_WithTitleAndBehavior_PublishesNotificationWithAllProperties()
     {
         // Arrange
@@ -156,7 +156,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.None);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes notification with normal severity")]
     public void Normal_PublishesNotificationWithNormalSeverity()
     {
         // Arrange
@@ -175,7 +175,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.ToastOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes normal notification with title and behavior")]
     public void Normal_WithTitleAndBehavior_PublishesNotificationWithAllProperties()
     {
         // Arrange
@@ -194,7 +194,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Behavior.ShouldBe(NotifyBehavior.AlertOnly);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes validation failure with default behavior")]
     public void ValidationFailure_PublishesNotificationWithDefaultBehavior()
     {
         // Arrange
@@ -215,7 +215,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Code.ShouldBe("VALIDATION_FAILURE");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes validation failure with custom behavior")]
     public void ValidationFailure_WithOverrideBehavior_UsesProvidedBehavior()
     {
         // Arrange
@@ -235,7 +235,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Code.ShouldBe("VALIDATION_FAILURE");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes custom notification payload")]
     public void Publish_PublishesCustomPayload()
     {
         // Arrange
@@ -268,7 +268,7 @@ public sealed class NotificationServiceTests
         receivedPayload.Metadata.ShouldNotBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Allows multiple subscribers to notification stream")]
     public void Notifications_AllowsMultipleSubscribers()
     {
         // Arrange
@@ -293,7 +293,7 @@ public sealed class NotificationServiceTests
         received3.Message.ShouldBe("Broadcast message");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes multiple notifications in order")]
     public void Notifications_PublishesMultipleNotificationsInOrder()
     {
         // Arrange
@@ -322,7 +322,7 @@ public sealed class NotificationServiceTests
         receivedPayloads[4].Severity.ShouldBe(NotifySeverity.Normal);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ObjectDisposedException when publishing after disposal")]
     public void Publish_AfterDispose_ThrowsObjectDisposedException()
     {
         // Arrange
@@ -335,7 +335,7 @@ public sealed class NotificationServiceTests
         Should.Throw<ObjectDisposedException>(() => service.Publish(payload));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Completes notification stream on disposal")]
     public void Dispose_CompletesNotificationStream()
     {
         // Arrange
@@ -353,7 +353,7 @@ public sealed class NotificationServiceTests
         completed.ShouldBe(true);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Multiple dispose calls do not throw")]
     public void Dispose_MultipleTimes_DoesNotThrow()
     {
         // Arrange
@@ -365,7 +365,7 @@ public sealed class NotificationServiceTests
         Should.NotThrow(() => service.Dispose());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishing before subscribers does not throw")]
     public void Notifications_BeforeAnySubscribers_DoesNotThrow()
     {
         // Arrange
@@ -379,7 +379,7 @@ public sealed class NotificationServiceTests
         Should.NotThrow(() => service.Normal("Test message"));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Unsubscribing stops receiving notifications")]
     public void Subscription_Unsubscribe_StopsReceivingNotifications()
     {
         // Arrange
@@ -396,7 +396,7 @@ public sealed class NotificationServiceTests
         receivedCount.ShouldBe(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Publishes notifications with different behaviors correctly")]
     public void Notifications_WithDifferentBehaviors_PublishesCorrectly()
     {
         // Arrange

@@ -7,7 +7,7 @@ namespace Neba.UnitTests.Website;
 
 public sealed class DocumentsMappingExtensionsTests
 {
-    [Fact]
+    [Fact(DisplayName = "Maps all properties from DocumentDto to response model")]
     public void ToStringResponseModel_ShouldMapAllProperties()
     {
         // Arrange

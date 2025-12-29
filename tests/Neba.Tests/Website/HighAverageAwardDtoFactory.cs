@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bogus;
+using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Website.Application.Awards.HighAverage;
 
@@ -18,7 +19,7 @@ public static class HighAverageAwardDtoFactory
     {
         Faker<HighAverageAwardDto> faker = new Faker<HighAverageAwardDto>()
             .RuleFor(x => x.Id, _ => SeasonAwardId.New())
-            .RuleFor(x => x.BowlerName, _ => BowlerName)
+            .RuleFor(x => x.BowlerName, _ => NameFactory.Bogus(1).Single())
             .RuleFor(x => x.Average, f => f.Random.Decimal(190.0m, 220.0m))
             .RuleFor(x => x.Games, f => f.Random.Int(8, 12))
             .RuleFor(x => x.Tournaments, f => f.Random.Int(3, 7))
@@ -34,7 +35,7 @@ public static class HighAverageAwardDtoFactory
 
     public static HighAverageAwardDto Create(
         string? season = null,
-        string? bowlerName = null,
+        Name? bowlerName = null,
         decimal? average = null,
         int? gamesBowled = null,
         int? tournaments = null)
@@ -42,7 +43,7 @@ public static class HighAverageAwardDtoFactory
             {
                 Id = SeasonAwardId.New(),
                 Season = season ?? "2023",
-                BowlerName = bowlerName ?? BowlerName,
+                BowlerName = bowlerName ?? NameFactory.Create(),
                 Average = average ?? 210.5m,
                 Games = gamesBowled ?? 10,
                 Tournaments = tournaments ?? 5

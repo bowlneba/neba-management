@@ -1,6 +1,7 @@
 using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Awards;
@@ -14,11 +15,7 @@ internal sealed class SeasonAwardConfiguration
     {
         builder.ToTable("season_awards", WebsiteDbContext.DefaultSchema);
 
-        builder.Property<int>("db_id")
-            .HasColumnName("id")
-            .UseIdentityAlwaysColumn();
-
-        builder.HasKey("db_id");
+        builder.ConfigureShadowId();
 
         builder.Property(seasonAward => seasonAward.Id)
             .IsUlid<SeasonAwardId, SeasonAwardId.EfCoreValueConverter>();

@@ -1,4 +1,3 @@
-using System.Data;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
@@ -37,7 +36,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
     /// Executes the sync job: retrieves the document HTML and uploads it to the
     /// specified storage container and path.
     /// </summary>
-    /// <param name="job">The sync job containing container, document name, and document key.</param>
+    /// <param name="job">The sync job containing container, path, and document key.</param>
     /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
     /// <returns>A task that completes when the sync operation finishes.</returns>
     public async Task ExecuteAsync(SyncHtmlDocumentToStorageJob job, CancellationToken cancellationToken)
@@ -49,14 +48,14 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
             throw new ArgumentException("Job.DocumentKey cannot be null or whitespace.", nameof(job));
         }
 
-        if (string.IsNullOrWhiteSpace(job.ContainerName))
+        if (string.IsNullOrWhiteSpace(job.Container))
         {
-            throw new ArgumentException("Job.ContainerName cannot be null or whitespace.", nameof(job));
+            throw new ArgumentException("Job.Container cannot be null or whitespace.", nameof(job));
         }
 
-        if (string.IsNullOrWhiteSpace(job.DocumentName))
+        if (string.IsNullOrWhiteSpace(job.Path))
         {
-            throw new ArgumentException("Job.DocumentName cannot be null or whitespace.", nameof(job));
+            throw new ArgumentException("Job.Path cannot be null or whitespace.", nameof(job));
         }
 
         try
@@ -74,7 +73,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
             job.Metadata["LastUpdatedUtc"] = DateTimeOffset.UtcNow.ToString("o");
             job.Metadata["LastUpdatedBy"] = job.TriggeredBy;
 
-            string name = await storageService.UploadAsync(job.ContainerName, job.DocumentName, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
+            string name = await storageService.UploadAsync(job.Container, job.Path, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
 
             logger.LogCompletedHtmlDocumentSync(name);
 

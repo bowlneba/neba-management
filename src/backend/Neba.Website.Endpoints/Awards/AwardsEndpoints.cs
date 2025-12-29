@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Neba.Application.Messaging;
 using Neba.Contracts;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Contracts.Awards;
@@ -22,6 +23,8 @@ internal static class AwardsEndpoints
     {
         public IEndpointRouteBuilder MapAwardsEndpoints()
         {
+            app.MapHallOfFameInductionsEndpoint();
+
             RouteGroupBuilder awardGroup = app.MapGroup("/awards");
 
             awardGroup
@@ -56,7 +59,7 @@ internal static class AwardsEndpoints
                 .WithDescription("Retrieves a list of all Bowler of the Year awards, including bowler and award details. Results are returned as a collection of award records.")
                 .Produces<CollectionResponse<BowlerOfTheYearResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags(s_tags);
+                .WithTags([.. s_tags.Union(["bowler-of-the-year"])]);
 
             return app;
         }
@@ -84,7 +87,7 @@ internal static class AwardsEndpoints
                 .WithDescription("Retrieves a list of all High Block awards, including bowler and award details. Results are returned as a collection of award records.")
                 .Produces<CollectionResponse<HighBlockAwardResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags(s_tags);
+                .WithTags([.. s_tags.Union(["high-block"])]);
 
             return app;
         }
@@ -112,7 +115,37 @@ internal static class AwardsEndpoints
                 .WithDescription("Retrieves a list of all High Average awards, including bowler and award details. Results are returned as a collection of award records.")
                 .Produces<CollectionResponse<HighAverageAwardResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags(s_tags);
+                .WithTags([.. s_tags.Union(["high-average"])]);
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapHallOfFameInductionsEndpoint()
+        {
+            app.MapGet(
+                "/hall-of-fame",
+                async (
+                    IQueryHandler<ListHallOfFameInductionsQuery, IReadOnlyCollection<HallOfFameInductionDto>> queryHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var query = new ListHallOfFameInductionsQuery();
+
+                    IReadOnlyCollection<HallOfFameInductionDto> result = await queryHandler.HandleAsync(query, cancellationToken);
+
+                    IReadOnlyCollection<HallOfFameInductionResponse> response = result
+                        .OrderBy(hof => hof.Year)
+                        .ThenBy(hof => hof.BowlerName.LastName)
+                        .ThenBy(hof => hof.BowlerName.FirstName)
+                        .Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetHallOfFameInductions")
+                .WithSummary("Get all NEBA Hall of Fame inductions.")
+                .WithDescription("Retrieves a list of all Hall of Fame inductions, including bowler and induction details. Results are returned as a collection of induction records.")
+                .Produces<CollectionResponse<HallOfFameInductionResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
+                .WithTags([.. s_tags.Union(["hall-of-fame"])]);
 
             return app;
         }

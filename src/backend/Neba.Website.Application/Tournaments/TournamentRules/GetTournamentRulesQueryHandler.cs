@@ -38,13 +38,13 @@ internal sealed class GetTournamentRulesQueryHandler(
     {
         // Fast path: try to get from the storage cache
         if (await storageService.ExistsAsync(
-            TournamentRulesConstants.ContainerName,
-            TournamentRulesConstants.FileName,
+            TournamentRulesConstants.Container,
+            TournamentRulesConstants.Path,
             cancellationToken))
         {
             return await storageService.GetContentWithMetadataAsync(
-                TournamentRulesConstants.ContainerName,
-                TournamentRulesConstants.FileName,
+                TournamentRulesConstants.Container,
+                TournamentRulesConstants.Path,
                 cancellationToken);
         }
 

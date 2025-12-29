@@ -1,4 +1,5 @@
 using Neba.Domain;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Website.Domain.Bowlers;
 
@@ -22,7 +23,7 @@ public sealed class SeasonAward
     public SeasonAward()
         : base(SeasonAwardId.New())
     {
-        AwardType = SeasonAwardType.s_default;
+        AwardType = SeasonAwardType.Default();
     }
 
     /// <summary>
@@ -72,7 +73,7 @@ public sealed class SeasonAward
 
     /// <summary>
     /// Number of tournaments participated in during the season (for HighAverage awards).
-    /// Provides context for comparison and potential tiebreaking.
+    /// Provides context for comparison and potential tie-breaking.
     /// Null for other award types.
     /// </summary>
     public int? Tournaments { get; init; }

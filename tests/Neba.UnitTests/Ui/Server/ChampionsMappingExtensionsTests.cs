@@ -9,7 +9,7 @@ namespace Neba.UnitTests.Ui.Server;
 
 public sealed class ChampionsMappingExtensionsTests
 {
-    [Fact]
+    [Fact(DisplayName = "Maps bowler ID from BowlerTitleSummaryResponse to view model")]
     public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapBowlerId()
     {
         // Arrange
@@ -23,7 +23,7 @@ public sealed class ChampionsMappingExtensionsTests
         viewModel.BowlerId.ShouldBe(bowlerId);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from BowlerTitleSummaryResponse to view model")]
     public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange
@@ -37,7 +37,7 @@ public sealed class ChampionsMappingExtensionsTests
         viewModel.BowlerName.ShouldBe(bowlerName);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps title count from BowlerTitleSummaryResponse to view model")]
     public void BowlerTitleSummaryResponse_ToViewModel_ShouldMapTitleCount()
     {
         // Arrange
@@ -51,7 +51,7 @@ public sealed class ChampionsMappingExtensionsTests
         viewModel.TitleCount.ShouldBe(titleCount);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps bowler name from BowlerTitlesResponse to view model")]
     public void BowlerTitlesResponse_ToViewModel_ShouldMapBowlerName()
     {
         // Arrange
@@ -65,7 +65,7 @@ public sealed class ChampionsMappingExtensionsTests
         viewModel.BowlerName.ShouldBe(bowlerName);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Maps titles from BowlerTitlesResponse to view model in chronological order")]
     public void BowlerTitlesResponse_ToViewModel_ShouldMapTitlesInOrder()
     {
         // Arrange

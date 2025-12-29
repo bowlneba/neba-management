@@ -1,4 +1,3 @@
-using System;
 using Neba.Application.Documents;
 using Neba.Infrastructure.Documents;
 
@@ -6,7 +5,7 @@ namespace Neba.UnitTests.Infrastructure.Documents;
 
 public sealed class DocumentRefreshStatusEventTests
 {
-    [Fact]
+    [Fact(DisplayName = "Creates event with default values when only status is provided")]
     public void FromStatus_WithStatusOnly_ShouldCreateEventWithDefaults()
     {
         // Arrange
@@ -21,7 +20,7 @@ public sealed class DocumentRefreshStatusEventTests
         (DateTimeOffset.UtcNow - result.Timestamp).TotalSeconds.ShouldBeLessThan(5);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Creates event with error message when status and error message are provided")]
     public void FromStatus_WithStatusAndErrorMessage_ShouldCreateEventWithErrorMessage()
     {
         // Arrange
@@ -37,7 +36,7 @@ public sealed class DocumentRefreshStatusEventTests
         (DateTimeOffset.UtcNow - result.Timestamp).TotalSeconds.ShouldBeLessThan(5);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Creates event when status is provided as string")]
     public void FromStatus_WithStringStatus_ShouldCreateEvent()
     {
         // Arrange
@@ -53,7 +52,7 @@ public sealed class DocumentRefreshStatusEventTests
         (DateTimeOffset.UtcNow - result.Timestamp).TotalSeconds.ShouldBeLessThan(5);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ArgumentNullException when status is null")]
     public void FromStatus_WithNullStatus_ShouldThrowArgumentNullException()
     {
         // Arrange
@@ -63,7 +62,7 @@ public sealed class DocumentRefreshStatusEventTests
         Should.Throw<ArgumentNullException>(() => DocumentRefreshStatusEvent.FromStatus(status!));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ArgumentException when string status is null")]
     public void FromStatus_WithNullStringStatus_ShouldThrowArgumentException()
     {
         // Arrange
@@ -73,7 +72,7 @@ public sealed class DocumentRefreshStatusEventTests
         Should.Throw<ArgumentException>(() => DocumentRefreshStatusEvent.FromStatus(statusString!));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ArgumentException when string status is empty")]
     public void FromStatus_WithEmptyStringStatus_ShouldThrowArgumentException()
     {
         // Arrange
@@ -83,7 +82,7 @@ public sealed class DocumentRefreshStatusEventTests
         Should.Throw<ArgumentException>(() => DocumentRefreshStatusEvent.FromStatus(statusString));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Throws ArgumentException when string status is whitespace")]
     public void FromStatus_WithWhitespaceStringStatus_ShouldThrowArgumentException()
     {
         // Arrange
@@ -93,7 +92,7 @@ public sealed class DocumentRefreshStatusEventTests
         Should.Throw<ArgumentException>(() => DocumentRefreshStatusEvent.FromStatus(statusString));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Timestamp property is immutable")]
     public void Timestamp_ShouldBeImmutable()
     {
         // Arrange
@@ -107,7 +106,7 @@ public sealed class DocumentRefreshStatusEventTests
         (statusEvent.Timestamp - originalTime).TotalSeconds.ShouldBeLessThan(5);
     }
 
-    [Theory]
+    [Theory(DisplayName = "Maps all document refresh status types correctly")]
     [InlineData("Retrieving")]
     [InlineData("Uploading")]
     [InlineData("Completed")]
@@ -125,7 +124,7 @@ public sealed class DocumentRefreshStatusEventTests
         result.ErrorMessage.ShouldBeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Two events with same status have equal property values")]
     public void Events_ShouldBeEquatable()
     {
         // Arrange
@@ -140,7 +139,7 @@ public sealed class DocumentRefreshStatusEventTests
         // Timestamps will be slightly different due to creation time
     }
 
-    [Fact]
+    [Fact(DisplayName = "Handles null error message gracefully")]
     public void Event_ShouldHandleNullErrorMessageGracefully()
     {
         // Arrange

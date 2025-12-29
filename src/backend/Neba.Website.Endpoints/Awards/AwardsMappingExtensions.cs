@@ -1,4 +1,5 @@
 ﻿using Neba.Website.Application.Awards.BowlerOfTheYear;
+using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Application.Bowlers.BowlerTitles;
@@ -18,7 +19,7 @@ internal static class AwardsMappingExtensions
         {
             return new BowlerOfTheYearResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Category = dto.Category.Name
             };
@@ -32,7 +33,8 @@ internal static class AwardsMappingExtensions
             return new BowlerTitlesResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
                     Month = title.Month,
@@ -50,7 +52,8 @@ internal static class AwardsMappingExtensions
             return new TitleSummaryResponse
             {
                 BowlerId = dto.BowlerId,
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                HallOfFame = dto.HallOfFame,
                 TitleCount = dto.TitleCount
             };
         }
@@ -62,7 +65,7 @@ internal static class AwardsMappingExtensions
         {
             return new HighBlockAwardResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Score = dto.Score
             };
@@ -75,11 +78,25 @@ internal static class AwardsMappingExtensions
         {
             return new HighAverageAwardResponse
             {
-                BowlerName = dto.BowlerName,
+                BowlerName = dto.BowlerName.ToDisplayName(),
                 Season = dto.Season,
                 Average = dto.Average,
                 Games = dto.Games,
                 Tournaments = dto.Tournaments
+            };
+        }
+    }
+
+    extension(HallOfFameInductionDto dto)
+    {
+        public HallOfFameInductionResponse ToResponseModel()
+        {
+            return new HallOfFameInductionResponse
+            {
+                Year = dto.Year,
+                BowlerName = dto.BowlerName.ToDisplayName(),
+                PhotoUrl = dto.PhotoUri,
+                Categories = dto.Categories.Select(cat => cat.Name).ToList()
             };
         }
     }

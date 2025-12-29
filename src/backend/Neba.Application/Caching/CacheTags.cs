@@ -187,6 +187,11 @@ public static class CacheTags
         /// Tag identifier for High Block (5-game) awards.
         /// </summary>
         public const string HighBlock = "high-block";
+
+        /// <summary>
+        /// Tag identifier for Hall of Fame awards.
+        /// </summary>
+        public const string HallOfFame = "hall-of-fame";
     }
 
     /// <summary>

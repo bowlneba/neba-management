@@ -152,6 +152,23 @@ Also avoid:
 ### 5.1 One Test Method = One Logical Behavior
 Do not pack multiple unrelated behaviors into a single test.
 
+**REQUIRED: All test methods must include a DisplayName attribute** that clearly describes what the test validates:
+
+```csharp
+// GOOD - Clear, descriptive DisplayName
+[Fact(DisplayName = "Renders error message when validation fails")]
+public void Component_RendersErrorMessage_WhenValidationFails() { }
+
+// BAD - Missing DisplayName
+[Fact]
+public void Component_RendersErrorMessage_WhenValidationFails() { }
+```
+
+The DisplayName should:
+- Describe the expected behavior in human-readable language
+- Be clear enough that anyone can understand what's being tested without reading the code
+- Focus on the "what" and "when" of the test scenario
+
 ### 5.2 Use Factory Pattern for Test Data
 All DTOs and ViewModels used in tests must be created using factory methods from the `Neba.Tests` project.
 
@@ -209,11 +226,12 @@ The entire bUnit suite should run in milliseconds.
 
 # 6. Test Organization Rules
 
-- group tests by component name  
-- include “ShouldExpectedResult_WhenCondition” naming  
-- use folders to organize by feature areas  
-- place cross-component helpers in `/TestUtils`  
-- maintain deterministic selector usage (avoid relying on runtime-generated ids)  
+- group tests by component name
+- include "ShouldExpectedResult_WhenCondition" naming for test methods
+- **ALWAYS include DisplayName attribute** on all `[Fact]` and `[Theory]` attributes
+- use folders to organize by feature areas
+- place cross-component helpers in `/TestUtils`
+- maintain deterministic selector usage (avoid relying on runtime-generated ids)
 
 Tests should reflect **component responsibilities**, not application workflows.
 

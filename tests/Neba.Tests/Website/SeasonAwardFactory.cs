@@ -1,5 +1,6 @@
 using System.Globalization;
 using Bogus;
+using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
 using Neba.Website.Domain.Awards;
 
