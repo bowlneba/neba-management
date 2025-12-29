@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Ardalis.SmartEnum.SystemTextJson;
+using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Addresses;
@@ -36,7 +36,7 @@ public static class AddressConfiguration
     /// This helper centralizes column naming and precision decisions for persistence of the
     /// <see cref="Address"/> value object so multiple entity configurations stay consistent.
     /// </remarks>
-        public void OwnsAddress(
+        public EntityTypeBuilder<T> OwnsAddress(
             Expression<Func<T, Address?>> addressExpression,
             string streetColumnName = "address_street",
             string unitColumnName = "address_unit",
@@ -47,7 +47,7 @@ public static class AddressConfiguration
             string latitudeColumnName = "address_latitude",
             string longitudeColumnName = "address_longitude")
         {
-            builder.OwnsOne(addressExpression, address =>
+            return builder.OwnsOne(addressExpression, address =>
             {
                 address.Property(a => a.Street)
                     .HasColumnName(streetColumnName)
@@ -71,9 +71,9 @@ public static class AddressConfiguration
 
                 address.Property(a => a.Country)
                     .HasColumnName(countryColumnName)
+                    .HasConversion<SmartEnumConverter<Country, string>>()
                     .HasMaxLength(2)
                     .IsFixedLength()
-                    .HasConversion<SmartEnumValueConverter<Country, string>>()
                     .IsRequired();
 
                 address.Property(a => a.PostalCode)
