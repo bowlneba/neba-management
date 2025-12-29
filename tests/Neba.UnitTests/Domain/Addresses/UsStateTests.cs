@@ -72,6 +72,7 @@ public sealed class UsStateTests
         UsState state = UsState.FromName(stateName);
 
         // Assert
+        state.Name.ShouldBe(stateName);
         state.Value.ShouldBe(expectedAbbreviation);
     }
 }

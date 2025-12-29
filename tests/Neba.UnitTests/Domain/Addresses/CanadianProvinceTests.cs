@@ -34,6 +34,7 @@ public sealed class CanadianProvinceTests
         CanadianProvince province = CanadianProvince.FromName(provinceName);
 
         // Assert
+        province.Name.ShouldBe(provinceName);
         province.Value.ShouldBe(expectedAbbreviation);
     }
 }
