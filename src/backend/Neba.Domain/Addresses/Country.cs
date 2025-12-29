@@ -8,6 +8,8 @@ namespace Neba.Domain.Addresses;
 public sealed class Country
     : SmartEnum<Country, string>
 {
+    internal static readonly Country s_default = new("default", "default");
+
     /// <summary>United States (US).</summary>
     public static readonly Country UnitedStates = new("United States", "US");
 
