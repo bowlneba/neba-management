@@ -92,10 +92,25 @@ async Task Main()
 
 public async Task MigrateBowlingCentersAsync()
 {
-	var softwareBowlingCentersDataTable = await QuerySoftwareDatabaseAsync("SELECT Id, CertificationNumber from dbo.BowlingCenters");
-	var bowlingCenterSoftwareIdByCertificationNumber = softwareBowlingCentersDataTable.AsEnumerable().ToDictionary(row => row.Field<string>("CertificationNumber")!, row => row.Field<int>("Id"));
+	var softwareBowlingCentersDataTable = await QuerySoftwareDatabaseAsync("SELECT * FROM BowlingCenters");
+	var websiteBowlingCentersDataTable = await QueryStatsDatabaseAsync("SELECT * FROM Centers WHERE ID not in (2, 19, 28)"); //2: AMF Silver (HOF Silver), 19: TBD Center, 28: Superbowl (Apple Valley)
+	
+	var bowlingCenterSoftwareIdByPhoneNumber = softwareBowlingCentersDataTable
+		.AsEnumerable().ToDictionary(row => row.Field<string>("PhoneNumber")!, row => row.Field<int>("Id"));
+		
+	var bowlingCenterWebsiteIdByPhoneNumber = websiteBowlingCentersDataTable
+		.AsEnumerable().ToDictionary(row => row.Field<string>("Phone")!
+			.Replace("-",string.Empty)
+			.Replace("(",string.Empty)
+			.Replace(")",string.Empty)
+			.Replace(" ",string.Empty)
+			.Trim(),
+		row => row.Field<int>("ID"));
+		
+	List<BowlingCenters> bowlingCentersToWebsiteSchema = [];
 	
 	IEnumerable<string> states = ["CT", "MA", "RI", "VT", "NH", "ME"];
+	
 	var serializationSettings = new JsonSerializerOptions
 	{
 		PropertyNameCaseInsensitive = true
@@ -104,7 +119,7 @@ public async Task MigrateBowlingCentersAsync()
 
 	using var httpClient = new HttpClient();
 
-	var bowlingCenters = new List<UsbcBowlingCenterDto>();
+	var usbcBowlingCenters = new List<UsbcBowlingCenterDto>();
 
 	foreach (var state in states)
 	{
@@ -122,17 +137,118 @@ public async Task MigrateBowlingCentersAsync()
 		{
 			var stateBowlingCenters = JsonSerializer.Deserialize<List<UsbcBowlingCenterDto>>(resultsElement.GetRawText(), serializationSettings)!;
 
-			bowlingCenters.AddRange(stateBowlingCenters);
+			usbcBowlingCenters.AddRange(stateBowlingCenters);
 		}
 	}
 	
-	List<UsbcBowlingCenterDto> failedBowlingCenters = [];
+	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
+	
+	List<string> centerPhoneNumbers = [];
 
-	foreach (var bowlingCenter in bowlingCenters)
+	foreach (var bowlingCenter in usbcBowlingCenters)
 	{
-		bowlingCenterSoftwareIdByCertificationNumber.TryGetValue(bowlingCenter.CertificationNumber, out var softwareId);
+		var centerPhoneNumber = bowlingCenter.Phone.Replace("/",string.Empty).Replace("-",string.Empty).Trim();
+		bowlingCenterSoftwareIdByPhoneNumber.TryGetValue(centerPhoneNumber, out var softwareId);
 		
-		string address = $"{bowlingCenter.Address} {bowlingCenter.CityStateZip}";
+		centerPhoneNumbers.Add(centerPhoneNumber);
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+			{
+				DomainId = Guid.AsDomainId(),
+				ApplicationId = softwareId > 0 ? softwareId : null,
+				WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(centerPhoneNumber, out var websiteId) ? websiteId : null,
+				Name = bowlingCenter.Name,
+				Street = bowlingCenter.Address,
+				City = bowlingCenter.City,
+				State = bowlingCenter.State,
+				Country = bowlingCenter.Country,
+				ZipCode = bowlingCenter.Zip,
+				Closed = false,
+				PhoneCountryCode = "1",
+				PhoneNumber = centerPhoneNumber
+			});
+	}
+
+	var softwareBowlingCenters = softwareBowlingCentersDataTable.AsEnumerable().Select(row => new
+	{
+		Id = row.Field<int>("Id"),
+		Name = row.Field<string>("Name")!,
+		CertificationNumber = row.Field<string>("CertificationNumber")!,
+		Street = row.Field<string>("MailingAddress_Street")!,
+		City = row.Field<string>("MailingAddress_City")!,
+		State = row.Field<string>("MailingAddress_State")!,
+		Zip = row.Field<string>("MailingAddress_Zip")!,
+		Closed = row.Field<bool>("Closed"),
+		PhoneNumber = row.Field<string>("PhoneNumber")!
+	})
+	.Where(bowlingCenter => !centerPhoneNumbers.Contains(bowlingCenter.PhoneNumber))
+	.ToList();
+	
+	softwareBowlingCenters.Dump("Software Bowling Centers not in USBC Table");
+
+	foreach (var softwareBowlingCenter in softwareBowlingCenters) // Should probably be just Ken's Bowl
+	{
+		//add to BowlingCenters collection
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+		{
+			DomainId = Guid.AsDomainId(),
+			ApplicationId = softwareBowlingCenter.Id,
+			WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(softwareBowlingCenter.PhoneNumber, out var websiteId) ? websiteId : null,
+			Name = softwareBowlingCenter.Name,
+			Street = softwareBowlingCenter.Street,
+			City = softwareBowlingCenter.City,
+			State = softwareBowlingCenter.State,
+			ZipCode = softwareBowlingCenter.Zip,
+			Country = "US",
+			Closed = softwareBowlingCenter.Closed,
+			PhoneCountryCode = "1",
+			PhoneNumber = softwareBowlingCenter.PhoneNumber
+		});
+		
+		// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
+		centerPhoneNumbers.Add(softwareBowlingCenter.PhoneNumber);
+	}
+
+	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
+	var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
+	.Select(row => new
+	{
+		Id = row.Field<int>("ID"),
+		CenterName = row.Field<string>("CenterName")!,
+		Street = row.Field<string>("Street")!,
+		City = row.Field<string>("City")!,
+		State = row.Field<string>("State")!,
+		Zip = row.Field<string>("Zip")!,
+		Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
+	})
+	.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
+	.Where(bc => bc.Id != 23); //Norwich has old phone number
+		
+	websiteBowlingCenters.Dump("Website Centers not Ported Yet");
+	
+	//bowlingCentersToWebsiteSchema.Where(x => string.IsNullOrWhiteSpace(x.PhoneNumber)).Dump("No phone");
+
+	foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
+	{
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+		{
+			DomainId = Guid.AsDomainId(),
+			ApplicationId = null,
+			WebsiteId = websiteBowlingCenter.Id,
+			Name = websiteBowlingCenter.CenterName,
+			Street = websiteBowlingCenter.Street,
+			City = websiteBowlingCenter.City,
+			State = websiteBowlingCenter.State,
+			ZipCode = websiteBowlingCenter.Zip,
+			Country = "US",
+			Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
+			PhoneCountryCode = "1",
+			PhoneNumber = websiteBowlingCenter.Phone
+		});
+	}
+
+	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema)
+	{
+		string address = $"{bowlingCenter.Street} {bowlingCenter.City}, {bowlingCenter.State} {bowlingCenter.ZipCode}";
 		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
 
 		var result = await httpClient.GetAsync(url);
@@ -145,48 +261,21 @@ public async Task MigrateBowlingCentersAsync()
 
 			if (azureResponse.Results.Length == 1)
 			{
-				BowlingCenters.Add(new BowlingCenters
-				{
-					DomainId = Guid.AsDomainId(),
-					ApplicationId = softwareId > 0 ? softwareId : null,
-					WebsiteId = null, // todo: need to do website lookup by for bowling center.  by address?
-					Name = bowlingCenter.Name,
-					Street = bowlingCenter.Address,
-					City = bowlingCenter.City,
-					State = bowlingCenter.State,
-					Country = bowlingCenter.Country,
-					ZipCode = bowlingCenter.Zip,
-					Closed = false,
-					Latitude = azureResponse.Results[0].Position.Lat,
-					Longitude = azureResponse.Results[0].Position.Lon
-				});
+				bowlingCenter.Latitude = azureResponse.Results[0].Position.Lat;
+				bowlingCenter.Longitude = azureResponse.Results[0].Position.Lon;
+
+				// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
 			}
 		}
 		else
 		{
-			failedBowlingCenters.Add(bowlingCenter);
-
-			BowlingCenters.Add(new BowlingCenters
-			{
-				DomainId = Guid.AsDomainId(),
-				ApplicationId = softwareId > 0 ? softwareId : null,
-				WebsiteId = null, // todo: need to do website lookup by for bowling center.  by address?
-				Name = bowlingCenter.Name,
-				Street = bowlingCenter.Address,
-				City = bowlingCenter.City,
-				State = bowlingCenter.State,
-				Country = bowlingCenter.Country,
-				ZipCode = bowlingCenter.Zip,
-				Closed = false
-			});
+			failedBowlingCenterAddressLookups.Add(bowlingCenter);
 		}
 	}
+
+	failedBowlingCenterAddressLookups.Dump("Failed Bowling Center Address Lookup");
 	
-	// loop through software bowling centers and remove the ones already added (Based on certification number) and use the software info to load
-	
-	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
-	
-	failedBowlingCenters.Dump("Failed Bowling Center Lookup");
+	BowlingCenters.AddRange(bowlingCentersToWebsiteSchema);
 	
 	await SaveChangesAsync();
 }
