@@ -456,12 +456,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                                         .HasColumnName("id");
 
                                     b2.Property<double>("Latitude")
-                                        .HasPrecision(8, 6)
                                         .HasColumnType("double precision")
                                         .HasColumnName("latitude");
 
                                     b2.Property<double>("Longitude")
-                                        .HasPrecision(9, 6)
                                         .HasColumnType("double precision")
                                         .HasColumnName("longitude");
 

@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Website.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20251229214645_BowlingCenters")]
+    [Migration("20251230134542_BowlingCenters")]
     partial class BowlingCenters
     {
         /// <inheritdoc />
@@ -459,12 +459,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                                         .HasColumnName("id");
 
                                     b2.Property<double>("Latitude")
-                                        .HasPrecision(8, 6)
                                         .HasColumnType("double precision")
                                         .HasColumnName("latitude");
 
                                     b2.Property<double>("Longitude")
-                                        .HasPrecision(9, 6)
                                         .HasColumnType("double precision")
                                         .HasColumnName("longitude");
 

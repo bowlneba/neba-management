@@ -21,78 +21,80 @@ public static class AddressConfiguration
     {
         /// <summary>
     /// Adds an owned mapping for an <see cref="Address"/> value object to the provided
-    /// <see cref="EntityTypeBuilder{T}"/>. Column names and precision for coordinates can be customized.
+    /// <see cref="EntityTypeBuilder{T}"/> with default column naming conventions.
     /// </summary>
     /// <param name="addressExpression">Expression that points to the address property on the entity.</param>
-    /// <param name="streetColumnName">Column name for the street field. Default: "address_street".</param>
-    /// <param name="unitColumnName">Column name for the unit field. Default: "address_unit".</param>
-    /// <param name="cityColumnName">Column name for the city field. Default: "address_city".</param>
-    /// <param name="regionColumnName">Column name for the region/state field. Default: "address_region".</param>
-    /// <param name="postalCodeColumnName">Column name for the postal code field. Default: "address_postal_code".</param>
-    /// <param name="countryColumnName">Column name for the country field. Default: "address_country".</param>
-    /// <param name="latitudeColumnName">Column name for latitude. Default: "address_latitude".</param>
-    /// <param name="longitudeColumnName">Column name for longitude. Default: "address_longitude".</param>
+    /// <param name="configureAddress">Optional action to override default column names or perform additional configuration (e.g., add indexes).</param>
     /// <remarks>
-    /// This helper centralizes column naming and precision decisions for persistence of the
-    /// <see cref="Address"/> value object so multiple entity configurations stay consistent.
+    /// <para>
+    /// Default column names applied:
+    /// <list type="bullet">
+    /// <item>Street: "address_street"</item>
+    /// <item>Unit: "address_unit"</item>
+    /// <item>City: "address_city"</item>
+    /// <item>Region: "address_region"</item>
+    /// <item>PostalCode: "address_postal_code"</item>
+    /// <item>Country: "address_country"</item>
+    /// <item>Latitude: "address_latitude"</item>
+    /// <item>Longitude: "address_longitude"</item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Use the <paramref name="configureAddress"/> action to override column names by calling
+    /// <c>address.Property(a => a.PropertyName).HasColumnName("custom_name")</c>.
+    /// </para>
     /// </remarks>
         public EntityTypeBuilder<T> OwnsAddress(
             Expression<Func<T, Address?>> addressExpression,
-            string streetColumnName = "address_street",
-            string unitColumnName = "address_unit",
-            string cityColumnName = "address_city",
-            string regionColumnName = "address_region",
-            string postalCodeColumnName = "address_postal_code",
-            string countryColumnName = "address_country",
-            string latitudeColumnName = "address_latitude",
-            string longitudeColumnName = "address_longitude")
+            Action<OwnedNavigationBuilder<T, Address>>? configureAddress = null)
         {
             return builder.OwnsOne(addressExpression, address =>
             {
                 address.Property(a => a.Street)
-                    .HasColumnName(streetColumnName)
+                    .HasColumnName("address_street")
                     .HasMaxLength(100)
                     .IsRequired();
 
                 address.Property(a => a.Unit)
-                    .HasColumnName(unitColumnName)
+                    .HasColumnName("address_unit")
                     .HasMaxLength(50);
 
                 address.Property(a => a.City)
-                    .HasColumnName(cityColumnName)
+                    .HasColumnName("address_city")
                     .HasMaxLength(50)
                     .IsRequired();
 
                 address.Property(a => a.Region)
-                    .HasColumnName(regionColumnName)
+                    .HasColumnName("address_region")
                     .HasMaxLength(2)
                     .IsFixedLength()
                     .IsRequired();
 
                 address.Property(a => a.Country)
-                    .HasColumnName(countryColumnName)
+                    .HasColumnName("address_country")
                     .HasConversion<SmartEnumConverter<Country, string>>()
                     .HasMaxLength(2)
                     .IsFixedLength()
                     .IsRequired();
 
                 address.Property(a => a.PostalCode)
-                    .HasColumnName(postalCodeColumnName)
+                    .HasColumnName("address_postal_code")
                     .HasMaxLength(10)
                     .IsRequired();
 
                 address.OwnsOne(a => a.Coordinates, coordinates =>
                 {
                     coordinates.Property(c => c.Latitude)
-                        .HasColumnName(latitudeColumnName)
-                        .HasPrecision(8,6)
+                        .HasColumnName("address_latitude")
                         .IsRequired();
 
                     coordinates.Property(c => c.Longitude)
-                        .HasColumnName(longitudeColumnName)
-                        .HasPrecision(9,6)
+                        .HasColumnName("address_longitude")
                         .IsRequired();
                 });
+
+                // Allow overriding defaults and additional configuration (e.g., indexes)
+                configureAddress?.Invoke(address);
             });
         }
     }
