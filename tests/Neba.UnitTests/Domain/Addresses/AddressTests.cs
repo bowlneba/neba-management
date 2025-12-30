@@ -58,9 +58,9 @@ public sealed class AddressTests
     }
 
     [Theory(DisplayName = "Creates valid US address with different ZIP code formats and normalizes them")]
-    [InlineData("12345", "12345", TestDisplayName = "5-digit ZIP code is valid and unchanged")]
-    [InlineData("12345-6789", "12345-6789", TestDisplayName = "ZIP+4 format with dash is valid and unchanged")]
-    [InlineData("123456789", "12345-6789", TestDisplayName = "ZIP+4 format without dash is normalized with dash")]
+    [InlineData("12345", "12345", TestDisplayName = "5-digit ZIP code is valid and stored without formatting")]
+    [InlineData("12345-6789", "123456789", TestDisplayName = "ZIP+4 format with dash is normalized to remove dash")]
+    [InlineData("123456789", "123456789", TestDisplayName = "ZIP+4 format without dash is stored as-is")]
     public void CreateUsAddress_WithValidZipCodeFormats_ReturnsAddress(string inputZipCode, string expectedZipCode)
     {
         // Arrange
@@ -191,7 +191,7 @@ public sealed class AddressTests
         result.Value.City.ShouldBe(city);
         result.Value.Region.ShouldBe("ON");
         result.Value.Country.ShouldBe(Country.Canada);
-        result.Value.PostalCode.ShouldBe("M5H 2N2");
+        result.Value.PostalCode.ShouldBe("M5H2N2");
         result.Value.Coordinates.ShouldBeNull();
     }
 
@@ -217,17 +217,17 @@ public sealed class AddressTests
         result.Value.City.ShouldBe(city);
         result.Value.Region.ShouldBe("BC");
         result.Value.Country.ShouldBe(Country.Canada);
-        result.Value.PostalCode.ShouldBe("V6B 1A1");
+        result.Value.PostalCode.ShouldBe("V6B1A1");
         result.Value.Coordinates.ShouldNotBeNull();
         result.Value.Coordinates.ShouldBe(coordinates);
     }
 
     [Theory(DisplayName = "Creates valid Canadian address with different postal code formats and normalizes them")]
-    [InlineData("K1A 0B1", "K1A 0B1", TestDisplayName = "Postal code with space is valid and unchanged")]
-    [InlineData("K1A0B1", "K1A 0B1", TestDisplayName = "Postal code without space is normalized with space")]
-    [InlineData("k1a 0b1", "K1A 0B1", TestDisplayName = "Lowercase postal code is normalized to uppercase with space")]
-    [InlineData("K1a 0B1", "K1A 0B1", TestDisplayName = "Mixed case postal code is normalized to uppercase")]
-    [InlineData("k1a0b1", "K1A 0B1", TestDisplayName = "Lowercase without space is normalized to uppercase with space")]
+    [InlineData("K1A 0B1", "K1A0B1", TestDisplayName = "Postal code with space is normalized to remove space and uppercase")]
+    [InlineData("K1A0B1", "K1A0B1", TestDisplayName = "Postal code without space is stored uppercase without formatting")]
+    [InlineData("k1a 0b1", "K1A0B1", TestDisplayName = "Lowercase postal code is normalized to uppercase without space")]
+    [InlineData("K1a 0B1", "K1A0B1", TestDisplayName = "Mixed case postal code is normalized to uppercase without space")]
+    [InlineData("k1a0b1", "K1A0B1", TestDisplayName = "Lowercase without space is normalized to uppercase")]
     public void CreateCanadianAddress_WithValidPostalCodeFormats_ReturnsAddress(string inputPostalCode, string expectedPostalCode)
     {
         // Arrange
@@ -257,7 +257,7 @@ public sealed class AddressTests
 
         // Assert
         result.IsError.ShouldBeFalse();
-        result.Value.PostalCode.ShouldBe("M5H 2N2");
+        result.Value.PostalCode.ShouldBe("M5H2N2");
     }
 
     [Fact(DisplayName = "Rejects Canadian address with null province")]

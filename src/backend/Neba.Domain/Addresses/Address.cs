@@ -58,7 +58,7 @@ public sealed partial record Address
     /// <param name="unit">Unit, apartment, or suite number (optional).</param>
     /// <param name="city">City or locality (required).</param>
     /// <param name="state">A <see cref="UsState"/> representing the state (required).</param>
-    /// <param name="zipCode">ZIP code. Must match US ZIP code formats (5 digits or 5+4).</param>
+    /// <param name="zipCode">ZIP code. Must match US ZIP code formats (5 digits or 5+4). Formatting characters (dashes, spaces) will be removed when stored.</param>
     /// <param name="coordinates">Optional geographic coordinates for the address.</param>
     /// <returns>
     /// An <see cref="ErrorOr{Address}"/> containing the created <see cref="Address"/> when input
@@ -113,12 +113,12 @@ public sealed partial record Address
     /// <param name="unit">Unit, apartment, or suite number (optional).</param>
     /// <param name="city">City or locality (required).</param>
     /// <param name="province">A <see cref="CanadianProvince"/> representing the province or territory (required).</param>
-    /// <param name="postalCode">Postal code. Must match Canadian postal code format (A1A 1A1 or A1A1A1).</param>
+    /// <param name="postalCode">Postal code. Must match Canadian postal code format (A1A 1A1 or A1A1A1). Formatting characters (spaces, dashes) will be removed when stored.</param>
     /// <param name="coordinates">Optional geographic coordinates for the address.</param>
     /// <returns>
     /// An <see cref="ErrorOr{Address}"/> containing the created <see cref="Address"/> when input
     /// is valid, or an error from <see cref="AddressErrors"/> describing the first validation failure.
-    /// The returned address will have the postal code normalized to upper-case.
+    /// The returned address will have the postal code normalized to uppercase without formatting characters.
     /// </returns>
     public static ErrorOr<Address> Create(
         string street,
@@ -170,14 +170,9 @@ public sealed partial record Address
 
     private static string NormalizeZipCode(string zipCode)
     {
-        // Remove any existing dash
-        string digitsOnly = zipCode.Replace("-", string.Empty, StringComparison.Ordinal);
-
-        // If 9 digits, format as 12345-6789
-        // If 5 digits, return as-is
-        return digitsOnly.Length == 9
-            ? $"{digitsOnly[..5]}-{digitsOnly[5..]}"
-            : digitsOnly;
+        // Remove all formatting (dashes, spaces, etc.) and store only digits
+        return zipCode.Replace("-", string.Empty, StringComparison.Ordinal)
+                      .Replace(" ", string.Empty, StringComparison.Ordinal);
     }
 
     [GeneratedRegex(@"^\d{5}(-?\d{4})?$")]
@@ -191,11 +186,10 @@ public sealed partial record Address
 
     private static string NormalizeCanadianPostalCode(string postalCode)
     {
-        // Remove any existing spaces and convert to uppercase
-        string normalized = postalCode.Replace(" ", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
-
-        // Insert space after 3rd character: A1A 1A1
-        return $"{normalized[..3]} {normalized[3..]}";
+        // Remove all formatting (spaces, dashes, etc.) and convert to uppercase
+        return postalCode.Replace(" ", string.Empty, StringComparison.Ordinal)
+                        .Replace("-", string.Empty, StringComparison.Ordinal)
+                        .ToUpperInvariant();
     }
 
     [GeneratedRegex(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] ?\d[ABCEGHJ-NPRSTV-Z]\d$",
