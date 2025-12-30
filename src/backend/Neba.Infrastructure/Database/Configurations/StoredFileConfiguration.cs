@@ -25,7 +25,7 @@ public static class StoredFileConfiguration
     /// <param name="filePathColumnName">Database column name for the file name (default: "file_name").</param>
     /// <param name="contentTypeColumnName">Database column name for the content type (default: "file_content_type").</param>
     /// <param name="sizeInBytesColumnName">Database column name for the file size in bytes (default: "file_size_in_bytes").</param>
-    public void OwnsStoredFile(
+    public void HasStoredFile(
         Expression<Func<T, Domain.StoredFile?>> fileExpression,
         string containerColumnName = "file_container",
         string filePathColumnName = "file_path",
@@ -33,7 +33,7 @@ public static class StoredFileConfiguration
         string sizeInBytesColumnName = "file_size_in_bytes")
     {
 
-        builder.OwnsOne(fileExpression, file =>
+        builder.ComplexProperty(fileExpression, file =>
         {
             file.Property(f => f.Container)
                 .HasColumnName(containerColumnName)
