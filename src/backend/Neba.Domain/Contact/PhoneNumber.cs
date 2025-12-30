@@ -9,6 +9,14 @@ namespace Neba.Domain.Contact;
 /// </summary>
 public sealed partial record PhoneNumber
 {
+
+    /// <summary>
+    /// Gets an empty <see cref="PhoneNumber"/> instance with default (empty) values.
+    /// Useful as a sentinel or default value where a non-null <see cref="PhoneNumber"/> is required.
+    /// </summary>
+    public static PhoneNumber Empty
+        => new();
+
     /// <summary>
     /// Gets the ISO country calling code for the phone number (e.g. "1" for North America).
     /// </summary>

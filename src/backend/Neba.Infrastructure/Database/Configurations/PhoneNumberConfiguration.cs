@@ -33,7 +33,9 @@ public static class PhoneNumberConfiguration
     /// <typeparam name="T">The entity type being configured.</typeparam>
     /// <param name="builder">The <see cref="EntityTypeBuilder{T}"/> for the entity.</param>
     /// <param name="phoneNumberExpression">An expression selecting the <see cref="PhoneNumber"/> property on the entity.</param>
-    /// <param name="configurePhoneNumber">Optional additional configuration action for the complex property.</param>
+    /// <param name="configurePhoneNumber">Optional additional configuration action for the complex property. The action is invoked with a <see cref="ComplexPropertyBuilder{PhoneNumber}"/>
+    /// (commonly named <c>phoneNumber</c> in the callback) that can be used to configure the owned property's columns
+    /// and constraints (for example, calling <c>phoneNumber.Property(p =&gt; p.CountryCode)</c>).</param>
     /// <returns>The same <see cref="EntityTypeBuilder{T}"/> instance to allow fluent chaining.</returns>
     public static EntityTypeBuilder<T> HasPhoneNumber<T>(
         this EntityTypeBuilder<T> builder,
