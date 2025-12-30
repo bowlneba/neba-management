@@ -37,6 +37,8 @@ internal sealed class BowlingCenterConfiguration
         builder.HasAddress(bowlingCenter => bowlingCenter.Address,
             configureAddress: address =>
             {
+                address.IsRequired();
+
                 // Override default column names
                 address.Property(a => a.Street).HasColumnName("street");
                 address.Property(a => a.Unit).HasColumnName("unit");
@@ -44,14 +46,12 @@ internal sealed class BowlingCenterConfiguration
                 address.Property(a => a.Region).HasColumnName("state");
                 address.Property(a => a.PostalCode).HasColumnName("zip_code");
                 address.Property(a => a.Country).HasColumnName("country");
-                address.OwnsOne(a => a.Coordinates, coordinates =>
+                address.ComplexProperty(a => a.Coordinates, coordinates =>
                 {
                     coordinates.Property(c => c.Latitude).HasColumnName("latitude");
                     coordinates.Property(c => c.Longitude).HasColumnName("longitude");
                 });
-            })
-            .Navigation(bowlingCenter => bowlingCenter.Address)
-            .IsRequired();
+            });
 
         builder.Property(bowlingCenter => bowlingCenter.IsClosed)
             .HasColumnName("closed")
