@@ -2,8 +2,9 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Ardalis.SmartEnum.SystemTextJson;
 using ErrorOr;
+using Neba.Domain.Geography;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Contact;
 
 /// <summary>
 /// Represents a postal address, including street, city, region, country, postal code, and optional coordinates.

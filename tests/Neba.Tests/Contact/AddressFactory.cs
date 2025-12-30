@@ -1,7 +1,8 @@
 using ErrorOr;
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
+using Neba.Domain.Geography;
 
-namespace Neba.Tests.Addresses;
+namespace Neba.Tests.Contact;
 
 public static class AddressFactory
 {

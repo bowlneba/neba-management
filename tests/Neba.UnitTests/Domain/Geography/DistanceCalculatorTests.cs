@@ -1,9 +1,10 @@
 using ErrorOr;
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
+using Neba.Domain.Geography;
 
-namespace Neba.UnitTests.Domain.Addresses;
+namespace Neba.UnitTests.Domain.Geography;
 
-public sealed class AddressDistanceCalculatorTests
+public sealed class DistanceCalculatorTests
 {
     #region DistanceInMiles Tests
 
@@ -30,7 +31,7 @@ public sealed class AddressDistanceCalculatorTests
             willisTowerCoordinates.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             empireStateAddress.Value,
             willisTowerAddress.Value);
 
@@ -63,7 +64,7 @@ public sealed class AddressDistanceCalculatorTests
             coordinates.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             address1.Value,
             address2.Value);
 
@@ -96,7 +97,7 @@ public sealed class AddressDistanceCalculatorTests
             coordinates2.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             address1.Value,
             address2.Value);
 
@@ -121,7 +122,7 @@ public sealed class AddressDistanceCalculatorTests
 
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
-            AddressDistanceCalculator.DistanceInMiles(null!, address.Value));
+            DistanceCalculator.DistanceInMiles(null!, address.Value));
     }
 
     [Fact(DisplayName = "Rejects null second address")]
@@ -139,7 +140,7 @@ public sealed class AddressDistanceCalculatorTests
 
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
-            AddressDistanceCalculator.DistanceInMiles(address.Value, null!));
+            DistanceCalculator.DistanceInMiles(address.Value, null!));
     }
 
     [Fact(DisplayName = "Returns error when first address has no coordinates")]
@@ -163,13 +164,13 @@ public sealed class AddressDistanceCalculatorTests
             coordinates2.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     [Fact(DisplayName = "Returns error when second address has no coordinates")]
@@ -193,13 +194,13 @@ public sealed class AddressDistanceCalculatorTests
             "90028");
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     [Fact(DisplayName = "Returns error when both addresses have no coordinates")]
@@ -221,13 +222,13 @@ public sealed class AddressDistanceCalculatorTests
             "90028");
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInMiles(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     #endregion
@@ -257,7 +258,7 @@ public sealed class AddressDistanceCalculatorTests
             willisTowerCoordinates.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInKilometers(
             empireStateAddress.Value,
             willisTowerAddress.Value);
 
@@ -291,10 +292,10 @@ public sealed class AddressDistanceCalculatorTests
             willisTowerCoordinates.Value);
 
         // Act
-        ErrorOr<decimal> milesResult = AddressDistanceCalculator.DistanceInMiles(
+        ErrorOr<decimal> milesResult = DistanceCalculator.DistanceInMiles(
             empireStateAddress.Value,
             willisTowerAddress.Value);
-        ErrorOr<decimal> kilometersResult = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> kilometersResult = DistanceCalculator.DistanceInKilometers(
             empireStateAddress.Value,
             willisTowerAddress.Value);
 
@@ -325,7 +326,7 @@ public sealed class AddressDistanceCalculatorTests
             coordinates.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInKilometers(
             address1.Value,
             address2.Value);
 
@@ -349,7 +350,7 @@ public sealed class AddressDistanceCalculatorTests
 
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
-            AddressDistanceCalculator.DistanceInKilometers(null!, address.Value));
+            DistanceCalculator.DistanceInKilometers(null!, address.Value));
     }
 
     [Fact(DisplayName = "Rejects null second address for kilometers")]
@@ -367,7 +368,7 @@ public sealed class AddressDistanceCalculatorTests
 
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
-            AddressDistanceCalculator.DistanceInKilometers(address.Value, null!));
+            DistanceCalculator.DistanceInKilometers(address.Value, null!));
     }
 
     [Fact(DisplayName = "Returns error when first address has no coordinates for kilometers")]
@@ -391,13 +392,13 @@ public sealed class AddressDistanceCalculatorTests
             coordinates2.Value);
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInKilometers(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     [Fact(DisplayName = "Returns error when second address has no coordinates for kilometers")]
@@ -421,13 +422,13 @@ public sealed class AddressDistanceCalculatorTests
             "90028");
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInKilometers(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     [Fact(DisplayName = "Returns error when both addresses have no coordinates for kilometers")]
@@ -449,13 +450,13 @@ public sealed class AddressDistanceCalculatorTests
             "90028");
 
         // Act
-        ErrorOr<decimal> result = AddressDistanceCalculator.DistanceInKilometers(
+        ErrorOr<decimal> result = DistanceCalculator.DistanceInKilometers(
             address1.Value,
             address2.Value);
 
         // Assert
         result.IsError.ShouldBeTrue();
-        result.FirstError.Code.ShouldBe(AddressDistanceCalculatorErrors.AddressMissingCoordinates.Code);
+        result.FirstError.Code.ShouldBe(DistanceCalculatorErrors.AddressMissingCoordinates.Code);
     }
 
     #endregion

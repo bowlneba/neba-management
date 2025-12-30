@@ -1,6 +1,6 @@
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
 
-namespace Neba.UnitTests.Domain.Addresses;
+namespace Neba.UnitTests.Domain.Contact;
 
 public sealed class UsStateTests
 {

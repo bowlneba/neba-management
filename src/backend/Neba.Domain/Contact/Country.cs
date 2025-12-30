@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Contact;
 
 /// <summary>
 /// Represents a country with its name and ISO 3166-1 alpha-2 code.

@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
 
 namespace Neba.Infrastructure.Database.Configurations;
 

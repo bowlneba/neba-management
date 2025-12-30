@@ -1,7 +1,8 @@
 using ErrorOr;
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
+using Neba.Domain.Geography;
 
-namespace Neba.UnitTests.Domain.Addresses;
+namespace Neba.UnitTests.Domain.Contact;
 
 public sealed class AddressTests
 {

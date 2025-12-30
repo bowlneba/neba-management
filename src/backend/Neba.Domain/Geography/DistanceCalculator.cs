@@ -1,13 +1,14 @@
 using ErrorOr;
+using Neba.Domain.Contact;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Geography;
 
 /// <summary>
 /// Provides utilities to calculate distances between two <see cref="Address"/> instances.
 /// Uses the Haversine formula to compute great-circle distances.
 /// Uses double precision for trigonometric calculations, then converts to decimal for financial precision.
 /// </summary>
-public static class AddressDistanceCalculator
+public static class DistanceCalculator
 {
     /// <summary>
     /// Earth's radius in miles used for Haversine distance calculations.
@@ -16,7 +17,7 @@ public static class AddressDistanceCalculator
 
     /// <summary>
     /// Calculates the great-circle distance between two addresses in miles using the Haversine formula.
-    /// Returns <see cref="AddressDistanceCalculatorErrors.AddressMissingCoordinates"/> if either address
+    /// Returns <see cref="DistanceCalculatorErrors.AddressMissingCoordinates"/> if either address
     /// is missing coordinates.
     /// </summary>
     /// <param name="address1">The first address (required).</param>
@@ -31,7 +32,7 @@ public static class AddressDistanceCalculator
 
         if (address1.Coordinates is null || address2.Coordinates is null)
         {
-            return AddressDistanceCalculatorErrors.AddressMissingCoordinates;
+            return DistanceCalculatorErrors.AddressMissingCoordinates;
         }
 
         // Use double for trigonometric calculations (standard for geographic calculations)

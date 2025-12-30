@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Contact;
 
 internal static class AddressErrors
 {

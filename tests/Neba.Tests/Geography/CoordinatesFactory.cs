@@ -1,6 +1,6 @@
-using Neba.Domain.Addresses;
+using Neba.Domain.Geography;
 
-namespace Neba.Tests.Addresses;
+namespace Neba.Tests.Geography;
 
 public static class CoordinatesFactory
 {

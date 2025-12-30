@@ -1,8 +1,8 @@
 using ErrorOr;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Geography;
 
-internal static class AddressDistanceCalculatorErrors
+internal static class DistanceCalculatorErrors
 {
     public static readonly Error AddressMissingCoordinates =
         Error.Validation(

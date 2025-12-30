@@ -1,7 +1,7 @@
 
 using ErrorOr;
 
-namespace Neba.Domain.Addresses;
+namespace Neba.Domain.Geography;
 
 /// <summary>
 /// Represents a geographic coordinate with latitude and longitude.
