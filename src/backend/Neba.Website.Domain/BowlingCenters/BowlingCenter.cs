@@ -1,5 +1,5 @@
 using Neba.Domain;
-using Neba.Domain.Addresses;
+using Neba.Domain.Contact;
 using Neba.Domain.Identifiers;
 
 namespace Neba.Website.Domain.BowlingCenters;
@@ -33,6 +33,13 @@ public sealed class BowlingCenter
     /// The physical address of the bowling center.
     /// </summary>
     public Address Address { get; internal init; } = Address.Empty;
+
+
+    /// <summary>
+    /// The primary contact phone number for the bowling center.
+    /// Stored as a domain `PhoneNumber` value object containing country code, digits and optional extension.
+    /// </summary>
+    public PhoneNumber PhoneNumber { get; internal init; } = PhoneNumber.Empty;
 
     /// <summary>
     /// Indicator if the bowling center has been closed

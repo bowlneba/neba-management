@@ -53,6 +53,12 @@ internal sealed class BowlingCenterConfiguration
                 });
             });
 
+        builder.HasPhoneNumber(bowlingCenter => bowlingCenter.PhoneNumber,
+            configurePhoneNumber: phoneNumber =>
+            {
+                phoneNumber.IsRequired();
+            });
+
         builder.Property(bowlingCenter => bowlingCenter.IsClosed)
             .HasColumnName("closed")
             .IsRequired();
