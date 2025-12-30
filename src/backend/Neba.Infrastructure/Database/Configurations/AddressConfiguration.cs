@@ -44,11 +44,11 @@ public static class AddressConfiguration
     /// <c>address.Property(a => a.PropertyName).HasColumnName("custom_name")</c>.
     /// </para>
     /// </remarks>
-        public EntityTypeBuilder<T> OwnsAddress(
+        public EntityTypeBuilder<T> HasAddress(
             Expression<Func<T, Address?>> addressExpression,
-            Action<OwnedNavigationBuilder<T, Address>>? configureAddress = null)
+            Action<ComplexPropertyBuilder<Address>>? configureAddress = null)
         {
-            return builder.OwnsOne(addressExpression, address =>
+            return builder.ComplexProperty(addressExpression, address =>
             {
                 address.Property(a => a.Street)
                     .HasColumnName("address_street")
@@ -82,7 +82,7 @@ public static class AddressConfiguration
                     .HasMaxLength(10)
                     .IsRequired();
 
-                address.OwnsOne(a => a.Coordinates, coordinates =>
+                address.ComplexProperty(a => a.Coordinates, coordinates =>
                 {
                     coordinates.Property(c => c.Latitude)
                         .HasColumnName("address_latitude")

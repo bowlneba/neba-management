@@ -34,7 +34,7 @@ internal sealed class BowlingCenterConfiguration
             .HasMaxLength(75)
             .IsRequired();
 
-        builder.OwnsAddress(bowlingCenter => bowlingCenter.Address,
+        builder.HasAddress(bowlingCenter => bowlingCenter.Address,
             configureAddress: address =>
             {
                 // Override default column names
