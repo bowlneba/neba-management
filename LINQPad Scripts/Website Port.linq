@@ -36,12 +36,24 @@
 
 async Task Main()
 {
+	bool getBowlingCenterCoordinates = true;
+
+	if (getBowlingCenterCoordinates)
+	{
+		BowlingCenters.RemoveRange(BowlingCenters);	
+	}
+	
 	SeasonAwards.RemoveRange(SeasonAwards);
 	Titles.RemoveRange(Titles);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
 	Bowlers.RemoveRange(Bowlers);
 	
 	await SaveChangesAsync();
+
+	if (getBowlingCenterCoordinates)
+	{
+		await MigrateBowlingCentersAsync();
+	}
 
 	var mergedBowlers = await MigrateBowlersAsync();
 	
@@ -65,7 +77,7 @@ async Task Main()
 								   
 	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
-	await MigrateHallOfFame(bowlerIdsBySoftwareId);
+	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
 	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
@@ -75,6 +87,339 @@ async Task Main()
 }
 
 // You can define other methods, fields, classes and namespaces here
+
+#region Bowling Centers
+
+public async Task MigrateBowlingCentersAsync()
+{
+	var softwareBowlingCentersDataTable = await QuerySoftwareDatabaseAsync("SELECT Id, CertificationNumber from dbo.BowlingCenters");
+	var bowlingCenterSoftwareIdByCertificationNumber = softwareBowlingCentersDataTable.AsEnumerable().ToDictionary(row => row.Field<string>("CertificationNumber")!, row => row.Field<int>("Id"));
+	
+	IEnumerable<string> states = ["CT", "MA", "RI", "VT", "NH", "ME"];
+	var serializationSettings = new JsonSerializerOptions
+	{
+		PropertyNameCaseInsensitive = true
+	};
+
+
+	using var httpClient = new HttpClient();
+
+	var bowlingCenters = new List<UsbcBowlingCenterDto>();
+
+	foreach (var state in states)
+	{
+		var result = await httpClient.GetAsync($"https://webservices.bowl.com/USBC.Search.Services/api/v1/centers?State={state}&Page=1&Size=300");
+
+		if (!result.IsSuccessStatusCode)
+		{
+			return;
+		}
+
+		using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+		var root = jsonDoc.RootElement;
+
+		if (root.TryGetProperty("Results", out var resultsElement))
+		{
+			var stateBowlingCenters = JsonSerializer.Deserialize<List<UsbcBowlingCenterDto>>(resultsElement.GetRawText(), serializationSettings)!;
+
+			bowlingCenters.AddRange(stateBowlingCenters);
+		}
+	}
+	
+	List<UsbcBowlingCenterDto> failedBowlingCenters = [];
+
+	foreach (var bowlingCenter in bowlingCenters)
+	{
+		bowlingCenterSoftwareIdByCertificationNumber.TryGetValue(bowlingCenter.CertificationNumber, out var softwareId);
+		
+		string address = $"{bowlingCenter.Address} {bowlingCenter.CityStateZip}";
+		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+
+		var result = await httpClient.GetAsync(url);
+
+		if (result.IsSuccessStatusCode)
+		{
+			using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+
+			var azureResponse = JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
+
+			if (azureResponse.Results.Length == 1)
+			{
+				BowlingCenters.Add(new BowlingCenters
+				{
+					DomainId = Guid.AsDomainId(),
+					ApplicationId = softwareId > 0 ? softwareId : null,
+					WebsiteId = null, // todo: need to do website lookup by for bowling center.  by address?
+					Name = bowlingCenter.Name,
+					Street = bowlingCenter.Address,
+					City = bowlingCenter.City,
+					State = bowlingCenter.State,
+					Country = bowlingCenter.Country,
+					ZipCode = bowlingCenter.Zip,
+					Closed = false,
+					Latitude = azureResponse.Results[0].Position.Lat,
+					Longitude = azureResponse.Results[0].Position.Lon
+				});
+			}
+		}
+		else
+		{
+			failedBowlingCenters.Add(bowlingCenter);
+
+			BowlingCenters.Add(new BowlingCenters
+			{
+				DomainId = Guid.AsDomainId(),
+				ApplicationId = softwareId > 0 ? softwareId : null,
+				WebsiteId = null, // todo: need to do website lookup by for bowling center.  by address?
+				Name = bowlingCenter.Name,
+				Street = bowlingCenter.Address,
+				City = bowlingCenter.City,
+				State = bowlingCenter.State,
+				Country = bowlingCenter.Country,
+				ZipCode = bowlingCenter.Zip,
+				Closed = false
+			});
+		}
+	}
+	
+	// loop through software bowling centers and remove the ones already added (Based on certification number) and use the software info to load
+	
+	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
+	
+	failedBowlingCenters.Dump("Failed Bowling Center Lookup");
+	
+	await SaveChangesAsync();
+}
+
+public class UsbcBowlingCenterDto
+{
+	[JsonPropertyName("id")]
+	public string Id { get; set; }
+
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
+
+	[JsonPropertyName("address")]
+	public string Address { get; set; }
+
+	[JsonPropertyName("citystatezip")]
+	public string CityStateZip { get; set; }
+
+	[JsonPropertyName("city")]
+	public string City { get; set; }
+
+	[JsonPropertyName("state")]
+	public string State { get; set; }
+
+	[JsonPropertyName("zip")]
+	public string Zip { get; set; }
+
+	[JsonPropertyName("country")]
+	public string Country { get; set; }
+
+	[JsonPropertyName("phone")]
+	public string Phone { get; set; }
+
+	[JsonPropertyName("email")]
+	public string Email { get; set; }
+
+	[JsonPropertyName("web")]
+	public string Web { get; set; }
+
+	[JsonPropertyName("certnumber")]
+	public string CertificationNumber { get; set; }
+
+	[JsonPropertyName("lanes")]
+	public int Lanes { get; set; }
+
+	[JsonPropertyName("sport")]
+	public bool Sport { get; set; }
+
+	[JsonPropertyName("rvp")]
+	public bool Rvp { get; set; }
+
+	[JsonPropertyName("strpin")]
+	public bool StringPin { get; set; }
+
+	[JsonPropertyName("snackbar")]
+	public bool SnackBar { get; set; }
+
+	[JsonPropertyName("restaurant")]
+	public bool Restaurant { get; set; }
+
+	[JsonPropertyName("lounge")]
+	public bool Lounge { get; set; }
+
+	[JsonPropertyName("arcade")]
+	public bool Arcade { get; set; }
+
+	[JsonPropertyName("proshop")]
+	public bool ProShop { get; set; }
+
+	[JsonPropertyName("glow")]
+	public bool Glow { get; set; }
+
+	[JsonPropertyName("childcare")]
+	public bool ChildCare { get; set; }
+
+	[JsonPropertyName("parties")]
+	public bool Parties { get; set; }
+
+	[JsonPropertyName("banquets")]
+	public bool Banquets { get; set; }
+
+	[JsonPropertyName("coach")]
+	public bool Coach { get; set; }
+}
+
+public class AzureAtlasResponse
+{
+	[JsonPropertyName("summary")]
+	public AzureAtlasSummary Summary { get; set; }
+
+	[JsonPropertyName("results")]
+	public AzureAtlasResult[] Results { get; set; }
+}
+
+public class AzureAtlasSummary
+{
+	[JsonPropertyName("query")]
+	public string Query { get; set; }
+
+	[JsonPropertyName("queryType")]
+	public string QueryType { get; set; }
+
+	[JsonPropertyName("queryTime")]
+	public int QueryTime { get; set; }
+
+	[JsonPropertyName("numResults")]
+	public int NumberOfResults { get; set; }
+
+	[JsonPropertyName("offset")]
+	public int Offset { get; set; }
+
+	[JsonPropertyName("totalResults")]
+	public int TotalResults { get; set; }
+
+	[JsonPropertyName("fuzzyLevel")]
+	public int FuzzyLevel { get; set; }
+}
+
+public record AzureAtlasResult
+{
+	[JsonPropertyName("type")]
+	public string Type { get; init; } = default!;
+
+	[JsonPropertyName("id")]
+	public string Id { get; init; } = default!;
+
+	[JsonPropertyName("score")]
+	public double Score { get; init; }
+
+	[JsonPropertyName("matchConfidence")]
+	public MatchConfidence MatchConfidence { get; init; } = default!;
+
+	[JsonPropertyName("address")]
+	public Address Address { get; init; } = default!;
+
+	[JsonPropertyName("position")]
+	public Position Position { get; init; } = default!;
+
+	[JsonPropertyName("viewport")]
+	public Viewport? Viewport { get; init; }
+
+	[JsonPropertyName("addressRanges")]
+	public AddressRanges? AddressRanges { get; init; }
+}
+
+public record MatchConfidence
+{
+	[JsonPropertyName("score")]
+	public double Score { get; init; }
+}
+
+public record Address
+{
+	[JsonPropertyName("streetNumber")]
+	public string? StreetNumber { get; init; }
+
+	[JsonPropertyName("streetName")]
+	public string StreetName { get; init; } = default!;
+
+	[JsonPropertyName("municipality")]
+	public string Municipality { get; init; } = default!;
+
+	[JsonPropertyName("neighbourhood")]
+	public string? Neighbourhood { get; init; }
+
+	[JsonPropertyName("countrySecondarySubdivision")]
+	public string CountrySecondarySubdivision { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivision")]
+	public string CountrySubdivision { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivisionName")]
+	public string CountrySubdivisionName { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivisionCode")]
+	public string CountrySubdivisionCode { get; init; } = default!;
+
+	[JsonPropertyName("postalCode")]
+	public string PostalCode { get; init; } = default!;
+
+	[JsonPropertyName("extendedPostalCode")]
+	public string? ExtendedPostalCode { get; init; }
+
+	[JsonPropertyName("countryCode")]
+	public string CountryCode { get; init; } = default!;
+
+	[JsonPropertyName("country")]
+	public string Country { get; init; } = default!;
+
+	[JsonPropertyName("countryCodeISO3")]
+	public string CountryCodeISO3 { get; init; } = default!;
+
+	[JsonPropertyName("freeformAddress")]
+	public string FreeformAddress { get; init; } = default!;
+
+	[JsonPropertyName("localName")]
+	public string LocalName { get; init; } = default!;
+}
+
+public record Position
+{
+	[JsonPropertyName("lat")]
+	public double Lat { get; init; }
+
+	[JsonPropertyName("lon")]
+	public double Lon { get; init; }
+}
+
+public record Viewport
+{
+	[JsonPropertyName("topLeftPoint")]
+	public Position TopLeftPoint { get; init; } = default!;
+
+	[JsonPropertyName("btmRightPoint")]
+	public Position BtmRightPoint { get; init; } = default!;
+}
+
+public record AddressRanges
+{
+	[JsonPropertyName("rangeLeft")]
+	public string? RangeLeft { get; init; }
+
+	[JsonPropertyName("rangeRight")]
+	public string? RangeRight { get; init; }
+
+	[JsonPropertyName("from")]
+	public Position From { get; init; } = default!;
+
+	[JsonPropertyName("to")]
+	public Position To { get; init; } = default!;
+}
+
+#endregion
 
 #region Bowlers
 
@@ -689,7 +1034,7 @@ public async Task MigrateHighAverageAsync(
 
 #region Hall of Fame
 
-public async Task MigrateHallOfFame(Dictionary<int, int> bowlerIdBySoftwareId)
+public async Task MigrateHallOfFameAsync(Dictionary<int, int> bowlerIdBySoftwareId)
 {
 	var categoryConversion = new Dictionary<int, int>
 	{
