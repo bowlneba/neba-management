@@ -14,6 +14,7 @@
 
 @code {
     private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<NebaMap>? _dotNetHelper;
     private string ContainerId { get; set; } = $"neba-map-{Guid.NewGuid():N}";
 
     /// <summary>
@@ -71,6 +72,13 @@
     [Parameter]
     public EventCallback OnMapReady { get; set; }
 
+    /// <summary>
+    /// Event callback fired when the map bounds change (zoom, pan, etc).
+    /// Returns a MapBounds object with the current viewport bounds.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MapBounds> OnBoundsChanged { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -80,6 +88,7 @@
                 "./Maps/NebaMap.razor.js"
             );
 
+            _dotNetHelper = DotNetObjectReference.Create(this);
             await InitializeMapAsync();
         }
     }
@@ -124,7 +133,7 @@
             metadata = loc.Metadata ?? new Dictionary<string, object>()
         }).ToList();
 
-        await _jsModule.InvokeVoidAsync("initializeMap", authConfig, mapConfig, locationData);
+        await _jsModule.InvokeVoidAsync("initializeMap", authConfig, mapConfig, locationData, _dotNetHelper);
 
         // Notify that map is ready
         await OnMapReady.InvokeAsync();
@@ -173,11 +182,22 @@
         }
     }
 
+    /// <summary>
+    /// JavaScript interop callback invoked when map bounds change.
+    /// </summary>
+    [JSInvokable]
+    public async Task NotifyBoundsChanged(MapBounds bounds)
+    {
+        await OnBoundsChanged.InvokeAsync(bounds);
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_jsModule is not null)
         {
             await _jsModule.DisposeAsync();
         }
+
+        _dotNetHelper?.Dispose();
     }
 }

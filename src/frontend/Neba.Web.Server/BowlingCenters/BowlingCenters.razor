@@ -78,7 +78,7 @@
 
             <!-- Results Count -->
             <div class="flex items-center text-sm text-[var(--neba-gray-700)] whitespace-nowrap">
-                Showing <span class="font-semibold mx-1">@_filteredCenters.Count</span> centers
+                Showing <span class="font-semibold mx-1">@_displayedCenters.Count</span> of @_filteredCenters.Count centers
             </div>
         </div>
     }
@@ -90,15 +90,19 @@
             <!-- Left Side: Centers List -->
             <div class="flex flex-col">
                 <div id="centers-scroll-container" class="overflow-y-auto pr-2 space-y-4" style="max-height: 600px;">
-                    @if (_filteredCenters.Count == 0)
+                    @if (_displayedCenters.Count == 0)
                     {
                         <div class="neba-card text-center py-8">
-                            <p class="text-[var(--neba-gray-700)]">No centers found matching your search criteria.</p>
+                            <p class="text-[var(--neba-gray-700)]">No centers visible in the current map view.</p>
+                            @if (_filteredCenters.Count > 0)
+                            {
+                                <p class="text-sm text-[var(--neba-gray-600)] mt-2">Zoom out or pan the map to see more centers.</p>
+                            }
                         </div>
                     }
                     else
                     {
-                        @foreach (var center in _filteredCenters)
+                        @foreach (var center in _displayedCenters)
                         {
                             <div class="neba-card hover:shadow-lg hover:border-[var(--neba-blue-500)] transition-all cursor-pointer"
                                  @onclick="@(() => HandleCenterCardClick(center))">
@@ -157,7 +161,8 @@
                          EnableClustering="true"
                          Center="@(new[] { -71.0589, 42.3601 })"
                          Zoom="7"
-                         Height="600px" />
+                         Height="600px"
+                         OnBoundsChanged="@HandleBoundsChanged" />
             </div>
         </div>
     }
@@ -166,6 +171,7 @@
 @code {
     private List<BowlingCenterViewModel> _allCenters = new();
     private List<BowlingCenterViewModel> _filteredCenters = new();
+    private List<BowlingCenterViewModel> _displayedCenters = new();
     private List<NebaMapLocation> _mapLocations = new();
     private string? _errorMessage;
     private bool _isLoading = true;
@@ -173,6 +179,7 @@
     private string _searchQuery = string.Empty;
     private IJSObjectReference? _jsModule;
     private NebaMap? _mapComponent;
+    private MapBounds? _currentMapBounds;
 
     protected override async Task OnInitializedAsync()
     {
@@ -187,8 +194,7 @@
             }
 
             _allCenters = bowlingCentersResult.Value.ToList();
-            _filteredCenters = _allCenters;
-            UpdateMapLocations();
+            ApplyFilters();
         }
         catch (Exception ex)
         {
@@ -217,6 +223,7 @@
 
     private void ApplyFilters()
     {
+        // Filter by state and search query for map display
         _filteredCenters = _allCenters
             .Where(c => _selectedState == null || c.State == _selectedState)
             .Where(c => string.IsNullOrWhiteSpace(_searchQuery) ||
@@ -224,7 +231,24 @@
                        c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
+        // Further filter by map bounds for list display
+        _displayedCenters = _currentMapBounds == null
+            ? _filteredCenters
+            : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
+
         UpdateMapLocations();
+    }
+
+    private void HandleBoundsChanged(MapBounds bounds)
+    {
+        _currentMapBounds = bounds;
+
+        // Only update the displayed centers list, don't change map locations
+        _displayedCenters = _currentMapBounds == null
+            ? _filteredCenters
+            : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
+
+        StateHasChanged();
     }
 
     private void UpdateMapLocations()

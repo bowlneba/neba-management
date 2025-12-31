@@ -7,6 +7,8 @@ let dataSource = null;
 let markers = new Map(); // Track markers by location ID
 let currentConfig = null;
 let currentPopup = null; // Track the currently open popup
+let dotNetHelper = null; // Reference to .NET component for callbacks
+let boundsChangeTimeout = null; // Timeout for debouncing bounds changes
 
 /**
  * Waits for the Azure Maps SDK to be loaded
@@ -41,8 +43,9 @@ function waitForAtlas() {
  * @param {Object} authConfig - Authentication configuration { accountId?, subscriptionKey? }
  * @param {Object} mapConfig - Map configuration { containerId, center, zoom, enableClustering }
  * @param {Array} locations - Array of location objects with coordinates and metadata
+ * @param {Object} dotNetRef - Reference to .NET component for callbacks
  */
-export async function initializeMap(authConfig, mapConfig, locations) {
+export async function initializeMap(authConfig, mapConfig, locations, dotNetRef) {
     console.log('[NebaMap] Initializing Azure Maps...');
     console.log('[NebaMap] Auth config:', { hasAccountId: !!authConfig.accountId, hasSubscriptionKey: !!authConfig.subscriptionKey });
     console.log('[NebaMap] Locations count:', locations.length);
@@ -52,6 +55,7 @@ export async function initializeMap(authConfig, mapConfig, locations) {
     console.log('[NebaMap] Azure Maps SDK loaded');
 
     currentConfig = mapConfig;
+    dotNetHelper = dotNetRef;
 
     // Determine authentication method
     let authOptions;
@@ -134,6 +138,15 @@ export async function initializeMap(authConfig, mapConfig, locations) {
 
             // Add initial markers
             updateMarkers(locations);
+
+            // Fit bounds to show all initial markers
+            fitBounds();
+
+            // Add event listeners for map bounds changes
+            // Note: moveend fires after pan, zoom, and fitBounds animations complete
+            map.events.add('moveend', () => {
+                notifyBoundsChanged();
+            });
         });
 
     } catch (error) {
@@ -257,9 +270,6 @@ export function updateMarkers(locations) {
 
     console.log(`[NebaMap] Adding ${features.length} valid markers to map`);
     dataSource.add(features);
-
-    // Adjust map bounds to show all markers
-    fitBounds();
 }
 
 /**
@@ -340,3 +350,41 @@ function showPopup(coordinates, properties) {
 
     currentPopup.open(map);
 }
+
+/**
+ * Notifies the Blazor component about map bounds changes
+ * Debounced to prevent excessive updates during continuous pan/zoom
+ */
+function notifyBoundsChanged() {
+    if (!map || !dotNetHelper) {
+        return;
+    }
+
+    // Clear any pending notification
+    if (boundsChangeTimeout) {
+        clearTimeout(boundsChangeTimeout);
+    }
+
+    // Debounce the notification by 150ms
+    boundsChangeTimeout = setTimeout(() => {
+        const camera = map.getCamera();
+        const bounds = camera.bounds;
+
+        if (bounds) {
+            const mapBounds = {
+                north: bounds[3],  // maxLatitude
+                south: bounds[1],  // minLatitude
+                east: bounds[2],   // maxLongitude
+                west: bounds[0]    // minLongitude
+            };
+
+            console.log('[NebaMap] Bounds changed:', mapBounds);
+
+            dotNetHelper.invokeMethodAsync('NotifyBoundsChanged', mapBounds)
+                .catch(error => {
+                    console.error('[NebaMap] Error notifying bounds changed:', error);
+                });
+        }
+    }, 150);
+}
+
