@@ -34,52 +34,34 @@ public static class BowlerFactory
         int count,
         int? seed = null)
     {
-#pragma warning disable CA5394 // Random is acceptable here - used only for test data generation, not security
-        Random random = seed.HasValue ? new Random(seed.Value) : new Random();
+        // Create pools of unique IDs to avoid collisions across tests
+        // Pools handle Random instantiation and null/value probability internally
+        UniqueIdPool websiteIdPool = UniqueIdPool.Create(
+            poolSize: 100000,
+            baseOffset: 0,
+            seed,
+            probabilityOfValue: 0.5f);
 
-        // Generate unique IDs using larger ranges and timestamp to avoid collisions across tests
-        long baseTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var shuffledWebsiteIds = Enumerable.Range(1, 100000)
-            .Select(i => (int)(baseTimestamp % 1_000_000) + (i * 1000) + random.Next(1000))
-            .OrderBy(_ => random.Next())
-            .ToList();
-        var shuffledApplicationIds = Enumerable.Range(1, 100000)
-            .Select(i => (int)(baseTimestamp % 1_000_000) + 100_000_000 + (i * 1000) + random.Next(1000))
-            .OrderBy(_ => random.Next())
-            .ToList();
-#pragma warning restore CA5394
-        int websiteIdIndex = 0;
-        int applicationIdIndex = 0;
+        UniqueIdPool applicationIdPool = UniqueIdPool.Create(
+            poolSize: 100000,
+            baseOffset: 100_000_000,
+            seed,
+            probabilityOfValue: 0.5f);
 
         Bogus.Faker<Bowler> faker = new Bogus.Faker<Bowler>()
-            .CustomInstantiator(f =>
+            .CustomInstantiator(f => new Bowler
             {
-                int? websiteId = null;
-                if (f.Random.Bool(0.5f))
-                {
-                    websiteId = shuffledWebsiteIds[websiteIdIndex++];
-                }
-
-                int? applicationId = null;
-                if (f.Random.Bool(0.5f))
-                {
-                    applicationId = shuffledApplicationIds[applicationIdIndex++];
-                }
-
-                return new Bowler
-                {
-                    Id = BowlerId.New(),
-                    Name = NameFactory.Bogus(),
-                    WebsiteId = websiteId,
-                    ApplicationId = applicationId,
-                    Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
-                    SeasonAwards = SeasonAwardFactory
-                        .BogusBowlerOfTheYear(f.Random.Int(0, 5), seed)
-                        .Union(SeasonAwardFactory.BogusHighBlockAward(f.Random.Int(0, 5), seed))
-                        .Union(SeasonAwardFactory.BogusHighAverageAward(f.Random.Int(0, 5), seed))
-                        .ToList().AsReadOnly(),
-                    HallOfFameInductions = HallOfFameInductionFactory.Bogus(f.Random.Int(0, 2), seed)
-                };
+                Id = BowlerId.New(),
+                Name = NameFactory.Bogus(),
+                WebsiteId = websiteIdPool.GetNext(),
+                ApplicationId = applicationIdPool.GetNext(),
+                Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
+                SeasonAwards = SeasonAwardFactory
+                    .BogusBowlerOfTheYear(f.Random.Int(0, 5), seed)
+                    .Union(SeasonAwardFactory.BogusHighBlockAward(f.Random.Int(0, 5), seed))
+                    .Union(SeasonAwardFactory.BogusHighAverageAward(f.Random.Int(0, 5), seed))
+                    .ToList().AsReadOnly(),
+                HallOfFameInductions = HallOfFameInductionFactory.Bogus(f.Random.Int(0, 2), seed)
             });
 
         if (seed.HasValue)
