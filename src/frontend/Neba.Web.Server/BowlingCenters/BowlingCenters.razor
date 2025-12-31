@@ -73,7 +73,7 @@
                        placeholder="Search centers..."
                        @bind="_searchQuery"
                        @bind:event="oninput"
-                       @bind:after="ApplyFilters" />
+                       @bind:after="ApplyFiltersAsync" />
             </div>
 
             <!-- Results Count -->
@@ -194,7 +194,7 @@
             }
 
             _allCenters = bowlingCentersResult.Value.ToList();
-            ApplyFilters();
+            await ApplyFiltersAsync();
         }
         catch (Exception ex)
         {
@@ -217,11 +217,11 @@
     private async Task FilterByState(string? state)
     {
         _selectedState = state;
-        ApplyFilters();
+        await ApplyFiltersAsync();
         await ScrollToTop();
     }
 
-    private void ApplyFilters()
+    private async Task ApplyFiltersAsync()
     {
         // Filter by state and search query for map display
         _filteredCenters = _allCenters
@@ -231,12 +231,28 @@
                        c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        // Further filter by map bounds for list display
-        _displayedCenters = _currentMapBounds == null
-            ? _filteredCenters
-            : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
-
+        // Update map locations to show only filtered centers
         UpdateMapLocations();
+
+        // Force a render cycle to ensure map component receives updated Locations parameter
+        StateHasChanged();
+
+        // Give the map component time to update its markers before fitting bounds
+        // This prevents the race condition where FitBounds is called on old markers
+        await Task.Delay(100);
+
+        // Zoom map to fit all filtered markers
+        if (_mapComponent is not null && _filteredCenters.Count > 0)
+        {
+            await _mapComponent.FitBoundsAsync();
+        }
+
+        // The bounds change event will update _displayedCenters
+        // If map component is null (initial load), display all filtered centers
+        if (_mapComponent is null)
+        {
+            _displayedCenters = _filteredCenters;
+        }
     }
 
     private async Task HandleBoundsChanged(MapBounds bounds)
