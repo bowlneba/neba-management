@@ -195,7 +195,20 @@
     {
         if (_jsModule is not null)
         {
-            await _jsModule.DisposeAsync();
+            try
+            {
+                // Call JavaScript cleanup to remove event listeners and dispose map
+                await _jsModule.InvokeVoidAsync("dispose");
+            }
+            catch (Exception ex)
+            {
+                // Ignore errors during disposal (component may already be disconnected)
+                Console.WriteLine($"[NebaMap] Error during dispose: {ex.Message}");
+            }
+            finally
+            {
+                await _jsModule.DisposeAsync();
+            }
         }
 
         _dotNetHelper?.Dispose();

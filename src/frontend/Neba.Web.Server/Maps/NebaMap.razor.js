@@ -401,3 +401,41 @@ function notifyBoundsChanged() {
     }, 150);
 }
 
+/**
+ * Cleans up the map instance and removes all event listeners
+ * Called when the component is disposed to prevent memory leaks and callback errors
+ */
+export function dispose() {
+    console.log('[NebaMap] Disposing map resources...');
+
+    // Clear any pending bounds change notifications
+    if (boundsChangeTimeout) {
+        clearTimeout(boundsChangeTimeout);
+        boundsChangeTimeout = null;
+    }
+
+    // Close any open popup
+    if (currentPopup) {
+        currentPopup.close();
+        currentPopup = null;
+    }
+
+    // Dispose of the map instance
+    if (map) {
+        // Remove all event listeners (moveend, click, mouseenter, mouseleave)
+        // Note: Azure Maps doesn't have a removeAllListeners method, but dispose() handles cleanup
+        map.dispose();
+        map = null;
+    }
+
+    // Clear data structures
+    if (dataSource) {
+        dataSource = null;
+    }
+    markers.clear();
+    dotNetHelper = null;
+    lastLocationHash = null;
+
+    console.log('[NebaMap] Map disposed successfully');
+}
+
