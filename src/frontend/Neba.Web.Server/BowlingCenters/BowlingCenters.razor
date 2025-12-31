@@ -2,6 +2,9 @@
 @using Neba.Web.Server.Notifications
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@inject IJSRuntime JSInterop
+@inject NebaApiService NebaApiService
+
 <PageTitle>Bowling Centers - NEBA</PageTitle>
 <HeadContent>
     <meta name="description" content="Browse USBC certified bowling centers across New England. Find centers in Massachusetts, Connecticut, Rhode Island, New Hampshire, Maine, and Vermont." />
@@ -171,11 +174,16 @@
     {
         try
         {
-            // Simulate API call with 2500ms delay
-            await Task.Delay(2500);
+            var bowlingCentersResult = await NebaApiService.GetBowlingCentersAsync();
 
-            // Load dummy data
-            _allCenters = GetDummyBowlingCenters();
+            if (bowlingCentersResult.IsError)
+            {
+                _errorMessage = bowlingCentersResult.FirstError.Description;
+
+                return;
+            }
+
+            _allCenters = bowlingCentersResult.Value.ToList();
             _filteredCenters = _allCenters;
         }
         catch (Exception ex)
@@ -237,179 +245,4 @@
         // If format doesn't match expected, return as-is
         return phoneNumber;
     }
-
-    private static List<BowlingCenterViewModel> GetDummyBowlingCenters()
-    {
-        return new List<BowlingCenterViewModel>
-        {
-            new BowlingCenterViewModel(
-                Name: "Brunswick Bowl-O-Drome",
-                Street: "123 Main Street",
-                Unit: null,
-                City: "Boston",
-                State: "MA",
-                ZipCode: "02101",
-                PhoneNumber: "16175550100",
-                PhoneExtension: null,
-                Latitude: 42.3601,
-                Longitude: -71.0589),
-            new BowlingCenterViewModel(
-                Name: "Kings Bowling",
-                Street: "456 Oak Avenue",
-                Unit: "Suite 200",
-                City: "Worcester",
-                State: "MA",
-                ZipCode: "01608",
-                PhoneNumber: "15085550200",
-                PhoneExtension: null,
-                Latitude: 42.2626,
-                Longitude: -71.8023),
-            new BowlingCenterViewModel(
-                Name: "Strike Zone Entertainment",
-                Street: "789 Elm Street",
-                Unit: null,
-                City: "Springfield",
-                State: "MA",
-                ZipCode: "01103",
-                PhoneNumber: "14135550300",
-                PhoneExtension: "123",
-                Latitude: 42.1015,
-                Longitude: -72.5898),
-            new BowlingCenterViewModel(
-                Name: "Lucky Lanes",
-                Street: "321 Pine Road",
-                Unit: null,
-                City: "Hartford",
-                State: "CT",
-                ZipCode: "06103",
-                PhoneNumber: "18605550400",
-                PhoneExtension: null,
-                Latitude: 41.7658,
-                Longitude: -72.6734),
-            new BowlingCenterViewModel(
-                Name: "Spare Time Bowling",
-                Street: "654 Maple Drive",
-                Unit: null,
-                City: "Providence",
-                State: "RI",
-                ZipCode: "02903",
-                PhoneNumber: "14015550500",
-                PhoneExtension: null,
-                Latitude: 41.8240,
-                Longitude: -71.4128),
-            new BowlingCenterViewModel(
-                Name: "All Star Lanes",
-                Street: "987 Cedar Lane",
-                Unit: "Unit B",
-                City: "Manchester",
-                State: "NH",
-                ZipCode: "03101",
-                PhoneNumber: "16035550600",
-                PhoneExtension: "456",
-                Latitude: 42.9956,
-                Longitude: -71.4548),
-            new BowlingCenterViewModel(
-                Name: "Perfect Game Lanes",
-                Street: "147 Birch Street",
-                Unit: null,
-                City: "Portland",
-                State: "ME",
-                ZipCode: "04101",
-                PhoneNumber: "12075550700",
-                PhoneExtension: null,
-                Latitude: 43.6591,
-                Longitude: -70.2568),
-            new BowlingCenterViewModel(
-                Name: "Green Mountain Bowling",
-                Street: "258 Spruce Avenue",
-                Unit: null,
-                City: "Burlington",
-                State: "VT",
-                ZipCode: "05401",
-                PhoneNumber: "18025550800",
-                PhoneExtension: null,
-                Latitude: 44.4759,
-                Longitude: -73.2121),
-            new BowlingCenterViewModel(
-                Name: "AMF Circle Lanes",
-                Street: "369 Willow Court",
-                Unit: null,
-                City: "New Haven",
-                State: "CT",
-                ZipCode: "06510",
-                PhoneNumber: "12035550900",
-                PhoneExtension: null,
-                Latitude: 41.3083,
-                Longitude: -72.9279),
-            new BowlingCenterViewModel(
-                Name: "Colonial Lanes",
-                Street: "741 Hickory Way",
-                Unit: null,
-                City: "Cambridge",
-                State: "MA",
-                ZipCode: "02139",
-                PhoneNumber: "16175551000",
-                PhoneExtension: null,
-                Latitude: 42.3736,
-                Longitude: -71.1097),
-            new BowlingCenterViewModel(
-                Name: "Thunder Alley",
-                Street: "852 Ash Boulevard",
-                Unit: "Suite 12",
-                City: "Warwick",
-                State: "RI",
-                ZipCode: "02886",
-                PhoneNumber: "14015551100",
-                PhoneExtension: null,
-                Latitude: 41.7001,
-                Longitude: -71.4162),
-            new BowlingCenterViewModel(
-                Name: "Pinz Entertainment",
-                Street: "963 Walnut Place",
-                Unit: null,
-                City: "Nashua",
-                State: "NH",
-                ZipCode: "03060",
-                PhoneNumber: "16035551200",
-                PhoneExtension: null,
-                Latitude: 42.7654,
-                Longitude: -71.4676),
-            new BowlingCenterViewModel(
-                Name: "Bayside Bowl",
-                Street: "159 Cherry Street",
-                Unit: null,
-                City: "Bangor",
-                State: "ME",
-                ZipCode: "04401",
-                PhoneNumber: "12075551300",
-                PhoneExtension: null,
-                Latitude: 44.8016,
-                Longitude: -68.7712),
-            new BowlingCenterViewModel(
-                Name: "Champlain Lanes",
-                Street: "357 Poplar Drive",
-                Unit: null,
-                City: "Montpelier",
-                State: "VT",
-                ZipCode: "05602",
-                PhoneNumber: "18025551400",
-                PhoneExtension: null,
-                Latitude: 44.2601,
-                Longitude: -72.5754),
-            new BowlingCenterViewModel(
-                Name: "Boston Bowl",
-                Street: "486 Sycamore Road",
-                Unit: null,
-                City: "Dorchester",
-                State: "MA",
-                ZipCode: "02124",
-                PhoneNumber: "16175551500",
-                PhoneExtension: null,
-                Latitude: 42.2918,
-                Longitude: -71.0677),
-        };
-    }
-
-    [Inject]
-    private IJSRuntime JSInterop { get; set; } = default!;
 }
