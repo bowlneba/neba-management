@@ -17,7 +17,8 @@ public static class BowlingCenterDtoFactory
         string? phoneNumber = null,
         string? extension = null,
         double? latitude = null,
-        double? longitude = null)
+        double? longitude = null,
+        bool? isClosed = null)
             => new()
             {
                 Name = name ?? "Test Bowling Center",
@@ -30,6 +31,7 @@ public static class BowlingCenterDtoFactory
                 Extension = extension,
                 Latitude = latitude ?? 40.7128,
                 Longitude = longitude ?? -74.0060,
+                IsClosed = isClosed ?? false,
             };
 
     public static BowlingCenterDto Bogus(int? seed = null)
@@ -52,7 +54,7 @@ public static class BowlingCenterDtoFactory
                 Extension = f.Random.Bool(0.2f) ? f.Random.Number(100, 999).ToString(CultureInfo.InvariantCulture) : null,
                 Latitude = f.Address.Latitude(),
                 Longitude = f.Address.Longitude(),
-                
+                IsClosed = f.Random.Bool(0.1f),
             });
 
         if (seed.HasValue)
