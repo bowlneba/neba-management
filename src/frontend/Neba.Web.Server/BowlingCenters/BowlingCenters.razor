@@ -118,7 +118,7 @@
                                                 @center.Unit
                                             }
                                             <br />
-                                            @center.City, @center.State @center.ZipCode
+                                            @center.City, @center.State @FormatZipCode(center.ZipCode)
                                         </div>
                                     </div>
 
@@ -265,6 +265,18 @@
 
         // If format doesn't match expected, return as-is
         return phoneNumber;
+    }
+
+    private static string FormatZipCode(string zipCode)
+    {
+        // Format ZIP codes as XXXXX or XXXXX-XXXX
+        if (zipCode.Length == 9)
+        {
+            return $"{zipCode[..5]}-{zipCode[5..]}";
+        }
+
+        // 5-digit ZIP or other format, return as-is
+        return zipCode;
     }
 
     public async ValueTask DisposeAsync()
