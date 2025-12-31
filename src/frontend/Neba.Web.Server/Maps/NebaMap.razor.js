@@ -11,6 +11,13 @@ let boundsChangeTimeout = null; // Timeout for debouncing bounds changes
 let lastLocationHash = null; // Hash of last locations to detect changes
 let markerClickInProgress = false; // Flag to track if a marker/cluster was just clicked
 
+// Directions mode state
+let directionsMode = false; // Whether we're in directions mode
+let routeDataSource = null; // Data source for route line
+let routeLayer = null; // Layer for route display
+let startMarker = null; // Starting location marker
+let subscriptionKey = null; // Azure Maps subscription key (stored for routing API)
+
 /**
  * Waits for the Azure Maps SDK to be loaded
  * @returns {Promise} Promise that resolves when atlas is available
@@ -62,6 +69,8 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
     if (authConfig.subscriptionKey) {
         // Local development or fallback: Use subscription key
         console.log('[NebaMap] Using subscription key authentication');
+        subscriptionKey = authConfig.subscriptionKey; // Store for routing API
+        window.azureMapsSubscriptionKey = subscriptionKey; // Make available to other modules
         authOptions = {
             authType: 'subscriptionKey',
             subscriptionKey: authConfig.subscriptionKey
@@ -430,6 +439,217 @@ function notifyBoundsChanged() {
 }
 
 /**
+ * Enters directions preview mode - zooms to selected location and dims other markers
+ * @param {string} locationId - The ID of the destination location
+ */
+export function enterDirectionsPreview(locationId) {
+    if (!map || !markers.has(locationId)) {
+        console.warn('[NebaMap] Cannot enter directions preview for location:', locationId);
+        return;
+    }
+
+    console.log('[NebaMap] Entering directions preview mode for:', locationId);
+    directionsMode = true;
+
+    const feature = markers.get(locationId);
+    const coordinates = feature.geometry.coordinates;
+
+    // Close any open popup
+    closePopup();
+
+    // Zoom to the selected location
+    map.setCamera({
+        center: coordinates,
+        zoom: 13,
+        type: 'ease',
+        duration: 1000
+    });
+
+    // Dim other markers by reducing their opacity
+    // We'll update the symbol layer to make non-selected markers semi-transparent
+    const symbolLayers = map.layers.getLayers().filter(l => l instanceof atlas.layer.SymbolLayer);
+    symbolLayers.forEach(layer => {
+        layer.setOptions({
+            iconOptions: {
+                opacity: ['case',
+                    ['==', ['get', 'id'], locationId],
+                    1.0, // Selected marker - full opacity
+                    0.3  // Other markers - dimmed
+                ]
+            }
+        });
+    });
+}
+
+/**
+ * Calculates and displays a route from origin to destination using Azure Maps Route API
+ * @param {number[]} origin - Origin coordinates [longitude, latitude]
+ * @param {number[]} destination - Destination coordinates [longitude, latitude]
+ * @returns {Promise<Object>} Route data with distance, time, and instructions
+ */
+export async function showRoute(origin, destination) {
+    if (!map || !subscriptionKey) {
+        console.error('[NebaMap] Cannot show route - map or subscription key not available');
+        throw new Error('Map not initialized');
+    }
+
+    console.log('[NebaMap] Calculating route from', origin, 'to', destination);
+
+    try {
+        // Call Azure Maps Route Directions API
+        const url = `https://atlas.microsoft.com/route/directions/json?` +
+            `subscription-key=${subscriptionKey}` +
+            `&api-version=1.0` +
+            `&query=${origin[1]},${origin[0]}:${destination[1]},${destination[0]}` +
+            `&travelMode=car` +
+            `&instructionsType=text`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Route API error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.routes || data.routes.length === 0) {
+            throw new Error('No route found');
+        }
+
+        const route = data.routes[0];
+        const summary = route.summary;
+        const legs = route.legs[0];
+
+        // Extract turn-by-turn instructions from guidance
+        // legs.guidance.instructions contains the actual turn-by-turn directions
+        const instructions = (legs.guidance?.instructions || []).map(instruction => ({
+            text: instruction.message || instruction.instructionType || 'Continue',
+            distanceMeters: instruction.travelDistance || 0
+        }));
+
+        console.log('[NebaMap] Extracted', instructions.length, 'turn-by-turn instructions');
+
+        // Create route data object (exclude routeGeoJson to reduce payload size)
+        const routeData = {
+            distanceMeters: summary.lengthInMeters,
+            travelTimeSeconds: summary.travelTimeInSeconds,
+            instructions: instructions,
+            routeGeoJson: null // Don't send full route back - too large for SignalR
+        };
+
+        // Draw the route on the map
+        drawRoute(route, origin, destination);
+
+        console.log('[NebaMap] Route calculated:', routeData);
+        return routeData;
+    } catch (error) {
+        console.error('[NebaMap] Error calculating route:', error);
+        throw error;
+    }
+}
+
+/**
+ * Draws the route line and markers on the map
+ * @param {Object} route - Route data from Azure Maps API
+ * @param {number[]} origin - Origin coordinates [longitude, latitude]
+ * @param {number[]} destination - Destination coordinates [longitude, latitude]
+ */
+function drawRoute(route, origin, destination) {
+    // Create route data source if it doesn't exist
+    if (!routeDataSource) {
+        routeDataSource = new atlas.source.DataSource();
+        map.sources.add(routeDataSource);
+
+        // Create route line layer
+        routeLayer = new atlas.layer.LineLayer(routeDataSource, null, {
+            strokeColor: '#0066b2',
+            strokeWidth: 5,
+            strokeOpacity: 0.8
+        });
+        map.layers.add(routeLayer, 'labels'); // Add below labels
+    }
+
+    // Clear existing route
+    routeDataSource.clear();
+
+    // Add route line
+    const routeLine = route.legs[0].points.map(p => [p.longitude, p.latitude]);
+    routeDataSource.add(new atlas.data.Feature(
+        new atlas.data.LineString(routeLine)
+    ));
+
+    // Add start marker
+    const startPoint = new atlas.data.Feature(
+        new atlas.data.Point(origin),
+        { type: 'start' }
+    );
+    routeDataSource.add(startPoint);
+
+    // Add start marker layer if not exists
+    if (!startMarker) {
+        startMarker = new atlas.layer.SymbolLayer(routeDataSource, null, {
+            iconOptions: {
+                image: 'pin-blue',
+                anchor: 'center',
+                size: 1.0
+            },
+            filter: ['==', ['get', 'type'], 'start']
+        });
+        map.layers.add(startMarker);
+    }
+
+    // Fit map bounds to show entire route
+    const bounds = atlas.data.BoundingBox.fromData([
+        new atlas.data.Point(origin),
+        new atlas.data.Point(destination)
+    ]);
+
+    map.setCamera({
+        bounds: bounds,
+        padding: 80,
+        type: 'ease',
+        duration: 1000
+    });
+}
+
+/**
+ * Exits directions mode and returns to overview
+ */
+export function exitDirectionsMode() {
+    console.log('[NebaMap] Exiting directions mode');
+    directionsMode = false;
+
+    // Remove route layer and data source
+    if (routeLayer) {
+        map.layers.remove(routeLayer);
+        routeLayer = null;
+    }
+
+    if (startMarker) {
+        map.layers.remove(startMarker);
+        startMarker = null;
+    }
+
+    if (routeDataSource) {
+        map.sources.remove(routeDataSource);
+        routeDataSource = null;
+    }
+
+    // Restore marker opacity
+    const symbolLayers = map.layers.getLayers().filter(l => l instanceof atlas.layer.SymbolLayer);
+    symbolLayers.forEach(layer => {
+        layer.setOptions({
+            iconOptions: {
+                opacity: 1.0
+            }
+        });
+    });
+
+    // Fit bounds to show all markers again
+    fitBounds();
+}
+
+/**
  * Cleans up the map instance and removes all event listeners
  * Called when the component is disposed to prevent memory leaks and callback errors
  */
@@ -448,6 +668,22 @@ export function dispose() {
         currentPopup = null;
     }
 
+    // Clean up directions mode resources
+    if (routeLayer) {
+        map?.layers.remove(routeLayer);
+        routeLayer = null;
+    }
+
+    if (startMarker) {
+        map?.layers.remove(startMarker);
+        startMarker = null;
+    }
+
+    if (routeDataSource) {
+        map?.sources.remove(routeDataSource);
+        routeDataSource = null;
+    }
+
     // Dispose of the map instance
     if (map) {
         // Remove all event listeners (moveend, click, mouseenter, mouseleave)
@@ -464,6 +700,8 @@ export function dispose() {
     dotNetHelper = null;
     lastLocationHash = null;
     markerClickInProgress = false;
+    directionsMode = false;
+    subscriptionKey = null;
 
     console.log('[NebaMap] Map disposed successfully');
 }

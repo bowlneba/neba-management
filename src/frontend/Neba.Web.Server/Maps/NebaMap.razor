@@ -194,6 +194,56 @@
     }
 
     /// <summary>
+    /// Enters directions preview mode for a specific location.
+    /// Zooms to the location and dims other markers.
+    /// </summary>
+    /// <param name="locationId">The ID of the destination location</param>
+    public async Task EnterDirectionsPreviewAsync(string locationId)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("enterDirectionsPreview", locationId);
+        }
+    }
+
+    /// <summary>
+    /// Calculates and displays a route from origin to destination.
+    /// </summary>
+    /// <param name="origin">Origin coordinates [longitude, latitude]</param>
+    /// <param name="destination">Destination coordinates [longitude, latitude]</param>
+    /// <returns>Route data including distance, time, and turn-by-turn instructions</returns>
+    public async Task<RouteData?> ShowRouteAsync(double[] origin, double[] destination)
+    {
+        if (_jsModule is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var routeData = await _jsModule.InvokeAsync<RouteData>("showRoute", origin, destination);
+            return routeData;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[NebaMap] Error showing route: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Exits directions mode and returns to overview mode.
+    /// Removes route and restores all markers to normal display.
+    /// </summary>
+    public async Task ExitDirectionsModeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("exitDirectionsMode");
+        }
+    }
+
+    /// <summary>
     /// JavaScript interop callback invoked when map bounds change.
     /// </summary>
     [JSInvokable]

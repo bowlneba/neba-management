@@ -1,6 +1,7 @@
 @page "/bowling-centers"
 @using Neba.Web.Server.Maps
 @using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Components
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @implements IAsyncDisposable
 
@@ -166,6 +167,12 @@
             </div>
         </div>
     }
+
+    <!-- Directions Modal -->
+    <DirectionsModal IsOpen="@_showDirectionsModal"
+                     OnClose="@HandleDirectionsClose"
+                     State="@_directionsState"
+                     OnLocationSelected="@HandleLocationSelected" />
 </div>
 
 @code {
@@ -180,6 +187,8 @@
     private IJSObjectReference? _jsModule;
     private NebaMap? _mapComponent;
     private MapBounds? _currentMapBounds;
+    private bool _showDirectionsModal = false;
+    private readonly DirectionsState _directionsState = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -360,8 +369,70 @@
 
     private async Task HandleDirectionsClick(BowlingCenterViewModel center)
     {
-        // Show alert for now (directions functionality to be implemented later)
-        await JSInterop.InvokeVoidAsync("alert", $"Directions to {center.Name}");
+        // Initialize directions state
+        _directionsState.Reset();
+        _directionsState.Mode = MapMode.DirectionsPreview;
+        _directionsState.SelectedCenterId = $"{center.Name}-{center.City}".Replace(" ", "-");
+        _directionsState.SelectedCenterName = center.Name;
+        _directionsState.DestinationLocation = new[] { center.Longitude, center.Latitude };
+
+        // Enter directions preview mode on the map
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.EnterDirectionsPreviewAsync(_directionsState.SelectedCenterId);
+        }
+
+        // Show the directions modal
+        _showDirectionsModal = true;
+    }
+
+    private async Task HandleLocationSelected(double[] location)
+    {
+        if (_mapComponent is null || _directionsState.DestinationLocation is null)
+        {
+            return;
+        }
+
+        _directionsState.IsLoading = true;
+        _directionsState.ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            // Calculate and display the route
+            var routeData = await _mapComponent.ShowRouteAsync(location, _directionsState.DestinationLocation);
+
+            if (routeData is not null)
+            {
+                _directionsState.Route = routeData;
+                _directionsState.Mode = MapMode.DirectionsActive;
+            }
+            else
+            {
+                _directionsState.ErrorMessage = "Unable to calculate route. Please try a different starting location.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _directionsState.ErrorMessage = $"Error calculating route: {ex.Message}";
+        }
+        finally
+        {
+            _directionsState.IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleDirectionsClose()
+    {
+        _showDirectionsModal = false;
+        _directionsState.Reset();
+
+        // Exit directions mode on the map
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.ExitDirectionsModeAsync();
+        }
     }
 
     private static string GetPhoneTelUri(string phoneNumber)
