@@ -12,7 +12,6 @@ let lastLocationHash = null; // Hash of last locations to detect changes
 let markerClickInProgress = false; // Flag to track if a marker/cluster was just clicked
 
 // Directions mode state
-let directionsMode = false; // Whether we're in directions mode
 let routeDataSource = null; // Data source for route line
 let routeLayer = null; // Layer for route display
 let startMarker = null; // Starting location marker
@@ -449,7 +448,6 @@ export function enterDirectionsPreview(locationId) {
     }
 
     console.log('[NebaMap] Entering directions preview mode for:', locationId);
-    directionsMode = true;
 
     const feature = markers.get(locationId);
     const coordinates = feature.geometry.coordinates;
@@ -520,23 +518,32 @@ export async function showRoute(origin, destination) {
 
         const route = data.routes[0];
         const summary = route.summary;
-        const legs = route.legs[0];
 
-        // Extract turn-by-turn instructions from guidance
-        // legs.guidance.instructions contains the actual turn-by-turn directions
-        const instructions = (legs.guidance?.instructions || []).map(instruction => ({
-            text: instruction.message || instruction.instructionType || 'Continue',
-            distanceMeters: instruction.travelDistance || 0
-        }));
+        // Extract turn-by-turn instructions
+        let instructions = [];
 
-        console.log('[NebaMap] Extracted', instructions.length, 'turn-by-turn instructions');
+        // Try route.guidance.instructions first
+        if (route.guidance?.instructions && route.guidance.instructions.length > 0) {
+            instructions = route.guidance.instructions.map(instruction => ({
+                Text: instruction.message || instruction.instructionType || instruction.text || 'Continue',
+                DistanceMeters: instruction.travelDistance || instruction.routeOffsetInMeters || 0
+            }));
+        }
+        // Fallback to route.guidance.instructionGroups
+        else if (route.guidance?.instructionGroups && route.guidance.instructionGroups.length > 0) {
+            const allInstructions = route.guidance.instructionGroups.flatMap(group => group.instructions || []);
+            instructions = allInstructions.map(instruction => ({
+                Text: instruction.message || instruction.instructionType || instruction.text || 'Continue',
+                DistanceMeters: instruction.travelDistance || instruction.routeOffsetInMeters || 0
+            }));
+        }
 
         // Create route data object (exclude routeGeoJson to reduce payload size)
         const routeData = {
-            distanceMeters: summary.lengthInMeters,
-            travelTimeSeconds: summary.travelTimeInSeconds,
-            instructions: instructions,
-            routeGeoJson: null // Don't send full route back - too large for SignalR
+            DistanceMeters: summary.lengthInMeters,
+            TravelTimeSeconds: summary.travelTimeInSeconds,
+            Instructions: instructions,
+            RouteGeoJson: null // Don't send full route back - too large for SignalR
         };
 
         // Draw the route on the map
@@ -619,7 +626,6 @@ function drawRoute(route, origin, destination) {
  */
 export function exitDirectionsMode() {
     console.log('[NebaMap] Exiting directions mode');
-    directionsMode = false;
 
     // Remove route layer and data source
     if (routeLayer) {
@@ -702,9 +708,7 @@ export function dispose() {
     dotNetHelper = null;
     lastLocationHash = null;
     markerClickInProgress = false;
-    directionsMode = false;
     subscriptionKey = null;
 
     console.log('[NebaMap] Map disposed successfully');
 }
-

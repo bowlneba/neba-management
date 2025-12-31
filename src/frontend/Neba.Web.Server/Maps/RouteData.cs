@@ -21,7 +21,9 @@ public sealed class RouteData
     /// <summary>
     /// Turn-by-turn directions.
     /// </summary>
-    public Collection<RouteInstruction> Instructions { get; } = [];
+#pragma warning disable CA2227 // Collection properties should be read only (needed for JSON deserialization)
+    public Collection<RouteInstruction> Instructions { get; set; } = [];
+#pragma warning restore CA2227
 
     /// <summary>
     /// GeoJSON representation of the route line (for drawing on map).
