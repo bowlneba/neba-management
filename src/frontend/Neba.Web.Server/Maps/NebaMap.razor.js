@@ -5,10 +5,10 @@
 let map = null;
 let dataSource = null;
 let markers = new Map(); // Track markers by location ID
-let currentConfig = null;
 let currentPopup = null; // Track the currently open popup
 let dotNetHelper = null; // Reference to .NET component for callbacks
 let boundsChangeTimeout = null; // Timeout for debouncing bounds changes
+let lastLocationHash = null; // Hash of last locations to detect changes
 
 /**
  * Waits for the Azure Maps SDK to be loaded
@@ -54,7 +54,6 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
     await waitForAtlas();
     console.log('[NebaMap] Azure Maps SDK loaded');
 
-    currentConfig = mapConfig;
     dotNetHelper = dotNetRef;
 
     // Determine authentication method
@@ -77,7 +76,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
         return;
     }
 
-    // Initialize the map
+    // Initialize the map with tile caching optimizations
     try {
         map = new atlas.Map(mapConfig.containerId, {
             authOptions: authOptions,
@@ -86,7 +85,11 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
             language: 'en-US',
             style: 'road',
             showLogo: false,
-            showFeedbackLink: false
+            showFeedbackLink: false,
+            // Performance optimizations for tile caching
+            renderWorldCopies: false, // Don't render multiple copies of the world (saves tiles)
+            preserveDrawingBuffer: true, // Better caching and performance
+            refreshExpiredTiles: false // Don't auto-refresh expired tiles (saves requests)
         });
 
         // Wait for map to be ready
@@ -224,6 +227,7 @@ function addClusterLayers() {
 
 /**
  * Updates the markers on the map with new location data
+ * Caches results to avoid unnecessary re-rendering and tile requests
  * @param {Array} locations - Array of location objects
  */
 export function updateMarkers(locations) {
@@ -231,6 +235,15 @@ export function updateMarkers(locations) {
         console.warn('[NebaMap] Data source not initialized');
         return;
     }
+
+    // Create a hash of location IDs to detect if data has actually changed
+    // This prevents unnecessary marker updates that trigger tile reloads
+    const locationHash = locations.map(l => l.id).sort().join('|');
+    if (locationHash === lastLocationHash) {
+        console.log('[NebaMap] Locations unchanged, skipping marker update (cached)');
+        return;
+    }
+    lastLocationHash = locationHash;
 
     console.log('[NebaMap] Updating markers:', locations.length);
 
