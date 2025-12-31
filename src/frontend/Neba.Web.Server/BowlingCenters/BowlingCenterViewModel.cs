@@ -13,6 +13,7 @@ namespace Neba.Web.Server.BowlingCenters;
 /// <param name="PhoneExtension">The optional phone extension (digits only).</param>
 /// <param name="Latitude">The latitude coordinate for map display.</param>
 /// <param name="Longitude">The longitude coordinate for map display.</param>
+/// <param name="IsClosed">Indicates whether the center is currently closed.</param>
 public record BowlingCenterViewModel(
     string Name,
     string Street,
@@ -23,4 +24,5 @@ public record BowlingCenterViewModel(
     string PhoneNumber,
     string? PhoneExtension,
     double Latitude,
-    double Longitude);
+    double Longitude,
+    bool IsClosed = false);
