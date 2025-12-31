@@ -36,9 +36,9 @@
 
 async Task Main()
 {
-	bool getBowlingCenterCoordinates = true;
+	bool getBowlingCenters = false;
 
-	if (getBowlingCenterCoordinates)
+	if (getBowlingCenters)
 	{
 		BowlingCenters.RemoveRange(BowlingCenters);	
 	}
@@ -50,7 +50,7 @@ async Task Main()
 	
 	await SaveChangesAsync();
 
-	if (getBowlingCenterCoordinates)
+	if (getBowlingCenters)
 	{
 		await MigrateBowlingCentersAsync();
 	}
@@ -140,8 +140,6 @@ public async Task MigrateBowlingCentersAsync()
 			usbcBowlingCenters.AddRange(stateBowlingCenters);
 		}
 	}
-	
-	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
 	
 	List<string> centerPhoneNumbers = [];
 
@@ -245,8 +243,14 @@ public async Task MigrateBowlingCentersAsync()
 			PhoneNumber = websiteBowlingCenter.Phone
 		});
 	}
+	
+	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
+	List<KeyValuePair<BowlingCenters, int>> multipleResultsBowlingCenters = [];
+	
+	//todo: do manual lat/lon (address update) mapping for multiple results and remove from loop (.where lat is not null)
+	ManualLocationUpdates(bowlingCentersToWebsiteSchema);
 
-	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema)
+	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema.Where(bc => bc.Latitude == null))
 	{
 		string address = $"{bowlingCenter.Street} {bowlingCenter.City}, {bowlingCenter.State} {bowlingCenter.ZipCode}";
 		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
@@ -261,10 +265,20 @@ public async Task MigrateBowlingCentersAsync()
 
 			if (azureResponse.Results.Length == 1)
 			{
-				bowlingCenter.Latitude = azureResponse.Results[0].Position.Lat;
-				bowlingCenter.Longitude = azureResponse.Results[0].Position.Lon;
+				var azureResult = azureResponse.Results[0];
+
+				bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
+				bowlingCenter.City = azureResult.Address.LocalName;
+				bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
+				
+				bowlingCenter.Latitude = azureResult.Position.Lat;
+				bowlingCenter.Longitude = azureResult.Position.Lon;
 
 				// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
+			}
+			else
+			{
+				multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
 			}
 		}
 		else
@@ -274,10 +288,123 @@ public async Task MigrateBowlingCentersAsync()
 	}
 
 	failedBowlingCenterAddressLookups.Dump("Failed Bowling Center Address Lookup");
+	multipleResultsBowlingCenters.Dump("Multiple Address Lookup Bowling Centers");
 	
 	BowlingCenters.AddRange(bowlingCentersToWebsiteSchema);
 	
 	await SaveChangesAsync();
+}
+
+private void ManualLocationUpdates(IReadOnlyCollection<BowlingCenters> bowlingCenters)
+{
+	var amity = bowlingCenters.Single(bc => bc.Name == "Amity Bowl");
+	amity.Street = "30 Selden Street";
+	
+	var tbowl = bowlingCenters.Single(bc => bc.Name == "Bowlero Wallingford");
+	tbowl.Latitude = 41.488968;
+	tbowl.Longitude = -72.8089833;
+	
+	var callahans = bowlingCenters.Single(bc => bc.Name == "Callahan's Bowl O Rama");
+	callahans.Latitude = 41.6950308;
+	callahans.Longitude = -72.7083898;
+	
+	var kickbackNBowl = bowlingCenters.Single(bc => bc.Name == "Kickback N Bowl");
+	kickbackNBowl.ZipCode = "06424";
+	
+	var subbaseLanes = bowlingCenters.Single(bc => bc.Name == "Subase Lanes");
+	subbaseLanes.Street = "Grayling Ave";
+	subbaseLanes.Unit = "Bldg. 485";
+	subbaseLanes.Latitude = 41.3912489;
+	subbaseLanes.Longitude = -72.0898898;
+	
+	var somerset = bowlingCenters.Single(bc => bc.Name == "AMF Somerset Lanes");
+	somerset.ZipCode = "02725";
+	
+	var barnBowl = bowlingCenters.Single(bc => bc.Name == "Barn Bowl & Bistro");
+	barnBowl.City = "Oak Bluffs";
+	barnBowl.Latitude = 41.4522285;
+	barnBowl.Longitude = -70.5657132;
+	
+	var auburn = bowlingCenters.Single(bc => bc.Name == "Bowlero Worcester");
+	auburn.Latitude = 42.222311;
+	auburn.Longitude = -71.8608448;
+	
+	var cove = bowlingCenters.Single(bc => bc.Name == "Cove Bowling & Entertainment, Inc");
+	cove.City = "Great Barrington";
+	cove.Latitude = 42.204971;
+	cove.Longitude = -73.347347;
+	
+	var hanscom = bowlingCenters.Single(bc => bc.Name == "Hanscom Lanes");
+	hanscom.Latitude = 42.4605193;
+	hanscom.Longitude = -71.2891387;
+	
+	var kingston = bowlingCenters.Single(bc => bc.Name == "Kingston TenPin");
+	kingston.Latitude = 42.0140969;
+	kingston.Longitude = -70.7343119;
+	
+	var moheganBowl = bowlingCenters.Single(bc => bc.Name == "Mohegan Bowl");
+	moheganBowl.Street = "51 Thompson Road";
+	moheganBowl.Latitude = 42.0558149;
+	moheganBowl.Longitude = -71.8648723;
+	
+	var ryansFamilyYarmouth = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusement Yarmouth");
+	ryansFamilyYarmouth.Street = "1067 Route 28";
+	ryansFamilyYarmouth.City = "South Yarmouth";
+	ryansFamilyYarmouth.Latitude = 41.6599952;
+	ryansFamilyYarmouth.Longitude = -70.2044246;
+	
+	var ryansFamilyRaynham = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusements Raynham");
+	ryansFamilyRaynham.Street = "115 New State Highway, Rte. 44";
+	
+	var bruce = bowlingCenters.Single(bc => bc.Name == "Vincent Hall Training Center");
+	bruce.Latitude = 42.322359;
+	bruce.Longitude = -71.5583947;
+	
+	var oldMountain = bowlingCenters.Single(bc => bc.Name == "Old Mountain Lanes");
+	oldMountain.ZipCode = "02879";
+	oldMountain.Latitude = 41.4447194;
+	oldMountain.Longitude = -71.4951874;
+	
+	var rutland = bowlingCenters.Single(bc => bc.Name == "Rutland Bowlerama");
+	rutland.Street = "158 South Main Street";
+	rutland.Latitude = 43.5982589;
+	rutland.Longitude = -72.9725074;
+	
+	var stMarks = bowlingCenters.Single(bc => bc.Name == "St Marks Bowling Lanes");
+	stMarks.Street = "1271 North Ave";
+	stMarks.ZipCode = "05408";
+	stMarks.Latitude = 44.5103739;
+	stMarks.Longitude = -73.2519529;
+	
+	var valleyBowl = bowlingCenters.Single(bc => bc.Name == "Valley Bowl");
+	valleyBowl.Street = "12 Prince St";
+	valleyBowl.Unit = "Ste 5";
+	valleyBowl.Latitude = 43.92591;
+	valleyBowl.Longitude = -72.6662649;
+	
+	var funspot = bowlingCenters.Single(bc => bc.Name == "Funspot Bowling Center");
+	funspot.Street = "579 Endicott St N";
+	funspot.Latitude = 43.6137749;
+	funspot.Longitude = -71.4796793;
+	
+	var yankeeManchester = bowlingCenters.Single(bc => bc.Name == "Yankee Lanes Manchester");
+	yankeeManchester.Latitude = 42.980634;
+	yankeeManchester.Longitude = -71.453377;
+	
+	var familyFun = bowlingCenters.Single(bc => bc.Name == "Family Fun Bowling Center");
+	familyFun.Latitude = 44.7940237;
+	familyFun.Longitude = -68.8405693;
+	
+	var meadowLanes = bowlingCenters.Single(bc => bc.Name == "Meadow Lanes");
+	meadowLanes.Street = "907 US-2";
+	meadowLanes.City = "Wilton";
+	meadowLanes.ZipCode = "04294";
+	meadowLanes.Latitude = 44.6161222;
+	meadowLanes.Longitude = -70.1783445;
+	
+	var hallowell = bowlingCenters.Single(bc => bc.Name == "Sparetime Recreation Hallowell");
+	hallowell.Name = "Interstate Bowling Center";
+	hallowell.Street = "215 Whitten Road"; 
 }
 
 public class UsbcBowlingCenterDto
@@ -1908,6 +2035,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(184, 2305),   // Patrick Donohoe Jr
 	new(null, 4053),  // Imani Williams
 	new(null, 2614),  // Jeremy Koziol
+	new(null, 1955),  // William Gibson
 	new(null, 1749),  // Tyler Scott
 	new(null, 4623),  // Chris Roberts
 	new(165, 2445),   // Douglas Carlson
