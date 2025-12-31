@@ -9,7 +9,7 @@ internal static class BowlingCentersMappingExtensions
 {
     extension(BowlingCenterDto dto)
     {
-        public BowlingCenterResponse ToResponse()
+        public BowlingCenterResponse ToResponseModel()
         {
             return new BowlingCenterResponse
             {

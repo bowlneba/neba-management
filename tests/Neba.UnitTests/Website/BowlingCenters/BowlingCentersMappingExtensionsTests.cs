@@ -16,7 +16,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(name: name);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Name.ShouldBe(name);
@@ -30,7 +30,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(street: street);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Street.ShouldBe(street);
@@ -44,7 +44,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(unit: unit);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Unit.ShouldBe(unit);
@@ -57,7 +57,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(unit: null);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Unit.ShouldBeNull();
@@ -71,7 +71,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(city: city);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.City.ShouldBe(city);
@@ -85,7 +85,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(state: state);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.State.ShouldBe(state);
@@ -99,7 +99,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(zipCode: zipCode);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.ZipCode.ShouldBe(zipCode);
@@ -113,7 +113,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(phoneNumber: phoneNumber);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.PhoneNumber.ShouldBe(phoneNumber);
@@ -127,7 +127,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(extension: extension);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.PhoneExtension.ShouldBe(extension);
@@ -140,7 +140,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(extension: null);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.PhoneExtension.ShouldBeNull();
@@ -154,7 +154,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(latitude: latitude);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Latitude.ShouldBe(latitude);
@@ -168,7 +168,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(longitude: longitude);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Longitude.ShouldBe(longitude);
@@ -182,7 +182,7 @@ public sealed class BowlingCentersMappingExtensionsTests
         BowlingCenterDto dto = BowlingCenterDtoFactory.Create(isClosed: isClosed);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.IsClosed.ShouldBe(isClosed);
@@ -218,7 +218,7 @@ public sealed class BowlingCentersMappingExtensionsTests
             isClosed: isClosed);
 
         // Act
-        BowlingCenterResponse response = dto.ToResponse();
+        BowlingCenterResponse response = dto.ToResponseModel();
 
         // Assert
         response.Name.ShouldBe(name);
