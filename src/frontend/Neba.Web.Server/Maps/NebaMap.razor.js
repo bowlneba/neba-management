@@ -9,6 +9,7 @@ let currentPopup = null; // Track the currently open popup
 let dotNetHelper = null; // Reference to .NET component for callbacks
 let boundsChangeTimeout = null; // Timeout for debouncing bounds changes
 let lastLocationHash = null; // Hash of last locations to detect changes
+let markerClickInProgress = false; // Flag to track if a marker/cluster was just clicked
 
 /**
  * Waits for the Azure Maps SDK to be loaded
@@ -125,6 +126,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
             // Add click event for individual markers to show popup
             map.events.add('click', symbolLayer, (e) => {
                 if (e.shapes && e.shapes.length > 0) {
+                    markerClickInProgress = true;
                     const properties = e.shapes[0].getProperties();
                     showPopup(e.shapes[0].getCoordinates(), properties);
                 }
@@ -149,6 +151,19 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
             // Note: moveend fires after pan, zoom, and fitBounds animations complete
             map.events.add('moveend', () => {
                 notifyBoundsChanged();
+            });
+
+            // Close popup when clicking on empty map area
+            map.events.add('click', () => {
+                // Use setTimeout to let layer click events fire first
+                setTimeout(() => {
+                    if (!markerClickInProgress && currentPopup) {
+                        currentPopup.close();
+                        currentPopup = null;
+                    }
+                    // Reset the flag for next click
+                    markerClickInProgress = false;
+                }, 0);
             });
         });
 
@@ -198,6 +213,7 @@ function addClusterLayers() {
             const properties = shape.getProperties ? shape.getProperties() : shape.properties;
 
             if (properties && properties.cluster) {
+                markerClickInProgress = true;
                 const clusterId = properties.cluster_id;
 
                 // Use the event position as the cluster center coordinates
@@ -435,6 +451,7 @@ export function dispose() {
     markers.clear();
     dotNetHelper = null;
     lastLocationHash = null;
+    markerClickInProgress = false;
 
     console.log('[NebaMap] Map disposed successfully');
 }
