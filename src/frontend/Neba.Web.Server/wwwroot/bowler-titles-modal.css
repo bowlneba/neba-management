@@ -21,9 +21,8 @@
     flex-direction: column !important;
 }
 
-/* Modal body should not scroll or have padding */
+/* Modal body - custom layout with no padding */
 .bowler-titles-modal .neba-modal-body {
-    overflow: hidden !important;
     padding: 0 !important;
     flex: 1 !important;
     display: flex !important;
