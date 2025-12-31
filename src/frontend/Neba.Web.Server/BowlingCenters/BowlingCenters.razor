@@ -1,0 +1,233 @@
+@page "/bowling-centers"
+@using Neba.Web.Server.Notifications
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Bowling Centers - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="Browse USBC certified bowling centers across New England. Find centers in Massachusetts, Connecticut, Rhode Island, New Hampshire, Maine, and Vermont." />
+</HeadContent>
+
+<div class="neba-space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-[var(--neba-blue-700)]">Bowling Centers</h1>
+        <p class="mt-1 text-sm text-gray-600">USBC certified centers across New England</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Centers"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading bowling centers..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Filter Bar -->
+    @if (!_isLoading && _allCenters.Count > 0)
+    {
+        <div class="flex flex-col md:flex-row gap-4 p-4 bg-[var(--neba-gray-100)] rounded-lg border border-[var(--neba-gray-300)]">
+            <!-- State Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="font-semibold text-[var(--neba-gray-700)] text-sm">Filter by State:</span>
+                <button class="state-btn @(_selectedState == "All" ? "active" : "")" @onclick="@(() => FilterByState("All"))">
+                    All States
+                </button>
+                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" @onclick="@(() => FilterByState("MA"))">
+                    MA
+                </button>
+                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" @onclick="@(() => FilterByState("CT"))">
+                    CT
+                </button>
+                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" @onclick="@(() => FilterByState("RI"))">
+                    RI
+                </button>
+                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" @onclick="@(() => FilterByState("NH"))">
+                    NH
+                </button>
+                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" @onclick="@(() => FilterByState("ME"))">
+                    ME
+                </button>
+                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" @onclick="@(() => FilterByState("VT"))">
+                    VT
+                </button>
+            </div>
+
+            <!-- Search Box -->
+            <div class="flex-1 min-w-[200px]">
+                <input type="text"
+                       class="w-full px-4 py-2 border-2 border-[var(--neba-gray-300)] rounded-md focus:outline-none focus:border-[var(--neba-blue-500)] transition-colors"
+                       placeholder="Search centers..."
+                       @bind="_searchQuery"
+                       @bind:event="oninput"
+                       @bind:after="ApplyFilters" />
+            </div>
+
+            <!-- Results Count -->
+            <div class="flex items-center text-sm text-[var(--neba-gray-700)] whitespace-nowrap">
+                Showing <span class="font-semibold mx-1">@_filteredCenters.Count</span> centers
+            </div>
+        </div>
+    }
+
+    <!-- Main Content: Side-by-Side Layout -->
+    @if (!_isLoading && _allCenters.Count > 0)
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
+            <!-- Left Side: Centers List -->
+            <div class="flex flex-col">
+                <div class="overflow-y-auto pr-2 space-y-4" style="max-height: 600px;">
+                    @if (_filteredCenters.Count == 0)
+                    {
+                        <div class="neba-card text-center py-8">
+                            <p class="text-[var(--neba-gray-700)]">No centers found matching your search criteria.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var center in _filteredCenters)
+                        {
+                            <div class="neba-card hover:shadow-lg hover:border-[var(--neba-blue-500)] transition-all cursor-pointer"
+                                 @onclick="@(() => HandleCenterCardClick(center))">
+                                <h3 class="text-lg font-bold text-[var(--neba-blue-700)] mb-3">@center.Name</h3>
+
+                                <div class="space-y-2 mb-4">
+                                    <!-- Address -->
+                                    <div class="flex items-start gap-2 text-sm text-[var(--neba-gray-700)]">
+                                        <svg class="w-5 h-5 text-[var(--neba-blue-600)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <div>
+                                            @center.Street<br />
+                                            @center.City, @center.State @center.ZipCode
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div class="flex items-center gap-2 text-sm text-[var(--neba-gray-700)]">
+                                        <svg class="w-5 h-5 text-[var(--neba-blue-600)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        <span>@center.Phone</span>
+                                    </div>
+                                </div>
+
+                                <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2"
+                                        @onclick="@((e) => HandleDirectionsClick(center, e))"
+                                        @onclick:stopPropagation="true">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                    </svg>
+                                    Get Directions
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Right Side: Map Placeholder -->
+            <div class="flex flex-col">
+                <div class="neba-card flex items-center justify-center bg-gradient-to-br from-[var(--neba-blue-100)] to-[var(--neba-blue-300)] text-[var(--neba-blue-700)]" style="height: 600px;">
+                    <div class="text-center">
+                        <svg class="w-16 h-16 mx-auto mb-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                        </svg>
+                        <p class="font-semibold text-lg">Azure Maps</p>
+                        <p class="text-sm opacity-80 mt-2">Interactive map will be displayed here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BowlingCenterViewModel> _allCenters = new();
+    private List<BowlingCenterViewModel> _filteredCenters = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+    private string _selectedState = "All";
+    private string _searchQuery = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Simulate API call with 2500ms delay
+            await Task.Delay(2500);
+
+            // Load dummy data
+            _allCenters = GetDummyBowlingCenters();
+            _filteredCenters = _allCenters;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load bowling centers: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void FilterByState(string state)
+    {
+        _selectedState = state;
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        _filteredCenters = _allCenters
+            .Where(c => _selectedState == "All" || c.State == _selectedState)
+            .Where(c => string.IsNullOrWhiteSpace(_searchQuery) ||
+                       c.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                       c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private void HandleCenterCardClick(BowlingCenterViewModel center)
+    {
+        // Placeholder for map focus functionality
+        _ = JSInterop.InvokeVoidAsync("alert", $"Would focus map on {center.Name}");
+    }
+
+    private void HandleDirectionsClick(BowlingCenterViewModel center, MouseEventArgs e)
+    {
+        // Placeholder for directions functionality
+        _ = JSInterop.InvokeVoidAsync("alert", $"Get directions to {center.Name}");
+    }
+
+    private static List<BowlingCenterViewModel> GetDummyBowlingCenters()
+    {
+        return new List<BowlingCenterViewModel>
+        {
+            new("Brunswick Bowl-O-Drome", "123 Main Street", "Boston", "MA", "02101", "(617) 555-0100", 42.3601, -71.0589),
+            new("Kings Bowling", "456 Oak Avenue", "Worcester", "MA", "01608", "(508) 555-0200", 42.2626, -71.8023),
+            new("Strike Zone Entertainment", "789 Elm Street", "Springfield", "MA", "01103", "(413) 555-0300", 42.1015, -72.5898),
+            new("Lucky Lanes", "321 Pine Road", "Hartford", "CT", "06103", "(860) 555-0400", 41.7658, -72.6734),
+            new("Spare Time Bowling", "654 Maple Drive", "Providence", "RI", "02903", "(401) 555-0500", 41.8240, -71.4128),
+            new("All Star Lanes", "987 Cedar Lane", "Manchester", "NH", "03101", "(603) 555-0600", 42.9956, -71.4548),
+            new("Perfect Game Lanes", "147 Birch Street", "Portland", "ME", "04101", "(207) 555-0700", 43.6591, -70.2568),
+            new("Green Mountain Bowling", "258 Spruce Avenue", "Burlington", "VT", "05401", "(802) 555-0800", 44.4759, -73.2121),
+            new("AMF Circle Lanes", "369 Willow Court", "New Haven", "CT", "06510", "(203) 555-0900", 41.3083, -72.9279),
+            new("Colonial Lanes", "741 Hickory Way", "Cambridge", "MA", "02139", "(617) 555-1000", 42.3736, -71.1097),
+            new("Thunder Alley", "852 Ash Boulevard", "Warwick", "RI", "02886", "(401) 555-1100", 41.7001, -71.4162),
+            new("Pinz Entertainment", "963 Walnut Place", "Nashua", "NH", "03060", "(603) 555-1200", 42.7654, -71.4676),
+            new("Bayside Bowl", "159 Cherry Street", "Bangor", "ME", "04401", "(207) 555-1300", 44.8016, -68.7712),
+            new("Champlain Lanes", "357 Poplar Drive", "Montpelier", "VT", "05602", "(802) 555-1400", 44.2601, -72.5754),
+            new("Boston Bowl", "486 Sycamore Road", "Dorchester", "MA", "02124", "(617) 555-1500", 42.2918, -71.0677),
+        };
+    }
+
+    [Inject]
+    private IJSRuntime JSInterop { get; set; } = default!;
+}
