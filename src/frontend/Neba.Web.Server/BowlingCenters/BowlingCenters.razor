@@ -227,10 +227,17 @@
     {
         _selectedState = state;
 
-        // Close any open popup since we're changing the view
+        // Close any open popup and clear any route since we're changing the view
         if (_mapComponent is not null)
         {
             await _mapComponent.ClosePopupAsync();
+
+            // Clear route if one is displayed
+            if (_directionsState.Mode == MapMode.DirectionsActive)
+            {
+                await _mapComponent.ExitDirectionsModeAsync();
+                _directionsState.Reset();
+            }
         }
 
         await ApplyFiltersAsync(shouldFitBounds: true);
@@ -369,6 +376,12 @@
 
     private async Task HandleDirectionsClick(BowlingCenterViewModel center)
     {
+        // Clear any existing route first
+        if (_mapComponent is not null && _directionsState.Mode == MapMode.DirectionsActive)
+        {
+            await _mapComponent.ExitDirectionsModeAsync();
+        }
+
         // Initialize directions state
         _directionsState.Reset();
         _directionsState.Mode = MapMode.DirectionsPreview;
@@ -426,12 +439,17 @@
     private async Task HandleDirectionsClose()
     {
         _showDirectionsModal = false;
-        _directionsState.Reset();
 
-        // Exit directions mode on the map
-        if (_mapComponent is not null)
+        // Keep the route visible on the map for reference
+        // User can see the route while browsing other centers
+        // The route will be cleared when they request new directions or change filters
+
+        // Just restore marker opacity, but keep the route displayed
+        if (_mapComponent is not null && _directionsState.Mode == MapMode.DirectionsActive)
         {
-            await _mapComponent.ExitDirectionsModeAsync();
+            // Don't call ExitDirectionsModeAsync - that would remove the route
+            // Instead, just restore the marker opacity via JavaScript
+            // The route stays visible until the user requests new directions
         }
     }
 

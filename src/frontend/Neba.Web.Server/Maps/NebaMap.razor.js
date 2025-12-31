@@ -497,12 +497,14 @@ export async function showRoute(origin, destination) {
 
     try {
         // Call Azure Maps Route Directions API
+        // Note: guidance=true is required to get turn-by-turn instructions
         const url = `https://atlas.microsoft.com/route/directions/json?` +
             `subscription-key=${subscriptionKey}` +
             `&api-version=1.0` +
             `&query=${origin[1]},${origin[0]}:${destination[1]},${destination[0]}` +
             `&travelMode=car` +
-            `&instructionsType=text`;
+            `&instructionsType=text` +
+            `&guidance=true`;
 
         const response = await fetch(url);
 
