@@ -1,4 +1,6 @@
 
+using Neba.Domain.Contact;
+
 namespace Neba.Website.Application.BowlingCenters;
 
 /// <summary>
@@ -30,9 +32,9 @@ public sealed record BowlingCenterDto
     public required string City { get; init; }
 
     /// <summary>
-    /// State or province abbreviation for the center location.
+    /// State or province for the center location.
     /// </summary>
-    public required string State { get; init; }
+    public required UsState State { get; init; }
 
     /// <summary>
     /// Postal ZIP or ZIP+4 code for the center location.
@@ -67,4 +69,9 @@ public sealed record BowlingCenterDto
     /// Longitude coordinate in decimal degrees for map placement.
     /// </summary>
     public required double Longitude { get; init; }
+
+    /// <summary>
+    /// Indicates whether the bowling center is currently closed.
+    /// </summary>
+    public bool IsClosed { get; init;}
 }

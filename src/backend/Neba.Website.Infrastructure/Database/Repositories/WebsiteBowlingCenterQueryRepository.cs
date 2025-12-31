@@ -1,18 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Domain.Contact;
 using Neba.Website.Application.BowlingCenters;
 
 namespace Neba.Website.Infrastructure.Database.Repositories;
 
-internal sealed class WebsiteBowlingCenterQueryRepository
-    : IWebsiteBowlingCenterQueryRepository
+internal sealed class WebsiteBowlingCenterQueryRepository(
+    WebsiteDbContext dbContext)
+        : IWebsiteBowlingCenterQueryRepository
 {
-    private readonly WebsiteDbContext _dbContext;
-
-    public WebsiteBowlingCenterQueryRepository(
-        WebsiteDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    private readonly WebsiteDbContext _dbContext = dbContext;
 
     public async Task<IReadOnlyCollection<BowlingCenterDto>> ListBowlingCentersAsync(
         CancellationToken cancellationToken)
@@ -25,12 +21,13 @@ internal sealed class WebsiteBowlingCenterQueryRepository
                 Street = bc.Address.Street,
                 Unit = bc.Address.Unit,
                 City = bc.Address.City,
-                State = bc.Address.Region,
+                State = UsState.FromValue(bc.Address.Region),
                 ZipCode = bc.Address.PostalCode,
                 PhoneNumber = $"{bc.PhoneNumber.CountryCode}{bc.PhoneNumber.Number}",
                 Extension = bc.PhoneNumber.Extension,
                 Latitude = bc.Address.Coordinates!.Latitude,
                 Longitude = bc.Address.Coordinates!.Longitude,
+                IsClosed = bc.IsClosed
             })
             .ToListAsync(cancellationToken);
     }

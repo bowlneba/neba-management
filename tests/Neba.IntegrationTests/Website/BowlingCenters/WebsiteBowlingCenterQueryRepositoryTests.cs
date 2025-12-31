@@ -71,12 +71,13 @@ public sealed class WebsiteBowlingCenterQueryRepositoryTests : IAsyncLifetime
         openCenterResult.Street.ShouldBe(openCenter.Address.Street);
         openCenterResult.Unit.ShouldBe(openCenter.Address.Unit);
         openCenterResult.City.ShouldBe(openCenter.Address.City);
-        openCenterResult.State.ShouldBe(openCenter.Address.Region);
+        openCenterResult.State.Value.ShouldBe(openCenter.Address.Region);
         openCenterResult.ZipCode.ShouldBe(openCenter.Address.PostalCode);
         openCenterResult.PhoneNumber.ShouldBe($"{openCenter.PhoneNumber.CountryCode}{openCenter.PhoneNumber.Number}");
         openCenterResult.Extension.ShouldBe(openCenter.PhoneNumber.Extension);
         openCenterResult.Latitude.ShouldBe(openCenter.Address.Coordinates!.Latitude);
         openCenterResult.Longitude.ShouldBe(openCenter.Address.Coordinates!.Longitude);
+        openCenterResult.IsClosed.ShouldBe(false);
 
         // Count the expected number of open centers from bogus data
         int expectedOpenCentersFromBogus = bogusCenter.Count(bc => !bc.IsClosed);
