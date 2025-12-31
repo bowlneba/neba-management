@@ -183,6 +183,17 @@
     }
 
     /// <summary>
+    /// Closes any open popup on the map.
+    /// </summary>
+    public async Task ClosePopupAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("closePopup");
+        }
+    }
+
+    /// <summary>
     /// JavaScript interop callback invoked when map bounds change.
     /// </summary>
     [JSInvokable]

@@ -314,8 +314,9 @@ export function focusOnLocation(locationId) {
     console.log('[NebaMap] Focusing on location:', locationId);
 
     const feature = markers.get(locationId);
-    const coordinates = feature.getCoordinates();
-    const properties = feature.getProperties();
+    // Access coordinates and properties directly from the feature
+    const coordinates = feature.geometry.coordinates;
+    const properties = feature.properties;
 
     // Zoom to the location
     map.setCamera({
@@ -346,6 +347,17 @@ export function fitBounds() {
             bounds: bounds,
             padding: 50
         });
+    }
+}
+
+/**
+ * Closes any open popup on the map
+ */
+export function closePopup() {
+    if (currentPopup) {
+        currentPopup.close();
+        currentPopup = null;
+        console.log('[NebaMap] Popup closed');
     }
 }
 

@@ -73,7 +73,7 @@
                        placeholder="Search centers..."
                        @bind="_searchQuery"
                        @bind:event="oninput"
-                       @bind:after="ApplyFiltersAsync" />
+                       @bind:after="ApplySearchFilterAsync" />
             </div>
 
             <!-- Results Count -->
@@ -141,7 +141,7 @@
                                 </div>
 
                                 <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2"
-                                        @onclick="@((e) => HandleDirectionsClick(center, e))"
+                                        @onclick="@(() => HandleDirectionsClick(center))"
                                         @onclick:stopPropagation="true">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
@@ -217,11 +217,24 @@
     private async Task FilterByState(string? state)
     {
         _selectedState = state;
-        await ApplyFiltersAsync();
+
+        // Close any open popup since we're changing the view
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.ClosePopupAsync();
+        }
+
+        await ApplyFiltersAsync(shouldFitBounds: true);
         await ScrollToTop();
     }
 
-    private async Task ApplyFiltersAsync()
+    private async Task ApplySearchFilterAsync()
+    {
+        // Search doesn't trigger map zoom, just filters the markers
+        await ApplyFiltersAsync(shouldFitBounds: false);
+    }
+
+    private async Task ApplyFiltersAsync(bool shouldFitBounds = false)
     {
         // Filter by state and search query for map display
         _filteredCenters = _allCenters
@@ -234,18 +247,32 @@
         // Update map locations to show only filtered centers
         UpdateMapLocations();
 
-        // Update displayed centers based on current map bounds
-        // If map component is null (initial load), display all filtered centers
-        if (_mapComponent is null || _currentMapBounds is null)
+        // Zoom map to fit filtered markers if requested (e.g., state filter clicked)
+        if (shouldFitBounds && _mapComponent is not null && _filteredCenters.Count > 0)
         {
-            _displayedCenters = _filteredCenters;
+            // Force a render cycle so the map component receives the updated Locations parameter
+            StateHasChanged();
+
+            // Give the map component time to update its markers before fitting bounds
+            // This ensures OnParametersSetAsync has run and markers are updated
+            await Task.Delay(200);
+            await _mapComponent.FitBoundsAsync();
         }
         else
         {
-            // Filter by current map bounds
-            _displayedCenters = _filteredCenters
-                .Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude))
-                .ToList();
+            // Update displayed centers based on current map bounds
+            // If map component is null (initial load), display all filtered centers
+            if (_mapComponent is null || _currentMapBounds is null)
+            {
+                _displayedCenters = _filteredCenters;
+            }
+            else
+            {
+                // Filter by current map bounds
+                _displayedCenters = _filteredCenters
+                    .Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude))
+                    .ToList();
+            }
         }
     }
 
@@ -331,12 +358,10 @@
         }
     }
 
-    private void HandleDirectionsClick(BowlingCenterViewModel center, MouseEventArgs e)
+    private async Task HandleDirectionsClick(BowlingCenterViewModel center)
     {
-        // Open Google Maps directions in new tab
-        var address = Uri.EscapeDataString($"{center.Street}, {center.City}, {center.State} {center.ZipCode}");
-        var url = $"https://www.google.com/maps/dir/?api=1&destination={address}";
-        _ = JSInterop.InvokeVoidAsync("open", url, "_blank");
+        // Show alert for now (directions functionality to be implemented later)
+        await JSInterop.InvokeVoidAsync("alert", $"Directions to {center.Name}");
     }
 
     private static string GetPhoneTelUri(string phoneNumber)
