@@ -11,14 +11,14 @@ internal sealed class BowlingCenterConfiguration
 {
     internal static class QueryFilters
     {
-        internal const string ClosedCentersFilter = "ClosedCentersFilter";
+        internal const string OpenCentersFilter = "OpenCentersFilter";
     }
 
     public void Configure(EntityTypeBuilder<BowlingCenter> builder)
     {
         builder.ToTable("bowling_centers", WebsiteDbContext.DefaultSchema);
 
-        builder.HasQueryFilter(QueryFilters.ClosedCentersFilter,
+        builder.HasQueryFilter(QueryFilters.OpenCentersFilter,
             bowlingCenter => !bowlingCenter.IsClosed);
 
         builder.ConfigureShadowId();

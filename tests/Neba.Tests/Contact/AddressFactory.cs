@@ -11,6 +11,9 @@ public static class AddressFactory
     public const string ValidRegion = "IL";
     public static readonly Country ValidCountry = Country.UnitedStates;
     public const string ValidPostalCode = "62704";
+    public const double DefaultLatitude = 39.7817;  // Springfield, IL
+    public const double DefaultLongitude = -89.6501;
+
     public static Address Create(
         string? street = null,
         string? unit = null,
@@ -19,16 +22,20 @@ public static class AddressFactory
         Country? country = null,
         string? postalCode = null,
         Coordinates? coordinates = null)
-            => new()
-            {
-                Street = street ?? ValidStreet,
-                Unit = unit,
-                City = city ?? ValidCity,
-                Region = region ?? ValidRegion,
-                Country = country ?? ValidCountry,
-                PostalCode = postalCode ?? ValidPostalCode,
-                Coordinates = coordinates
-            };
+    {
+        var defaultCoordinates = coordinates ?? Coordinates.Create(DefaultLatitude, DefaultLongitude).Value;
+
+        return new()
+        {
+            Street = street ?? ValidStreet,
+            Unit = unit,
+            City = city ?? ValidCity,
+            Region = region ?? ValidRegion,
+            Country = country ?? ValidCountry,
+            PostalCode = postalCode ?? ValidPostalCode,
+            Coordinates = defaultCoordinates
+        };
+    }
 
     public static Address Bogus(int? seed = null)
     {
