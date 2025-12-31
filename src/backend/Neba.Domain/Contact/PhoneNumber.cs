@@ -113,26 +113,4 @@ public sealed partial record PhoneNumber
 
         return true;
     }
-
-    /// <summary>
-    /// Returns the phone number formatted in the standard North American style: (NPA) NXX-XXXX.
-    /// </summary>
-    /// <returns>A formatted phone number string like "(555) 123-4567".</returns>
-    public string ToFormattedString()
-    {
-        // (555) 123-4567
-        return $"({Number[..3]}) {Number[3..6]}-{Number[6..]}";
-    }
-
-    /// <summary>
-    /// Returns the formatted phone number including the extension when present.
-    /// </summary>
-    /// <returns>
-    /// The formatted phone number, optionally suffixed with " x{extension}" when an extension exists.
-    /// </returns>
-    public string ToFormattedStringWithExtension()
-    {
-        string formatted = ToFormattedString();
-        return Extension is null ? formatted : $"{formatted} x{Extension}";
-    }
 }
