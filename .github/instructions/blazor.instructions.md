@@ -12,6 +12,101 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - Async/await should be used where applicable to ensure non-blocking UI operations.
 - **Never use inline `<style>` and `<script>` tags in production Razor components.** Always extract styles to `.razor.css` files and scripts to `.razor.js` files for better maintainability, CSP compliance, and separation of concerns. This is a strict requirement for all production code.
 
+### JavaScript Organization for Razor Components
+
+**File Naming and Location:**
+- JavaScript files must be co-located with their Razor component using the naming pattern: `ComponentName.razor.js`
+- Place the `.razor.js` file in the same directory as the `.razor` file
+- Example: For `BowlingCenters/BowlingCenters.razor`, create `BowlingCenters/BowlingCenters.razor.js`
+- The build system automatically copies `.razor.js` files to `wwwroot/js/` during compilation
+
+**JavaScript Module Pattern (Recommended):**
+- Use ES6 modules with `export` keyword - do NOT use `window` global functions
+- Load modules dynamically using `IJSObjectReference` in the component
+- This provides component-scoped JavaScript and avoids global namespace pollution
+- Components must implement `IAsyncDisposable` to properly dispose of module references
+
+**Build Configuration:**
+- The project file is configured to automatically copy `*.razor.js` files to `wwwroot/js/`
+- Files are copied during build and publish operations
+- No manual copying is required - just place the file next to your component
+
+**Why This Matters:**
+- **Co-location**: JavaScript code lives next to the component that uses it for better organization
+- **Module Isolation**: No global namespace pollution - each component loads its own module
+- **CSP Compliance**: Inline scripts in `<HeadContent>` are not available to Interactive Server components
+- **Maintainability**: Easy to find and modify component-specific JavaScript
+- **Performance**: Modules are loaded on-demand and can be cached
+- **Security**: Enables proper Content Security Policy headers
+
+**Implementation Example:**
+
+*JavaScript Module (BowlingCenters.razor.js):*
+```javascript
+export function scrollToTop() {
+    const element = document.querySelector('#centers-scroll-container');
+    if (element) {
+        element.scrollTop = 0;
+    }
+}
+```
+
+*Razor Component (BowlingCenters.razor):*
+```razor
+@page "/bowling-centers"
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSInterop
+
+@code {
+    private IJSObjectReference? _jsModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSInterop.InvokeAsync<IJSObjectReference>(
+                "import", "./js/BowlingCenters.razor.js");
+        }
+    }
+
+    private async Task ScrollToTop()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+}
+```
+
+**File Structure:**
+```
+src/frontend/Neba.Web.Server/
+├── BowlingCenters/
+│   ├── BowlingCenters.razor          ← Component
+│   ├── BowlingCenters.razor.js       ← Component JavaScript module (co-located)
+│   └── BowlingCenterViewModel.cs
+└── wwwroot/js/                        ← Build copies .razor.js files here
+    └── BowlingCenters.razor.js       (copied during build)
+```
+
+**Important Notes:**
+- Never use inline `<script>` tags in `<HeadContent>` - they won't work with Interactive Server components
+- Use ES6 `export` keyword, NOT `window.functionName` for module functions
+- Always implement `IAsyncDisposable` when using `IJSObjectReference`
+- Load modules in `OnAfterRenderAsync(firstRender)` to ensure DOM is ready
+- Check module is not null before invoking functions
+- Keep JavaScript minimal - complex logic should be in C# when possible
+
 ## Modern UI/UX Patterns and Best Practices
 
 ### Design Philosophy

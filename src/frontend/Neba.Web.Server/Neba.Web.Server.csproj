@@ -31,4 +31,24 @@
     <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
   </ItemGroup>
 
+  <!-- Disable automatic detection of .razor.js files as JS modules -->
+  <PropertyGroup>
+    <RazorLangVersion>Latest</RazorLangVersion>
+  </PropertyGroup>
+
+  <!-- Copy component-specific JavaScript files to wwwroot/js during build -->
+  <ItemGroup>
+    <!-- First, exclude all .razor.js from default processing -->
+    <Compile Remove="**\*.razor.js" />
+    <Content Remove="**\*.razor.js" />
+    <JSModuleFile Remove="**\*.razor.js" />
+
+    <!-- Then, explicitly include them as None items that get copied -->
+    <None Include="**\*.razor.js" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);**\node_modules\**;**\bin\**;**\obj\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>wwwroot\js\%(Filename)%(Extension)</Link>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

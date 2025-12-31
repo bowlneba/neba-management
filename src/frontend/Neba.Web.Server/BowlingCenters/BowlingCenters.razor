@@ -1,9 +1,12 @@
 @page "/bowling-centers"
 @using Neba.Web.Server.Notifications
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IAsyncDisposable
 
 @inject IJSRuntime JSInterop
 @inject NebaApiService NebaApiService
+
+<script src="./BowlingCenters/BowlingCenters.razor.js" type="module"></script>
 
 <PageTitle>Bowling Centers - NEBA</PageTitle>
 <HeadContent>
@@ -39,25 +42,25 @@
             <!-- State Filters -->
             <div class="flex flex-wrap items-center gap-2">
                 <span class="font-semibold text-[var(--neba-gray-700)] text-sm">Filter by State:</span>
-                <button class="state-btn @(_selectedState == "All" ? "active" : "")" @onclick="@(() => FilterByState("All"))">
+                <button class="state-btn @(_selectedState == null ? "active" : "")" @onclick="@(async () => await FilterByState(null))">
                     All States
                 </button>
-                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" @onclick="@(() => FilterByState("MA"))">
+                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" @onclick="@(async () => await FilterByState("MA"))">
                     MA
                 </button>
-                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" @onclick="@(() => FilterByState("CT"))">
+                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" @onclick="@(async () => await FilterByState("CT"))">
                     CT
                 </button>
-                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" @onclick="@(() => FilterByState("RI"))">
+                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" @onclick="@(async () => await FilterByState("RI"))">
                     RI
                 </button>
-                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" @onclick="@(() => FilterByState("NH"))">
+                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" @onclick="@(async () => await FilterByState("NH"))">
                     NH
                 </button>
-                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" @onclick="@(() => FilterByState("ME"))">
+                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" @onclick="@(async () => await FilterByState("ME"))">
                     ME
                 </button>
-                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" @onclick="@(() => FilterByState("VT"))">
+                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" @onclick="@(async () => await FilterByState("VT"))">
                     VT
                 </button>
             </div>
@@ -85,7 +88,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
             <!-- Left Side: Centers List -->
             <div class="flex flex-col">
-                <div class="overflow-y-auto pr-2 space-y-4" style="max-height: 600px;">
+                <div id="centers-scroll-container" class="overflow-y-auto pr-2 space-y-4" style="max-height: 600px;">
                     @if (_filteredCenters.Count == 0)
                     {
                         <div class="neba-card text-center py-8">
@@ -167,8 +170,9 @@
     private List<BowlingCenterViewModel> _filteredCenters = new();
     private string? _errorMessage;
     private bool _isLoading = true;
-    private string _selectedState = "All";
+    private string? _selectedState = null;
     private string _searchQuery = string.Empty;
+    private IJSObjectReference? _jsModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -196,20 +200,37 @@
         }
     }
 
-    private void FilterByState(string state)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSInterop.InvokeAsync<IJSObjectReference>("import", "./BowlingCenters/BowlingCenters.razor.js");
+        }
+    }
+
+    private async Task FilterByState(string? state)
     {
         _selectedState = state;
         ApplyFilters();
+        await ScrollToTop();
     }
 
     private void ApplyFilters()
     {
         _filteredCenters = _allCenters
-            .Where(c => _selectedState == "All" || c.State == _selectedState)
+            .Where(c => _selectedState == null || c.State == _selectedState)
             .Where(c => string.IsNullOrWhiteSpace(_searchQuery) ||
                        c.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
                        c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
+    }
+
+    private async Task ScrollToTop()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("scrollToTop");
+        }
     }
 
     private void HandleCenterCardClick(BowlingCenterViewModel center)
@@ -244,5 +265,13 @@
 
         // If format doesn't match expected, return as-is
         return phoneNumber;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
     }
 }
