@@ -141,6 +141,8 @@ public async Task MigrateBowlingCentersAsync()
 		}
 	}
 	
+	usbcBowlingCenters.Shuffle();
+	
 	List<string> centerPhoneNumbers = [];
 
 	foreach (var bowlingCenter in usbcBowlingCenters)
