@@ -6,6 +6,7 @@ let map = null;
 let dataSource = null;
 let markers = new Map(); // Track markers by location ID
 let currentConfig = null;
+let currentPopup = null; // Track the currently open popup
 
 /**
  * Waits for the Azure Maps SDK to be loaded
@@ -304,6 +305,11 @@ export function fitBounds() {
  * @param {Object} properties - Location properties
  */
 function showPopup(coordinates, properties) {
+    // Close any existing popup before opening a new one
+    if (currentPopup) {
+        currentPopup.close();
+    }
+
     const content = `
         <div style="padding: 12px; max-width: 280px;">
             <div style="font-weight: 700; font-size: 16px; color: #0066b2; margin-bottom: 8px;">
@@ -315,11 +321,11 @@ function showPopup(coordinates, properties) {
         </div>
     `;
 
-    const popup = new atlas.Popup({
+    currentPopup = new atlas.Popup({
         position: coordinates,
         content: content,
         pixelOffset: [0, -18]
     });
 
-    popup.open(map);
+    currentPopup.open(map);
 }
