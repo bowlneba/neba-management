@@ -177,14 +177,25 @@ function addClusterLayers() {
 
     // Add click event for clusters to zoom in
     map.events.add('click', clusterLayer, (e) => {
-        if (e.shapes && e.shapes.length > 0 && e.shapes[0].getProperties().cluster) {
-            const clusterId = e.shapes[0].getProperties().cluster_id;
-            dataSource.getClusterExpansionZoom(clusterId).then((zoom) => {
-                map.setCamera({
-                    center: e.shapes[0].getCoordinates(),
-                    zoom: zoom
+        if (e.shapes && e.shapes.length > 0) {
+            const shape = e.shapes[0];
+            const properties = shape.getProperties ? shape.getProperties() : shape.properties;
+
+            if (properties && properties.cluster) {
+                const clusterId = properties.cluster_id;
+
+                // Use the event position as the cluster center coordinates
+                const coordinates = e.position;
+
+                dataSource.getClusterExpansionZoom(clusterId).then((zoom) => {
+                    map.setCamera({
+                        center: coordinates,
+                        zoom: zoom,
+                        type: 'ease',
+                        duration: 500
+                    });
                 });
-            });
+            }
         }
     });
 
