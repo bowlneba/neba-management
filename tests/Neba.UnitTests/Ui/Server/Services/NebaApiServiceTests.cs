@@ -6,12 +6,14 @@ using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Tests;
 using Neba.Tests.Website;
+using Neba.Web.Server.BowlingCenters;
 using Neba.Web.Server.Documents;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
 using Refit;
 
@@ -1252,6 +1254,270 @@ public sealed class NebaApiServiceTests
         var titles2025 = titlesList[0].Titles.ToList();
         titles2025[0].BowlerName.ShouldBe("Person B"); // December
         titles2025[1].BowlerName.ShouldBe("Person C"); // January
+    }
+
+    #endregion
+
+    #region GetBowlingCentersAsync Tests
+
+    [Fact(DisplayName = "Returns bowling centers ordered by name on successful response")]
+    public async Task GetBowlingCentersAsync_SuccessfulResponse_ReturnsBowlingCentersOrderedByName()
+    {
+        // Arrange - Create bowling centers with names in non-alphabetical order
+        var centers = new List<BowlingCenterResponse>
+        {
+            BowlingCenterResponseFactory.Create(name: "Zebra Lanes"),
+            BowlingCenterResponseFactory.Create(name: "Alpha Bowling"),
+            BowlingCenterResponseFactory.Create(name: "Charlie's Bowl")
+        };
+
+        var collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = centers
+
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(3);
+
+        var centersList = result.Value.ToList();
+
+        // Verify centers are ordered by name in ascending order
+        centersList[0].Name.ShouldBe("Alpha Bowling");
+        centersList[1].Name.ShouldBe("Charlie's Bowl");
+        centersList[2].Name.ShouldBe("Zebra Lanes");
+    }
+
+    [Fact(DisplayName = "Returns empty collection when no bowling centers exist")]
+    public async Task GetBowlingCentersAsync_EmptyResponse_ReturnsEmptyCollection()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = new List<BowlingCenterResponse>()
+
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(0);
+    }
+
+    [Fact(DisplayName = "Returns error when bowling centers API call fails")]
+    public async Task GetBowlingCentersAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = new List<BowlingCenterResponse>()
+
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Returns error when bowling centers response content is null")]
+    public async Task GetBowlingCentersAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<CollectionResponse<BowlingCenterResponse>>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Returns error when bowling centers API exception is thrown")]
+    public async Task GetBowlingCentersAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Returns network error when bowling centers request fails")]
+    public async Task GetBowlingCentersAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Returns timeout error when bowling centers task is canceled")]
+    public async Task GetBowlingCentersAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Returns unexpected error for unhandled bowling centers exceptions")]
+    public async Task GetBowlingCentersAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+        result.Errors.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact(DisplayName = "Correctly maps BowlingCenterResponse to BowlingCenterViewModel")]
+    public async Task GetBowlingCentersAsync_SuccessfulResponse_CorrectlyMapsToViewModel()
+    {
+        // Arrange
+        var center = BowlingCenterResponseFactory.Create(
+            name: "Test Bowling Center",
+            street: "123 Test St",
+            unit: "Suite 100",
+            city: "Test City",
+            zipCode: "12345",
+            phoneNumber: "16315551234",
+            phoneExtension: "123",
+            latitude: 40.7128,
+            longitude: -74.0060,
+            isClosed: true);
+
+        var collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = new List<BowlingCenterResponse> { center }
+
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(1);
+
+        var viewModel = result.Value.First();
+        viewModel.Name.ShouldBe("Test Bowling Center");
+        viewModel.Street.ShouldBe("123 Test St");
+        viewModel.Unit.ShouldBe("Suite 100");
+        viewModel.City.ShouldBe("Test City");
+        viewModel.ZipCode.ShouldBe("12345");
+        viewModel.PhoneNumber.ShouldBe("16315551234");
+        viewModel.PhoneExtension.ShouldBe("123");
+        viewModel.Latitude.ShouldBe(40.7128);
+        viewModel.Longitude.ShouldBe(-74.0060);
+        viewModel.IsClosed.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Orders bowling centers by name in ascending order")]
+    public async Task GetBowlingCentersAsync_OrdersByNameAscending()
+    {
+        // Arrange - Create centers in non-sorted order
+        var centers = new List<BowlingCenterResponse>
+        {
+            BowlingCenterResponseFactory.Create(name: "Downtown Bowl"),
+            BowlingCenterResponseFactory.Create(name: "AMF Bowling"),
+            BowlingCenterResponseFactory.Create(name: "Strikes & Spares"),
+            BowlingCenterResponseFactory.Create(name: "Bowl-O-Rama")
+        };
+
+        var collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = centers
+
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetBowlingCentersAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>> result = await _sut.GetBowlingCentersAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        var centersList = result.Value.ToList();
+        centersList[0].Name.ShouldBe("AMF Bowling");
+        centersList[1].Name.ShouldBe("Bowl-O-Rama");
+        centersList[2].Name.ShouldBe("Downtown Bowl");
+        centersList[3].Name.ShouldBe("Strikes & Spares");
     }
 
     #endregion
