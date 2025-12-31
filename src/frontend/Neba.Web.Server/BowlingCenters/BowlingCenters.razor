@@ -239,7 +239,7 @@
         UpdateMapLocations();
     }
 
-    private void HandleBoundsChanged(MapBounds bounds)
+    private async Task HandleBoundsChanged(MapBounds bounds)
     {
         _currentMapBounds = bounds;
 
@@ -249,6 +249,9 @@
             : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
 
         StateHasChanged();
+
+        // Scroll list back to top when bounds change
+        await ScrollToTop();
     }
 
     private void UpdateMapLocations()
