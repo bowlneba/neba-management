@@ -245,7 +245,7 @@
 
             if (_jsModule is not null)
             {
-                var suggestions = await _jsModule.InvokeAsync<AddressSuggestion[]>("searchAddress", _addressInput, _searchCts.Token);
+                var suggestions = await _jsModule.InvokeAsync<AddressSuggestion[]>("searchAddress", _searchCts.Token, _addressInput);
                 _addressSuggestions = suggestions?.ToList() ?? new();
                 StateHasChanged();
             }
