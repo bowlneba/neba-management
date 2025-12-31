@@ -5,6 +5,7 @@ namespace Neba.Web.Server.BowlingCenters;
 /// </summary>
 /// <param name="Name">The name of the bowling center.</param>
 /// <param name="Street">The street address.</param>
+/// <param name="Unit">Optional apartment, suite, or unit identifier.</param>
 /// <param name="City">The city.</param>
 /// <param name="State">The state abbreviation (e.g., MA, CT, RI, NH, ME, VT).</param>
 /// <param name="ZipCode">The ZIP code.</param>
@@ -15,6 +16,7 @@ namespace Neba.Web.Server.BowlingCenters;
 public record BowlingCenterViewModel(
     string Name,
     string Street,
+    string? Unit,
     string City,
     string State,
     string ZipCode,

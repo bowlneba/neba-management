@@ -20,6 +20,11 @@ public sealed record BowlingCenterDto
     public required string Street { get; init; }
 
     /// <summary>
+    /// Optional unit, suite, or apartment designation for the center's address.
+    /// </summary>
+    public string? Unit { get; init; }
+
+    /// <summary>
     /// City where the center is located.
     /// </summary>
     public required string City { get; init; }
