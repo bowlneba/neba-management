@@ -18,17 +18,16 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - JavaScript files must be co-located with their Razor component using the naming pattern: `ComponentName.razor.js`
 - Place the `.razor.js` file in the same directory as the `.razor` file
 - Example: For `BowlingCenters/BowlingCenters.razor`, create `BowlingCenters/BowlingCenters.razor.js`
-- The build system automatically copies `.razor.js` files to `wwwroot/js/` during compilation
+- The build system automatically handles these files - no manual copying to wwwroot is required
 
-**JavaScript Module Pattern (Recommended):**
+**JavaScript Module Pattern (Required):**
 - Use ES6 modules with `export` keyword - do NOT use `window` global functions
-- Load modules dynamically using `IJSObjectReference` in the component
+- Load modules using `<script src="..." type="module">` tag (recommended) or `IJSObjectReference` (when you need to call functions)
 - This provides component-scoped JavaScript and avoids global namespace pollution
-- Components must implement `IAsyncDisposable` to properly dispose of module references
 
 **Build Configuration:**
-- The project file is configured to automatically copy `*.razor.js` files to `wwwroot/js/`
-- Files are copied during build and publish operations
+- The project file is configured to automatically process `*.razor.js` files
+- Files are made available during build and publish operations
 - No manual copying is required - just place the file next to your component
 
 **Why This Matters:**
@@ -41,7 +40,7 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 
 **Implementation Example:**
 
-*JavaScript Module (BowlingCenters.razor.js):*
+*JavaScript Module (BowlingCenters/BowlingCenters.razor.js):*
 ```javascript
 export function scrollToTop() {
     const element = document.querySelector('#centers-scroll-container');
@@ -51,12 +50,14 @@ export function scrollToTop() {
 }
 ```
 
-*Razor Component (BowlingCenters.razor):*
+*Razor Component (BowlingCenters/BowlingCenters.razor):*
 ```razor
 @page "/bowling-centers"
 @implements IAsyncDisposable
 
 @inject IJSRuntime JSInterop
+
+<script src="./BowlingCenters/BowlingCenters.razor.js" type="module"></script>
 
 @code {
     private IJSObjectReference? _jsModule;
@@ -65,8 +66,9 @@ export function scrollToTop() {
     {
         if (firstRender)
         {
+            // Import the module to get a reference for calling exported functions
             _jsModule = await JSInterop.InvokeAsync<IJSObjectReference>(
-                "import", "./js/BowlingCenters.razor.js");
+                "import", "./BowlingCenters/BowlingCenters.razor.js");
         }
     }
 
@@ -95,12 +97,23 @@ src/frontend/Neba.Web.Server/
 │   ├── BowlingCenters.razor          ← Component
 │   ├── BowlingCenters.razor.js       ← Component JavaScript module (co-located)
 │   └── BowlingCenterViewModel.cs
-└── wwwroot/js/                        ← Build copies .razor.js files here
-    └── BowlingCenters.razor.js       (copied during build)
+├── Components/
+│   ├── NebaDocument.razor
+│   └── NebaDocument.razor.js         ← Another example
+└── Layout/
+    ├── MainLayout.razor
+    └── MainLayout.razor.js           ← Another example
 ```
 
+**Important Path Patterns:**
+- **Script tag path**: `<script src="./FolderName/ComponentName.razor.js" type="module"></script>`
+- **JSInterop import path**: `"./FolderName/ComponentName.razor.js"`
+- Pattern: Always use `./FolderName/FileName.razor.js` relative to the component's location
+- The path follows the component's folder structure, NOT a wwwroot/js structure
+
 **Important Notes:**
-- Never use inline `<script>` tags in `<HeadContent>` - they won't work with Interactive Server components
+- Use `<script src="..." type="module">` to load the module (this is the primary method)
+- Optionally use `IJSObjectReference` in `OnAfterRenderAsync` if you need to call exported functions from C#
 - Use ES6 `export` keyword, NOT `window.functionName` for module functions
 - Always implement `IAsyncDisposable` when using `IJSObjectReference`
 - Load modules in `OnAfterRenderAsync(firstRender)` to ensure DOM is ready
