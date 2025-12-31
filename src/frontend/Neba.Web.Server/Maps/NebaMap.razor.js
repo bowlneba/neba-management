@@ -16,6 +16,7 @@ let routeDataSource = null; // Data source for route line
 let routeLayer = null; // Layer for route display
 let startMarker = null; // Starting location marker
 let subscriptionKey = null; // Azure Maps subscription key (stored for routing API)
+let authConfig = null; // Full auth config (stored for other modules to access)
 
 /**
  * Waits for the Azure Maps SDK to be loaded
@@ -63,6 +64,9 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
 
     dotNetHelper = dotNetRef;
 
+    // Store auth config for other modules to access
+    window.azureMapsAuthConfig = authConfig; // Make available globally
+
     // Determine authentication method
     let authOptions;
     if (authConfig.subscriptionKey) {
@@ -76,10 +80,26 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
         };
     } else if (authConfig.accountId) {
         // Azure deployment: Use Azure AD authentication with managed identity
-        // For MVP, we'll still use subscription key. Token-based auth is Phase 2.
-        console.log('[NebaMap] AccountId provided but subscription key authentication required for MVP');
-        console.error('[NebaMap] No subscription key available for authentication');
-        return;
+        console.log('[NebaMap] Using Azure AD authentication with account:', authConfig.accountId);
+        authOptions = {
+            authType: 'aad',
+            clientId: authConfig.accountId,
+            getToken: async function(resolve, reject) {
+                // Get token from Azure AD
+                // In production, this would use the managed identity token
+                try {
+                    const response = await fetch('/.auth/me');
+                    const data = await response.json();
+                    if (data && data[0] && data[0].access_token) {
+                        resolve(data[0].access_token);
+                    } else {
+                        reject(new Error('No access token available'));
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            }
+        };
     } else {
         console.error('[NebaMap] No authentication configured for Azure Maps');
         return;
@@ -481,30 +501,53 @@ export function enterDirectionsPreview(locationId) {
 
 /**
  * Calculates and displays a route from origin to destination using Azure Maps Route API
+ * Supports both subscription key (local dev) and Azure AD (production) authentication
  * @param {number[]} origin - Origin coordinates [longitude, latitude]
  * @param {number[]} destination - Destination coordinates [longitude, latitude]
  * @returns {Promise<Object>} Route data with distance, time, and instructions
  */
 export async function showRoute(origin, destination) {
-    if (!map || !subscriptionKey) {
-        console.error('[NebaMap] Cannot show route - map or subscription key not available');
+    if (!map) {
+        console.error('[NebaMap] Cannot show route - map not initialized');
         throw new Error('Map not initialized');
+    }
+
+    const authConfig = window.azureMapsAuthConfig;
+    if (!authConfig) {
+        console.error('[NebaMap] Cannot show route - no auth configuration available');
+        throw new Error('Authentication not configured');
     }
 
     console.log('[NebaMap] Calculating route from', origin, 'to', destination);
 
     try {
-        // Call Azure Maps Route Directions API
-        // Note: guidance=true is required to get turn-by-turn instructions
-        const url = `https://atlas.microsoft.com/route/directions/json?` +
-            `subscription-key=${subscriptionKey}` +
-            `&api-version=1.0` +
+        // Build base URL
+        let url = `https://atlas.microsoft.com/route/directions/json?` +
+            `api-version=1.0` +
             `&query=${origin[1]},${origin[0]}:${destination[1]},${destination[0]}` +
             `&travelMode=car` +
             `&instructionsType=text` +
             `&guidance=true`;
 
-        const response = await fetch(url);
+        let headers = {};
+
+        // Add authentication
+        if (authConfig.subscriptionKey) {
+            // Local development: Use subscription key
+            console.log('[NebaMap] Using subscription key for route');
+            url += `&subscription-key=${authConfig.subscriptionKey}`;
+        } else if (authConfig.accountId) {
+            // Production: Use Azure AD authentication
+            console.log('[NebaMap] Using Azure AD for route');
+            const token = await getAzureADTokenForRoute();
+            if (!token) {
+                throw new Error('Failed to get Azure AD token for route calculation');
+            }
+            headers['Authorization'] = `Bearer ${token}`;
+            headers['x-ms-client-id'] = authConfig.accountId;
+        }
+
+        const response = await fetch(url, { headers });
 
         if (!response.ok) {
             throw new Error(`Route API error: ${response.status} ${response.statusText}`);
@@ -655,6 +698,35 @@ export function exitDirectionsMode() {
 
     // Fit bounds to show all markers again
     fitBounds();
+}
+
+/**
+ * Gets an Azure AD access token for Azure Maps API calls
+ * In production with Azure App Service, this uses the built-in authentication
+ * @returns {Promise<string|null>} The access token or null if not available
+ */
+async function getAzureADTokenForRoute() {
+    try {
+        // In Azure App Service with Easy Auth enabled, we can get the token from /.auth/me
+        const response = await fetch('/.auth/me');
+
+        if (!response.ok) {
+            console.warn('[NebaMap] Could not fetch auth info from /.auth/me');
+            return null;
+        }
+
+        const data = await response.json();
+
+        if (data && data[0] && data[0].access_token) {
+            return data[0].access_token;
+        }
+
+        console.warn('[NebaMap] No access token found in auth response');
+        return null;
+    } catch (error) {
+        console.error('[NebaMap] Error getting Azure AD token:', error);
+        return null;
+    }
 }
 
 /**

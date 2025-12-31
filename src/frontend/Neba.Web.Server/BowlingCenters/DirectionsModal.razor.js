@@ -47,11 +47,13 @@ export async function getCurrentLocation() {
 
 /**
  * Searches for address suggestions using Azure Maps Search API
- * Note: This uses the global 'atlas' object from Azure Maps SDK
+ * Supports both subscription key (local dev) and Azure AD (production) authentication
  * @param {string} query - The address search query
  * @returns {Promise<Array>} Promise that resolves to array of address suggestions
  */
 export async function searchAddress(query) {
+    console.log('[DirectionsModal] Searching for address:', query);
+
     // Wait for Azure Maps SDK to be loaded
     if (typeof atlas === 'undefined') {
         console.error('[DirectionsModal] Azure Maps SDK not loaded');
@@ -59,51 +61,70 @@ export async function searchAddress(query) {
     }
 
     try {
-        // Get the search service URL from the map instance
-        // For now, we'll use the Search API directly
-        // This requires the subscription key to be available
+        // Get authentication configuration
+        const authConfig = window.azureMapsAuthConfig;
 
-        // Get subscription key from the existing map authentication
-        // We'll construct the API request manually
-        const subscriptionKey = getAzureMapsSubscriptionKey();
-
-        if (!subscriptionKey) {
-            console.error('[DirectionsModal] No Azure Maps subscription key available');
+        if (!authConfig) {
+            console.error('[DirectionsModal] No Azure Maps auth configuration available');
             return [];
         }
 
-        // Use Azure Maps Search API to get address suggestions
-        // Limit search to New England region for better results
-        const url = `https://atlas.microsoft.com/search/address/json?` +
-            `subscription-key=${subscriptionKey}` +
-            `&api-version=1.0` +
+        let url = `https://atlas.microsoft.com/search/address/json?` +
+            `api-version=1.0` +
             `&query=${encodeURIComponent(query)}` +
             `&limit=5` +
             `&countrySet=US` +
             `&view=Auto`;
 
-        const response = await fetch(url);
+        let headers = {};
+
+        // Determine authentication method
+        if (authConfig.subscriptionKey) {
+            // Local development: Use subscription key
+            console.log('[DirectionsModal] Using subscription key authentication');
+            url += `&subscription-key=${authConfig.subscriptionKey}`;
+        } else if (authConfig.accountId) {
+            // Production: Use Azure AD authentication
+            console.log('[DirectionsModal] Using Azure AD authentication');
+            const token = await getAzureADToken();
+            if (!token) {
+                console.error('[DirectionsModal] Failed to get Azure AD token');
+                return [];
+            }
+            headers['Authorization'] = `Bearer ${token}`;
+            headers['x-ms-client-id'] = authConfig.accountId;
+        } else {
+            console.error('[DirectionsModal] No valid authentication method available');
+            return [];
+        }
+
+        console.log('[DirectionsModal] Fetching from Azure Maps Search API...');
+        const response = await fetch(url, { headers });
 
         if (!response.ok) {
-            console.error('[DirectionsModal] Search API error:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('[DirectionsModal] Search API error:', response.status, response.statusText, errorText);
             return [];
         }
 
         const data = await response.json();
+        console.log('[DirectionsModal] Search API response:', data);
 
         if (!data.results || data.results.length === 0) {
+            console.log('[DirectionsModal] No results found for query:', query);
             return [];
         }
 
         // Transform results to our format
+        // Note: Using PascalCase to match C# AddressSuggestion class for proper deserialization
         const suggestions = data.results.map(result => ({
-            address: result.address.freeformAddress,
-            locality: result.address.municipality || result.address.countrySubdivision,
-            latitude: result.position.lat,
-            longitude: result.position.lon
+            Address: result.address.freeformAddress,
+            Locality: result.address.municipality || result.address.countrySubdivision,
+            Latitude: result.position.lat,
+            Longitude: result.position.lon
         }));
 
-        console.log('[DirectionsModal] Found address suggestions:', suggestions.length);
+        console.log('[DirectionsModal] Found address suggestions:', suggestions.length, suggestions);
         return suggestions;
     } catch (error) {
         console.error('[DirectionsModal] Error searching address:', error);
@@ -120,29 +141,30 @@ export function openInNewTab(url) {
 }
 
 /**
- * Helper function to get the Azure Maps subscription key
- * This extracts it from the existing map instance's authentication
- * @returns {string|null} The subscription key or null if not found
+ * Gets an Azure AD access token for Azure Maps API calls
+ * In production with Azure App Service, this uses the built-in authentication
+ * @returns {Promise<string|null>} The access token or null if not available
  */
-function getAzureMapsSubscriptionKey() {
-    // Try to get it from the window object where it might be stored
-    // This is a bit of a hack, but works for now
-    // In production, we might want to pass this more explicitly
-
-    // Check if there's a map instance we can access
-    // The NebaMap component should have set this up
+async function getAzureADToken() {
     try {
-        // Access the atlas authentication from the global scope
-        // When the map is initialized, the subscription key is in the auth config
-        // We'll need to store this in a global variable during map initialization
-        if (window.azureMapsSubscriptionKey) {
-            return window.azureMapsSubscriptionKey;
+        // In Azure App Service with Easy Auth enabled, we can get the token from /.auth/me
+        const response = await fetch('/.auth/me');
+
+        if (!response.ok) {
+            console.warn('[DirectionsModal] Could not fetch auth info from /.auth/me');
+            return null;
         }
 
-        console.warn('[DirectionsModal] Subscription key not found in window.azureMapsSubscriptionKey');
+        const data = await response.json();
+
+        if (data && data[0] && data[0].access_token) {
+            return data[0].access_token;
+        }
+
+        console.warn('[DirectionsModal] No access token found in auth response');
         return null;
     } catch (error) {
-        console.error('[DirectionsModal] Error getting subscription key:', error);
+        console.error('[DirectionsModal] Error getting Azure AD token:', error);
         return null;
     }
 }
