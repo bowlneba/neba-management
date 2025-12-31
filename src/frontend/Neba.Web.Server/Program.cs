@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Neba.Web.Server;
 using Neba.Web.Server.BackgroundJobs;
+using Neba.Web.Server.Maps;
 using Neba.Web.Server.Documents;
 using Neba.Web.Server.Notifications;
 using Neba.Web.Server.Services;
@@ -30,6 +31,13 @@ builder.Services.AddOptions<NebaApiConfiguration>()
 
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<NebaApiConfiguration>>().Value);
+
+builder.Services.AddOptions<AzureMapsSettings>()
+    .Bind(builder.Configuration.GetSection("AzureMaps"))
+    .ValidateOnStart();
+
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<AzureMapsSettings>>().Value);
 
 builder.Services.AddRefitClient<INebaApi>(new RefitSettings
 {

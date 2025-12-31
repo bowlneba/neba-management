@@ -1,4 +1,5 @@
 @page "/bowling-centers"
+@using Neba.Web.Server.Maps
 @using Neba.Web.Server.Notifications
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @implements IAsyncDisposable
@@ -149,17 +150,14 @@
                 </div>
             </div>
 
-            <!-- Right Side: Map Placeholder -->
+            <!-- Right Side: Azure Maps Component -->
             <div class="flex flex-col">
-                <div class="neba-card flex items-center justify-center bg-gradient-to-br from-[var(--neba-blue-100)] to-[var(--neba-blue-300)] text-[var(--neba-blue-700)]" style="height: 600px;">
-                    <div class="text-center">
-                        <svg class="w-16 h-16 mx-auto mb-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                        </svg>
-                        <p class="font-semibold text-lg">Azure Maps</p>
-                        <p class="text-sm opacity-80 mt-2">Interactive map will be displayed here</p>
-                    </div>
-                </div>
+                <NebaMap @ref="_mapComponent"
+                         Locations="@_mapLocations"
+                         EnableClustering="true"
+                         Center="@(new[] { -71.0589, 42.3601 })"
+                         Zoom="7"
+                         Height="600px" />
             </div>
         </div>
     }
@@ -168,11 +166,13 @@
 @code {
     private List<BowlingCenterViewModel> _allCenters = new();
     private List<BowlingCenterViewModel> _filteredCenters = new();
+    private List<NebaMapLocation> _mapLocations = new();
     private string? _errorMessage;
     private bool _isLoading = true;
     private string? _selectedState = null;
     private string _searchQuery = string.Empty;
     private IJSObjectReference? _jsModule;
+    private NebaMap? _mapComponent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -183,12 +183,12 @@
             if (bowlingCentersResult.IsError)
             {
                 _errorMessage = bowlingCentersResult.FirstError.Description;
-
                 return;
             }
 
             _allCenters = bowlingCentersResult.Value.ToList();
             _filteredCenters = _allCenters;
+            UpdateMapLocations();
         }
         catch (Exception ex)
         {
@@ -223,6 +223,58 @@
                        c.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
                        c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .ToList();
+
+        UpdateMapLocations();
+    }
+
+    private void UpdateMapLocations()
+    {
+        _mapLocations = _filteredCenters
+            // Filter out centers with invalid coordinates (defensive programming)
+            .Where(center => IsValidCoordinate(center.Latitude, center.Longitude))
+            .Select(center => new NebaMapLocation(
+                Id: $"{center.Name}-{center.City}".Replace(" ", "-"),
+                Title: center.Name,
+                Description: BuildCenterDescription(center),
+                Latitude: center.Latitude,
+                Longitude: center.Longitude,
+                Metadata: new Dictionary<string, object>
+                {
+                    ["street"] = center.Street,
+                    ["unit"] = center.Unit ?? string.Empty,
+                    ["city"] = center.City,
+                    ["state"] = center.State,
+                    ["zipCode"] = FormatZipCode(center.ZipCode),
+                    ["phoneNumber"] = FormatPhoneNumber(center.PhoneNumber),
+                    ["phoneExtension"] = center.PhoneExtension ?? string.Empty,
+                    ["isClosed"] = center.IsClosed
+                }
+            )).ToList();
+    }
+
+    private static bool IsValidCoordinate(double latitude, double longitude)
+    {
+        // Validate coordinates are within valid ranges and not default/null values
+        // New England region: roughly 40-48°N, 65-74°W
+        return latitude is >= 40 and <= 48 &&
+               longitude is >= -74 and <= -65;
+    }
+
+    private static string BuildCenterDescription(BowlingCenterViewModel center)
+    {
+        var parts = new List<string>
+        {
+            center.Street
+        };
+
+        if (!string.IsNullOrWhiteSpace(center.Unit))
+        {
+            parts.Add(center.Unit);
+        }
+
+        parts.Add($"{center.City}, {center.State} {FormatZipCode(center.ZipCode)}");
+
+        return string.Join("<br/>", parts);
     }
 
     private async Task ScrollToTop()
@@ -233,16 +285,21 @@
         }
     }
 
-    private void HandleCenterCardClick(BowlingCenterViewModel center)
+    private async Task HandleCenterCardClick(BowlingCenterViewModel center)
     {
-        // Placeholder for map focus functionality
-        _ = JSInterop.InvokeVoidAsync("alert", $"Would focus map on {center.Name}");
+        if (_mapComponent is not null)
+        {
+            var locationId = $"{center.Name}-{center.City}".Replace(" ", "-");
+            await _mapComponent.FocusOnLocationAsync(locationId);
+        }
     }
 
     private void HandleDirectionsClick(BowlingCenterViewModel center, MouseEventArgs e)
     {
-        // Placeholder for directions functionality
-        _ = JSInterop.InvokeVoidAsync("alert", $"Get directions to {center.Name}");
+        // Open Google Maps directions in new tab
+        var address = Uri.EscapeDataString($"{center.Street}, {center.City}, {center.State} {center.ZipCode}");
+        var url = $"https://www.google.com/maps/dir/?api=1&destination={address}";
+        _ = JSInterop.InvokeVoidAsync("open", url, "_blank");
     }
 
     private static string GetPhoneTelUri(string phoneNumber)

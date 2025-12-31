@@ -1,0 +1,183 @@
+@using Neba.Web.Server.Maps
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSRuntime
+@inject AzureMapsSettings MapsSettings
+
+<link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" type="text/css" />
+<script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+<script src="./Maps/NebaMap.razor.js" type="module"></script>
+
+<div id="@ContainerId" class="@CssClass" style="@($"height: {Height}; width: {Width}; padding: 0;")">
+    <!-- Azure Maps will be rendered here by JavaScript -->
+</div>
+
+@code {
+    private IJSObjectReference? _jsModule;
+    private string ContainerId { get; set; } = $"neba-map-{Guid.NewGuid():N}";
+
+    /// <summary>
+    /// The locations to display on the map.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<NebaMapLocation> Locations { get; set; } = Array.Empty<NebaMapLocation>();
+
+    /// <summary>
+    /// Whether to enable clustering of nearby markers.
+    /// </summary>
+    [Parameter]
+    public bool EnableClustering { get; set; } = true;
+
+    /// <summary>
+    /// The center point of the map as [longitude, latitude].
+    /// Defaults to Boston, MA (center of New England).
+    /// </summary>
+    [Parameter]
+    public double[] Center { get; set; } = new[] { -71.0589, 42.3601 };
+
+    /// <summary>
+    /// The initial zoom level of the map (1-20).
+    /// </summary>
+    [Parameter]
+    public int Zoom { get; set; } = 7;
+
+    /// <summary>
+    /// The height of the map container.
+    /// </summary>
+    [Parameter]
+    public string Height { get; set; } = "600px";
+
+    /// <summary>
+    /// The width of the map container.
+    /// </summary>
+    [Parameter]
+    public string Width { get; set; } = "100%";
+
+    /// <summary>
+    /// Additional CSS classes to apply to the map container.
+    /// </summary>
+    [Parameter]
+    public string CssClass { get; set; } = "neba-card";
+
+    /// <summary>
+    /// Event callback fired when a location is selected on the map.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnLocationSelected { get; set; }
+
+    /// <summary>
+    /// Event callback fired when the map is ready and initialized.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnMapReady { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Maps/NebaMap.razor.js"
+            );
+
+            await InitializeMapAsync();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update markers when Locations parameter changes
+        if (_jsModule is not null)
+        {
+            await UpdateMarkersAsync();
+        }
+    }
+
+    private async Task InitializeMapAsync()
+    {
+        if (_jsModule is null)
+        {
+            return;
+        }
+
+        var authConfig = new
+        {
+            accountId = MapsSettings.AccountId,
+            subscriptionKey = MapsSettings.SubscriptionKey
+        };
+
+        var mapConfig = new
+        {
+            containerId = ContainerId,
+            center = Center,
+            zoom = Zoom,
+            enableClustering = EnableClustering
+        };
+
+        var locationData = Locations.Select(loc => new
+        {
+            id = loc.Id,
+            title = loc.Title,
+            description = loc.Description,
+            latitude = loc.Latitude,
+            longitude = loc.Longitude,
+            metadata = loc.Metadata ?? new Dictionary<string, object>()
+        }).ToList();
+
+        await _jsModule.InvokeVoidAsync("initializeMap", authConfig, mapConfig, locationData);
+
+        // Notify that map is ready
+        await OnMapReady.InvokeAsync();
+    }
+
+    private async Task UpdateMarkersAsync()
+    {
+        if (_jsModule is null)
+        {
+            return;
+        }
+
+        var locationData = Locations.Select(loc => new
+        {
+            id = loc.Id,
+            title = loc.Title,
+            description = loc.Description,
+            latitude = loc.Latitude,
+            longitude = loc.Longitude,
+            metadata = loc.Metadata ?? new Dictionary<string, object>()
+        }).ToList();
+
+        await _jsModule.InvokeVoidAsync("updateMarkers", locationData);
+    }
+
+    /// <summary>
+    /// Focuses the map on a specific location by ID.
+    /// </summary>
+    /// <param name="locationId">The ID of the location to focus on</param>
+    public async Task FocusOnLocationAsync(string locationId)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("focusOnLocation", locationId);
+        }
+    }
+
+    /// <summary>
+    /// Fits the map bounds to show all locations.
+    /// </summary>
+    public async Task FitBoundsAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("fitBounds");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+}
