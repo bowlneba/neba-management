@@ -52,4 +52,17 @@
     </None>
   </ItemGroup>
 
+  <!-- Exclude test files from publish -->
+  <ItemGroup>
+    <Content Update="wwwroot\**\*.test.js">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="**\jest.config.js">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="**\test-output.txt">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
