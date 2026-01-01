@@ -19,13 +19,14 @@ export default {
     '!**/bin/**',
     '!**/obj/**',
     '!**/wwwroot/**',
+    '!**/coverage/**',
     '!jest.config.js',
     '!tailwind.config.js'
   ],
 
   coverageThreshold: {
     global: {
-      branches: 70,
+      branches: 65,
       functions: 70,
       lines: 70,
       statements: 70

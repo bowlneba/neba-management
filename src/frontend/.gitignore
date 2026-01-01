@@ -1,2 +1,4 @@
 # Environment variables file (contains secrets)
 .env
+
+*/coverage/*

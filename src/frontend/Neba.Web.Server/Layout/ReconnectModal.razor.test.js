@@ -1,24 +1,32 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
-
-// Mock Blazor global
-globalThis.Blazor = {
-  reconnect: jest.fn(),
-  resumeCircuit: jest.fn()
-};
+import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
 describe('ReconnectModal', () => {
   let reconnectModal;
   let retryButton;
   let resumeButton;
+  let mockReconnect;
+  let mockResumeCircuit;
+  let mockReload;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
-    // Reset location mock
-    delete globalThis.location;
-    globalThis.location = { reload: jest.fn() };
+    // Create mocks for Blazor methods
+    mockReconnect = jest.fn();
+    mockResumeCircuit = jest.fn();
 
-    // Set up DOM
+    // Mock Blazor global
+    globalThis.Blazor = {
+      reconnect: mockReconnect,
+      resumeCircuit: mockResumeCircuit
+    };
+
+    // Reset location mock
+    mockReload = jest.fn();
+    delete globalThis.location;
+    globalThis.location = { reload: mockReload };
+
+    // Set up DOM before importing module
     document.body.innerHTML = `
       <dialog id="components-reconnect-modal"></dialog>
       <button id="components-reconnect-button">Retry</button>
@@ -39,6 +47,15 @@ describe('ReconnectModal', () => {
       configurable: true,
       value: 'visible'
     });
+
+    // Clear module cache and import to register event listeners
+    const modulePath = './ReconnectModal.razor.js';
+    if (typeof jest !== 'undefined') {
+      jest.resetModules();
+    }
+
+    // Import module to register event listeners
+    await import(modulePath);
   });
 
   describe('DOM Elements', () => {
@@ -58,28 +75,180 @@ describe('ReconnectModal', () => {
     });
   });
 
-  describe('Module behavior (integration tests)', () => {
-    test('should set up event listener for components-reconnect-state-changed', () => {
-      // Note: The module sets up event listeners on import
-      // This test documents the expected behavior
-      // In a real scenario, the module would listen for 'components-reconnect-state-changed' events
-      expect(reconnectModal).toBeDefined();
+  describe('Reconnect state change events', () => {
+    test('should show modal when state is "show"', () => {
+      // Act
+      const event = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'show' }
+      });
+      reconnectModal.dispatchEvent(event);
+
+      // Assert
+      expect(reconnectModal.showModal).toHaveBeenCalled();
     });
 
-    test('should handle "show" state by showing the modal', () => {
-      // Expected behavior: When state is "show", modal.showModal() should be called
-      // This is an integration concern - the module code runs on import
-      expect(reconnectModal.showModal).toBeDefined();
+    test('should close modal when state is "hide"', () => {
+      // Act
+      const event = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'hide' }
+      });
+      reconnectModal.dispatchEvent(event);
+
+      // Assert
+      expect(reconnectModal.close).toHaveBeenCalled();
     });
 
-    test('should handle "hide" state by closing the modal', () => {
-      // Expected behavior: When state is "hide", modal.close() should be called
-      expect(reconnectModal.close).toBeDefined();
+    test('should reload page when state is "rejected"', () => {
+      // Act
+      const event = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'rejected' }
+      });
+      reconnectModal.dispatchEvent(event);
+
+      // Assert
+      expect(mockReload).toHaveBeenCalled();
     });
 
-    test('should handle "rejected" state by reloading the page', () => {
-      // Expected behavior: When state is "rejected", location.reload() should be called
-      expect(globalThis.location.reload).toBeDefined();
+    test('should add visibility change listener when state is "failed"', () => {
+      // Arrange
+      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+
+      // Act
+      const event = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'failed' }
+      });
+      reconnectModal.dispatchEvent(event);
+
+      // Assert
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'visibilitychange',
+        expect.any(Function)
+      );
+
+      addEventListenerSpy.mockRestore();
+    });
+  });
+
+  describe('Retry button behavior', () => {
+    test('should call Blazor.reconnect when retry button is clicked', async () => {
+      // Arrange
+      mockReconnect.mockResolvedValue(true);
+
+      // Act
+      retryButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockReconnect).toHaveBeenCalled();
+    });
+
+    test('should reload page when reconnect returns false', async () => {
+      // Arrange
+      mockReconnect.mockResolvedValue(false);
+      mockResumeCircuit.mockResolvedValue(false);
+
+      // Act
+      retryButton.click();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockReconnect).toHaveBeenCalled();
+      expect(mockResumeCircuit).toHaveBeenCalled();
+      expect(mockReload).toHaveBeenCalled();
+    });
+
+    test('should try resume circuit when reconnect fails', async () => {
+      // Arrange
+      mockReconnect.mockResolvedValue(false);
+      mockResumeCircuit.mockResolvedValue(true);
+
+      // Act
+      retryButton.click();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockReconnect).toHaveBeenCalled();
+      expect(mockResumeCircuit).toHaveBeenCalled();
+      expect(reconnectModal.close).toHaveBeenCalled();
+    });
+
+    test('should handle reconnect exception', async () => {
+      // Arrange
+      mockReconnect.mockRejectedValue(new Error('Network error'));
+      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+
+      // Act
+      retryButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockReconnect).toHaveBeenCalled();
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'visibilitychange',
+        expect.any(Function)
+      );
+
+      addEventListenerSpy.mockRestore();
+    });
+
+    test('should remove visibilitychange listener before retrying', async () => {
+      // Arrange
+      mockReconnect.mockResolvedValue(true);
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+
+      // Act
+      retryButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'visibilitychange',
+        expect.any(Function)
+      );
+
+      removeEventListenerSpy.mockRestore();
+    });
+  });
+
+  describe('Resume button behavior', () => {
+    test('should call Blazor.resumeCircuit when resume button is clicked', async () => {
+      // Arrange
+      mockResumeCircuit.mockResolvedValue(true);
+
+      // Act
+      resumeButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockResumeCircuit).toHaveBeenCalled();
+    });
+
+    test('should reload page when resume fails', async () => {
+      // Arrange
+      mockResumeCircuit.mockResolvedValue(false);
+
+      // Act
+      resumeButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockResumeCircuit).toHaveBeenCalled();
+      expect(mockReload).toHaveBeenCalled();
+    });
+
+    test('should reload page when resume throws exception', async () => {
+      // Arrange
+      mockResumeCircuit.mockRejectedValue(new Error('Resume error'));
+
+      // Act
+      resumeButton.click();
+      await Promise.resolve();
+
+      // Assert
+      expect(mockResumeCircuit).toHaveBeenCalled();
+      expect(mockReload).toHaveBeenCalled();
     });
   });
 
@@ -157,34 +326,57 @@ describe('ReconnectModal', () => {
     });
   });
 
-  describe('Document visibility', () => {
-    test('should check document.visibilityState', () => {
-      expect(document.visibilityState).toBeDefined();
-      expect(document.visibilityState).toBe('visible');
-    });
-
-    test('should handle visibility change to hidden', () => {
+  describe('Visibility change handling', () => {
+    test('should retry when document becomes visible after failed state', async () => {
       // Arrange
-      Object.defineProperty(document, 'visibilityState', {
-        writable: true,
-        configurable: true,
-        value: 'hidden'
+      mockReconnect.mockResolvedValue(true);
+
+      // Trigger failed state to add visibility listener
+      const failedEvent = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'failed' }
       });
+      reconnectModal.dispatchEvent(failedEvent);
 
-      // Assert
-      expect(document.visibilityState).toBe('hidden');
-    });
-
-    test('should handle visibility change to visible', () => {
-      // Arrange
+      // Act - simulate document becoming visible
       Object.defineProperty(document, 'visibilityState', {
         writable: true,
         configurable: true,
         value: 'visible'
       });
 
+      const visibilityEvent = new Event('visibilitychange');
+      document.dispatchEvent(visibilityEvent);
+      await Promise.resolve();
+
       // Assert
-      expect(document.visibilityState).toBe('visible');
+      expect(mockReconnect).toHaveBeenCalled();
+    });
+
+    test('should not retry when document is hidden', async () => {
+      // Arrange
+      mockReconnect.mockResolvedValue(true);
+
+      // Trigger failed state to add visibility listener
+      const failedEvent = new CustomEvent('components-reconnect-state-changed', {
+        detail: { state: 'failed' }
+      });
+      reconnectModal.dispatchEvent(failedEvent);
+
+      mockReconnect.mockClear();
+
+      // Act - simulate document becoming hidden
+      Object.defineProperty(document, 'visibilityState', {
+        writable: true,
+        configurable: true,
+        value: 'hidden'
+      });
+
+      const visibilityEvent = new Event('visibilitychange');
+      document.dispatchEvent(visibilityEvent);
+      await Promise.resolve();
+
+      // Assert
+      expect(mockReconnect).not.toHaveBeenCalled();
     });
   });
 });

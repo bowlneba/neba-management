@@ -320,6 +320,116 @@ describe('DirectionsModal', () => {
       const fetchCall = globalThis.fetch.mock.calls[0][0];
       expect(fetchCall).toContain('countrySet=US');
     });
+
+    test('should use Azure AD authentication when accountId is provided', async () => {
+      // Arrange
+      globalThis.window.azureMapsAuthConfig = {
+        accountId: 'test-account-id'
+      };
+
+      // Mock successful auth token fetch
+      globalThis.fetch = jest.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue([{
+            access_token: 'test-azure-ad-token'
+          }])
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            results: [{
+              address: { freeformAddress: '123 Main St', municipality: 'Boston' },
+              position: { lat: 42.3601, lon: -71.0589 }
+            }]
+          })
+        });
+
+      // Act
+      const result = await searchAddress('Boston, MA');
+
+      // Assert
+      expect(result).toHaveLength(1);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+
+      // First call should be to /.auth/me
+      expect(globalThis.fetch.mock.calls[0][0]).toBe('/.auth/me');
+
+      // Second call should include Azure AD headers
+      const searchCall = globalThis.fetch.mock.calls[1];
+      expect(searchCall[1].headers['Authorization']).toBe('Bearer test-azure-ad-token');
+      expect(searchCall[1].headers['x-ms-client-id']).toBe('test-account-id');
+    });
+
+    test('should return empty array when Azure AD token fetch fails', async () => {
+      // Arrange
+      globalThis.window.azureMapsAuthConfig = {
+        accountId: 'test-account-id'
+      };
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 401
+      });
+
+      // Act
+      const result = await searchAddress('Boston, MA');
+
+      // Assert
+      expect(result).toEqual([]);
+      expect(globalThis.fetch).toHaveBeenCalledWith('/.auth/me');
+    });
+
+    test('should return empty array when Azure AD token is missing', async () => {
+      // Arrange
+      globalThis.window.azureMapsAuthConfig = {
+        accountId: 'test-account-id'
+      };
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue([{}]) // No access_token
+      });
+
+      // Act
+      const result = await searchAddress('Boston, MA');
+
+      // Assert
+      expect(result).toEqual([]);
+    });
+
+    test('should handle Azure AD token fetch exception', async () => {
+      // Arrange
+      globalThis.window.azureMapsAuthConfig = {
+        accountId: 'test-account-id'
+      };
+
+      globalThis.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+      // Act
+      const result = await searchAddress('Boston, MA');
+
+      // Assert
+      expect(result).toEqual([]);
+    });
+
+    test('should handle empty auth response array', async () => {
+      // Arrange
+      globalThis.window.azureMapsAuthConfig = {
+        accountId: 'test-account-id'
+      };
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue([]) // Empty array
+      });
+
+      // Act
+      const result = await searchAddress('Boston, MA');
+
+      // Assert
+      expect(result).toEqual([]);
+    });
   });
 
   describe('openInNewTab', () => {

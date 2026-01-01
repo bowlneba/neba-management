@@ -413,6 +413,33 @@ describe('NebaDocument', () => {
       expect(mobileTocList.innerHTML).toContain('Heading 1');
       expect(mobileTocList.innerHTML).toContain('Heading 2');
     });
+
+    test('should handle when mobile list element is missing', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading 1</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'nonexistent-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+      };
+
+      // Act & Assert - should not throw
+      expect(() => initializeToc(config)).not.toThrow();
+    });
   });
 
   describe('scrollToHash', () => {
@@ -602,6 +629,965 @@ describe('NebaDocument', () => {
       // Expected: browser default behavior (open in new tab)
       // Event should NOT be prevented when Ctrl is pressed
       expect(defaultPrevented).toBe(false);
+    });
+
+    test('should open internal links in slideover when configured', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Internal Link</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          html: '<p>Document content</p>',
+          metadata: { LastUpdatedUtc: '2025-01-01T12:00:00Z', LastUpdatedBy: 'Test User' }
+        })
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws"]');
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link.dispatchEvent(clickEvent);
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/documents/bylaws'),
+        expect.any(Object)
+      );
+
+      const slideoverContent = document.getElementById('slideover-content');
+      expect(slideoverContent.innerHTML).toContain('Document content');
+      expect(slideoverContent.innerHTML).toContain('Test User');
+    });
+
+    test('should handle fetch errors when opening slideover', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Internal Link</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found'
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws"]');
+      link.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      const slideoverTitle = document.getElementById('slideover-title');
+      const slideoverContent = document.getElementById('slideover-content');
+
+      expect(slideoverTitle.textContent).toContain('Error');
+      expect(slideoverContent.innerHTML).toContain('Failed to load');
+    });
+
+    test('should close slideover on close button click', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover" class="active"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      document.body.style.overflow = 'hidden';
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      const slideover = document.getElementById('slideover');
+      const closeButton = document.getElementById('slideover-close');
+
+      // Act
+      closeButton.click();
+
+      // Assert
+      expect(slideover.classList.contains('active')).toBe(false);
+      expect(document.body.style.overflow).toBe('');
+    });
+
+    test('should close slideover on Escape key', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover" class="active"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      const slideover = document.getElementById('slideover');
+      const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+
+      // Act
+      document.dispatchEvent(escapeEvent);
+
+      // Assert
+      expect(slideover.classList.contains('active')).toBe(false);
+    });
+
+    test('should allow external protocol links like mailto and tel', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="mailto:test@example.com">Email</a>
+          <a href="tel:+1234567890">Phone</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act/Assert - clicking links should not throw
+      const emailLink = document.querySelector('a[href^="mailto:"]');
+      const phoneLink = document.querySelector('a[href^="tel:"]');
+
+      expect(() => emailLink.click()).not.toThrow();
+      expect(() => phoneLink.click()).not.toThrow();
+    });
+
+    test('should handle opening slideover with hash in URL', async () => {
+      // Arrange
+      jest.useFakeTimers();
+
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws#section-2">Link with hash</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content" style="overflow: auto;"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          html: '<h2 id="section-2">Section 2</h2><p>Content</p>',
+          metadata: {}
+        })
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws#section-2"]');
+      link.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const slideoverContent = document.getElementById('slideover-content');
+
+      // Mock scrollIntoView on the target element
+      const targetElement = slideoverContent.querySelector('#section-2');
+      if (targetElement) {
+        targetElement.scrollIntoView = jest.fn();
+      }
+
+      // Fast-forward the setTimeout in openInSlideover
+      jest.advanceTimersByTime(100);
+
+      // Assert
+      expect(slideoverContent.innerHTML).toContain('Section 2');
+      if (targetElement) {
+        expect(targetElement.scrollIntoView).toHaveBeenCalled();
+      }
+
+      jest.useRealTimers();
+    });
+
+    test('should handle missing hash target in slideover', async () => {
+      // Arrange
+      jest.useFakeTimers();
+
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws#nonexistent">Link with invalid hash</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          html: '<p>Content without target</p>',
+          metadata: {}
+        })
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws#nonexistent"]');
+      link.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Fast-forward the setTimeout - should not throw when target not found
+      expect(() => jest.advanceTimersByTime(100)).not.toThrow();
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe('scroll spy functionality', () => {
+    test('should update active link when scrolling content', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content" style="height: 500px; overflow: auto;">
+          <h1 id="heading1" style="margin-top: 50px;">Heading 1</h1>
+          <div style="height: 300px;"></div>
+          <h1 id="heading2" style="margin-top: 100px;">Heading 2</h1>
+          <div style="height: 300px;"></div>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+      };
+
+      initializeToc(config);
+
+      const content = document.getElementById('content');
+
+      // Act - trigger scroll event
+      const scrollEvent = new Event('scroll');
+      content.dispatchEvent(scrollEvent);
+
+      // Assert - requestAnimationFrame should be called
+      expect(globalThis.requestAnimationFrame).toHaveBeenCalled();
+    });
+
+    test('should click desktop TOC link to scroll to section', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content" style="height: 500px; overflow: auto;">
+          <h1 id="heading1">Heading 1</h1>
+          <div style="height: 500px;"></div>
+          <h1 id="heading2">Heading 2</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+      };
+
+      initializeToc(config);
+
+      const content = document.getElementById('content');
+      content.scrollTo = jest.fn();
+
+      // Act
+      const tocLink = document.querySelector('.toc-link[data-target="heading2"]');
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      tocLink.dispatchEvent(clickEvent);
+
+      // Assert
+      expect(content.scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          behavior: 'smooth'
+        })
+      );
+    });
+
+    test('should click mobile TOC link to scroll to section and close modal', () => {
+      // Arrange
+      jest.useFakeTimers();
+
+      document.body.innerHTML = `
+        <div id="content" style="height: 500px; overflow: auto;">
+          <h1 id="heading1">Heading 1</h1>
+          <div style="height: 500px;"></div>
+          <h1 id="heading2">Heading 2</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal" class="active"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      globalThis.scrollTo = jest.fn();
+      globalThis.pageYOffset = 0;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+      };
+
+      initializeToc(config);
+
+      const modal = document.getElementById('toc-modal');
+
+      // Act
+      const mobileTocLink = document.querySelector('#toc-mobile-list .toc-link[data-target="heading2"]');
+      mobileTocLink.click();
+
+      // Assert - modal should close immediately
+      expect(modal.classList.contains('active')).toBe(false);
+
+      // Fast-forward the setTimeout
+      jest.advanceTimersByTime(300);
+
+      // Assert - should call window.scrollTo
+      expect(globalThis.scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          behavior: 'smooth'
+        })
+      );
+
+      jest.useRealTimers();
+    });
+
+    test('should handle missing target when clicking mobile TOC link', () => {
+      // Arrange
+      jest.useFakeTimers();
+
+      document.body.innerHTML = `
+        <div id="content">
+          <h1 id="heading1">Heading 1</h1>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list">
+          <li><a class="toc-link" data-target="nonexistent">Bad Link</a></li>
+        </ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal" class="active"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+      };
+
+      initializeToc(config);
+
+      const modal = document.getElementById('toc-modal');
+
+      // Act
+      const mobileTocLink = document.querySelector('#toc-mobile-list .toc-link');
+      mobileTocLink.click();
+
+      // Assert - modal should still close even if target not found
+      expect(modal.classList.contains('active')).toBe(false);
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe('nested slideover navigation', () => {
+    test('should navigate to nested internal link in slideover', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Open Bylaws</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            html: '<p>Bylaws content</p><a href="/rules">See Rules</a>',
+            metadata: {}
+          })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            html: '<p>Rules content</p>',
+            metadata: {}
+          })
+        });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act - click initial link
+      const initialLink = document.querySelector('a[href="/bylaws"]');
+      initialLink.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const slideoverContent = document.getElementById('slideover-content');
+      expect(slideoverContent.innerHTML).toContain('Bylaws content');
+
+      // Act - click nested link in slideover
+      const nestedLink = slideoverContent.querySelector('a[href="/rules"]');
+      nestedLink.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert - slideover content should be replaced
+      expect(slideoverContent.innerHTML).toContain('Rules content');
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    test('should handle hash links within slideover', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Open Bylaws</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          html: '<h2 id="section1">Section 1</h2><a href="#section1">Jump to section</a>',
+          metadata: {}
+        })
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act - open slideover
+      const initialLink = document.querySelector('a[href="/bylaws"]');
+      initialLink.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const slideoverContent = document.getElementById('slideover-content');
+      const section = slideoverContent.querySelector('#section1');
+      section.scrollIntoView = jest.fn();
+
+      // Act - click hash link within slideover
+      const hashLink = slideoverContent.querySelector('a[href="#section1"]');
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      hashLink.dispatchEvent(clickEvent);
+
+      // Assert - should scroll to section
+      expect(section.scrollIntoView).toHaveBeenCalledWith(
+        expect.objectContaining({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      );
+    });
+
+    test('should allow Ctrl+Click in slideover nested links', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Open Bylaws</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          html: '<a href="/rules">External in new tab</a>',
+          metadata: {}
+        })
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act - open slideover
+      const initialLink = document.querySelector('a[href="/bylaws"]');
+      initialLink.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const slideoverContent = document.getElementById('slideover-content');
+
+      // Act - Ctrl+click nested link
+      const nestedLink = slideoverContent.querySelector('a[href="/rules"]');
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        ctrlKey: true
+      });
+
+      const defaultPrevented = !nestedLink.dispatchEvent(clickEvent);
+
+      // Assert - should NOT prevent default (allow browser to open in new tab)
+      expect(defaultPrevented).toBe(false);
+    });
+  });
+
+  describe('helper functions', () => {
+    test('should handle JSON parse error when fetching slideover content', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Open Bylaws</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      // Simulate JSON parse error
+      globalThis.fetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
+      });
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws"]');
+      link.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      const slideoverTitle = document.getElementById('slideover-title');
+      const slideoverContent = document.getElementById('slideover-content');
+
+      expect(slideoverTitle.textContent).toContain('Error');
+      expect(slideoverContent.innerHTML).toContain('Invalid JSON');
+    });
+
+    test('should handle network error when fetching slideover content', async () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1>Heading</h1>
+          <a href="/bylaws">Open Bylaws</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+        <div id="slideover"></div>
+        <div id="slideover-overlay"></div>
+        <button id="slideover-close"></button>
+        <div id="slideover-title"></div>
+        <div id="slideover-content"></div>
+      `;
+
+      globalThis.fetch.mockRejectedValue(new Error('Network error'));
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close',
+        slideoverId: 'slideover',
+        slideoverOverlayId: 'slideover-overlay',
+        slideoverCloseId: 'slideover-close',
+        slideoverTitleId: 'slideover-title',
+        slideoverContentId: 'slideover-content'
+      };
+
+      initializeToc(config);
+
+      // Act
+      const link = document.querySelector('a[href="/bylaws"]');
+      link.click();
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Assert
+      const slideoverTitle = document.getElementById('slideover-title');
+      const slideoverContent = document.getElementById('slideover-content');
+
+      expect(slideoverTitle.textContent).toContain('Error');
+      expect(slideoverContent.innerHTML).toContain('Network error');
+    });
+
+    test('should initialize without slideover elements', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <div id="content">
+          <h1 id="heading1">Heading 1</h1>
+          <a href="#heading1">Anchor link</a>
+        </div>
+        <ul id="toc-list"></ul>
+        <ul id="toc-mobile-list"></ul>
+        <button id="toc-mobile-button"></button>
+        <div id="toc-modal"></div>
+        <div id="toc-modal-overlay"></div>
+        <button id="toc-modal-close"></button>
+      `;
+
+      const config = {
+        contentId: 'content',
+        tocListId: 'toc-list',
+        tocMobileListId: 'toc-mobile-list',
+        tocMobileButtonId: 'toc-mobile-button',
+        tocModalId: 'toc-modal',
+        tocModalOverlayId: 'toc-modal-overlay',
+        tocModalCloseId: 'toc-modal-close'
+        // No slideover config
+      };
+
+      const content = document.getElementById('content');
+      content.scrollTo = jest.fn();
+
+      // Act
+      const result = initializeToc(config);
+
+      // Assert
+      expect(result).toBe(true);
+
+      const link = content.querySelector('a[href="#heading1"]');
+
+      // Act - click anchor link (should use fallback navigation)
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link.dispatchEvent(clickEvent);
+
+      // Assert - should prevent default and call scrollTo
+      expect(content.scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          behavior: 'smooth'
+        })
+      );
     });
   });
 });
