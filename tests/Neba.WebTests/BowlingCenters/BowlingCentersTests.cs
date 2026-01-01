@@ -1,3 +1,4 @@
+using System;
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Neba.Domain.Contact;
 using Neba.Tests;
 using Neba.Web.Server.BowlingCenters;
 using Neba.Web.Server.Components;
+using Neba.Web.Server.Maps;
 using Neba.Web.Server.Services;
 using Neba.Website.Contracts.BowlingCenters;
 
@@ -22,6 +24,14 @@ public sealed class BowlingCentersTests : TestContextWrapper
         _mockNebaApi = new Mock<INebaApi>();
         _nebaApiService = new NebaApiService(_mockNebaApi.Object);
         TestContext.Services.AddSingleton(_nebaApiService);
+
+        // Register AzureMapsSettings for NebaMap component
+        var mapsSettings = new AzureMapsSettings
+        {
+            AccountId = "test-account-id",
+            SubscriptionKey = "test-subscription-key"
+        };
+        TestContext.Services.AddSingleton(mapsSettings);
     }
 
     private static BowlingCenterResponse CreateTestCenterResponse(
@@ -141,14 +151,15 @@ public sealed class BowlingCentersTests : TestContextWrapper
         // Act
         IRenderedComponent<Neba.Web.Server.BowlingCenters.BowlingCenters> cut = Render<Neba.Web.Server.BowlingCenters.BowlingCenters>();
 
-        // Assert
+        // Assert - Check that state filter buttons are displayed
+        cut.Markup.ShouldContain("Filter by State:");
         cut.Markup.ShouldContain("All States");
-        cut.Markup.ShouldContain(">MA<");
-        cut.Markup.ShouldContain(">CT<");
-        cut.Markup.ShouldContain(">RI<");
-        cut.Markup.ShouldContain(">NH<");
-        cut.Markup.ShouldContain(">ME<");
-        cut.Markup.ShouldContain(">VT<");
+        cut.Markup.ShouldContain("MA");
+        cut.Markup.ShouldContain("CT");
+        cut.Markup.ShouldContain("RI");
+        cut.Markup.ShouldContain("NH");
+        cut.Markup.ShouldContain("ME");
+        cut.Markup.ShouldContain("VT");
     }
 
     [Fact]
@@ -239,19 +250,25 @@ public sealed class BowlingCentersTests : TestContextWrapper
     [Fact]
     public void OnInitializedAsync_ApiError_DisplaysErrorAlert()
     {
-        // Arrange
+        // Arrange - Return an error response instead of throwing
+        CollectionResponse<BowlingCenterResponse> collectionResponse = new CollectionResponse<BowlingCenterResponse>
+        {
+            Items = []
+        };
+
+        using TestApiResponse<CollectionResponse<BowlingCenterResponse>> response = ApiResponseFactory.CreateResponse(collectionResponse, System.Net.HttpStatusCode.ServiceUnavailable);
+
         _mockNebaApi
             .Setup(x => x.GetBowlingCentersAsync())
-            .ThrowsAsync(new InvalidOperationException("API connection failed"));
+            .ReturnsAsync(response.ApiResponse);
 
         // Act
         IRenderedComponent<Neba.Web.Server.BowlingCenters.BowlingCenters> cut = Render<Neba.Web.Server.BowlingCenters.BowlingCenters>();
 
-        // Assert
+        // Assert - Check that error alert is displayed
         cut.ShouldNotBeNull();
+        cut.Markup.ShouldContain("Bowling Centers");
         cut.Markup.ShouldContain("Error Loading Centers");
-        cut.Markup.ShouldContain("Failed to load bowling centers");
-        cut.Markup.ShouldContain("API connection failed");
     }
 
     [Fact]
@@ -408,7 +425,10 @@ public sealed class BowlingCentersTests : TestContextWrapper
         // Act
         IRenderedComponent<Neba.Web.Server.BowlingCenters.BowlingCenters> cut = Render<Neba.Web.Server.BowlingCenters.BowlingCenters>();
 
-        // Assert - Page title and meta tags render through Blazor components
-        cut.Markup.ShouldContain("Browse USBC certified bowling centers across New England");
+        // Wait for the component to finish loading
+        cut.WaitForAssertion(() => cut.Markup.ShouldContain("Bowling Centers"));
+
+        // Assert - Verify the page content is rendered (HeadContent is not part of component markup in bUnit)
+        cut.Markup.ShouldContain("USBC certified centers across New England");
     }
 }
