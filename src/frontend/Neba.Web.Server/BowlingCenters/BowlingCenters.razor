@@ -156,13 +156,37 @@
             </div>
 
             <!-- Right Side: Azure Maps Component -->
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-2">
+                <!-- Map Style Switcher -->
+                <div class="flex items-center justify-end gap-2 px-2">
+                    <span class="text-sm text-[var(--neba-gray-700)] font-medium">Map View:</span>
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "road" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-l-md transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("road"))">
+                            Road
+                        </button>
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border-t border-b @(_mapStyle == "satellite" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("satellite"))">
+                            Satellite
+                        </button>
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "satellite_road_labels" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-r-md transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("satellite_road_labels"))">
+                            Hybrid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Map Component -->
                 <NebaMap @ref="_mapComponent"
                          Locations="@_mapLocations"
                          EnableClustering="true"
                          Center="@(new[] { -71.0589, 42.3601 })"
                          Zoom="7"
                          Height="600px"
+                         MapStyle="@_mapStyle"
                          OnBoundsChanged="@HandleBoundsChanged" />
             </div>
         </div>
@@ -189,6 +213,7 @@
     private MapBounds? _currentMapBounds;
     private bool _showDirectionsModal = false;
     private readonly DirectionsState _directionsState = new();
+    private string _mapStyle = "road";
 
     protected override async Task OnInitializedAsync()
     {
@@ -450,6 +475,16 @@
             // Don't call ExitDirectionsModeAsync - that would remove the route
             // Instead, just restore the marker opacity via JavaScript
             // The route stays visible until the user requests new directions
+        }
+    }
+
+    private async Task HandleMapStyleChange(string style)
+    {
+        _mapStyle = style;
+
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.SetMapStyleAsync(style);
         }
     }
 

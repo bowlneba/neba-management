@@ -112,7 +112,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
             center: mapConfig.center,
             zoom: mapConfig.zoom,
             language: 'en-US',
-            style: 'road',
+            style: mapConfig.style || 'road',
             showLogo: false,
             showFeedbackLink: false,
             // Performance optimizations for tile caching
@@ -698,6 +698,30 @@ export function exitDirectionsMode() {
 
     // Fit bounds to show all markers again
     fitBounds();
+}
+
+/**
+ * Changes the map style/view
+ * @param {string} style - The map style to apply: 'road', 'satellite', or 'satellite_road_labels' (hybrid)
+ */
+export function setMapStyle(style) {
+    if (!map) {
+        console.warn('[NebaMap] Cannot change map style - map not initialized');
+        return;
+    }
+
+    // Validate style
+    const validStyles = ['road', 'satellite', 'satellite_road_labels', 'grayscale_dark', 'grayscale_light', 'night', 'road_shaded_relief'];
+    if (!validStyles.includes(style)) {
+        console.warn('[NebaMap] Invalid map style:', style);
+        return;
+    }
+
+    console.log('[NebaMap] Changing map style to:', style);
+
+    map.setStyle({
+        style: style
+    });
 }
 
 /**

@@ -89,6 +89,11 @@ describe('NebaMap', () => {
       const { dispose } = await import('./NebaMap.razor.js');
       expect(typeof dispose).toBe('function');
     });
+
+    test('should export setMapStyle function', async () => {
+      const { setMapStyle } = await import('./NebaMap.razor.js');
+      expect(typeof setMapStyle).toBe('function');
+    });
   });
 
   describe('Azure Maps SDK', () => {
@@ -203,6 +208,155 @@ describe('NebaMap', () => {
       expect(expectedUrl).toContain('api-version=1.0');
       expect(expectedUrl).toContain('travelMode=car');
       expect(expectedUrl).toContain('instructionsType=text');
+    });
+  });
+
+  describe('Map style switching', () => {
+    test('should accept valid map styles', () => {
+      const validStyles = [
+        'road',
+        'satellite',
+        'satellite_road_labels',
+        'grayscale_dark',
+        'grayscale_light',
+        'night',
+        'road_shaded_relief'
+      ];
+
+      validStyles.forEach(style => {
+        expect(typeof style).toBe('string');
+        expect(style.length).toBeGreaterThan(0);
+      });
+    });
+
+    test('should handle road style', async () => {
+      const { setMapStyle } = await import('./NebaMap.razor.js');
+
+      // Should not throw when called without initialized map
+      expect(() => setMapStyle('road')).not.toThrow();
+
+      expect(globalThis.console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Cannot change map style - map not initialized')
+      );
+    });
+
+    test('should handle satellite style', async () => {
+      const { setMapStyle } = await import('./NebaMap.razor.js');
+
+      expect(() => setMapStyle('satellite')).not.toThrow();
+    });
+
+    test('should handle hybrid (satellite_road_labels) style', async () => {
+      const { setMapStyle } = await import('./NebaMap.razor.js');
+
+      expect(() => setMapStyle('satellite_road_labels')).not.toThrow();
+    });
+
+    test('should reject invalid map style', async () => {
+      // Create a mock map instance
+      const mockMap = {
+        setStyle: jest.fn(),
+        events: {
+          add: jest.fn()
+        },
+        layers: {
+          add: jest.fn(),
+          getLayers: jest.fn(() => []),
+          remove: jest.fn()
+        },
+        sources: {
+          add: jest.fn(),
+          remove: jest.fn()
+        },
+        getCamera: jest.fn(() => ({ bounds: [0, 0, 1, 1] })),
+        setCamera: jest.fn(),
+        dispose: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const { initializeMap, setMapStyle } = await import('./NebaMap.razor.js');
+
+      // Initialize map first
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = {
+        containerId: 'test-map',
+        center: [0, 0],
+        zoom: 10,
+        enableClustering: false,
+        style: 'road'
+      };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Clear previous warnings
+      globalThis.console.warn.mockClear();
+
+      // Try invalid style
+      setMapStyle('invalid-style');
+
+      expect(globalThis.console.warn).toHaveBeenCalledWith(
+        '[NebaMap] Invalid map style:',
+        'invalid-style'
+      );
+
+      // setStyle should not have been called with invalid style
+      expect(mockMap.setStyle).not.toHaveBeenCalled();
+    });
+
+    test('should log style change', async () => {
+      // Create a mock map instance
+      const mockMap = {
+        setStyle: jest.fn(),
+        events: {
+          add: jest.fn()
+        },
+        layers: {
+          add: jest.fn(),
+          getLayers: jest.fn(() => []),
+          remove: jest.fn()
+        },
+        sources: {
+          add: jest.fn(),
+          remove: jest.fn()
+        },
+        getCamera: jest.fn(() => ({ bounds: [0, 0, 1, 1] })),
+        setCamera: jest.fn(),
+        dispose: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const { initializeMap, setMapStyle } = await import('./NebaMap.razor.js');
+
+      // Initialize map first
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = {
+        containerId: 'test-map',
+        center: [0, 0],
+        zoom: 10,
+        enableClustering: false,
+        style: 'road'
+      };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Clear previous logs
+      globalThis.console.log.mockClear();
+
+      // Change style
+      setMapStyle('satellite');
+
+      expect(globalThis.console.log).toHaveBeenCalledWith(
+        '[NebaMap] Changing map style to:',
+        'satellite'
+      );
+
+      expect(mockMap.setStyle).toHaveBeenCalledWith({
+        style: 'satellite'
+      });
     });
   });
 

@@ -135,7 +135,10 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/frontend/Neba.Web.Server/BowlingCenters/BowlingCenterViewModel.cs)",
       "Bash(dotnet user-secrets list:*)",
       "Bash(npm test:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..bowlingCenters --oneline)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters --stat)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters)"
     ],
     "deny": [],
     "ask": []

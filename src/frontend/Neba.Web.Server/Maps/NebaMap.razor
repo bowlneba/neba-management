@@ -61,6 +61,13 @@
     public string CssClass { get; set; } = "neba-card";
 
     /// <summary>
+    /// The map style/view to display.
+    /// Supported values: "road" (default), "satellite", "satellite_road_labels" (hybrid).
+    /// </summary>
+    [Parameter]
+    public string MapStyle { get; set; } = "road";
+
+    /// <summary>
     /// Event callback fired when a location is selected on the map.
     /// </summary>
     [Parameter]
@@ -120,7 +127,8 @@
             containerId = ContainerId,
             center = Center,
             zoom = Zoom,
-            enableClustering = EnableClustering
+            enableClustering = EnableClustering,
+            style = MapStyle
         };
 
         var locationData = Locations.Select(loc => new
@@ -240,6 +248,18 @@
         if (_jsModule is not null)
         {
             await _jsModule.InvokeVoidAsync("exitDirectionsMode");
+        }
+    }
+
+    /// <summary>
+    /// Changes the map style/view.
+    /// </summary>
+    /// <param name="style">The map style to apply: "road", "satellite", or "satellite_road_labels" (hybrid)</param>
+    public async Task SetMapStyleAsync(string style)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("setMapStyle", style);
         }
     }
 
