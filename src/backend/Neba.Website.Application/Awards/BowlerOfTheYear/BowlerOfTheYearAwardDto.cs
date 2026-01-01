@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum.SystemTextJson;
 using Neba.Domain;
 using Neba.Domain.Awards;
 using Neba.Domain.Identifiers;
@@ -32,5 +34,6 @@ public sealed record BowlerOfTheYearAwardDto
     /// <summary>
     /// The category of the Bowler of the Year award (e.g., Open, Woman, Senior).
     /// </summary>
+    [JsonConverter(typeof(SmartEnumValueConverter<BowlerOfTheYearCategory, int>))]
     public required BowlerOfTheYearCategory Category { get; init; }
 }

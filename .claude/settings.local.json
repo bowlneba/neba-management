@@ -139,7 +139,9 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..bowlingCenters --oneline)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters --stat)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters)",
-      "Bash(az maps account list:*)"
+      "Bash(az maps account list:*)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Application/Awards/BowlerOfTheYear/BowlerOfTheYearAwardDto.cs)",
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline -5)"
     ],
     "deny": [],
     "ask": []
