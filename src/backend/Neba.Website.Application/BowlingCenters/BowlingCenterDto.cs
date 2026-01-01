@@ -73,5 +73,5 @@ public sealed record BowlingCenterDto
     /// <summary>
     /// Indicates whether the bowling center is currently closed.
     /// </summary>
-    public bool IsClosed { get; init;}
+    public bool IsClosed { get; init; }
 }
