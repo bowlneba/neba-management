@@ -170,7 +170,8 @@
 
 @code {
     private bool IsProduction =>
-        string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase);
+        string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(HostEnv.EnvironmentName, "Docker", StringComparison.OrdinalIgnoreCase);
 
     bool IsActive(string path)
     {

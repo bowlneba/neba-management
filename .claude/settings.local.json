@@ -134,7 +134,8 @@
       "Bash(xargs ls:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/frontend/Neba.Web.Server/BowlingCenters/BowlingCenterViewModel.cs)",
       "Bash(dotnet user-secrets list:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []
