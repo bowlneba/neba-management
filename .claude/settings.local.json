@@ -138,7 +138,8 @@
       "Bash(docker exec:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log main..bowlingCenters --oneline)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters --stat)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff main...bowlingCenters)",
+      "Bash(az maps account list:*)"
     ],
     "deny": [],
     "ask": []
