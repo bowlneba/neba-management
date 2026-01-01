@@ -22,6 +22,9 @@ resource mapsAccount 'Microsoft.Maps/accounts@2023-06-01' = {
     name: skuName
   }
   kind: 'Gen2'
+  identity: {
+    type: 'SystemAssigned'
+  }
   tags: tags
   properties: {
     // Keep local auth enabled to support subscription key for local development
