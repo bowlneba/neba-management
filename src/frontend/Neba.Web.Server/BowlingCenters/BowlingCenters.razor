@@ -44,25 +44,25 @@
             <!-- State Filters -->
             <div class="flex flex-wrap items-center gap-2">
                 <span class="font-semibold text-[var(--neba-gray-700)] text-sm">Filter by State:</span>
-                <button class="state-btn @(_selectedState == null ? "active" : "")" data-testid="state-filter-all" @onclick="@(async () => await FilterByState(null))">
+                <button class="state-btn @(_selectedState == null ? "active" : "")" @onclick="@(async () => await FilterByState(null))">
                     All States
                 </button>
-                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" data-testid="state-filter-MA" @onclick="@(async () => await FilterByState("MA"))">
+                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" @onclick="@(async () => await FilterByState("MA"))">
                     MA
                 </button>
-                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" data-testid="state-filter-CT" @onclick="@(async () => await FilterByState("CT"))">
+                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" @onclick="@(async () => await FilterByState("CT"))">
                     CT
                 </button>
-                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" data-testid="state-filter-RI" @onclick="@(async () => await FilterByState("RI"))">
+                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" @onclick="@(async () => await FilterByState("RI"))">
                     RI
                 </button>
-                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" data-testid="state-filter-NH" @onclick="@(async () => await FilterByState("NH"))">
+                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" @onclick="@(async () => await FilterByState("NH"))">
                     NH
                 </button>
-                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" data-testid="state-filter-ME" @onclick="@(async () => await FilterByState("ME"))">
+                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" @onclick="@(async () => await FilterByState("ME"))">
                     ME
                 </button>
-                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" data-testid="state-filter-VT" @onclick="@(async () => await FilterByState("VT"))">
+                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" @onclick="@(async () => await FilterByState("VT"))">
                     VT
                 </button>
             </div>
@@ -72,14 +72,13 @@
                 <input type="text"
                        class="w-full px-4 py-2 border-2 border-[var(--neba-gray-300)] rounded-md focus:outline-none focus:border-[var(--neba-blue-500)] transition-colors"
                        placeholder="Search centers..."
-                       data-testid="center-search-input"
                        @bind="_searchQuery"
                        @bind:event="oninput"
                        @bind:after="ApplySearchFilterAsync" />
             </div>
 
             <!-- Results Count -->
-            <div class="flex items-center text-sm text-[var(--neba-gray-700)] whitespace-nowrap" data-testid="results-count">
+            <div class="flex items-center text-sm text-[var(--neba-gray-700)] whitespace-nowrap">
                 Showing <span class="font-semibold mx-1">@_displayedCenters.Count</span> of @_filteredCenters.Count centers
             </div>
         </div>
@@ -107,7 +106,6 @@
                         @foreach (var center in _displayedCenters)
                         {
                             <div class="neba-card hover:shadow-lg hover:border-[var(--neba-blue-500)] transition-all cursor-pointer"
-                                 data-testid="center-card"
                                  @onclick="@(() => HandleCenterCardClick(center))">
                                 <h3 class="text-lg font-bold text-[var(--neba-blue-700)] mb-3">@center.Name</h3>
 
@@ -144,7 +142,6 @@
                                 </div>
 
                                 <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2"
-                                    data-testid="directions-btn"
                                         @onclick="@(() => HandleDirectionsClick(center))"
                                         @onclick:stopPropagation="true">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,19 +162,16 @@
                     <span class="text-sm text-[var(--neba-gray-700)] font-medium">Map View:</span>
                     <div class="inline-flex rounded-md shadow-sm" role="group">
                         <button type="button"
-                            data-testid="map-style-road"
                                 class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "road" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-l-md transition-colors"
                                 @onclick="@(() => HandleMapStyleChange("road"))">
                             Road
                         </button>
                         <button type="button"
-                            data-testid="map-style-satellite"
                                 class="px-3 py-1.5 text-sm font-medium border-t border-b @(_mapStyle == "satellite" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") transition-colors"
                                 @onclick="@(() => HandleMapStyleChange("satellite"))">
                             Satellite
                         </button>
                         <button type="button"
-                            data-testid="map-style-hybrid"
                                 class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "satellite_road_labels" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-r-md transition-colors"
                                 @onclick="@(() => HandleMapStyleChange("satellite_road_labels"))">
                             Hybrid

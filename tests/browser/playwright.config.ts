@@ -10,7 +10,6 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: '.',
-  globalSetup: './global-setup.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -77,7 +76,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'NebaApi__BaseUrl=http://127.0.0.1:5055 ASPNETCORE_ENVIRONMENT=Development dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Debug --urls http://localhost:5200',
+    command: 'ASPNETCORE_ENVIRONMENT=Development dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Debug --urls http://localhost:5200',
     url: 'http://localhost:5200',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
