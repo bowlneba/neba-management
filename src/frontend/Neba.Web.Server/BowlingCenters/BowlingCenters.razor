@@ -303,17 +303,9 @@
         {
             // Update displayed centers based on current map bounds
             // If map component is null (initial load), display all filtered centers
-            if (_mapComponent is null || _currentMapBounds is null)
-            {
-                _displayedCenters = _filteredCenters;
-            }
-            else
-            {
-                // Filter by current map bounds
-                _displayedCenters = _filteredCenters
-                    .Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude))
-                    .ToList();
-            }
+            _displayedCenters = (_mapComponent is null || _currentMapBounds is null)
+                ? _filteredCenters
+                : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
         }
     }
 

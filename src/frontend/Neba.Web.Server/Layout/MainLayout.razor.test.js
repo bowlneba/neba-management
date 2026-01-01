@@ -235,9 +235,6 @@ describe('MainLayout', () => {
         <button data-action="toggle-menu" aria-expanded="true"></button>
       `;
 
-      const menu = document.querySelector('#main-menu');
-      const toggle = document.querySelector('[data-action="toggle-menu"]');
-
       // Act
       const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
       document.dispatchEvent(escapeEvent);
@@ -266,7 +263,6 @@ describe('MainLayout', () => {
     test('should add scrolled class when page scrolls down', () => {
       // Arrange
       document.body.innerHTML = '<nav class="neba-navbar"></nav>';
-      const navbar = document.querySelector('.neba-navbar');
 
       // Simulate scroll
       Object.defineProperty(globalThis, 'scrollY', {
@@ -285,7 +281,6 @@ describe('MainLayout', () => {
     test('should remove scrolled class when at top of page', () => {
       // Arrange
       document.body.innerHTML = '<nav class="neba-navbar scrolled"></nav>';
-      const navbar = document.querySelector('.neba-navbar');
 
       // Simulate scroll to top
       Object.defineProperty(globalThis, 'scrollY', {
@@ -331,7 +326,6 @@ describe('MainLayout', () => {
       `;
 
       const menuLink = document.querySelector('#menu-link');
-      const menu = document.querySelector('#main-menu');
 
       // Act
       const clickEvent = new MouseEvent('click', { bubbles: true });

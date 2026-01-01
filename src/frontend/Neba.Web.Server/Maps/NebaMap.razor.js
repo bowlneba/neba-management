@@ -16,7 +16,6 @@ let routeDataSource = null; // Data source for route line
 let routeLayer = null; // Layer for route display
 let startMarker = null; // Starting location marker
 let subscriptionKey = null; // Azure Maps subscription key (stored for routing API)
-let authConfig = null; // Full auth config (stored for other modules to access)
 
 /**
  * Waits for the Azure Maps SDK to be loaded
