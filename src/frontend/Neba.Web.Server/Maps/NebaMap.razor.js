@@ -281,7 +281,10 @@ export function updateMarkers(locations) {
 
     // Create a hash of location IDs to detect if data has actually changed
     // This prevents unnecessary marker updates that trigger tile reloads
-    const locationHash = locations.map(l => l.id).sort().join('|');
+    const locationHash = locations
+        .map(l => l.id)
+        .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }))
+        .join('|');
     if (locationHash === lastLocationHash) {
         console.log('[NebaMap] Locations unchanged, skipping marker update (cached)');
         return;
@@ -511,7 +514,7 @@ export async function showRoute(origin, destination) {
         throw new Error('Map not initialized');
     }
 
-    const authConfig = window.azureMapsAuthConfig;
+    const authConfig = globalThis.azureMapsAuthConfig;
     if (!authConfig) {
         console.error('[NebaMap] Cannot show route - no auth configuration available');
         throw new Error('Authentication not configured');
@@ -642,7 +645,7 @@ function drawRoute(route, origin, destination) {
             iconOptions: {
                 image: 'pin-blue',
                 anchor: 'center',
-                size: 1.0
+                size: 1
             },
             filter: ['==', ['get', 'type'], 'start']
         });
@@ -690,7 +693,7 @@ export function exitDirectionsMode() {
     symbolLayers.forEach(layer => {
         layer.setOptions({
             iconOptions: {
-                opacity: 1.0
+                opacity: 1
             }
         });
     });
@@ -740,7 +743,7 @@ async function getAzureADTokenForRoute() {
 
         const data = await response.json();
 
-        if (data && data[0] && data[0].access_token) {
+        if (data?.[0]?.access_token) {
             return data[0].access_token;
         }
 
