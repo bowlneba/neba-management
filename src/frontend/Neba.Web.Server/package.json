@@ -2,11 +2,18 @@
   "name": "neba-web-server",
   "version": "1.0.0",
   "description": "Neba Management Web Application",
+  "type": "module",
   "scripts": {
     "build:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --minify",
-    "watch:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch"
+    "watch:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "tailwindcss": "^3.4.0"
   }
 }
