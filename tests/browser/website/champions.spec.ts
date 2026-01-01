@@ -251,20 +251,28 @@ test.describe('Champions Page', () => {
       await page.waitForSelector('.neba-loading-overlay-page', { state: 'hidden', timeout: 5000 })
         .catch(() => {});
 
-      // Find a Hall of Fame card (has HOF badge)
-      const hofCard = page.getByTestId('champion-card').filter({ has: page.locator('img[alt="Hall of Fame"]') }).first();
+      // Find all Hall of Fame cards (cards that have HOF badge)
+      const hofCards = page.getByTestId('champion-card').filter({ has: page.locator('img[alt="Hall of Fame"]') });
 
       // Check if there are any HOF members
-      const hofCount = await hofCard.count();
+      const hofCount = await hofCards.count();
       if (hofCount > 0) {
-        await hofCard.click();
+        // Click the first HOF card
+        await hofCards.first().click();
 
         // Modal should show HOF badge
         const modal = page.locator('.neba-modal-content.bowler-titles-modal');
         await expect(modal).toBeVisible();
 
-        const modalHofBadge = modal.locator('img[alt="Hall of Fame"]');
-        await expect(modalHofBadge).toBeVisible({ timeout: 3000 });
+        // HOF badge appears in two places: header stats (landscape/desktop) or summary card (portrait).
+        // Due to responsive CSS, one will be visible and one hidden. Check both and verify at least one is visible.
+        const headerBadge = modal.locator('.bowler-titles-header-stats img[alt="Hall of Fame"]');
+        const summaryBadge = modal.locator('.bowler-titles-summary-card img[alt="Hall of Fame"]');
+
+        // At least one badge should be visible (depends on viewport size)
+        const headerVisible = await headerBadge.isVisible().catch(() => false);
+        const summaryVisible = await summaryBadge.isVisible().catch(() => false);
+        expect(headerVisible || summaryVisible).toBeTruthy();
       }
     });
 
