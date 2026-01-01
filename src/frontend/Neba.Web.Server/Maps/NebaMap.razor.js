@@ -65,7 +65,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
     dotNetHelper = dotNetRef;
 
     // Store auth config for other modules to access
-    window.azureMapsAuthConfig = authConfig; // Make available globally
+    globalThis.azureMapsAuthConfig = authConfig; // Make available globally
 
     // Determine authentication method
     let authOptions;
@@ -73,7 +73,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
         // Local development or fallback: Use subscription key
         console.log('[NebaMap] Using subscription key authentication');
         subscriptionKey = authConfig.subscriptionKey; // Store for routing API
-        window.azureMapsSubscriptionKey = subscriptionKey; // Make available to other modules
+        globalThis.azureMapsSubscriptionKey = subscriptionKey; // Make available to other modules
         authOptions = {
             authType: 'subscriptionKey',
             subscriptionKey: authConfig.subscriptionKey
@@ -90,7 +90,7 @@ export async function initializeMap(authConfig, mapConfig, locations, dotNetRef)
                 try {
                     const response = await fetch('/.auth/me');
                     const data = await response.json();
-                    if (data && data[0] && data[0].access_token) {
+                    if (data?.[0]?.access_token) {
                         resolve(data[0].access_token);
                     } else {
                         reject(new Error('No access token available'));
@@ -240,7 +240,7 @@ function addClusterLayers() {
             const shape = e.shapes[0];
             const properties = shape.getProperties ? shape.getProperties() : shape.properties;
 
-            if (properties && properties.cluster) {
+            if (properties?.cluster) {
                 markerClickInProgress = true;
                 const clusterId = properties.cluster_id;
 
@@ -301,10 +301,10 @@ export function updateMarkers(locations) {
             // Validate coordinates are valid numbers
             const isValid = typeof location.latitude === 'number' &&
                           typeof location.longitude === 'number' &&
-                          !isNaN(location.latitude) &&
-                          !isNaN(location.longitude) &&
-                          isFinite(location.latitude) &&
-                          isFinite(location.longitude);
+                          !Number.isNaN(location.latitude) &&
+                          !Number.isNaN(location.longitude) &&
+                          Number.isFinite(location.latitude) &&
+                          Number.isFinite(location.longitude);
 
             if (!isValid) {
                 console.warn(`[NebaMap] Skipping location with invalid coordinates:`, location.id, location.latitude, location.longitude);
@@ -491,7 +491,7 @@ export function enterDirectionsPreview(locationId) {
             iconOptions: {
                 opacity: ['case',
                     ['==', ['get', 'id'], locationId],
-                    1.0, // Selected marker - full opacity
+                    1, // Selected marker - full opacity
                     0.3  // Other markers - dimmed
                 ]
             }
