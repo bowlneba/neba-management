@@ -55,9 +55,9 @@ test.describe('Champions Page', () => {
       await expect(headers.first()).toBeVisible({ timeout: 5000 });
 
       // Verify header contains title count and bowler count
-      const firstHeader = await headers.first().textContent();
-      expect(firstHeader).toMatch(/\d+ Titles?/);
-      expect(firstHeader).toMatch(/\d+ bowlers?/);
+      const firstHeader = (await headers.first().textContent()) ?? '';
+      expect(firstHeader).toMatch(/\d+ Titles?/i);
+      expect(firstHeader).toMatch(/\d+ bowlers?/i);
     });
 
     test('displays champion names on cards', async ({ page }) => {

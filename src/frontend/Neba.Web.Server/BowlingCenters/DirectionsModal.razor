@@ -14,7 +14,7 @@
         @if (State.Mode == MapMode.DirectionsPreview)
         {
             <!-- Location Input UI -->
-            <div class="neba-space-y-4">
+            <div class="neba-space-y-4" data-testid="directions-modal-body">
                 @if (!string.IsNullOrWhiteSpace(State.ErrorMessage))
                 {
                     <div class="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
@@ -25,6 +25,7 @@
                 <!-- Use Current Location Button -->
                 <div>
                     <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2 py-3 text-base"
+                            data-testid="use-location-btn"
                             @onclick="HandleUseCurrentLocation"
                             disabled="@State.IsLoading">
                         @if (State.IsLoading)
@@ -64,6 +65,7 @@
                                id="address-input"
                                class="w-full px-4 py-3 border-2 border-[var(--neba-gray-300)] rounded-md focus:outline-none focus:border-[var(--neba-blue-500)] transition-colors"
                                placeholder="123 Main St, Boston, MA"
+                               data-testid="address-input"
                                @bind="_addressInput"
                                @bind:event="oninput"
                                @bind:after="HandleAddressInputChange"
@@ -73,7 +75,7 @@
 
                         @if (_addressSuggestions.Count > 0)
                         {
-                            <div class="absolute z-10 w-full mt-1 bg-white border-2 border-[var(--neba-blue-500)] rounded-md shadow-lg max-h-60 overflow-y-auto">
+                            <div class="absolute z-10 w-full mt-1 bg-white border-2 border-[var(--neba-blue-500)] rounded-md shadow-lg max-h-60 overflow-y-auto" data-testid="address-suggestions">
                                 @foreach (var suggestion in _addressSuggestions)
                                 {
                                     <button type="button"
@@ -96,9 +98,9 @@
         else if (State.Mode == MapMode.DirectionsActive && State.Route is not null)
         {
             <!-- Directions Display -->
-            <div class="neba-space-y-4">
+            <div class="neba-space-y-4" data-testid="directions-modal-body">
                 <!-- Summary -->
-                <div class="flex items-center justify-between p-4 bg-[var(--neba-blue-100)] rounded-md">
+                <div class="flex items-center justify-between p-4 bg-[var(--neba-blue-100)] rounded-md" data-testid="route-summary">
                     <div>
                         <div class="text-2xl font-bold text-[var(--neba-blue-700)]">@State.Route.FormattedDistance</div>
                         <div class="text-sm text-[var(--neba-gray-700)]">@State.Route.FormattedTravelTime</div>
@@ -110,7 +112,8 @@
 
                 <!-- Open in Maps App Button -->
                 <button class="neba-btn neba-btn-secondary w-full flex items-center justify-center gap-2"
-                        @onclick="HandleOpenInMaps">
+                    data-testid="open-maps-btn"
+                    @onclick="HandleOpenInMaps">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
@@ -134,7 +137,7 @@
 
                     @if (_showDirections)
                     {
-                        <div class="mt-2 space-y-2 max-h-80 overflow-y-auto">
+                        <div class="mt-2 space-y-2 max-h-80 overflow-y-auto" data-testid="directions-steps">
                             @for (int i = 0; i < State.Route.Instructions.Count; i++)
                             {
                                 var instruction = State.Route.Instructions[i];
