@@ -12,8 +12,8 @@ COPY src/frontend/Neba.Web.Server/ src/frontend/Neba.Web.Server/
 COPY src/frontend/Neba.Web.Client/ src/frontend/Neba.Web.Client/
 
 WORKDIR /src/src/frontend/Neba.Web.Server
-# Use npm install to build Tailwind CSS assets
-RUN npm install && npm run build:css
+# Use npm install with --ignore-scripts to prevent execution of potentially malicious scripts
+RUN npm install --ignore-scripts && npm run build:css
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -26,8 +26,8 @@ COPY ["src/backend/Neba.Website.Contracts/Neba.Website.Contracts.csproj", "src/b
 COPY ["src/shared-kernel/Neba.Contracts/Neba.Contracts.csproj", "src/shared-kernel/Neba.Contracts/"]
 RUN dotnet restore "src/frontend/Neba.Web.Server/Neba.Web.Server.csproj"
 
-# Copy the full repo and then overlay built frontend artifacts from the node build stage
-COPY . .
+# Copy only necessary source files to avoid inadvertently adding sensitive data
+COPY src/ src/
 COPY --from=nodebuild /src/src/frontend/Neba.Web.Server/wwwroot /src/src/frontend/Neba.Web.Server/wwwroot
 
 WORKDIR "/src/src/frontend/Neba.Web.Server"
@@ -38,6 +38,7 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Neba.Web.Server.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+USER $APP_UID
 WORKDIR /app
 COPY --from=publish --chown=$APP_UID:$APP_UID /app/publish .
 ENTRYPOINT ["dotnet", "Neba.Web.Server.dll"]
