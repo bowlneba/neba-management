@@ -135,7 +135,7 @@
                     @if (_showDirections)
                     {
                         <div class="mt-2 space-y-2 max-h-80 overflow-y-auto">
-                            @for (int i = 0; i < State.Route.Instructions.Count; i++)
+                            @for (var i = 0; i < State.Route.Instructions.Count; i++)
                             {
                                 var instruction = State.Route.Instructions[i];
                                 <div class="flex gap-3 p-3 bg-white border border-[var(--neba-gray-300)] rounded-md">

@@ -453,7 +453,7 @@
         }
     }
 
-    private async Task HandleDirectionsClose()
+    private Task HandleDirectionsClose()
     {
         _showDirectionsModal = false;
 
@@ -468,6 +468,8 @@
             // Instead, just restore the marker opacity via JavaScript
             // The route stays visible until the user requests new directions
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task HandleMapStyleChange(string style)
