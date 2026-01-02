@@ -117,7 +117,7 @@ src/backend/
 - [x] Health Checks
 - [x] SonarCloud Integration
 - [x] Background Jobs
-- [ ] Global Exception Handling
+- [x] Global Exception Handling
 - [ ] Open Telemetry
 - [ ] Rate Limiting & Throttling
 - [ ] Security Audits & Vulnerability Scanning
