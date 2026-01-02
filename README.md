@@ -2,6 +2,8 @@
 
 Centralized platform for managing the New England Bowlers Association (NEBA). Handles tournament operations, enforces NEBA and USBC rules, and streamlines governance and member management.
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=bowlneba_neba-management)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+
 ## Architecture
 
 This application follows a **Modular Monolith** architecture with **Domain-Driven Design (DDD)** tactical patterns and **Clean Architecture** principles.
