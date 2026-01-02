@@ -28,7 +28,9 @@ builder.Services
     .AddWebsiteInfrastructure(builder.Configuration);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options
+    => options.CustomizeProblemDetails = context
+        => context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier));
 
 // Add CORS policy
 builder.Services.AddCors(options =>

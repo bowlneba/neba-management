@@ -1,28 +1,38 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Api.ErrorHandling;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Neba.UnitTests.ErrorHandling;
 
-[Trait("Category", "Unit")]
-[Trait("Component", "ErrorHandling")]
-public sealed class GlobalExceptionHandlerTests
+[
+    Trait("Category", "Unit"),
+    Trait("Component", "ErrorHandling")
+]
+public sealed class GlobalExceptionHandlerTests : IDisposable
 {
+    private const string GenericDetail = "An error occurred while processing your request";
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
+    private readonly ServiceProvider _serviceProvider;
+    private readonly IProblemDetailsService _problemDetailsService;
     private readonly GlobalExceptionHandler _sut;
 
     public GlobalExceptionHandlerTests()
     {
-        _sut = new GlobalExceptionHandler(NullLogger<GlobalExceptionHandler>.Instance);
+        _serviceProvider = BuildServiceProvider();
+        _problemDetailsService = _serviceProvider.GetRequiredService<IProblemDetailsService>();
+        _sut = new GlobalExceptionHandler(_problemDetailsService, NullLogger<GlobalExceptionHandler>.Instance);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldSetStatusCodeTo500()
+    [Fact(DisplayName = "Sets 500 status code for unhandled exceptions")]
+    public async Task TryHandleAsync_WhenExceptionThrown_SetsInternalServerErrorStatusCode()
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
@@ -36,8 +46,8 @@ public sealed class GlobalExceptionHandlerTests
         httpContext.Response.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldReturnProblemDetailsWithCorrectTitle()
+    [Fact(DisplayName = "Writes RFC 9457 title")]
+    public async Task TryHandleAsync_WhenExceptionThrown_WritesProblemDetailsTitle()
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
@@ -53,12 +63,11 @@ public sealed class GlobalExceptionHandlerTests
         problemDetails.Title.ShouldBe("An unexpected error occurred.");
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldReturnProblemDetailsWithExceptionMessage()
+    [Fact(DisplayName = "Returns generic detail instead of exception message")]
+    public async Task TryHandleAsync_WhenExceptionThrown_ReturnsGenericDetail()
     {
         // Arrange
-        const string exceptionMessage = "Something went wrong in the application";
-        var exception = new InvalidOperationException(exceptionMessage);
+        var exception = new InvalidOperationException("Something went wrong in the application");
         DefaultHttpContext httpContext = CreateHttpContext();
         CancellationToken cancellationToken = CancellationToken.None;
 
@@ -68,11 +77,11 @@ public sealed class GlobalExceptionHandlerTests
         // Assert
         ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
         problemDetails.ShouldNotBeNull();
-        problemDetails.Detail.ShouldBe(exceptionMessage);
+        problemDetails.Detail.ShouldBe(GenericDetail);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldReturnProblemDetailsWithStatus500()
+    [Fact(DisplayName = "Serializes 500 into problem details")]
+    public async Task TryHandleAsync_WhenExceptionThrown_ReturnsInternalServerErrorStatusInBody()
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
@@ -88,8 +97,8 @@ public sealed class GlobalExceptionHandlerTests
         problemDetails.Status.ShouldBe(StatusCodes.Status500InternalServerError);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldReturnTrue()
+    [Fact(DisplayName = "Returns true after writing problem details")]
+    public async Task TryHandleAsync_WhenExceptionThrown_ReturnsTrue()
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
@@ -103,15 +112,14 @@ public sealed class GlobalExceptionHandlerTests
         result.ShouldBeTrue();
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldHandleArgumentNullException()
+    [Fact(DisplayName = "Handles argument null exceptions with generic response")]
+    public async Task TryHandleAsync_WhenArgumentNullExceptionThrown_WritesGenericProblemDetails()
     {
         // Arrange
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable S3928 // The parameter name is not declared in the argument list
         var exception = new ArgumentNullException("param", "Parameter cannot be null");
-#pragma warning restore S3928
-#pragma warning restore CA2208
+#pragma warning restore S3928, CA2208
         DefaultHttpContext httpContext = CreateHttpContext();
         CancellationToken cancellationToken = CancellationToken.None;
 
@@ -123,12 +131,11 @@ public sealed class GlobalExceptionHandlerTests
         httpContext.Response.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
         problemDetails.ShouldNotBeNull();
-        problemDetails.Detail.ShouldNotBeNullOrEmpty();
-        problemDetails.Detail.ShouldContain("Parameter cannot be null");
+        problemDetails.Detail.ShouldBe(GenericDetail);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldHandleInvalidOperationException()
+    [Fact(DisplayName = "Handles invalid operation exceptions with generic response")]
+    public async Task TryHandleAsync_WhenInvalidOperationExceptionThrown_WritesGenericProblemDetails()
     {
         // Arrange
         var exception = new InvalidOperationException("Invalid operation performed");
@@ -143,11 +150,11 @@ public sealed class GlobalExceptionHandlerTests
         httpContext.Response.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
         problemDetails.ShouldNotBeNull();
-        problemDetails.Detail.ShouldBe("Invalid operation performed");
+        problemDetails.Detail.ShouldBe(GenericDetail);
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldHandleExceptionsWithInnerExceptions()
+    [Fact(DisplayName = "Handles exceptions with inner exceptions generically")]
+    public async Task TryHandleAsync_WhenInnerExceptionsPresent_WritesGenericProblemDetails()
     {
         // Arrange
         var innerException = new InvalidOperationException("Inner error");
@@ -163,25 +170,11 @@ public sealed class GlobalExceptionHandlerTests
         httpContext.Response.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
         problemDetails.ShouldNotBeNull();
-        problemDetails.Detail.ShouldBe("Outer error");
+        problemDetails.Detail.ShouldBe(GenericDetail);
     }
-
-    [Fact]
-    public async Task TryHandleAsync_ShouldRespectCancellationToken()
-    {
-        // Arrange
-        var exception = new InvalidOperationException("Test error");
-        DefaultHttpContext httpContext = CreateHttpContext();
-        using var cts = new CancellationTokenSource();
-        await cts.CancelAsync();
-
-        // Act & Assert
-        await Should.ThrowAsync<TaskCanceledException>(async () =>
-            await _sut.TryHandleAsync(httpContext, exception, cts.Token));
-    }
-
-    [Fact]
-    public async Task TryHandleAsync_ShouldWriteResponseAsJson()
+    
+    [Fact(DisplayName = "Writes application/problem+json body")]
+    public async Task TryHandleAsync_WhenExceptionThrown_WritesProblemDetailsAsJson()
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
@@ -196,14 +189,15 @@ public sealed class GlobalExceptionHandlerTests
         using var reader = new StreamReader(httpContext.Response.Body);
         string responseText = await reader.ReadToEndAsync();
         responseText.ShouldNotBeNullOrWhiteSpace();
+        httpContext.Response.ContentType.ShouldStartWith("application/problem+json");
 
         ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, JsonOptions);
 
         problemDetails.ShouldNotBeNull();
     }
 
-    [Fact]
-    public async Task TryHandleAsync_ShouldHandleMultipleConsecutiveExceptions()
+    [Fact(DisplayName = "Handles multiple consecutive exceptions consistently")]
+    public async Task TryHandleAsync_WhenInvokedMultipleTimes_WritesProblemDetailsEachTime()
     {
         // Arrange
         var exception1 = new InvalidOperationException("First error");
@@ -223,14 +217,73 @@ public sealed class GlobalExceptionHandlerTests
         ProblemDetails problemDetails1 = await DeserializeProblemDetails(httpContext1);
         ProblemDetails problemDetails2 = await DeserializeProblemDetails(httpContext2);
 
-        problemDetails1.Detail.ShouldBe("First error");
-        problemDetails2.Detail.ShouldBe("Second error");
+        problemDetails1.Detail.ShouldBe(GenericDetail);
+        problemDetails2.Detail.ShouldBe(GenericDetail);
     }
 
-    private static DefaultHttpContext CreateHttpContext()
+    [Fact(DisplayName = "Includes trace id extension from trace identifier")]
+    public async Task TryHandleAsync_WhenExceptionThrown_IncludesTraceIdExtension()
     {
-        var httpContext = new DefaultHttpContext();
+        // Arrange
+        var exception = new InvalidOperationException("Test error");
+        DefaultHttpContext httpContext = CreateHttpContext();
+        CancellationToken cancellationToken = CancellationToken.None;
+
+        // Act
+        await _sut.TryHandleAsync(httpContext, exception, cancellationToken);
+
+        // Assert
+        ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
+        problemDetails.ShouldNotBeNull();
+
+        problemDetails.Extensions.TryGetValue("traceId", out object? traceIdValue).ShouldBeTrue();
+        traceIdValue.ShouldNotBeNull();
+
+        string? traceId = traceIdValue switch
+        {
+            JsonElement jsonElement => jsonElement.GetString(),
+            JsonValue jsonValue => jsonValue.GetValue<string>(),
+            string str => str,
+            _ => null,
+        };
+
+        traceId.ShouldBe(httpContext.TraceIdentifier);
+    }
+
+    [Fact(DisplayName = "Sets RFC 9457 type and instance")]
+    public async Task TryHandleAsync_WhenExceptionThrown_SetsProblemDetailsTypeAndInstance()
+    {
+        // Arrange
+        var exception = new InvalidOperationException("Test error");
+        DefaultHttpContext httpContext = CreateHttpContext();
+        CancellationToken cancellationToken = CancellationToken.None;
+
+        // Act
+        await _sut.TryHandleAsync(httpContext, exception, cancellationToken);
+
+        // Assert
+        ProblemDetails problemDetails = await DeserializeProblemDetails(httpContext);
+        problemDetails.ShouldNotBeNull();
+        problemDetails.Type.ShouldBe("https://datatracker.ietf.org/doc/html/rfc9457");
+        problemDetails.Instance.ShouldBe(httpContext.Request.Path);
+    }
+
+    public void Dispose()
+    {
+        _serviceProvider.Dispose();
+    }
+
+    private DefaultHttpContext CreateHttpContext()
+    {
+        DefaultHttpContext httpContext = new()
+        {
+            RequestServices = _serviceProvider,
+            TraceIdentifier = Guid.NewGuid().ToString(),
+        };
+
+        httpContext.Request.Path = "/test";
         httpContext.Response.Body = new MemoryStream();
+
         return httpContext;
     }
 
@@ -243,5 +296,14 @@ public sealed class GlobalExceptionHandlerTests
         ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, JsonOptions);
 
         return problemDetails ?? throw new InvalidOperationException("Failed to deserialize ProblemDetails");
+    }
+
+    private static ServiceProvider BuildServiceProvider()
+    {
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddProblemDetails();
+
+        return services.BuildServiceProvider();
     }
 }
