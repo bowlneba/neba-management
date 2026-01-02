@@ -6,7 +6,12 @@
   "directories": {
     "test": "tests"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bowlneba/neba-management.git"
