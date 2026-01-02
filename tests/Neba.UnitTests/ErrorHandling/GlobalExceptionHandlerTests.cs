@@ -1,10 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Neba.Api.ErrorHandling;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Neba.UnitTests.ErrorHandling;
 
@@ -172,7 +172,7 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
         problemDetails.ShouldNotBeNull();
         problemDetails.Detail.ShouldBe(GenericDetail);
     }
-    
+
     [Fact(DisplayName = "Writes application/problem+json body")]
     public async Task TryHandleAsync_WhenExceptionThrown_WritesProblemDetailsAsJson()
     {

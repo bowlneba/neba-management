@@ -2,6 +2,7 @@ using Neba.Application.Documents;
 using Neba.Infrastructure.Documents;
 
 namespace Neba.UnitTests.Infrastructure.Documents;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Infrastructure.Documents")]
 

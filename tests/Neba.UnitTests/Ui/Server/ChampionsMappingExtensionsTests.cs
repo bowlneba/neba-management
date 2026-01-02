@@ -6,6 +6,7 @@ using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;
 
 namespace Neba.UnitTests.Ui.Server;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Ui.Server")]
 

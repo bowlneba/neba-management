@@ -7,6 +7,7 @@ using Neba.Website.Contracts.Awards;
 using Neba.Website.Endpoints.Awards;
 
 namespace Neba.UnitTests.Website.Awards;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Website.Awards")]
 

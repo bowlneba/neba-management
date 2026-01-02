@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Neba.Web.Server.Notifications;
 
 namespace Neba.WebTests.Components.Notifications;
+
 [Trait("Category", "Web")]
 [Trait("Component", "Components.Notifications")]
 

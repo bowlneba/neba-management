@@ -10,6 +10,7 @@ using Neba.Web.Server.Services;
 using Neba.Website.Contracts.Titles;
 
 namespace Neba.WebTests.History.Champions;
+
 [Trait("Category", "Web")]
 [Trait("Component", "History.Champions")]
 

@@ -2,6 +2,7 @@ using ErrorOr;
 using Neba.Domain.Geography;
 
 namespace Neba.UnitTests.Domain.Geography;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain.Geography")]
 

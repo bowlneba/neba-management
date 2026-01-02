@@ -3,6 +3,7 @@ using Neba.Application.Messaging;
 using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents.Bylaws;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Website.Documents.Bylaws")]
 

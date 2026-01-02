@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Neba.Web.Server.Components;
 
 namespace Neba.WebTests.Components;
+
 [Trait("Category", "Web")]
 [Trait("Component", "Components")]
 

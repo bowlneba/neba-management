@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Neba.Infrastructure.Documents;
 
 namespace Neba.UnitTests.Infrastructure.Documents;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Infrastructure.Documents")]
 

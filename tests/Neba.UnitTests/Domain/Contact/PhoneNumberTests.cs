@@ -2,6 +2,7 @@ using ErrorOr;
 using Neba.Domain.Contact;
 
 namespace Neba.UnitTests.Domain.Contact;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain.Contact")]
 

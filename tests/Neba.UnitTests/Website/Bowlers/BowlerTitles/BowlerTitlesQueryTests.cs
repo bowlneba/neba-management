@@ -5,6 +5,7 @@ using Neba.Domain.Identifiers;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Website.Bowlers.BowlerTitles")]
 

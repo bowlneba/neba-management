@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Neba.Api.HealthChecks;
 using Neba.Api.ErrorHandling;
+using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
 using Neba.Website.Application;

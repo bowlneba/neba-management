@@ -3,6 +3,7 @@ using Neba.Domain.Contact;
 using Neba.Domain.Geography;
 
 namespace Neba.UnitTests.Domain.Contact;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain.Contact")]
 

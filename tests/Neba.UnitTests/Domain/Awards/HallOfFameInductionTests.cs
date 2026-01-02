@@ -5,6 +5,7 @@ using Neba.Tests;
 using Neba.Website.Domain.Awards;
 
 namespace Neba.UnitTests.Domain.Awards;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain.Awards")]
 

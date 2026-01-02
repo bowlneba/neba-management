@@ -5,6 +5,7 @@ using Neba.Contracts;
 using Neba.IntegrationTests.Infrastructure;
 
 namespace Neba.IntegrationTests.Website.Documents;
+
 [Trait("Category", "Integration")]
 [Trait("Component", "Website.Documents")]
 

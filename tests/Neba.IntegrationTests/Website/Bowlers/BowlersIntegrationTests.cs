@@ -8,6 +8,7 @@ using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
+
 [Trait("Category", "Integration")]
 [Trait("Component", "Website.Bowlers")]
 

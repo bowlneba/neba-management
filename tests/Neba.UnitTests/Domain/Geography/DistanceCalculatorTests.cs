@@ -4,6 +4,7 @@ using Neba.Domain.Geography;
 using UnitsNet;
 
 namespace Neba.UnitTests.Domain.Geography;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain.Geography")]
 

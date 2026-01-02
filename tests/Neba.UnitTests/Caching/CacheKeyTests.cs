@@ -1,6 +1,7 @@
 using Neba.Application.Caching;
 
 namespace Neba.UnitTests.Caching;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Caching")]
 

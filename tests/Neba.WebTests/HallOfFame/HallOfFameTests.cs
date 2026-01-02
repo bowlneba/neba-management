@@ -9,6 +9,7 @@ using Neba.Web.Server.Services;
 using Neba.Website.Contracts.Awards;
 
 namespace Neba.WebTests.HallOfFame;
+
 [Trait("Category", "Web")]
 [Trait("Component", "HallOfFame")]
 

@@ -2,6 +2,7 @@ using Neba.Application.Messaging;
 using Neba.Website.Application.BowlingCenters;
 
 namespace Neba.UnitTests.Website.BowlingCenters;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Website.BowlingCenters")]
 

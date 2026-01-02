@@ -2,6 +2,7 @@ using Neba.Domain.Awards;
 using Neba.Website.Infrastructure.Database.Converters;
 
 namespace Neba.UnitTests.Website.Infrastructure.Database.Converters;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Website.Infrastructure.Database.Converters")]
 

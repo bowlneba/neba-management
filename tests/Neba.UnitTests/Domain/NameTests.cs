@@ -3,6 +3,7 @@ using Neba.Domain;
 using Neba.Tests;
 
 namespace Neba.UnitTests.Domain;
+
 [Trait("Category", "Unit")]
 [Trait("Component", "Domain")]
 

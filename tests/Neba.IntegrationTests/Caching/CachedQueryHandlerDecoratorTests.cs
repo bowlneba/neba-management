@@ -4,6 +4,7 @@ using Neba.Application.Messaging;
 using Neba.IntegrationTests.Infrastructure;
 
 namespace Neba.IntegrationTests.Caching;
+
 [Trait("Category", "Integration")]
 [Trait("Component", "Caching")]
 
