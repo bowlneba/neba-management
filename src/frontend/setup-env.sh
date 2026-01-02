@@ -15,7 +15,7 @@ SUBSCRIPTION_KEY=$(dotnet user-secrets list --project "$PROJECT_PATH" | grep "Az
 
 # Check if we got a value
 if [[ -z "$SUBSCRIPTION_KEY" ]]; then
-    echo "Error: AzureMaps:SubscriptionKey not found in user secrets"
+    stderr "Error: AzureMaps:SubscriptionKey not found in user secrets"
     echo "Please set it with: dotnet user-secrets set 'AzureMaps:SubscriptionKey' 'your-key' --project $PROJECT_PATH"
     exit 1
 fi
