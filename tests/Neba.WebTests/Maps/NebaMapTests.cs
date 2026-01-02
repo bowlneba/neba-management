@@ -1,10 +1,10 @@
+using System.Collections.ObjectModel;
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Neba.Web.Server.Maps;
 using MapsRouteData = Neba.Web.Server.Maps.RouteData;
-using System.Collections.ObjectModel;
 
 namespace Neba.WebTests.Maps;
 
