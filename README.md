@@ -75,7 +75,7 @@ src/backend/
 - [x] Organization Bylaws
 - [x] Tournament Rules
 - [x] Hall of Fame (including HOF indicator for champions)
-- [ ] Bowling Centers
+- [x] Bowling Centers
 - [ ] Tournaments
 - [ ] News
 - [ ] Sponsors
