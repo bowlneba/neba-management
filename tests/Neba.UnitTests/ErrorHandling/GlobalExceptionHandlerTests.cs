@@ -8,10 +8,8 @@ using Neba.Api.ErrorHandling;
 
 namespace Neba.UnitTests.ErrorHandling;
 
-[
-    Trait("Category", "Unit"),
-    Trait("Component", "ErrorHandling")
-]
+[Trait("Category", "Unit")]
+[Trait("Component", "ErrorHandling")]
 public sealed class GlobalExceptionHandlerTests : IDisposable
 {
     private const string GenericDetail = "An error occurred while processing your request";
