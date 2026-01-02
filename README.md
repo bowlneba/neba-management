@@ -69,7 +69,7 @@ src/backend/
 ### Technology Stack
 
 - **Backend**: ASP.NET Core (.NET 10), EF Core, PostgreSQL
-- **Frontend**: Blazor WebAssembly
+- **Frontend**: Blazor
 - **Infrastructure**: Azure App Service, Azure Key Vault, GitHub Actions
 - **Testing**: xUnit, bUnit, Playwright
 
