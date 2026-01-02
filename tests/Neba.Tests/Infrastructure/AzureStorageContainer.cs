@@ -8,8 +8,7 @@ namespace Neba.Tests.Infrastructure;
 /// </summary>
 public sealed class AzureStorageContainer : IAsyncLifetime
 {
-    private readonly AzuriteContainer _container = new AzuriteBuilder()
-        .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
+    private readonly AzuriteContainer _container = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
         .Build();
 
     /// <summary>
