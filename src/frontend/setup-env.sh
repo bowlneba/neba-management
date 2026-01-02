@@ -14,7 +14,7 @@ echo "Extracting secrets from user secrets..."
 SUBSCRIPTION_KEY=$(dotnet user-secrets list --project "$PROJECT_PATH" | grep "AzureMaps:SubscriptionKey" | cut -d'=' -f2- | xargs)
 
 # Check if we got a value
-if [ -z "$SUBSCRIPTION_KEY" ]; then
+if [[ -z "$SUBSCRIPTION_KEY" ]]; then
     echo "Error: AzureMaps:SubscriptionKey not found in user secrets"
     echo "Please set it with: dotnet user-secrets set 'AzureMaps:SubscriptionKey' 'your-key' --project $PROJECT_PATH"
     exit 1
