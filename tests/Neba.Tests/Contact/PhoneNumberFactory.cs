@@ -1,5 +1,4 @@
 using Bogus;
-using ErrorOr;
 using Neba.Domain.Contact;
 
 namespace Neba.Tests.Contact;

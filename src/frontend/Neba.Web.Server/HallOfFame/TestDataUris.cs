@@ -1,5 +1,3 @@
-using System;
-
 namespace Neba.Web.Server.HallOfFame;
 
 /// <summary>

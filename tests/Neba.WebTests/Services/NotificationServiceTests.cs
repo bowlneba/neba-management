@@ -1,6 +1,5 @@
 using System.Reactive.Linq;
 using Neba.Web.Server.Notifications;
-using Neba.Web.Server.Services;
 
 namespace Neba.WebTests.Services;
 

@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
