@@ -2,6 +2,8 @@ using Neba.Application.Messaging;
 using Neba.Website.Application.Awards.HighAverage;
 
 namespace Neba.UnitTests.Website.Awards.HighAverage;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HighAverage")]
 
 public sealed class ListHighAverageAwardsQueryTests
 {

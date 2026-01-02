@@ -3,6 +3,8 @@ using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.HighBlock;
 
 namespace Neba.UnitTests.Website.Awards.HighBlock;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HighBlock")]
 
 public sealed class ListHigh5GameBlockAwardsQueryHandlerTests
 {

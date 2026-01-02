@@ -18,6 +18,8 @@ using Neba.Website.Contracts.Titles;
 using Refit;
 
 namespace Neba.UnitTests.Ui.Server.Services;
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.Services")]
 
 public sealed class NebaApiServiceTests
 {

@@ -3,6 +3,8 @@ using Neba.Website.Application.Awards;
 using Neba.Website.Application.Awards.BowlerOfTheYear;
 
 namespace Neba.UnitTests.Website.Awards.BowlerOfTheYear;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.BowlerOfTheYear")]
 
 public sealed class ListBowlerOfTheYearAwardsQueryHandlerTests
 {

@@ -3,6 +3,8 @@ using Neba.Web.Server.HallOfFame;
 using Neba.Website.Contracts.Awards;
 
 namespace Neba.UnitTests.Ui.Server.HallOfFame;
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.HallOfFame")]
 
 public sealed class HallOfFameMappingExtensionsTests
 {

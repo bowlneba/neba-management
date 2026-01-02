@@ -8,6 +8,8 @@ using Neba.Web.Server.Services;
 using Neba.Web.Server.Tournaments;
 
 namespace Neba.WebTests.Tournaments;
+[Trait("Category", "Web")]
+[Trait("Component", "Tournaments")]
 
 public sealed class TournamentRulesTests : TestContextWrapper
 {

@@ -1,6 +1,8 @@
 using Neba.Web.Server.Notifications;
 
 namespace Neba.UnitTests.Ui.Server.Notifications;
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.Notifications")]
 
 public sealed class AlertServiceTests
 {

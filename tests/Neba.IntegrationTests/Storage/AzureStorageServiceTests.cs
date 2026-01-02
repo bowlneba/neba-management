@@ -9,6 +9,8 @@ using Neba.Tests.Infrastructure;
 using static Neba.Tests.Storage.BlobMetadataFactory;
 
 namespace Neba.IntegrationTests.Storage;
+[Trait("Category", "Integration")]
+[Trait("Component", "Storage")]
 
 /// <summary>
 /// Integration tests for AzureStorageService using Azurite test container.

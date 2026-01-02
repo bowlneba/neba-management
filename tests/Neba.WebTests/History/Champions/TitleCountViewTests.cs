@@ -5,6 +5,8 @@ using Neba.Tests.Website;
 using Neba.Web.Server.History.Champions;
 
 namespace Neba.WebTests.History.Champions;
+[Trait("Category", "Web")]
+[Trait("Component", "History.Champions")]
 
 public sealed class TitleCountViewTests : TestContextWrapper
 {

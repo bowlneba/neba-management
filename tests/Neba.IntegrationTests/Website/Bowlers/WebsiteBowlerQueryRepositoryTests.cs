@@ -10,6 +10,8 @@ using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.Bowlers")]
 
 public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
 {

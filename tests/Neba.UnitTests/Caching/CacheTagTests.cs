@@ -3,6 +3,8 @@ using Neba.Application.Caching;
 using Neba.Domain.Identifiers;
 
 namespace Neba.UnitTests.Caching;
+[Trait("Category", "Unit")]
+[Trait("Component", "Caching")]
 
 public sealed class CacheTagTests
 {

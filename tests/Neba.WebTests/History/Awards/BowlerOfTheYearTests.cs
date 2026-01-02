@@ -10,6 +10,8 @@ using Neba.Web.Server.Services;
 using Neba.Website.Contracts.Awards;
 
 namespace Neba.WebTests.History.Awards;
+[Trait("Category", "Web")]
+[Trait("Component", "History.Awards")]
 
 public sealed class BowlerOfTheYearTests : TestContextWrapper
 {

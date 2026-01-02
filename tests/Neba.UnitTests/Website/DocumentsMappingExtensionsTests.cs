@@ -4,6 +4,8 @@ using Neba.Tests.Documents;
 using Neba.Website.Endpoints.Documents;
 
 namespace Neba.UnitTests.Website;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website")]
 
 public sealed class DocumentsMappingExtensionsTests
 {

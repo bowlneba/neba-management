@@ -2,6 +2,8 @@ using Neba.Application.Messaging;
 using Neba.Website.Application.Awards.HallOfFame;
 
 namespace Neba.UnitTests.Website.Awards.HallOfFame;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HallOfFame")]
 
 public sealed class ListHallOfFameInductionsQueryTests
 {

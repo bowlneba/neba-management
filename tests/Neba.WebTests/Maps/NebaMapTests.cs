@@ -5,6 +5,8 @@ using Neba.Web.Server.Maps;
 using MapsRouteData = Neba.Web.Server.Maps.RouteData;
 
 namespace Neba.WebTests.Maps;
+[Trait("Category", "Web")]
+[Trait("Component", "Maps")]
 
 public sealed class NebaMapTests : TestContextWrapper
 {

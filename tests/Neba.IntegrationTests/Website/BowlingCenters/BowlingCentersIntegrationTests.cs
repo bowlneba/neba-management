@@ -8,6 +8,8 @@ using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Domain.BowlingCenters;
 
 namespace Neba.IntegrationTests.Website.BowlingCenters;
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.BowlingCenters")]
 
 public sealed class BowlingCentersIntegrationTests
     : ApiTestsBase

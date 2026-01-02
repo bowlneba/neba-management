@@ -5,6 +5,8 @@ using Neba.Tests.Documents;
 using Neba.Website.Application.Tournaments.TournamentRules;
 
 namespace Neba.UnitTests.Website.Tournaments.TournamentRules;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Tournaments.TournamentRules")]
 
 public sealed class GetTournamentRulesQueryHandlerTests
 {

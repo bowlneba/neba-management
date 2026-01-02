@@ -7,6 +7,8 @@ using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.BowlingCenters;
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.BowlingCenters")]
 
 public sealed class WebsiteBowlingCenterQueryRepositoryTests : IAsyncLifetime
 {

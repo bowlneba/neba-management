@@ -13,6 +13,8 @@ using Neba.Web.Server.Services;
 using Neba.Website.Contracts.BowlingCenters;
 
 namespace Neba.WebTests.BowlingCenters;
+[Trait("Category", "Web")]
+[Trait("Component", "BowlingCenters")]
 
 public sealed class BowlingCentersTests : TestContextWrapper
 {

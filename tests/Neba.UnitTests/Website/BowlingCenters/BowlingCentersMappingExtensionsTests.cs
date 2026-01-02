@@ -5,6 +5,8 @@ using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Endpoints.BowlingCenters;
 
 namespace Neba.UnitTests.Website.BowlingCenters;
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.BowlingCenters")]
 
 public sealed class BowlingCentersMappingExtensionsTests
 {
