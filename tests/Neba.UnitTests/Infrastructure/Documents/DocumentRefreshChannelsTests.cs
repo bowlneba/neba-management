@@ -79,7 +79,7 @@ public sealed class DocumentRefreshChannelsTests
         Task<bool> writeTask1 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status1")));
         Task<bool> writeTask2 = Task.Run(() => channel.Writer.TryWrite(DocumentRefreshStatusEvent.FromStatus("status2")));
 
-        var writeResults = await Task.WhenAll(writeTask1, writeTask2);
+        bool[] writeResults = await Task.WhenAll(writeTask1, writeTask2);
 
         writeResults[0].ShouldBeTrue();
         writeResults[1].ShouldBeTrue();

@@ -300,7 +300,7 @@ public sealed class AlertServiceTests
     {
         // Arrange
         var service = new AlertService();
-        var changeCount = 0;
+        int changeCount = 0;
         service.OnChange += (_, _) => changeCount++;
 
         // Act
@@ -316,7 +316,7 @@ public sealed class AlertServiceTests
         // Arrange
         var service = new AlertService();
         service.ShowInfo("Test message");
-        var changeCount = 0;
+        int changeCount = 0;
         service.OnChange += (_, _) => changeCount++;
 
         // Act
@@ -331,7 +331,7 @@ public sealed class AlertServiceTests
     {
         // Arrange
         var service = new AlertService();
-        var changeCount = 0;
+        int changeCount = 0;
         service.OnChange += (_, _) => changeCount++;
 
         // Act
@@ -364,9 +364,9 @@ public sealed class AlertServiceTests
     {
         // Arrange
         var service = new AlertService();
-        var count1 = 0;
-        var count2 = 0;
-        var count3 = 0;
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
         service.OnChange += (_, _) => count1++;
         service.OnChange += (_, _) => count2++;
         service.OnChange += (_, _) => count3++;
@@ -403,7 +403,7 @@ public sealed class AlertServiceTests
     {
         // Arrange
         var service = new AlertService();
-        var clickHandlerCalled = false;
+        bool clickHandlerCalled = false;
 
         // Act
         service.ShowInfo("Test message", configure: options =>
