@@ -1440,7 +1440,7 @@ public sealed class NebaApiServiceTests
     public async Task GetBowlingCentersAsync_SuccessfulResponse_CorrectlyMapsToViewModel()
     {
         // Arrange
-        var center = BowlingCenterResponseFactory.Create(
+        BowlingCenterResponse center = BowlingCenterResponseFactory.Create(
             name: "Test Bowling Center",
             street: "123 Test St",
             unit: "Suite 100",
@@ -1471,7 +1471,7 @@ public sealed class NebaApiServiceTests
         result.IsError.ShouldBeFalse();
         result.Value.Count.ShouldBe(1);
 
-        var viewModel = result.Value.First();
+        BowlingCenterViewModel viewModel = result.Value.First();
         viewModel.Name.ShouldBe("Test Bowling Center");
         viewModel.Street.ShouldBe("123 Test St");
         viewModel.Unit.ShouldBe("Suite 100");

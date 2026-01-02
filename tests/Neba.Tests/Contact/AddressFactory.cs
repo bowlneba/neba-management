@@ -1,3 +1,4 @@
+using Bogus;
 using ErrorOr;
 using Neba.Domain.Contact;
 using Neba.Domain.Geography;
@@ -23,7 +24,7 @@ public static class AddressFactory
         string? postalCode = null,
         Coordinates? coordinates = null)
     {
-        var defaultCoordinates = coordinates ?? Coordinates.Create(DefaultLatitude, DefaultLongitude).Value;
+        Coordinates defaultCoordinates = coordinates ?? Coordinates.Create(DefaultLatitude, DefaultLongitude).Value;
 
         return new()
         {
@@ -39,7 +40,7 @@ public static class AddressFactory
 
     public static Address Bogus(int? seed = null)
     {
-        var faker = new Bogus.Faker<Address>()
+        Faker<Address> faker = new Bogus.Faker<Address>()
             .RuleFor(a => a.Street, f => f.Address.StreetAddress())
             .RuleFor(a => a.Unit, f => f.Random.Bool(0.3f) ? f.Address.SecondaryAddress() : null)
             .RuleFor(a => a.City, f => f.Address.City())

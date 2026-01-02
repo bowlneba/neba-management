@@ -1,3 +1,4 @@
+using Bogus;
 using ErrorOr;
 using Neba.Domain.Contact;
 
@@ -22,7 +23,7 @@ public static class PhoneNumberFactory
 
     public static PhoneNumber Bogus(int? seed = null)
     {
-        var faker = new Bogus.Faker<PhoneNumber>()
+        Faker<PhoneNumber> faker = new Bogus.Faker<PhoneNumber>()
             .RuleFor(p => p.CountryCode, _ => "1")
             .RuleFor(p => p.Number, f =>
             {
