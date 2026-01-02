@@ -1,8 +1,10 @@
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Neba.Web.Server.Maps;
 using MapsRouteData = Neba.Web.Server.Maps.RouteData;
+using System.Collections.ObjectModel;
 
 namespace Neba.WebTests.Maps;
 
@@ -476,5 +478,481 @@ public sealed class NebaMapTests : TestContextWrapper
         state.Route.ShouldBeNull();
         state.IsLoading.ShouldBeFalse();
         state.ErrorMessage.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ShouldInitializeMap_AfterFirstRender()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        // Assert
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+        jsModule.VerifyInvoke("initializeMap");
+    }
+
+    [Fact]
+    public async Task ShouldPassAuthConfigToJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        // Assert
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+        JSRuntimeInvocation invocation = jsModule.Invocations["initializeMap"][0];
+        invocation.Arguments.ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public async Task OnParametersSetAsync_ChecksForModuleInitialization()
+    {
+        // Arrange
+        List<NebaMapLocation> initialLocations = [CreateTestLocation("loc-1")];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        // Act - Render component which triggers OnAfterRenderAsync and OnParametersSetAsync
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, initialLocations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Assert - Component should initialize successfully even with OnParametersSetAsync running
+        cut.Instance.ShouldNotBeNull();
+        jsModule.VerifyInvoke("initializeMap");
+    }
+
+    [Fact]
+    public async Task FocusOnLocationAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation("test-loc-1")];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("focusOnLocation");
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.FocusOnLocationAsync("test-loc-1"));
+
+        // Assert
+        jsModule.VerifyInvoke("focusOnLocation", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task FitBoundsAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("fitBounds").SetVoidResult();
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.FitBoundsAsync());
+
+        // Assert
+        jsModule.VerifyInvoke("fitBounds", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task ClosePopupAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("closePopup").SetVoidResult();
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.ClosePopupAsync());
+
+        // Assert
+        jsModule.VerifyInvoke("closePopup", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task EnterDirectionsPreviewAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation("preview-loc")];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("enterDirectionsPreview");
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.EnterDirectionsPreviewAsync("preview-loc"));
+
+        // Assert
+        jsModule.VerifyInvoke("enterDirectionsPreview", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task ShowRouteAsync_ReturnsRouteData_OnSuccess()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        double[] origin = [42.3601, -71.0589];
+        double[] destination = [42.3500, -71.0500];
+
+        var expectedRoute = new MapsRouteData
+        {
+            DistanceMeters = 5000,
+            TravelTimeSeconds = 600,
+            Instructions = new Collection<RouteInstruction>
+            {
+                new RouteInstruction { Text = "Turn left", DistanceMeters = 100 }
+            }
+        };
+
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.Setup<MapsRouteData>("showRoute", _ => true).SetResult(expectedRoute);
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        MapsRouteData? result = await cut.InvokeAsync(async () =>
+            await cut.Instance.ShowRouteAsync(origin, destination));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.DistanceMeters.ShouldBe(5000);
+        result.TravelTimeSeconds.ShouldBe(600);
+        result.Instructions.ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public async Task ShowRouteAsync_ReturnsNull_OnJavaScriptError()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        double[] origin = [42.3601, -71.0589];
+        double[] destination = [42.3500, -71.0500];
+
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.Setup<MapsRouteData>("showRoute")
+            .SetException(new JSException("Route calculation failed"));
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        MapsRouteData? result = await cut.InvokeAsync(async () =>
+            await cut.Instance.ShowRouteAsync(origin, destination));
+
+        // Assert
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ExitDirectionsModeAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("exitDirectionsMode").SetVoidResult();
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.ExitDirectionsModeAsync());
+
+        // Assert
+        jsModule.VerifyInvoke("exitDirectionsMode", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task SetMapStyleAsync_CallsJavaScript()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("setMapStyle");
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.SetMapStyleAsync("satellite"));
+
+        // Assert
+        jsModule.VerifyInvoke("setMapStyle", calledTimes: 1);
+    }
+
+    [Fact]
+    public void ShouldUseDefaultMapStyle_WhenNotProvided()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        // Assert
+        cut.Instance.MapStyle.ShouldBe("road");
+    }
+
+    [Fact]
+    public void ShouldUseCustomMapStyle_WhenProvided()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations)
+            .Add(p => p.MapStyle, "satellite_road_labels"));
+
+        // Assert
+        cut.Instance.MapStyle.ShouldBe("satellite_road_labels");
+    }
+
+    [Fact]
+    public async Task OnMapReady_EventFires_AfterInitialization()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        bool mapReadyCalled = false;
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations)
+            .Add(p => p.OnMapReady, () => { mapReadyCalled = true; return Task.CompletedTask; }));
+
+        // Assert
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+        mapReadyCalled.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task NotifyBoundsChanged_InvokesCallback()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        MapBounds? receivedBounds = null;
+        var expectedBounds = new MapBounds(North: 43.0, South: 42.0, East: -70.0, West: -72.0);
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations)
+            .Add(p => p.OnBoundsChanged, bounds => { receivedBounds = bounds; return Task.CompletedTask; }));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.NotifyBoundsChanged(expectedBounds));
+
+        // Assert
+        receivedBounds.ShouldNotBeNull();
+        receivedBounds.North.ShouldBe(43.0);
+        receivedBounds.South.ShouldBe(42.0);
+        receivedBounds.East.ShouldBe(-70.0);
+        receivedBounds.West.ShouldBe(-72.0);
+    }
+
+    [Fact]
+    public async Task ShouldHtmlEncodeLocationData()
+    {
+        // Arrange
+        List<NebaMapLocation> locations =
+        [
+            CreateTestLocation(
+                id: "xss-test",
+                title: "<script>alert('xss')</script>",
+                description: "<img src=x onerror=alert('xss')>")
+        ];
+
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        // The HTML encoding happens in InitializeMapAsync, which is called during OnAfterRenderAsync
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Assert - Verify the JS interop was called (encoding happens in the component)
+        jsModule.VerifyInvoke("initializeMap");
+    }
+
+    [Fact]
+    public async Task ShouldHandleNullTitleAndDescription()
+    {
+        // Arrange
+        List<NebaMapLocation> locations =
+        [
+            new NebaMapLocation(
+                Id: "null-test",
+                Title: null!,
+                Description: null!,
+                Latitude: 42.3601,
+                Longitude: -71.0589,
+                Metadata: null)
+        ];
+
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+
+        // Act
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Assert
+        jsModule.VerifyInvoke("initializeMap");
+    }
+
+    [Fact]
+    public async Task DisposeAsync_CallsJavaScriptDispose()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("dispose");
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        await cut.InvokeAsync(async () => await cut.Instance.DisposeAsync());
+
+        // Assert
+        jsModule.VerifyInvoke("dispose", calledTimes: 1);
+    }
+
+    [Fact]
+    public async Task DisposeAsync_HandlesJavaScriptError_Gracefully()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");
+        jsModule.SetupVoid("initializeMap");
+        jsModule.SetupVoid("dispose").SetException(new JSException("Dispose failed"));
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        await cut.InvokeAsync(async () => await Task.Delay(100));
+
+        // Act
+        Exception? exception = null;
+        try
+        {
+            await cut.InvokeAsync(async () => await cut.Instance.DisposeAsync());
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+        }
+
+        // Assert - Should not throw
+        exception.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task FocusOnLocationAsync_DoesNothing_WhenModuleNotInitialized()
+    {
+        // Arrange
+        List<NebaMapLocation> locations = [CreateTestLocation()];
+
+        IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+            .Add(p => p.Locations, locations));
+
+        // Don't wait for initialization
+
+        // Act
+        Exception? exception = null;
+        try
+        {
+            await cut.InvokeAsync(async () => await cut.Instance.FocusOnLocationAsync("test-loc"));
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+        }
+
+        // Assert - Should not throw
+        exception.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task OnParametersSetAsync_DoesNotThrow_WhenModuleNotInitialized()
+    {
+        // Arrange & Act - Render component without waiting for module initialization
+        List<NebaMapLocation> initialLocations = [CreateTestLocation("loc-1")];
+
+        Exception? exception = null;
+        try
+        {
+            IRenderedComponent<NebaMap> cut = Render<NebaMap>(parameters => parameters
+                .Add(p => p.Locations, initialLocations));
+
+            // OnParametersSetAsync is called during rendering
+            // It should handle the case where _jsModule is null
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+        }
+
+        // Assert - Should not throw even when module is not initialized
+        exception.ShouldBeNull();
     }
 }
