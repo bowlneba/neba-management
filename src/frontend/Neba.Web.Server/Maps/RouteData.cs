@@ -37,7 +37,7 @@ public sealed class RouteData
     {
         get
         {
-            var miles = DistanceMeters * 0.000621371; // Convert meters to miles
+            double miles = DistanceMeters * 0.000621371; // Convert meters to miles
             return $"{miles:F1} mi";
         }
     }
@@ -49,14 +49,14 @@ public sealed class RouteData
     {
         get
         {
-            var minutes = TravelTimeSeconds / 60;
+            int minutes = TravelTimeSeconds / 60;
             if (minutes < 60)
             {
                 return $"{minutes} min";
             }
 
-            var hours = minutes / 60;
-            var remainingMinutes = minutes % 60;
+            int hours = minutes / 60;
+            int remainingMinutes = minutes % 60;
             return $"{hours} hr {remainingMinutes} min";
         }
     }

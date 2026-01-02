@@ -22,10 +22,10 @@ public sealed class RouteInstruction
     {
         get
         {
-            var miles = DistanceMeters * 0.000621371;
+            double miles = DistanceMeters * 0.000621371;
             if (miles < 0.1)
             {
-                var feet = DistanceMeters * 3.28084;
+                double feet = DistanceMeters * 3.28084;
                 return $"{feet:F0} ft";
             }
             return $"{miles:F1} mi";
