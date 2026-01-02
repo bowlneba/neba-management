@@ -20,6 +20,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
+COPY [".editorconfig", "./"]
 COPY ["src/frontend/Neba.Web.Server/Neba.Web.Server.csproj", "src/frontend/Neba.Web.Server/"]
 COPY ["src/frontend/Neba.Web.Client/Neba.Web.Client.csproj", "src/frontend/Neba.Web.Client/"]
 COPY ["src/backend/Neba.Website.Contracts/Neba.Website.Contracts.csproj", "src/backend/Neba.Website.Contracts/"]
@@ -31,7 +32,6 @@ COPY src/ src/
 COPY --from=nodebuild /src/src/frontend/Neba.Web.Server/wwwroot /src/src/frontend/Neba.Web.Server/wwwroot
 
 WORKDIR "/src/src/frontend/Neba.Web.Server"
-RUN dotnet build "./Neba.Web.Server.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release

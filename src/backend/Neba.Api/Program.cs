@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Neba.Api.HealthChecks;
+using Neba.Api.ErrorHandling;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
 using Neba.Website.Application;
@@ -26,6 +27,9 @@ builder.Services
     .AddWebsiteApplication()
     .AddWebsiteInfrastructure(builder.Configuration);
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
@@ -42,6 +46,8 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
+
+app.UseExceptionHandler();
 
 //authorization / authentication would go here
 
