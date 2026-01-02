@@ -3,6 +3,9 @@ using Neba.Domain.Awards;
 
 namespace Neba.UnitTests.Domain.Awards;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Awards")]
+
 public sealed class SeasonAwardTypeTests
 {
     [Fact(DisplayName = "SeasonAwardType should have correct number of awards")]

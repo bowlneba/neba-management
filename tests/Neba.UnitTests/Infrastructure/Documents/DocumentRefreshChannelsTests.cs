@@ -3,6 +3,9 @@ using Neba.Infrastructure.Documents;
 
 namespace Neba.UnitTests.Infrastructure.Documents;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Infrastructure.Documents")]
+
 public sealed class DocumentRefreshChannelsTests
 {
     private readonly DocumentRefreshChannels _channels = new();

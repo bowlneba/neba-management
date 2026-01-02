@@ -12,6 +12,9 @@ using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Awards;
 
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.Awards")]
+
 public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
 {
     private DatabaseContainer _database = null!;

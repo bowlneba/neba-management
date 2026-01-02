@@ -10,10 +10,8 @@ using static Neba.Tests.Storage.BlobMetadataFactory;
 
 namespace Neba.IntegrationTests.Storage;
 
-/// <summary>
-/// Integration tests for AzureStorageService using Azurite test container.
-/// Tests verify blob upload, download, existence checks, and deletion operations.
-/// </summary>
+[Trait("Category", "Integration")]
+[Trait("Component", "Storage")]
 public sealed class AzureStorageServiceTests : IAsyncLifetime
 {
     private AzureStorageContainer _storageContainer = null!;

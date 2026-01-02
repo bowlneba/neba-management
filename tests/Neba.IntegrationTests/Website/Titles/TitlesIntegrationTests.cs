@@ -9,6 +9,9 @@ using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Titles;
 
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.Titles")]
+
 public sealed class TitlesIntegrationTests
     : ApiTestsBase
 {

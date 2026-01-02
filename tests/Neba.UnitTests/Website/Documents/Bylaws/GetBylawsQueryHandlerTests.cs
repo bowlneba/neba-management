@@ -6,6 +6,9 @@ using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents.Bylaws;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Documents.Bylaws")]
+
 public sealed class GetBylawsQueryHandlerTests
 {
     private readonly Mock<IStorageService> _storageServiceMock;

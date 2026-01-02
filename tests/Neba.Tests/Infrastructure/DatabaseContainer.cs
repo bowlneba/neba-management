@@ -11,8 +11,7 @@ namespace Neba.Tests.Infrastructure;
 public sealed class DatabaseContainer
     : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage("postgres:17.6")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:17.6")
         .WithDatabase("website")
         .WithUsername("neba")
         .WithPassword("neba")

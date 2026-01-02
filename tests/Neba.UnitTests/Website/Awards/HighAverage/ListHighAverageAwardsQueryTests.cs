@@ -3,6 +3,9 @@ using Neba.Website.Application.Awards.HighAverage;
 
 namespace Neba.UnitTests.Website.Awards.HighAverage;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HighAverage")]
+
 public sealed class ListHighAverageAwardsQueryTests
 {
     private static readonly string[] ExpectedAwardTags = ["website", "website:awards", "website:award:high-average"];

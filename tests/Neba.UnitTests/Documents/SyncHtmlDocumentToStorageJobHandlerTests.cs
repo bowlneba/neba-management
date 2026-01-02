@@ -5,6 +5,9 @@ using Neba.Application.Storage;
 
 namespace Neba.UnitTests.Documents;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Documents")]
+
 public sealed class SyncHtmlDocumentToStorageJobHandlerTests
 {
     private readonly Mock<IDocumentsService> _mockDocumentsService;

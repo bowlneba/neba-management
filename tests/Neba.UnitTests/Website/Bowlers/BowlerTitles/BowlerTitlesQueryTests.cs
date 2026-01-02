@@ -6,6 +6,9 @@ using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Bowlers.BowlerTitles")]
+
 public sealed class BowlerTitlesQueryTests
 {
     private static readonly string[] ExpectedBowlerTags = ["website", "website:bowlers", "website:bowler:01ARZ3NDEKTSV4RRFFQ69G5FAV"];

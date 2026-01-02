@@ -19,6 +19,9 @@ using Refit;
 
 namespace Neba.UnitTests.Ui.Server.Services;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.Services")]
+
 public sealed class NebaApiServiceTests
 {
     private readonly Mock<INebaApi> _mockNebaApi;

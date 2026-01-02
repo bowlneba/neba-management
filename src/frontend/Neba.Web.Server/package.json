@@ -4,8 +4,8 @@
   "description": "Neba Management Web Application",
   "type": "module",
   "scripts": {
-    "build:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --minify",
-    "watch:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch",
+    "build:css": "npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --minify",
+    "watch:css": "npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"

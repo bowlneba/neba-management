@@ -2,6 +2,9 @@ using Neba.Website.Domain.Tournaments;
 
 namespace Neba.UnitTests.Tournaments;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Tournaments")]
+
 public sealed class TournamentTypeTests
 {
     [Fact(DisplayName = "TournamentType should have 14 different tournament types")]

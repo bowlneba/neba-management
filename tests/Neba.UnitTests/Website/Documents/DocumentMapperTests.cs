@@ -4,6 +4,9 @@ using Neba.Tests.Website;
 
 namespace Neba.UnitTests.Website.Documents;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Documents")]
+
 public sealed class DocumentMapperTests
 {
     [Fact(DisplayName = "Converts empty document to empty string")]

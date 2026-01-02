@@ -3,6 +3,9 @@ using Neba.Domain.Geography;
 
 namespace Neba.UnitTests.Domain.Geography;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Geography")]
+
 public sealed class CoordinatesTests
 {
     [Fact(DisplayName = "Create should return Coordinates for valid latitude and longitude")]

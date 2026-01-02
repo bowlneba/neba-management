@@ -1,8 +1,10 @@
 using System.Reactive.Linq;
 using Neba.Web.Server.Notifications;
-using Neba.Web.Server.Services;
 
 namespace Neba.WebTests.Services;
+
+[Trait("Category", "Web")]
+[Trait("Component", "Services")]
 
 public sealed class NotificationServiceTests : IDisposable
 {

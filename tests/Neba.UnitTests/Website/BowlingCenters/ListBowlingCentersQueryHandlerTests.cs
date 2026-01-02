@@ -3,6 +3,9 @@ using Neba.Website.Application.BowlingCenters;
 
 namespace Neba.UnitTests.Website.BowlingCenters;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.BowlingCenters")]
+
 public sealed class ListBowlingCentersQueryHandlerTests
 {
     private readonly Mock<IWebsiteBowlingCenterQueryRepository> _repositoryMock;

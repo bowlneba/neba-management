@@ -4,6 +4,9 @@ using Neba.Domain.Geography;
 
 namespace Neba.UnitTests.Domain.Contact;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Contact")]
+
 public sealed class AddressTests
 {
     #region US Address Tests

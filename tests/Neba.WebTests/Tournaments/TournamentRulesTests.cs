@@ -9,6 +9,9 @@ using Neba.Web.Server.Tournaments;
 
 namespace Neba.WebTests.Tournaments;
 
+[Trait("Category", "Web")]
+[Trait("Component", "Tournaments")]
+
 public sealed class TournamentRulesTests : TestContextWrapper
 {
     private readonly Mock<INebaApi> _mockNebaApi;

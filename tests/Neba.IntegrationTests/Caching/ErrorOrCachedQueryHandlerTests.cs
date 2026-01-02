@@ -6,6 +6,9 @@ using Neba.IntegrationTests.Infrastructure;
 
 namespace Neba.IntegrationTests.Caching;
 
+[Trait("Category", "Integration")]
+[Trait("Component", "Caching")]
+
 public sealed class ErrorOrCachedQueryHandlerTests : CachingTestsBase
 {
     public override async ValueTask InitializeAsync()

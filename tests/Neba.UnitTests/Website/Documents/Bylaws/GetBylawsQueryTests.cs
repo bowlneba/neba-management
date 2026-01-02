@@ -4,6 +4,9 @@ using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents.Bylaws;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Documents.Bylaws")]
+
 public sealed class GetBylawsQueryTests
 {
     private static readonly string[] ExpectedDocumentTags = ["website", "website:documents", "website:document:bylaws"];

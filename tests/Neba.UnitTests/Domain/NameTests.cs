@@ -4,6 +4,9 @@ using Neba.Tests;
 
 namespace Neba.UnitTests.Domain;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain")]
+
 public sealed class NameTests
 {
     [Theory(DisplayName = "Returns error when first name is null or whitespace")]

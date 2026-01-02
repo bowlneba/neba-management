@@ -10,6 +10,9 @@ using Neba.Website.Domain.Bowlers;
 
 namespace Neba.IntegrationTests.Website.Awards;
 
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.Awards")]
+
 public sealed class AwardsIntegrationTests
     : ApiTestsBase
 {

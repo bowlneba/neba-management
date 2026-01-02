@@ -2,6 +2,9 @@ using Neba.Application.BackgroundJobs;
 
 namespace Neba.UnitTests.BackgroundJobs;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "BackgroundJobs")]
+
 public sealed class BackgroundJobNamingTests
 {
     [Fact(DisplayName = "IBackgroundJob provides custom display name")]

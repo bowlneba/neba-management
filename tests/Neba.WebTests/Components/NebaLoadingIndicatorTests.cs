@@ -5,6 +5,9 @@ using Neba.Web.Server.Components;
 
 namespace Neba.WebTests.Components;
 
+[Trait("Category", "Web")]
+[Trait("Component", "Components")]
+
 public sealed class NebaLoadingIndicatorTests : TestContextWrapper
 {
     private static void WaitForLoadingIndicator(IRenderedComponent<NebaLoadingIndicator> cut)

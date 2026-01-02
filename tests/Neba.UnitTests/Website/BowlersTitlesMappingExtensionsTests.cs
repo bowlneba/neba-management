@@ -10,6 +10,9 @@ using Neba.Website.Endpoints.Bowlers;
 
 namespace Neba.UnitTests.Website;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website")]
+
 public sealed class BowlersTitlesMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps bowler ID from BowlerTitleDto to response model")]

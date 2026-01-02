@@ -8,6 +8,9 @@ using Neba.Website.Endpoints.Awards;
 
 namespace Neba.UnitTests.Website.Awards;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards")]
+
 public sealed class AwardsMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps year from HallOfFameInductionDto to response model")]

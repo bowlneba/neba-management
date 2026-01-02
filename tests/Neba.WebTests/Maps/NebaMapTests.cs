@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -7,6 +5,9 @@ using Neba.Web.Server.Maps;
 using MapsRouteData = Neba.Web.Server.Maps.RouteData;
 
 namespace Neba.WebTests.Maps;
+
+[Trait("Category", "Web")]
+[Trait("Component", "Maps")]
 
 public sealed class NebaMapTests : TestContextWrapper
 {

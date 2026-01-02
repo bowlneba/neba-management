@@ -110,6 +110,41 @@ applyTo: '**/*.cs'
   - Examples of bad TestDisplayName values (avoid):
     - "IsValidCacheKey_ValidatesCorrectly: Valid key" (includes method name)
     - "ShouldApplyCorrectSeverityClass: Error => error" (includes method name)
+- **REQUIRED: All test classes MUST include `[Trait]` attributes for test discovery and filtering.**
+  - Apply two trait attributes at the class level (immediately after the namespace declaration):
+    1. `[Trait("Category", "<category>")]` - identifies the test type
+    2. `[Trait("Component", "<component>")]` - identifies the feature/domain area being tested
+  - **Category values** are determined by which test project the class belongs to:
+    - `"Unit"` for files in `Neba.UnitTests`
+    - `"Integration"` for files in `Neba.IntegrationTests`
+    - `"Web"` for files in `Neba.WebTests`
+  - **Component value** is derived from the namespace hierarchy after the project prefix:
+    - Extract everything after `Neba.UnitTests.` (or corresponding project prefix)
+    - Preserve the dot-notation hierarchy (e.g., `Domain.Contact`, `Website.Awards`, `Services`)
+    - Examples:
+      ```csharp
+      // Namespace: Neba.UnitTests.Domain.Contact.PhoneNumberTests
+      namespace Neba.UnitTests.Domain.Contact;
+      [Trait("Category", "Unit")]
+      [Trait("Component", "Domain.Contact")]
+      public sealed class PhoneNumberTests { }
+
+      // Namespace: Neba.IntegrationTests.Caching.CachedQueryHandlerDecoratorTests
+      namespace Neba.IntegrationTests.Caching;
+      [Trait("Category", "Integration")]
+      [Trait("Component", "Caching")]
+      public sealed class CachedQueryHandlerDecoratorTests { }
+
+      // Namespace: Neba.WebTests.Services.AlertServiceTests
+      namespace Neba.WebTests.Services;
+      [Trait("Category", "Web")]
+      [Trait("Component", "Services")]
+      public sealed class AlertServiceTests { }
+      ```
+  - Traits enable xUnit test filtering, allowing developers to run specific test categories from the command line:
+    - `dotnet test --filter Category=Unit` - run only unit tests
+    - `dotnet test --filter Category=Integration` - run only integration tests
+    - `dotnet test --filter Component=Domain` - run all domain-related tests across categories
 - Explain integration testing approaches for API endpoints.
 - Demonstrate how to mock dependencies for effective testing.
 - Show how to test authentication and authorization logic.

@@ -4,6 +4,9 @@ using Neba.Web.Server.Notifications;
 
 namespace Neba.WebTests.Components.Notifications;
 
+[Trait("Category", "Web")]
+[Trait("Component", "Components.Notifications")]
+
 public sealed class NebaToastTests : TestContextWrapper
 {
     [Fact]

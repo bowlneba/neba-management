@@ -4,6 +4,9 @@ using Neba.Website.Application.Awards.HighAverage;
 
 namespace Neba.UnitTests.Website.Awards.HighAverage;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HighAverage")]
+
 public sealed class ListHighAverageAwardsQueryHandlerTests
 {
     private readonly Mock<IWebsiteAwardQueryRepository> _mockRepository;

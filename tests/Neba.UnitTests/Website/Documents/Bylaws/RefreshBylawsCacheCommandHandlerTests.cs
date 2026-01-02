@@ -3,6 +3,9 @@ using Neba.Website.Application.Documents.Bylaws;
 
 namespace Neba.UnitTests.Website.Documents.Bylaws;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Documents.Bylaws")]
+
 public sealed class RefreshBylawsCacheCommandHandlerTests
 {
     private readonly Mock<IBylawsSyncBackgroundJob> _bylawsSyncJobMock;

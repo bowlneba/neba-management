@@ -2,6 +2,9 @@ using Neba.Domain.Contact;
 
 namespace Neba.UnitTests.Domain.Contact;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Contact")]
+
 public sealed class UsStateTests
 {
     [Fact(DisplayName = "All states should contain 50 states plus DC")]

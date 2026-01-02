@@ -5,6 +5,9 @@ using Neba.Website.Endpoints.Documents;
 
 namespace Neba.UnitTests.Website;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website")]
+
 public sealed class DocumentsMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps all properties from DocumentDto to response model")]

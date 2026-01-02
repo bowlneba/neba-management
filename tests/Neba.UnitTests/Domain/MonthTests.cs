@@ -2,6 +2,9 @@ using Neba.Domain;
 
 namespace Neba.UnitTests.Domain;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain")]
+
 public sealed class MonthTests
 {
     [Fact(DisplayName = "Month should have 12 different months")]

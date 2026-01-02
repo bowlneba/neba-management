@@ -9,6 +9,9 @@ using MapsRouteData = Neba.Web.Server.Maps.RouteData;
 
 namespace Neba.WebTests.BowlingCenters;
 
+[Trait("Category", "Web")]
+[Trait("Component", "BowlingCenters")]
+
 public sealed class DirectionsModalTests : TestContextWrapper
 {
     [Fact]

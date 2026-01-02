@@ -3,6 +3,9 @@ using Neba.Website.Infrastructure.Database.Converters;
 
 namespace Neba.UnitTests.Website.Infrastructure.Database.Converters;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Infrastructure.Database.Converters")]
+
 public sealed class HallOfFameCategoryValueConverterTests
 {
     private readonly HallOfFameCategoryValueConverter _converter = new();

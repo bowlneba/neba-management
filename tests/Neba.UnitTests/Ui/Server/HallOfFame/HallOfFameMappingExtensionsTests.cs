@@ -4,6 +4,9 @@ using Neba.Website.Contracts.Awards;
 
 namespace Neba.UnitTests.Ui.Server.HallOfFame;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.HallOfFame")]
+
 public sealed class HallOfFameMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps bowler name from HallOfFameInductionResponse to view model")]

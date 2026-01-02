@@ -3,6 +3,9 @@ using Neba.Domain.Contact;
 
 namespace Neba.UnitTests.Domain.Contact;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Contact")]
+
 public sealed class PhoneNumberTests
 {
     #region North American Phone Number Tests - Happy Path

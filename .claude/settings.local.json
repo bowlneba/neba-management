@@ -142,7 +142,10 @@
       "Bash(az maps account list:*)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management diff src/backend/Neba.Website.Application/Awards/BowlerOfTheYear/BowlerOfTheYearAwardDto.cs)",
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management log --oneline -5)",
-      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management remote:*)"
+      "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management remote:*)",
+      "Bash(./tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)",
+      "Bash(git stash push:*)",
+      "Bash(xattr:*)"
     ],
     "deny": [],
     "ask": []

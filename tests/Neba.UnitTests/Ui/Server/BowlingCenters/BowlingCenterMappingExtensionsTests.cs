@@ -5,6 +5,9 @@ using Neba.Website.Contracts.BowlingCenters;
 
 namespace Neba.UnitTests.Ui.Server.BowlingCenters;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.BowlingCenters")]
+
 public sealed class BowlingCenterMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps name from BowlingCenterResponse to view model")]

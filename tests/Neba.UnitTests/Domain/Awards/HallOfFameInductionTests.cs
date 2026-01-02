@@ -6,6 +6,9 @@ using Neba.Website.Domain.Awards;
 
 namespace Neba.UnitTests.Domain.Awards;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Awards")]
+
 public sealed class HallOfFameInductionTests
 {
     [Fact(DisplayName = "Constructor should generate valid HallOfFameId")]

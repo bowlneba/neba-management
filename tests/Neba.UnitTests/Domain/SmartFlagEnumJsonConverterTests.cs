@@ -5,6 +5,9 @@ using Neba.Domain;
 
 namespace Neba.UnitTests.Domain;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain")]
+
 public sealed class SmartFlagEnumJsonConverterTests
 {
     private readonly JsonSerializerOptions _jsonOptions = new()

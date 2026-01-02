@@ -3,6 +3,9 @@ using Neba.Website.Application.BowlingCenters;
 
 namespace Neba.UnitTests.Website.BowlingCenters;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.BowlingCenters")]
+
 public sealed class ListBowlingCentersQueryTests
 {
     private static readonly string[] ExpectedBowlingCenterTags = ["website", "website:bowling-centers"];

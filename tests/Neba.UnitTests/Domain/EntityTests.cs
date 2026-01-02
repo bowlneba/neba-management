@@ -2,6 +2,9 @@ using Neba.Domain;
 
 namespace Neba.UnitTests.Domain;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain")]
+
 public sealed class EntityTests
 {
     [Fact(DisplayName = "Entities with same ID should be equal")]

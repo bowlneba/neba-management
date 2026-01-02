@@ -5,6 +5,9 @@ using Neba.Website.Application.Awards.HallOfFame;
 
 namespace Neba.UnitTests.Website.Awards.HallOfFame;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HallOfFame")]
+
 public sealed class ListHallOfFameInductionsQueryHandlerTests
 {
     private readonly Mock<IWebsiteAwardQueryRepository> _awardQueryRepositoryMock;

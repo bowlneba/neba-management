@@ -3,6 +3,9 @@ using Neba.Website.Application.Awards.HallOfFame;
 
 namespace Neba.UnitTests.Website.Awards.HallOfFame;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Awards.HallOfFame")]
+
 public sealed class ListHallOfFameInductionsQueryTests
 {
     private static readonly string[] ExpectedAwardTags = ["website", "website:awards", "website:award:hall-of-fame"];

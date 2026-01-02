@@ -3,6 +3,9 @@ using Neba.Website.Application.Bowlers.BowlerTitles;
 
 namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Website.Bowlers.BowlerTitles")]
+
 public sealed class ListBowlerTitlesQueryHandlerTests
 {
     private readonly Mock<IWebsiteTitleQueryRepository> _mockWebsiteTitleQueryRepository;

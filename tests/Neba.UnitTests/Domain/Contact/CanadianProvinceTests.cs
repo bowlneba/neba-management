@@ -2,6 +2,9 @@ using Neba.Domain.Contact;
 
 namespace Neba.UnitTests.Domain.Contact;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Contact")]
+
 public sealed class CanadianProvinceTests
 {
     [Fact(DisplayName = "AllProvinces_ShouldContain13ProvincesAndTerritories")]

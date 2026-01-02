@@ -7,6 +7,9 @@ using Neba.Website.Contracts.Titles;
 
 namespace Neba.UnitTests.Ui.Server;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server")]
+
 public sealed class ChampionsMappingExtensionsTests
 {
     [Fact(DisplayName = "Maps bowler ID from BowlerTitleSummaryResponse to view model")]

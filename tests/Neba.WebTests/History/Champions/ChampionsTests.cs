@@ -11,6 +11,9 @@ using Neba.Website.Contracts.Titles;
 
 namespace Neba.WebTests.History.Champions;
 
+[Trait("Category", "Web")]
+[Trait("Component", "History.Champions")]
+
 public sealed class ChampionsTests : TestContextWrapper
 {
     private readonly Mock<INebaApi> _mockNebaApi;

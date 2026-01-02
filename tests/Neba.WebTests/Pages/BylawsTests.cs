@@ -9,6 +9,9 @@ using Neba.Web.Server.Services;
 
 namespace Neba.WebTests.Pages;
 
+[Trait("Category", "Web")]
+[Trait("Component", "Pages")]
+
 public sealed class BylawsTests : TestContextWrapper
 {
     private readonly Mock<INebaApi> _mockNebaApi;

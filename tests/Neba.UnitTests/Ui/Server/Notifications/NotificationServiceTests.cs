@@ -2,6 +2,9 @@ using Neba.Web.Server.Notifications;
 
 namespace Neba.UnitTests.Ui.Server.Notifications;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Ui.Server.Notifications")]
+
 public sealed class NotificationServiceTests
 {
     [Fact(DisplayName = "Publishes notification with info severity")]

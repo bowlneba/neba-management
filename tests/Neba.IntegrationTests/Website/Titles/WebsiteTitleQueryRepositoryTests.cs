@@ -9,6 +9,9 @@ using Neba.Website.Infrastructure.Database.Repositories;
 
 namespace Neba.IntegrationTests.Website.Titles;
 
+[Trait("Category", "Integration")]
+[Trait("Component", "Website.Titles")]
+
 public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
 {
     private DatabaseContainer _database = null!;
