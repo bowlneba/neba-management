@@ -1,5 +1,6 @@
 using ErrorOr;
 using Neba.Domain.Contact;
+using UnitsNet;
 
 namespace Neba.Domain.Geography;
 
@@ -78,7 +79,8 @@ public static class DistanceCalculator
         }
 
         decimal milesDistance = milesResult.Value;
-        decimal kilometersDistance = milesDistance * 1.60934m;
+        Length distance = Length.FromMiles((double)milesDistance);
+        decimal kilometersDistance = (decimal)distance.Kilometers;
 
         return kilometersDistance;
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Neba.Web.Server.BowlingCenters;
 using Neba.Web.Server.Maps;
+using UnitsNet;
 using MapsRouteData = Neba.Web.Server.Maps.RouteData;
 
 namespace Neba.WebTests.BowlingCenters;
@@ -881,7 +882,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
                 new RouteInstruction
                 {
                     Text = "Head north",
-                    DistanceMeters = 1609.34 // ~1 mile
+                    DistanceMeters = Length.FromMiles(1).Meters
                 }
             ]
         };

@@ -25,6 +25,7 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Reactive" />
+    <PackageReference Include="UnitsNet" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\backend\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />

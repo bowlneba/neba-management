@@ -1,6 +1,7 @@
 using ErrorOr;
 using Neba.Domain.Contact;
 using Neba.Domain.Geography;
+using UnitsNet;
 
 namespace Neba.UnitTests.Domain.Geography;
 
@@ -300,7 +301,8 @@ public sealed class DistanceCalculatorTests
             willisTowerAddress.Value);
 
         // Assert
-        decimal expectedKilometers = milesResult.Value * 1.60934m;
+        Length distance = Length.FromMiles((double)milesResult.Value);
+        decimal expectedKilometers = (decimal)distance.Kilometers;
         kilometersResult.Value.ShouldBe(expectedKilometers);
     }
 

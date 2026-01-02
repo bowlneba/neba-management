@@ -1,3 +1,5 @@
+using UnitsNet;
+
 namespace Neba.Web.Server.Maps;
 
 /// <summary>
@@ -22,10 +24,11 @@ public sealed class RouteInstruction
     {
         get
         {
-            double miles = DistanceMeters * 0.000621371;
+            Length distance = Length.FromMeters(DistanceMeters);
+            double miles = distance.Miles;
             if (miles < 0.1)
             {
-                double feet = DistanceMeters * 3.28084;
+                double feet = distance.Feet;
                 return $"{feet:F0} ft";
             }
             return $"{miles:F1} mi";

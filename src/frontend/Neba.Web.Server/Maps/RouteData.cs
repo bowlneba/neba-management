@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnitsNet;
 
 namespace Neba.Web.Server.Maps;
 
@@ -37,7 +37,8 @@ public sealed class RouteData
     {
         get
         {
-            double miles = DistanceMeters * 0.000621371; // Convert meters to miles
+            Length distance = Length.FromMeters(DistanceMeters);
+            double miles = distance.Miles;
             return $"{miles:F1} mi";
         }
     }
