@@ -85,6 +85,15 @@ public static class CacheTags
         ];
 
     /// <summary>
+    /// Creates a complete tag set for a bowling center cache entry.
+    /// </summary>
+    public static string[] AllBowlingCenters() =>
+        [
+            CacheKeys.WebsiteContext,
+            $"{CacheKeys.WebsiteContext}:bowling-centers"
+        ];
+
+    /// <summary>
     /// Creates a complete tag set for a tournament cache entry.
     /// </summary>
     /// <param name="tournamentId">The unique identifier of the tournament.</param>

@@ -1,0 +1,321 @@
+@using Neba.Web.Server.Maps
+@using Neba.Web.Server.Components
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSRuntime
+
+<script src="./BowlingCenters/DirectionsModal.razor.js" type="module"></script>
+
+<NebaModal IsOpen="@IsOpen"
+           OnClose="@HandleClose"
+           Title="@($"Directions to {State.SelectedCenterName}")"
+           MaxWidth="600px">
+    <ChildContent>
+        @if (State.Mode == MapMode.DirectionsPreview)
+        {
+            <!-- Location Input UI -->
+            <div class="neba-space-y-4">
+                @if (!string.IsNullOrWhiteSpace(State.ErrorMessage))
+                {
+                    <div class="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+                        @State.ErrorMessage
+                    </div>
+                }
+
+                <!-- Use Current Location Button -->
+                <div>
+                    <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2 py-3 text-base"
+                            @onclick="HandleUseCurrentLocation"
+                            disabled="@State.IsLoading">
+                        @if (State.IsLoading)
+                        {
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Getting your location...</span>
+                        }
+                        else
+                        {
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>Use My Current Location</span>
+                        }
+                    </button>
+                    <p class="text-xs text-[var(--neba-gray-600)] mt-2 text-center">Recommended for fastest results</p>
+                </div>
+
+                <!-- OR Divider -->
+                <div class="relative flex items-center">
+                    <div class="flex-grow border-t border-[var(--neba-gray-300)]"></div>
+                    <span class="flex-shrink mx-4 text-sm text-[var(--neba-gray-600)] font-medium">OR</span>
+                    <div class="flex-grow border-t border-[var(--neba-gray-300)]"></div>
+                </div>
+
+                <!-- Manual Address Entry -->
+                <div>
+                    <label for="address-input" class="block text-sm font-medium text-[var(--neba-gray-700)] mb-2">
+                        Enter your starting address
+                    </label>
+                    <div class="relative">
+                        <input type="text"
+                               id="address-input"
+                               class="w-full px-4 py-3 border-2 border-[var(--neba-gray-300)] rounded-md focus:outline-none focus:border-[var(--neba-blue-500)] transition-colors"
+                               placeholder="123 Main St, Boston, MA"
+                               @bind="_addressInput"
+                               @bind:event="oninput"
+                               @bind:after="HandleAddressInputChange"
+                               disabled="@State.IsLoading"
+                               aria-label="Starting address"
+                               aria-describedby="address-help" />
+
+                        @if (_addressSuggestions.Count > 0)
+                        {
+                            <div class="absolute z-10 w-full mt-1 bg-white border-2 border-[var(--neba-blue-500)] rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                @foreach (var suggestion in _addressSuggestions)
+                                {
+                                    <button type="button"
+                                            class="w-full text-left px-4 py-3 hover:bg-[var(--neba-blue-100)] transition-colors border-b border-[var(--neba-gray-200)] last:border-b-0"
+                                            @onclick="@(() => HandleSelectSuggestion(suggestion))">
+                                        <div class="font-medium text-[var(--neba-gray-700)]">@suggestion.Address</div>
+                                        @if (!string.IsNullOrWhiteSpace(suggestion.Locality))
+                                        {
+                                            <div class="text-sm text-[var(--neba-gray-600)]">@suggestion.Locality</div>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <p id="address-help" class="text-xs text-[var(--neba-gray-600)] mt-1">Start typing to see suggestions</p>
+                </div>
+            </div>
+        }
+        else if (State.Mode == MapMode.DirectionsActive && State.Route is not null)
+        {
+            <!-- Directions Display -->
+            <div class="neba-space-y-4">
+                <!-- Summary -->
+                <div class="flex items-center justify-between p-4 bg-[var(--neba-blue-100)] rounded-md">
+                    <div>
+                        <div class="text-2xl font-bold text-[var(--neba-blue-700)]">@State.Route.FormattedDistance</div>
+                        <div class="text-sm text-[var(--neba-gray-700)]">@State.Route.FormattedTravelTime</div>
+                    </div>
+                    <svg class="w-12 h-12 text-[var(--neba-blue-600)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                    </svg>
+                </div>
+
+                <!-- Open in Maps App Button -->
+                <button class="neba-btn neba-btn-secondary w-full flex items-center justify-center gap-2"
+                        @onclick="HandleOpenInMaps">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    Open in Maps App
+                </button>
+
+                <!-- Turn-by-Turn Directions -->
+                <div>
+                    <button class="w-full flex items-center justify-between p-3 bg-[var(--neba-gray-100)] hover:bg-[var(--neba-gray-200)] rounded-md transition-colors"
+                            @onclick="@(() => _showDirections = !_showDirections)">
+                        <span class="font-semibold text-[var(--neba-gray-700)]">
+                            Turn-by-turn directions (@State.Route.Instructions.Count steps)
+                        </span>
+                        <svg class="w-5 h-5 text-[var(--neba-gray-700)] transition-transform @(_showDirections ? "rotate-180" : "")"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    @if (_showDirections)
+                    {
+                        <div class="mt-2 space-y-2 max-h-80 overflow-y-auto">
+                            @for (var i = 0; i < State.Route.Instructions.Count; i++)
+                            {
+                                var instruction = State.Route.Instructions[i];
+                                <div class="flex gap-3 p-3 bg-white border border-[var(--neba-gray-300)] rounded-md">
+                                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--neba-blue-600)] text-white flex items-center justify-center font-semibold text-sm">
+                                        @(i + 1)
+                                    </div>
+                                    <div class="flex-grow">
+                                        <p class="text-sm text-[var(--neba-gray-700)]">@instruction.Text</p>
+                                        @if (instruction.DistanceMeters > 0)
+                                        {
+                                            <p class="text-xs text-[var(--neba-gray-600)] mt-1">@instruction.FormattedDistance</p>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </ChildContent>
+
+    <FooterContent>
+        <div class="flex justify-end gap-2">
+            <button class="neba-btn neba-btn-secondary"
+                    @onclick="HandleClose">
+                @(State.Mode == MapMode.DirectionsActive ? "Close" : "Cancel")
+            </button>
+        </div>
+    </FooterContent>
+</NebaModal>
+
+@code {
+    private IJSObjectReference? _jsModule;
+    private string _addressInput = string.Empty;
+    private List<AddressSuggestion> _addressSuggestions = new();
+    private bool _showDirections = false;
+    private System.Threading.CancellationTokenSource? _searchCts;
+
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter, EditorRequired]
+    public DirectionsState State { get; set; } = new();
+
+    [Parameter, EditorRequired]
+    public EventCallback<double[]> OnLocationSelected { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./BowlingCenters/DirectionsModal.razor.js");
+        }
+    }
+
+    private async Task HandleUseCurrentLocation()
+    {
+        if (_jsModule is null) return;
+
+        State.IsLoading = true;
+        State.ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var location = await _jsModule.InvokeAsync<double[]>("getCurrentLocation");
+            State.UserLocation = location;
+            State.UserAddress = "Current Location";
+            await OnLocationSelected.InvokeAsync(location);
+        }
+        catch (Exception ex)
+        {
+            State.ErrorMessage = ex.Message.Contains("denied")
+                ? "Location access denied. Please enable location services or enter your address manually."
+                : $"Unable to get your location: {ex.Message}";
+        }
+        finally
+        {
+            State.IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleAddressInputChange()
+    {
+        if (string.IsNullOrWhiteSpace(_addressInput) || _addressInput.Length < 3)
+        {
+            _addressSuggestions.Clear();
+            return;
+        }
+
+        // Cancel any pending search
+        if (_searchCts is not null)
+        {
+            await _searchCts.CancelAsync();
+        }
+        _searchCts = new System.Threading.CancellationTokenSource();
+
+        try
+        {
+            // Debounce the search
+            await Task.Delay(300, _searchCts.Token);
+
+            if (_jsModule is not null)
+            {
+                var suggestions = await _jsModule.InvokeAsync<AddressSuggestion[]>("searchAddress", _searchCts.Token, _addressInput);
+                _addressSuggestions = suggestions?.ToList() ?? new();
+                StateHasChanged();
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancellation
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DirectionsModal] Error searching address: {ex.Message}");
+        }
+    }
+
+    private async Task HandleSelectSuggestion(AddressSuggestion suggestion)
+    {
+        _addressInput = suggestion.Address;
+        _addressSuggestions.Clear();
+        State.UserAddress = suggestion.Address;
+        State.UserLocation = new[] { suggestion.Longitude, suggestion.Latitude };
+        await OnLocationSelected.InvokeAsync(State.UserLocation);
+    }
+
+    private async Task HandleOpenInMaps()
+    {
+        if (State.UserLocation is null || State.DestinationLocation is null)
+        {
+            return;
+        }
+
+        // Generate deep link to native maps app
+        var origin = $"{State.UserLocation[1]},{State.UserLocation[0]}"; // lat,lon
+        var destination = $"{State.DestinationLocation[1]},{State.DestinationLocation[0]}"; // lat,lon
+
+        // Universal link that works on iOS, Android, and desktop
+        var mapsUrl = $"https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&travelmode=driving";
+
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("openInNewTab", mapsUrl);
+        }
+    }
+
+    private async Task HandleClose()
+    {
+        _addressInput = string.Empty;
+        _addressSuggestions.Clear();
+        _showDirections = false;
+        await OnClose.InvokeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_searchCts is not null)
+        {
+            await _searchCts.CancelAsync();
+            _searchCts.Dispose();
+        }
+
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+
+    private sealed class AddressSuggestion(string address, double latitude, double longitude, string? locality = null)
+    {
+        public string Address { get; } = address;
+        public string? Locality { get; } = locality;
+        public double Latitude { get; } = latitude;
+        public double Longitude { get; } = longitude;
+    }
+}

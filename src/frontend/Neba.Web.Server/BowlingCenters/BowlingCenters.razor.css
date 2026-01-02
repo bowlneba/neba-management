@@ -1,0 +1,41 @@
+.state-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--neba-gray-300);
+    background: white;
+    border-radius: var(--neba-radius);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.15s;
+    color: var(--neba-gray-700);
+}
+
+.state-btn:hover {
+    border-color: var(--neba-blue-500);
+    background: var(--neba-blue-100);
+}
+
+.state-btn.active {
+    background: var(--neba-blue-600);
+    border-color: var(--neba-blue-600);
+    color: white;
+}
+
+/* Custom scrollbar styling */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: var(--neba-gray-100);
+    border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--neba-gray-300);
+    border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--neba-blue-500);
+}

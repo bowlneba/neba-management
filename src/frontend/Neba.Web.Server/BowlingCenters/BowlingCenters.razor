@@ -1,0 +1,526 @@
+@page "/bowling-centers"
+@using Neba.Web.Server.Maps
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Components
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSInterop
+@inject NebaApiService NebaApiService
+
+<script src="./BowlingCenters/BowlingCenters.razor.js" type="module"></script>
+
+<PageTitle>Bowling Centers - NEBA</PageTitle>
+<HeadContent>
+    <meta name="description" content="Browse USBC certified bowling centers across New England. Find centers in Massachusetts, Connecticut, Rhode Island, New Hampshire, Maine, and Vermont." />
+</HeadContent>
+
+<div class="neba-space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-[var(--neba-blue-700)]">Bowling Centers</h1>
+        <p class="mt-1 text-sm text-gray-600">USBC certified centers across New England</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Centers"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading bowling centers..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Filter Bar -->
+    @if (!_isLoading && _allCenters.Count > 0)
+    {
+        <div class="flex flex-col md:flex-row gap-4 p-4 bg-[var(--neba-gray-100)] rounded-lg border border-[var(--neba-gray-300)]">
+            <!-- State Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="font-semibold text-[var(--neba-gray-700)] text-sm">Filter by State:</span>
+                <button class="state-btn @(_selectedState == null ? "active" : "")" @onclick="@(async () => await FilterByState(null))">
+                    All States
+                </button>
+                <button class="state-btn @(_selectedState == "MA" ? "active" : "")" @onclick="@(async () => await FilterByState("MA"))">
+                    MA
+                </button>
+                <button class="state-btn @(_selectedState == "CT" ? "active" : "")" @onclick="@(async () => await FilterByState("CT"))">
+                    CT
+                </button>
+                <button class="state-btn @(_selectedState == "RI" ? "active" : "")" @onclick="@(async () => await FilterByState("RI"))">
+                    RI
+                </button>
+                <button class="state-btn @(_selectedState == "NH" ? "active" : "")" @onclick="@(async () => await FilterByState("NH"))">
+                    NH
+                </button>
+                <button class="state-btn @(_selectedState == "ME" ? "active" : "")" @onclick="@(async () => await FilterByState("ME"))">
+                    ME
+                </button>
+                <button class="state-btn @(_selectedState == "VT" ? "active" : "")" @onclick="@(async () => await FilterByState("VT"))">
+                    VT
+                </button>
+            </div>
+
+            <!-- Search Box -->
+            <div class="flex-1 min-w-[200px]">
+                <input type="text"
+                       class="w-full px-4 py-2 border-2 border-[var(--neba-gray-300)] rounded-md focus:outline-none focus:border-[var(--neba-blue-500)] transition-colors"
+                       placeholder="Search centers..."
+                       @bind="_searchQuery"
+                       @bind:event="oninput"
+                       @bind:after="ApplySearchFilterAsync" />
+            </div>
+
+            <!-- Results Count -->
+            <div class="flex items-center text-sm text-[var(--neba-gray-700)] whitespace-nowrap">
+                Showing <span class="font-semibold mx-1">@_displayedCenters.Count</span> of @_filteredCenters.Count centers
+            </div>
+        </div>
+    }
+
+    <!-- Main Content: Side-by-Side Layout -->
+    @if (!_isLoading && _allCenters.Count > 0)
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
+            <!-- Left Side: Centers List -->
+            <div class="flex flex-col">
+                <div id="centers-scroll-container" class="overflow-y-auto pr-2 space-y-4" style="max-height: 600px;">
+                    @if (_displayedCenters.Count == 0)
+                    {
+                        <div class="neba-card text-center py-8">
+                            <p class="text-[var(--neba-gray-700)]">No centers visible in the current map view.</p>
+                            @if (_filteredCenters.Count > 0)
+                            {
+                                <p class="text-sm text-[var(--neba-gray-600)] mt-2">Zoom out or pan the map to see more centers.</p>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var center in _displayedCenters)
+                        {
+                            <div class="neba-card hover:shadow-lg hover:border-[var(--neba-blue-500)] transition-all cursor-pointer"
+                                 @onclick="@(() => HandleCenterCardClick(center))">
+                                <h3 class="text-lg font-bold text-[var(--neba-blue-700)] mb-3">@center.Name</h3>
+
+                                <div class="space-y-2 mb-4">
+                                    <!-- Address -->
+                                    <div class="flex items-start gap-2 text-sm text-[var(--neba-gray-700)]">
+                                        <svg class="w-5 h-5 text-[var(--neba-blue-600)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <div>
+                                            @center.Street
+                                            @if (!string.IsNullOrWhiteSpace(center.Unit))
+                                            {
+                                                <br />
+                                                @center.Unit
+                                            }
+                                            <br />
+                                            @center.City, @center.State @FormatZipCode(center.ZipCode)
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <svg class="w-5 h-5 text-[var(--neba-blue-600)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        <a href="@GetPhoneTelUri(center.PhoneNumber)"
+                                           class="text-[var(--neba-blue-600)] hover:text-[var(--neba-blue-700)] hover:underline"
+                                           @onclick:stopPropagation="true">
+                                            @FormatPhoneNumber(center.PhoneNumber)@(!string.IsNullOrWhiteSpace(center.PhoneExtension) ? $" x{center.PhoneExtension}" : "")
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <button class="neba-btn neba-btn-primary w-full flex items-center justify-center gap-2"
+                                        @onclick="@(() => HandleDirectionsClick(center))"
+                                        @onclick:stopPropagation="true">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                    </svg>
+                                    Get Directions
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Right Side: Azure Maps Component -->
+            <div class="flex flex-col gap-2">
+                <!-- Map Style Switcher -->
+                <div class="flex items-center justify-end gap-2 px-2">
+                    <span class="text-sm text-[var(--neba-gray-700)] font-medium">Map View:</span>
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "road" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-l-md transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("road"))">
+                            Road
+                        </button>
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border-t border-b @(_mapStyle == "satellite" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("satellite"))">
+                            Satellite
+                        </button>
+                        <button type="button"
+                                class="px-3 py-1.5 text-sm font-medium border @(_mapStyle == "satellite_road_labels" ? "bg-[var(--neba-blue-600)] text-white border-[var(--neba-blue-600)]" : "bg-white text-[var(--neba-gray-700)] border-[var(--neba-gray-300)] hover:bg-[var(--neba-gray-100)]") rounded-r-md transition-colors"
+                                @onclick="@(() => HandleMapStyleChange("satellite_road_labels"))">
+                            Hybrid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Map Component -->
+                <NebaMap @ref="_mapComponent"
+                         Locations="@_mapLocations"
+                         EnableClustering="true"
+                         Center="@(new[] { -71.0589, 42.3601 })"
+                         Zoom="7"
+                         Height="600px"
+                         MapStyle="@_mapStyle"
+                         OnBoundsChanged="@HandleBoundsChanged" />
+            </div>
+        </div>
+    }
+
+    <!-- Directions Modal -->
+    <DirectionsModal IsOpen="@_showDirectionsModal"
+                     OnClose="@HandleDirectionsClose"
+                     State="@_directionsState"
+                     OnLocationSelected="@HandleLocationSelected" />
+</div>
+
+@code {
+    private List<BowlingCenterViewModel> _allCenters = new();
+    private List<BowlingCenterViewModel> _filteredCenters = new();
+    private List<BowlingCenterViewModel> _displayedCenters = new();
+    private List<NebaMapLocation> _mapLocations = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+    private string? _selectedState = null;
+    private string _searchQuery = string.Empty;
+    private IJSObjectReference? _jsModule;
+    private NebaMap? _mapComponent;
+    private MapBounds? _currentMapBounds;
+    private bool _showDirectionsModal = false;
+    private readonly DirectionsState _directionsState = new();
+    private string _mapStyle = "road";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var bowlingCentersResult = await NebaApiService.GetBowlingCentersAsync();
+
+            if (bowlingCentersResult.IsError)
+            {
+                _errorMessage = bowlingCentersResult.FirstError.Description;
+                return;
+            }
+
+            _allCenters = bowlingCentersResult.Value.ToList();
+            await ApplyFiltersAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load bowling centers: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSInterop.InvokeAsync<IJSObjectReference>("import", "./BowlingCenters/BowlingCenters.razor.js");
+        }
+    }
+
+    private async Task FilterByState(string? state)
+    {
+        _selectedState = state;
+
+        // Close any open popup and clear any route since we're changing the view
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.ClosePopupAsync();
+
+            // Clear route if one is displayed
+            if (_directionsState.Mode == MapMode.DirectionsActive)
+            {
+                await _mapComponent.ExitDirectionsModeAsync();
+                _directionsState.Reset();
+            }
+        }
+
+        await ApplyFiltersAsync(shouldFitBounds: true);
+        await ScrollToTop();
+    }
+
+    private async Task ApplySearchFilterAsync()
+    {
+        // Search doesn't trigger map zoom, just filters the markers
+        await ApplyFiltersAsync(shouldFitBounds: false);
+    }
+
+    private async Task ApplyFiltersAsync(bool shouldFitBounds = false)
+    {
+        // Filter by state and search query for map display
+        _filteredCenters = _allCenters
+            .Where(c => _selectedState == null || c.State == _selectedState)
+            .Where(c => string.IsNullOrWhiteSpace(_searchQuery) ||
+                       c.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                       c.City.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        // Update map locations to show only filtered centers
+        UpdateMapLocations();
+
+        // Zoom map to fit filtered markers if requested (e.g., state filter clicked)
+        if (shouldFitBounds && _mapComponent is not null && _filteredCenters.Count > 0)
+        {
+            // Force a render cycle so the map component receives the updated Locations parameter
+            StateHasChanged();
+
+            // Give the map component time to update its markers before fitting bounds
+            // This ensures OnParametersSetAsync has run and markers are updated
+            await Task.Delay(200);
+            await _mapComponent.FitBoundsAsync();
+        }
+        else
+        {
+            // Update displayed centers based on current map bounds
+            // If map component is null (initial load), display all filtered centers
+            _displayedCenters = (_mapComponent is null || _currentMapBounds is null)
+                ? _filteredCenters
+                : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
+        }
+    }
+
+    private async Task HandleBoundsChanged(MapBounds bounds)
+    {
+        _currentMapBounds = bounds;
+
+        // Only update the displayed centers list, don't change map locations
+        _displayedCenters = _currentMapBounds == null
+            ? _filteredCenters
+            : _filteredCenters.Where(c => _currentMapBounds.Contains(c.Latitude, c.Longitude)).ToList();
+
+        StateHasChanged();
+
+        // Scroll list back to top when bounds change
+        await ScrollToTop();
+    }
+
+    private void UpdateMapLocations()
+    {
+        _mapLocations = _filteredCenters
+            // Filter out centers with invalid coordinates (defensive programming)
+            .Where(center => IsValidCoordinate(center.Latitude, center.Longitude))
+            .Select(center => new NebaMapLocation(
+                Id: $"{center.Name}-{center.City}".Replace(" ", "-"),
+                Title: center.Name,
+                Description: BuildCenterDescription(center),
+                Latitude: center.Latitude,
+                Longitude: center.Longitude,
+                Metadata: new Dictionary<string, object>
+                {
+                    ["street"] = center.Street,
+                    ["unit"] = center.Unit ?? string.Empty,
+                    ["city"] = center.City,
+                    ["state"] = center.State,
+                    ["zipCode"] = FormatZipCode(center.ZipCode),
+                    ["phoneNumber"] = FormatPhoneNumber(center.PhoneNumber),
+                    ["phoneExtension"] = center.PhoneExtension ?? string.Empty,
+                    ["isClosed"] = center.IsClosed
+                }
+            )).ToList();
+    }
+
+    private static bool IsValidCoordinate(double latitude, double longitude)
+    {
+        // Validate coordinates are within valid ranges and not default/null values
+        // New England region: roughly 40-48°N, 65-74°W
+        return latitude is >= 40 and <= 48 &&
+               longitude is >= -74 and <= -65;
+    }
+
+    private static string BuildCenterDescription(BowlingCenterViewModel center)
+    {
+        var parts = new List<string>
+        {
+            center.Street
+        };
+
+        if (!string.IsNullOrWhiteSpace(center.Unit))
+        {
+            parts.Add(center.Unit);
+        }
+
+        parts.Add($"{center.City}, {center.State} {FormatZipCode(center.ZipCode)}");
+
+        return string.Join("<br/>", parts);
+    }
+
+    private async Task ScrollToTop()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    private async Task HandleCenterCardClick(BowlingCenterViewModel center)
+    {
+        if (_mapComponent is not null)
+        {
+            var locationId = $"{center.Name}-{center.City}".Replace(" ", "-");
+            await _mapComponent.FocusOnLocationAsync(locationId);
+        }
+    }
+
+    private async Task HandleDirectionsClick(BowlingCenterViewModel center)
+    {
+        // Clear any existing route first
+        if (_mapComponent is not null && _directionsState.Mode == MapMode.DirectionsActive)
+        {
+            await _mapComponent.ExitDirectionsModeAsync();
+        }
+
+        // Initialize directions state
+        _directionsState.Reset();
+        _directionsState.Mode = MapMode.DirectionsPreview;
+        _directionsState.SelectedCenterId = $"{center.Name}-{center.City}".Replace(" ", "-");
+        _directionsState.SelectedCenterName = center.Name;
+        _directionsState.DestinationLocation = new[] { center.Longitude, center.Latitude };
+
+        // Enter directions preview mode on the map
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.EnterDirectionsPreviewAsync(_directionsState.SelectedCenterId);
+        }
+
+        // Show the directions modal
+        _showDirectionsModal = true;
+    }
+
+    private async Task HandleLocationSelected(double[] location)
+    {
+        if (_mapComponent is null || _directionsState.DestinationLocation is null)
+        {
+            return;
+        }
+
+        _directionsState.IsLoading = true;
+        _directionsState.ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            // Calculate and display the route
+            var routeData = await _mapComponent.ShowRouteAsync(location, _directionsState.DestinationLocation);
+
+            if (routeData is not null)
+            {
+                _directionsState.Route = routeData;
+                _directionsState.Mode = MapMode.DirectionsActive;
+            }
+            else
+            {
+                _directionsState.ErrorMessage = "Unable to calculate route. Please try a different starting location.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _directionsState.ErrorMessage = $"Error calculating route: {ex.Message}";
+        }
+        finally
+        {
+            _directionsState.IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private Task HandleDirectionsClose()
+    {
+        _showDirectionsModal = false;
+
+        // Keep the route visible on the map for reference
+        // User can see the route while browsing other centers
+        // The route will be cleared when they request new directions or change filters
+
+        // Just restore marker opacity, but keep the route displayed
+        if (_mapComponent is not null && _directionsState.Mode == MapMode.DirectionsActive)
+        {
+            // Don't call ExitDirectionsModeAsync - that would remove the route
+            // Instead, just restore the marker opacity via JavaScript
+            // The route stays visible until the user requests new directions
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleMapStyleChange(string style)
+    {
+        _mapStyle = style;
+
+        if (_mapComponent is not null)
+        {
+            await _mapComponent.SetMapStyleAsync(style);
+        }
+    }
+
+    private static string GetPhoneTelUri(string phoneNumber)
+    {
+        // Generate tel: URI with + prefix for international compatibility
+        // Assumes phoneNumber already includes country code (e.g., "12035551234")
+        return $"tel:+{phoneNumber}";
+    }
+
+    private static string FormatPhoneNumber(string phoneNumber)
+    {
+        // Format North American phone numbers as (NPA) NXX-XXXX
+        // Assumes format: 1 (country code) + 10 digits (area code + number)
+        if (phoneNumber.Length == 11 && phoneNumber.StartsWith('1'))
+        {
+            // Strip leading "1" country code for display
+            var digits = phoneNumber[1..];
+            return $"({digits[..3]}) {digits[3..6]}-{digits[6..]}";
+        }
+
+        // If format doesn't match expected, return as-is
+        return phoneNumber;
+    }
+
+    private static string FormatZipCode(string zipCode)
+    {
+        // Format ZIP codes as XXXXX or XXXXX-XXXX
+        if (zipCode.Length == 9)
+        {
+            return $"{zipCode[..5]}-{zipCode[5..]}";
+        }
+
+        // 5-digit ZIP or other format, return as-is
+        return zipCode;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+}

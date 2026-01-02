@@ -6,10 +6,10 @@ namespace Neba.UnitTests.Domain;
 
 public sealed class NameTests
 {
-    [Theory(DisplayName = "Create should return an error when first name is null or whitespace")]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
+    [Theory(DisplayName = "Returns error when first name is null or whitespace")]
+    [InlineData(null, TestDisplayName = "Null first name is rejected")]
+    [InlineData("", TestDisplayName = "Empty first name is rejected")]
+    [InlineData(" ", TestDisplayName = "Whitespace-only first name is rejected")]
     public void Create_ShouldReturnAnError_WhenFirstNameIsNullOrWhitespace(string? firstName)
     {
 #nullable disable
@@ -22,10 +22,10 @@ public sealed class NameTests
 #nullable enable
     }
 
-    [Theory(DisplayName = "Create should return an error when last name is null or whitespace")]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
+    [Theory(DisplayName = "Returns error when last name is null or whitespace")]
+    [InlineData(null, TestDisplayName = "Null last name is rejected")]
+    [InlineData("", TestDisplayName = "Empty last name is rejected")]
+    [InlineData(" ", TestDisplayName = "Whitespace-only last name is rejected")]
     public void Create_ShouldReturnAnError_WhenLastNameIsNullOrWhitespace(string? lastName)
     {
 #nullable disable

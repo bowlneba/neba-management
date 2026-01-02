@@ -1,0 +1,22 @@
+name: neba-management-frontend
+services:
+  neba.web:
+    container_name: neba-web
+    image: neba.web
+    build:
+      context: ../..
+      dockerfile: src/frontend/Neba.Web.Server/Dockerfile
+    ports:
+      - "5250:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - AzureMaps__SubscriptionKey=${AZURE_MAPS_SUBSCRIPTION_KEY}
+      - AzureMaps__AccountId=${AZURE_MAPS_ACCOUNT_ID}
+    networks:
+      - neba-network
+
+networks:
+  neba-network:
+    external: true
+    name: neba-management-backend_neba-network

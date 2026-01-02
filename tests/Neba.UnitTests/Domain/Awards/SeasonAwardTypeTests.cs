@@ -18,10 +18,10 @@ public sealed class SeasonAwardTypeTests
         actualCount.ShouldBe(expectedCount);
     }
 
-    [Theory(DisplayName = "SeasonAwardType should have correct name and value")]
-    [InlineData("Bowler of the Year", 1)]
-    [InlineData("High Average", 2)]
-    [InlineData("High 5-Game Block", 3)]
+    [Theory(DisplayName = "Has correct name and value for all types")]
+    [InlineData("Bowler of the Year", 1, TestDisplayName = "Bowler of the Year type is correct")]
+    [InlineData("High Average", 2, TestDisplayName = "High Average type is correct")]
+    [InlineData("High 5-Game Block", 3, TestDisplayName = "High 5-Game Block type is correct")]
     public void SeasonAwardType_ShouldHaveCorrectNameAndValue(string expectedName, int expectedValue)
     {
         // Act

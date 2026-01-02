@@ -2,6 +2,7 @@ using Neba.Contracts;
 using Neba.Domain.Identifiers;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
 using Refit;
 
@@ -17,6 +18,9 @@ internal interface INebaApi
 
     [Get("/bowlers/{bowlerId}/titles")]
     Task<Refit.ApiResponse<Contracts.ApiResponse<BowlerTitlesResponse>>> GetBowlerTitlesAsync(BowlerId bowlerId);
+
+    [Get("/bowling-centers")]
+    Task<Refit.ApiResponse<CollectionResponse<BowlingCenterResponse>>> GetBowlingCentersAsync();
 
     [Get("/awards/bowler-of-the-year")]
     Task<Refit.ApiResponse<CollectionResponse<BowlerOfTheYearResponse>>> GetBowlerOfTheYearAwardsAsync();

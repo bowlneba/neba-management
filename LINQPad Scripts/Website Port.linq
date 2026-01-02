@@ -36,12 +36,24 @@
 
 async Task Main()
 {
+	bool getBowlingCenters = false;
+
+	if (getBowlingCenters)
+	{
+		BowlingCenters.RemoveRange(BowlingCenters);	
+	}
+	
 	SeasonAwards.RemoveRange(SeasonAwards);
 	Titles.RemoveRange(Titles);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
 	Bowlers.RemoveRange(Bowlers);
 	
 	await SaveChangesAsync();
+
+	if (getBowlingCenters)
+	{
+		await MigrateBowlingCentersAsync();
+	}
 
 	var mergedBowlers = await MigrateBowlersAsync();
 	
@@ -65,7 +77,7 @@ async Task Main()
 								   
 	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
-	await MigrateHallOfFame(bowlerIdsBySoftwareId);
+	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
 	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
@@ -75,6 +87,557 @@ async Task Main()
 }
 
 // You can define other methods, fields, classes and namespaces here
+
+#region Bowling Centers
+
+public async Task MigrateBowlingCentersAsync()
+{
+	var softwareBowlingCentersDataTable = await QuerySoftwareDatabaseAsync("SELECT * FROM BowlingCenters");
+	var websiteBowlingCentersDataTable = await QueryStatsDatabaseAsync("SELECT * FROM Centers WHERE ID not in (2, 19, 28)"); //2: AMF Silver (HOF Silver), 19: TBD Center, 28: Superbowl (Apple Valley)
+	
+	var bowlingCenterSoftwareIdByPhoneNumber = softwareBowlingCentersDataTable
+		.AsEnumerable().ToDictionary(row => row.Field<string>("PhoneNumber")!, row => row.Field<int>("Id"));
+		
+	var bowlingCenterWebsiteIdByPhoneNumber = websiteBowlingCentersDataTable
+		.AsEnumerable().ToDictionary(row => row.Field<string>("Phone")!
+			.Replace("-",string.Empty)
+			.Replace("(",string.Empty)
+			.Replace(")",string.Empty)
+			.Replace(" ",string.Empty)
+			.Trim(),
+		row => row.Field<int>("ID"));
+		
+	List<BowlingCenters> bowlingCentersToWebsiteSchema = [];
+	
+	IEnumerable<string> states = ["CT", "MA", "RI", "VT", "NH", "ME"];
+	
+	var serializationSettings = new JsonSerializerOptions
+	{
+		PropertyNameCaseInsensitive = true
+	};
+
+
+	using var httpClient = new HttpClient();
+
+	var usbcBowlingCenters = new List<UsbcBowlingCenterDto>();
+
+	foreach (var state in states)
+	{
+		var result = await httpClient.GetAsync($"https://webservices.bowl.com/USBC.Search.Services/api/v1/centers?State={state}&Page=1&Size=300");
+
+		if (!result.IsSuccessStatusCode)
+		{
+			return;
+		}
+
+		using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+		var root = jsonDoc.RootElement;
+
+		if (root.TryGetProperty("Results", out var resultsElement))
+		{
+			var stateBowlingCenters = JsonSerializer.Deserialize<List<UsbcBowlingCenterDto>>(resultsElement.GetRawText(), serializationSettings)!;
+
+			usbcBowlingCenters.AddRange(stateBowlingCenters);
+		}
+	}
+	
+	usbcBowlingCenters.Shuffle();
+	
+	List<string> centerPhoneNumbers = [];
+
+	foreach (var bowlingCenter in usbcBowlingCenters)
+	{
+		var centerPhoneNumber = bowlingCenter.Phone.Replace("/",string.Empty).Replace("-",string.Empty).Trim();
+		bowlingCenterSoftwareIdByPhoneNumber.TryGetValue(centerPhoneNumber, out var softwareId);
+		
+		centerPhoneNumbers.Add(centerPhoneNumber);
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+			{
+				DomainId = Guid.AsDomainId(),
+				ApplicationId = softwareId > 0 ? softwareId : null,
+				WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(centerPhoneNumber, out var websiteId) ? websiteId : null,
+				Name = bowlingCenter.Name,
+				Street = bowlingCenter.Address,
+				City = bowlingCenter.City,
+				State = bowlingCenter.State,
+				Country = bowlingCenter.Country,
+				ZipCode = bowlingCenter.Zip,
+				Closed = false,
+				PhoneCountryCode = "1",
+				PhoneNumber = centerPhoneNumber
+			});
+	}
+
+	var softwareBowlingCenters = softwareBowlingCentersDataTable.AsEnumerable().Select(row => new
+	{
+		Id = row.Field<int>("Id"),
+		Name = row.Field<string>("Name")!,
+		CertificationNumber = row.Field<string>("CertificationNumber")!,
+		Street = row.Field<string>("MailingAddress_Street")!,
+		City = row.Field<string>("MailingAddress_City")!,
+		State = row.Field<string>("MailingAddress_State")!,
+		Zip = row.Field<string>("MailingAddress_Zip")!,
+		Closed = row.Field<bool>("Closed"),
+		PhoneNumber = row.Field<string>("PhoneNumber")!
+	})
+	.Where(bowlingCenter => !centerPhoneNumbers.Contains(bowlingCenter.PhoneNumber))
+	.ToList();
+	
+	softwareBowlingCenters.Dump("Software Bowling Centers not in USBC Table");
+
+	foreach (var softwareBowlingCenter in softwareBowlingCenters) // Should probably be just Ken's Bowl
+	{
+		//add to BowlingCenters collection
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+		{
+			DomainId = Guid.AsDomainId(),
+			ApplicationId = softwareBowlingCenter.Id,
+			WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(softwareBowlingCenter.PhoneNumber, out var websiteId) ? websiteId : null,
+			Name = softwareBowlingCenter.Name,
+			Street = softwareBowlingCenter.Street,
+			City = softwareBowlingCenter.City,
+			State = softwareBowlingCenter.State,
+			ZipCode = softwareBowlingCenter.Zip,
+			Country = "US",
+			Closed = softwareBowlingCenter.Closed,
+			PhoneCountryCode = "1",
+			PhoneNumber = softwareBowlingCenter.PhoneNumber
+		});
+		
+		// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
+		centerPhoneNumbers.Add(softwareBowlingCenter.PhoneNumber);
+	}
+
+	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
+	var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
+	.Select(row => new
+	{
+		Id = row.Field<int>("ID"),
+		CenterName = row.Field<string>("CenterName")!,
+		Street = row.Field<string>("Street")!,
+		City = row.Field<string>("City")!,
+		State = row.Field<string>("State")!,
+		Zip = row.Field<string>("Zip")!,
+		Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
+	})
+	.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
+	.Where(bc => bc.Id != 23); //Norwich has old phone number
+		
+	websiteBowlingCenters.Dump("Website Centers not Ported Yet");
+	
+	//bowlingCentersToWebsiteSchema.Where(x => string.IsNullOrWhiteSpace(x.PhoneNumber)).Dump("No phone");
+
+	foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
+	{
+		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+		{
+			DomainId = Guid.AsDomainId(),
+			ApplicationId = null,
+			WebsiteId = websiteBowlingCenter.Id,
+			Name = websiteBowlingCenter.CenterName,
+			Street = websiteBowlingCenter.Street,
+			City = websiteBowlingCenter.City,
+			State = websiteBowlingCenter.State,
+			ZipCode = websiteBowlingCenter.Zip,
+			Country = "US",
+			Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
+			PhoneCountryCode = "1",
+			PhoneNumber = websiteBowlingCenter.Phone
+		});
+	}
+	
+	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
+	List<KeyValuePair<BowlingCenters, int>> multipleResultsBowlingCenters = [];
+	
+	//todo: do manual lat/lon (address update) mapping for multiple results and remove from loop (.where lat is not null)
+	ManualLocationUpdates(bowlingCentersToWebsiteSchema);
+
+	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema.Where(bc => bc.Latitude == null))
+	{
+		string address = $"{bowlingCenter.Street} {bowlingCenter.City}, {bowlingCenter.State} {bowlingCenter.ZipCode}";
+		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+
+		var result = await httpClient.GetAsync(url);
+
+		if (result.IsSuccessStatusCode)
+		{
+			using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+
+			var azureResponse = JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
+
+			if (azureResponse.Results.Length == 1)
+			{
+				var azureResult = azureResponse.Results[0];
+
+				bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
+				bowlingCenter.City = azureResult.Address.LocalName;
+				bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
+				
+				bowlingCenter.Latitude = azureResult.Position.Lat;
+				bowlingCenter.Longitude = azureResult.Position.Lon;
+
+				// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
+			}
+			else
+			{
+				multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
+			}
+		}
+		else
+		{
+			failedBowlingCenterAddressLookups.Add(bowlingCenter);
+		}
+	}
+
+	failedBowlingCenterAddressLookups.Dump("Failed Bowling Center Address Lookup");
+	multipleResultsBowlingCenters.Dump("Multiple Address Lookup Bowling Centers");
+	
+	BowlingCenters.AddRange(bowlingCentersToWebsiteSchema);
+	
+	await SaveChangesAsync();
+}
+
+private void ManualLocationUpdates(IReadOnlyCollection<BowlingCenters> bowlingCenters)
+{
+	var amity = bowlingCenters.Single(bc => bc.Name == "Amity Bowl");
+	amity.Street = "30 Selden Street";
+	
+	var tbowl = bowlingCenters.Single(bc => bc.Name == "Bowlero Wallingford");
+	tbowl.Latitude = 41.488968;
+	tbowl.Longitude = -72.8089833;
+	
+	var callahans = bowlingCenters.Single(bc => bc.Name == "Callahan's Bowl O Rama");
+	callahans.Latitude = 41.6950308;
+	callahans.Longitude = -72.7083898;
+	
+	var kickbackNBowl = bowlingCenters.Single(bc => bc.Name == "Kickback N Bowl");
+	kickbackNBowl.ZipCode = "06424";
+	
+	var subbaseLanes = bowlingCenters.Single(bc => bc.Name == "Subase Lanes");
+	subbaseLanes.Street = "Grayling Ave";
+	subbaseLanes.Unit = "Bldg. 485";
+	subbaseLanes.Latitude = 41.3912489;
+	subbaseLanes.Longitude = -72.0898898;
+	
+	var somerset = bowlingCenters.Single(bc => bc.Name == "AMF Somerset Lanes");
+	somerset.ZipCode = "02725";
+	
+	var barnBowl = bowlingCenters.Single(bc => bc.Name == "Barn Bowl & Bistro");
+	barnBowl.City = "Oak Bluffs";
+	barnBowl.Latitude = 41.4522285;
+	barnBowl.Longitude = -70.5657132;
+	
+	var auburn = bowlingCenters.Single(bc => bc.Name == "Bowlero Worcester");
+	auburn.Latitude = 42.222311;
+	auburn.Longitude = -71.8608448;
+	
+	var cove = bowlingCenters.Single(bc => bc.Name == "Cove Bowling & Entertainment, Inc");
+	cove.City = "Great Barrington";
+	cove.Latitude = 42.204971;
+	cove.Longitude = -73.347347;
+	
+	var hanscom = bowlingCenters.Single(bc => bc.Name == "Hanscom Lanes");
+	hanscom.Latitude = 42.4605193;
+	hanscom.Longitude = -71.2891387;
+	
+	var kingston = bowlingCenters.Single(bc => bc.Name == "Kingston TenPin");
+	kingston.Latitude = 42.0140969;
+	kingston.Longitude = -70.7343119;
+	
+	var moheganBowl = bowlingCenters.Single(bc => bc.Name == "Mohegan Bowl");
+	moheganBowl.Street = "51 Thompson Road";
+	moheganBowl.Latitude = 42.0558149;
+	moheganBowl.Longitude = -71.8648723;
+	
+	var ryansFamilyYarmouth = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusement Yarmouth");
+	ryansFamilyYarmouth.Street = "1067 Route 28";
+	ryansFamilyYarmouth.City = "South Yarmouth";
+	ryansFamilyYarmouth.Latitude = 41.6599952;
+	ryansFamilyYarmouth.Longitude = -70.2044246;
+	
+	var ryansFamilyRaynham = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusements Raynham");
+	ryansFamilyRaynham.Street = "115 New State Highway, Rte. 44";
+	
+	var bruce = bowlingCenters.Single(bc => bc.Name == "Vincent Hall Training Center");
+	bruce.Latitude = 42.322359;
+	bruce.Longitude = -71.5583947;
+	
+	var oldMountain = bowlingCenters.Single(bc => bc.Name == "Old Mountain Lanes");
+	oldMountain.ZipCode = "02879";
+	oldMountain.Latitude = 41.4447194;
+	oldMountain.Longitude = -71.4951874;
+	
+	var rutland = bowlingCenters.Single(bc => bc.Name == "Rutland Bowlerama");
+	rutland.Street = "158 South Main Street";
+	rutland.Latitude = 43.5982589;
+	rutland.Longitude = -72.9725074;
+	
+	var stMarks = bowlingCenters.Single(bc => bc.Name == "St Marks Bowling Lanes");
+	stMarks.Street = "1271 North Ave";
+	stMarks.ZipCode = "05408";
+	stMarks.Latitude = 44.5103739;
+	stMarks.Longitude = -73.2519529;
+	
+	var valleyBowl = bowlingCenters.Single(bc => bc.Name == "Valley Bowl");
+	valleyBowl.Street = "12 Prince St";
+	valleyBowl.Unit = "Ste 5";
+	valleyBowl.Latitude = 43.92591;
+	valleyBowl.Longitude = -72.6662649;
+	
+	var funspot = bowlingCenters.Single(bc => bc.Name == "Funspot Bowling Center");
+	funspot.Street = "579 Endicott St N";
+	funspot.Latitude = 43.6137749;
+	funspot.Longitude = -71.4796793;
+	
+	var yankeeManchester = bowlingCenters.Single(bc => bc.Name == "Yankee Lanes Manchester");
+	yankeeManchester.Latitude = 42.980634;
+	yankeeManchester.Longitude = -71.453377;
+	
+	var familyFun = bowlingCenters.Single(bc => bc.Name == "Family Fun Bowling Center");
+	familyFun.Latitude = 44.7940237;
+	familyFun.Longitude = -68.8405693;
+	
+	var meadowLanes = bowlingCenters.Single(bc => bc.Name == "Meadow Lanes");
+	meadowLanes.Street = "907 US-2";
+	meadowLanes.City = "Wilton";
+	meadowLanes.ZipCode = "04294";
+	meadowLanes.Latitude = 44.6161222;
+	meadowLanes.Longitude = -70.1783445;
+	
+	var hallowell = bowlingCenters.Single(bc => bc.Name == "Sparetime Recreation Hallowell");
+	hallowell.Name = "Interstate Bowling Center";
+	hallowell.Street = "215 Whitten Road"; 
+}
+
+public class UsbcBowlingCenterDto
+{
+	[JsonPropertyName("id")]
+	public string Id { get; set; }
+
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
+
+	[JsonPropertyName("address")]
+	public string Address { get; set; }
+
+	[JsonPropertyName("citystatezip")]
+	public string CityStateZip { get; set; }
+
+	[JsonPropertyName("city")]
+	public string City { get; set; }
+
+	[JsonPropertyName("state")]
+	public string State { get; set; }
+
+	[JsonPropertyName("zip")]
+	public string Zip { get; set; }
+
+	[JsonPropertyName("country")]
+	public string Country { get; set; }
+
+	[JsonPropertyName("phone")]
+	public string Phone { get; set; }
+
+	[JsonPropertyName("email")]
+	public string Email { get; set; }
+
+	[JsonPropertyName("web")]
+	public string Web { get; set; }
+
+	[JsonPropertyName("certnumber")]
+	public string CertificationNumber { get; set; }
+
+	[JsonPropertyName("lanes")]
+	public int Lanes { get; set; }
+
+	[JsonPropertyName("sport")]
+	public bool Sport { get; set; }
+
+	[JsonPropertyName("rvp")]
+	public bool Rvp { get; set; }
+
+	[JsonPropertyName("strpin")]
+	public bool StringPin { get; set; }
+
+	[JsonPropertyName("snackbar")]
+	public bool SnackBar { get; set; }
+
+	[JsonPropertyName("restaurant")]
+	public bool Restaurant { get; set; }
+
+	[JsonPropertyName("lounge")]
+	public bool Lounge { get; set; }
+
+	[JsonPropertyName("arcade")]
+	public bool Arcade { get; set; }
+
+	[JsonPropertyName("proshop")]
+	public bool ProShop { get; set; }
+
+	[JsonPropertyName("glow")]
+	public bool Glow { get; set; }
+
+	[JsonPropertyName("childcare")]
+	public bool ChildCare { get; set; }
+
+	[JsonPropertyName("parties")]
+	public bool Parties { get; set; }
+
+	[JsonPropertyName("banquets")]
+	public bool Banquets { get; set; }
+
+	[JsonPropertyName("coach")]
+	public bool Coach { get; set; }
+}
+
+public class AzureAtlasResponse
+{
+	[JsonPropertyName("summary")]
+	public AzureAtlasSummary Summary { get; set; }
+
+	[JsonPropertyName("results")]
+	public AzureAtlasResult[] Results { get; set; }
+}
+
+public class AzureAtlasSummary
+{
+	[JsonPropertyName("query")]
+	public string Query { get; set; }
+
+	[JsonPropertyName("queryType")]
+	public string QueryType { get; set; }
+
+	[JsonPropertyName("queryTime")]
+	public int QueryTime { get; set; }
+
+	[JsonPropertyName("numResults")]
+	public int NumberOfResults { get; set; }
+
+	[JsonPropertyName("offset")]
+	public int Offset { get; set; }
+
+	[JsonPropertyName("totalResults")]
+	public int TotalResults { get; set; }
+
+	[JsonPropertyName("fuzzyLevel")]
+	public int FuzzyLevel { get; set; }
+}
+
+public record AzureAtlasResult
+{
+	[JsonPropertyName("type")]
+	public string Type { get; init; } = default!;
+
+	[JsonPropertyName("id")]
+	public string Id { get; init; } = default!;
+
+	[JsonPropertyName("score")]
+	public double Score { get; init; }
+
+	[JsonPropertyName("matchConfidence")]
+	public MatchConfidence MatchConfidence { get; init; } = default!;
+
+	[JsonPropertyName("address")]
+	public Address Address { get; init; } = default!;
+
+	[JsonPropertyName("position")]
+	public Position Position { get; init; } = default!;
+
+	[JsonPropertyName("viewport")]
+	public Viewport? Viewport { get; init; }
+
+	[JsonPropertyName("addressRanges")]
+	public AddressRanges? AddressRanges { get; init; }
+}
+
+public record MatchConfidence
+{
+	[JsonPropertyName("score")]
+	public double Score { get; init; }
+}
+
+public record Address
+{
+	[JsonPropertyName("streetNumber")]
+	public string? StreetNumber { get; init; }
+
+	[JsonPropertyName("streetName")]
+	public string StreetName { get; init; } = default!;
+
+	[JsonPropertyName("municipality")]
+	public string Municipality { get; init; } = default!;
+
+	[JsonPropertyName("neighbourhood")]
+	public string? Neighbourhood { get; init; }
+
+	[JsonPropertyName("countrySecondarySubdivision")]
+	public string CountrySecondarySubdivision { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivision")]
+	public string CountrySubdivision { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivisionName")]
+	public string CountrySubdivisionName { get; init; } = default!;
+
+	[JsonPropertyName("countrySubdivisionCode")]
+	public string CountrySubdivisionCode { get; init; } = default!;
+
+	[JsonPropertyName("postalCode")]
+	public string PostalCode { get; init; } = default!;
+
+	[JsonPropertyName("extendedPostalCode")]
+	public string? ExtendedPostalCode { get; init; }
+
+	[JsonPropertyName("countryCode")]
+	public string CountryCode { get; init; } = default!;
+
+	[JsonPropertyName("country")]
+	public string Country { get; init; } = default!;
+
+	[JsonPropertyName("countryCodeISO3")]
+	public string CountryCodeISO3 { get; init; } = default!;
+
+	[JsonPropertyName("freeformAddress")]
+	public string FreeformAddress { get; init; } = default!;
+
+	[JsonPropertyName("localName")]
+	public string LocalName { get; init; } = default!;
+}
+
+public record Position
+{
+	[JsonPropertyName("lat")]
+	public double Lat { get; init; }
+
+	[JsonPropertyName("lon")]
+	public double Lon { get; init; }
+}
+
+public record Viewport
+{
+	[JsonPropertyName("topLeftPoint")]
+	public Position TopLeftPoint { get; init; } = default!;
+
+	[JsonPropertyName("btmRightPoint")]
+	public Position BtmRightPoint { get; init; } = default!;
+}
+
+public record AddressRanges
+{
+	[JsonPropertyName("rangeLeft")]
+	public string? RangeLeft { get; init; }
+
+	[JsonPropertyName("rangeRight")]
+	public string? RangeRight { get; init; }
+
+	[JsonPropertyName("from")]
+	public Position From { get; init; } = default!;
+
+	[JsonPropertyName("to")]
+	public Position To { get; init; } = default!;
+}
+
+#endregion
 
 #region Bowlers
 
@@ -689,7 +1252,7 @@ public async Task MigrateHighAverageAsync(
 
 #region Hall of Fame
 
-public async Task MigrateHallOfFame(Dictionary<int, int> bowlerIdBySoftwareId)
+public async Task MigrateHallOfFameAsync(Dictionary<int, int> bowlerIdBySoftwareId)
 {
 	var categoryConversion = new Dictionary<int, int>
 	{
@@ -1474,6 +2037,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(184, 2305),   // Patrick Donohoe Jr
 	new(null, 4053),  // Imani Williams
 	new(null, 2614),  // Jeremy Koziol
+	new(null, 1955),  // William Gibson
 	new(null, 1749),  // Tyler Scott
 	new(null, 4623),  // Chris Roberts
 	new(165, 2445),   // Douglas Carlson

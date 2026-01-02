@@ -57,6 +57,9 @@ param azureKeyVaultName string
 @description('Storage Account name')
 param azureStorageAccountName string
 
+@description('Azure Maps Account name')
+param azureMapsAccountName string
+
 @description('Tags to apply to all resources')
 param tags object = {
   Environment: azureEnvironment
@@ -116,6 +119,18 @@ module storageAccount 'modules/storageAccount.bicep' = {
     skuName: 'Standard_LRS'
     accessTier: 'Hot'
     tags: union(tags, { Component: 'Storage' })
+  }
+}
+
+// Azure Maps Account Module
+module mapsAccount 'modules/azureMapsAccount.bicep' = {
+  scope: rg
+  name: 'mapsAccount-deployment'
+  params: {
+    name: '${azureMapsAccountName}-${azureLocation}'
+    location: azureLocation
+    skuName: 'G2'
+    tags: union(tags, { Component: 'Maps' })
   }
 }
 
@@ -195,6 +210,18 @@ module webKeyVaultAccess 'modules/keyVaultRoleAssignment.bicep' = {
   }
 }
 
+// RBAC Role Assignment: Web Managed Identity -> Azure Maps Data Reader
+// Azure Maps Data Reader role ID: 423170ca-a8f6-4b0f-8487-9e4eb8f49baa
+module webMapsAccess 'modules/azureMapsRoleAssignment.bicep' = {
+  scope: rg
+  name: 'webMapsAccess-deployment'
+  params: {
+    mapsAccountName: mapsAccount.outputs.name
+    principalId: webAppService.outputs.principalId
+    roleDefinitionId: '423170ca-a8f6-4b0f-8487-9e4eb8f49baa'
+  }
+}
+
 // RBAC Role Assignment: API Managed Identity -> Storage Blob Data Contributor
 // Storage Blob Data Contributor role ID: ba92f5b4-2d11-453d-a403-e96b0029c9fe
 module apiStorageAccess 'modules/storageRoleAssignment.bicep' = {
@@ -239,6 +266,10 @@ module webAppService 'modules/appService.bicep' = {
         name: 'KeyVault__VaultUrl'
         value: keyVault.outputs.uri
       }
+      {
+        name: 'AzureMaps__AccountId'
+        value: mapsAccount.outputs.accountId
+      }
     ]
   }
 }
@@ -259,3 +290,5 @@ output keyVaultName string = keyVault.outputs.name
 output keyVaultUri string = keyVault.outputs.uri
 output storageAccountName string = storageAccount.outputs.name
 output storageAccountBlobEndpoint string = storageAccount.outputs.primaryBlobEndpoint
+output mapsAccountName string = mapsAccount.outputs.name
+output mapsAccountId string = mapsAccount.outputs.accountId

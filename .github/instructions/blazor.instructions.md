@@ -12,6 +12,114 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 - Async/await should be used where applicable to ensure non-blocking UI operations.
 - **Never use inline `<style>` and `<script>` tags in production Razor components.** Always extract styles to `.razor.css` files and scripts to `.razor.js` files for better maintainability, CSP compliance, and separation of concerns. This is a strict requirement for all production code.
 
+### JavaScript Organization for Razor Components
+
+**File Naming and Location:**
+- JavaScript files must be co-located with their Razor component using the naming pattern: `ComponentName.razor.js`
+- Place the `.razor.js` file in the same directory as the `.razor` file
+- Example: For `BowlingCenters/BowlingCenters.razor`, create `BowlingCenters/BowlingCenters.razor.js`
+- The build system automatically handles these files - no manual copying to wwwroot is required
+
+**JavaScript Module Pattern (Required):**
+- Use ES6 modules with `export` keyword - do NOT use `window` global functions
+- Load modules using `<script src="..." type="module">` tag (recommended) or `IJSObjectReference` (when you need to call functions)
+- This provides component-scoped JavaScript and avoids global namespace pollution
+
+**Build Configuration:**
+- The project file is configured to automatically process `*.razor.js` files
+- Files are made available during build and publish operations
+- No manual copying is required - just place the file next to your component
+
+**Why This Matters:**
+- **Co-location**: JavaScript code lives next to the component that uses it for better organization
+- **Module Isolation**: No global namespace pollution - each component loads its own module
+- **CSP Compliance**: Inline scripts in `<HeadContent>` are not available to Interactive Server components
+- **Maintainability**: Easy to find and modify component-specific JavaScript
+- **Performance**: Modules are loaded on-demand and can be cached
+- **Security**: Enables proper Content Security Policy headers
+
+**Implementation Example:**
+
+*JavaScript Module (BowlingCenters/BowlingCenters.razor.js):*
+```javascript
+export function scrollToTop() {
+    const element = document.querySelector('#centers-scroll-container');
+    if (element) {
+        element.scrollTop = 0;
+    }
+}
+```
+
+*Razor Component (BowlingCenters/BowlingCenters.razor):*
+```razor
+@page "/bowling-centers"
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSInterop
+
+<script src="./BowlingCenters/BowlingCenters.razor.js" type="module"></script>
+
+@code {
+    private IJSObjectReference? _jsModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Import the module to get a reference for calling exported functions
+            _jsModule = await JSInterop.InvokeAsync<IJSObjectReference>(
+                "import", "./BowlingCenters/BowlingCenters.razor.js");
+        }
+    }
+
+    private async Task ScrollToTop()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+}
+```
+
+**File Structure:**
+```
+src/frontend/Neba.Web.Server/
+├── BowlingCenters/
+│   ├── BowlingCenters.razor          ← Component
+│   ├── BowlingCenters.razor.js       ← Component JavaScript module (co-located)
+│   └── BowlingCenterViewModel.cs
+├── Components/
+│   ├── NebaDocument.razor
+│   └── NebaDocument.razor.js         ← Another example
+└── Layout/
+    ├── MainLayout.razor
+    └── MainLayout.razor.js           ← Another example
+```
+
+**Important Path Patterns:**
+- **Script tag path**: `<script src="./FolderName/ComponentName.razor.js" type="module"></script>`
+- **JSInterop import path**: `"./FolderName/ComponentName.razor.js"`
+- Pattern: Always use `./FolderName/FileName.razor.js` relative to the component's location
+- The path follows the component's folder structure, NOT a wwwroot/js structure
+
+**Important Notes:**
+- Use `<script src="..." type="module">` to load the module (this is the primary method)
+- Optionally use `IJSObjectReference` in `OnAfterRenderAsync` if you need to call exported functions from C#
+- Use ES6 `export` keyword, NOT `window.functionName` for module functions
+- Always implement `IAsyncDisposable` when using `IJSObjectReference`
+- Load modules in `OnAfterRenderAsync(firstRender)` to ensure DOM is ready
+- Check module is not null before invoking functions
+- Keep JavaScript minimal - complex logic should be in C# when possible
+
 ## Modern UI/UX Patterns and Best Practices
 
 ### Design Philosophy

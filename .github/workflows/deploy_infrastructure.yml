@@ -92,7 +92,8 @@ jobs:
               postgresVersion='${{ vars.POSTGRES_VERSION }}' \
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
-              azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}'
+              azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}' \
+              azureMapsAccountName='${{ vars.AZURE_MAPS_ACCOUNT_NAME }}'
 
   deploy:
     name: Deploy to ${{ inputs.environment || 'Production' }}
@@ -156,6 +157,7 @@ jobs:
               azurePostgresBackupRetentionDays=${{ vars.AZURE_POSTGRES_BACKUP_RETENTION_DAYS }} \
               azureKeyVaultName='${{ vars.AZURE_KEY_VAULT_NAME }}' \
               azureStorageAccountName='${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}' \
+              azureMapsAccountName='${{ vars.AZURE_MAPS_ACCOUNT_NAME }}' \
             --no-wait
 
           echo ""

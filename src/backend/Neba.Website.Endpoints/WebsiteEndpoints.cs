@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Neba.Website.Endpoints.Awards;
 using Neba.Website.Endpoints.Bowlers;
+using Neba.Website.Endpoints.BowlingCenters;
 using Neba.Website.Endpoints.Documents;
 using Neba.Website.Endpoints.Titles;
 using Neba.Website.Endpoints.Tournaments;
@@ -36,6 +37,7 @@ public static class WebsiteEndpoints
         public IEndpointRouteBuilder MapWebsiteEndpoints()
         {
             app
+                .MapBowlingCenterEndpoints()
                 .MapBowlersEndpoints()
                 .MapTitlesEndpoints()
                 .MapAwardsEndpoints()

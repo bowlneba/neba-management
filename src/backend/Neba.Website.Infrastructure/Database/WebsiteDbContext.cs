@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Neba.Infrastructure.Database;
 using Neba.Website.Domain.Awards;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
 using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database.Configurations;
 
@@ -14,6 +15,9 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
 
     public DbSet<Bowler> Bowlers
         => Set<Bowler>();
+
+    public DbSet<BowlingCenter> BowlingCenters
+        => Set<BowlingCenter>();
 
     public DbSet<Title> Titles
         => Set<Title>();
@@ -29,6 +33,7 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
         modelBuilder.HasDefaultSchema(DefaultSchema);
 
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
+        modelBuilder.ApplyConfiguration(new BowlingCenterConfiguration());
         modelBuilder.ApplyConfiguration(new TitleConfiguration());
         modelBuilder.ApplyConfiguration(new SeasonAwardConfiguration());
         modelBuilder.ApplyConfiguration(new HallOfFameInductionConfiguration());

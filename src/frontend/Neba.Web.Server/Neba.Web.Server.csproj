@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <UserSecretsId>6aeddec6-defa-4da5-ad0e-bca10a004887</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,11 +25,45 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Reactive" />
+    <PackageReference Include="UnitsNet" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\backend\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Web.Client\Neba.Web.Client.csproj" />
     <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
+  </ItemGroup>
+
+  <!-- Disable automatic detection of .razor.js files as JS modules -->
+  <PropertyGroup>
+    <RazorLangVersion>Latest</RazorLangVersion>
+  </PropertyGroup>
+
+  <!-- Copy component-specific JavaScript files to wwwroot/js during build -->
+  <ItemGroup>
+    <!-- First, exclude all .razor.js from default processing -->
+    <Compile Remove="**\*.razor.js" />
+    <Content Remove="**\*.razor.js" />
+    <JSModuleFile Remove="**\*.razor.js" />
+
+    <!-- Then, explicitly include them as None items that get copied -->
+    <None Include="**\*.razor.js" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);**\node_modules\**;**\bin\**;**\obj\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>wwwroot\js\%(Filename)%(Extension)</Link>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Exclude test files from publish -->
+  <ItemGroup>
+    <Content Update="wwwroot\**\*.test.js">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="**\jest.config.js">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="**\test-output.txt">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

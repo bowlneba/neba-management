@@ -1,0 +1,298 @@
+@using Neba.Web.Server.Maps
+@using System.Net
+@implements IAsyncDisposable
+
+@inject IJSRuntime JSRuntime
+@inject AzureMapsSettings MapsSettings
+
+<link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" type="text/css" />
+<script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+<script src="./Maps/NebaMap.razor.js" type="module"></script>
+
+<div id="@ContainerId" class="@CssClass" style="@($"height: {Height}; width: {Width}; padding: 0;")">
+    <!-- Azure Maps will be rendered here by JavaScript -->
+</div>
+
+@code {
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<NebaMap>? _dotNetHelper;
+    private string ContainerId { get; set; } = $"neba-map-{Guid.NewGuid():N}";
+
+    /// <summary>
+    /// The locations to display on the map.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<NebaMapLocation> Locations { get; set; } = Array.Empty<NebaMapLocation>();
+
+    /// <summary>
+    /// Whether to enable clustering of nearby markers.
+    /// </summary>
+    [Parameter]
+    public bool EnableClustering { get; set; } = true;
+
+    /// <summary>
+    /// The center point of the map as [longitude, latitude].
+    /// Defaults to Boston, MA (center of New England).
+    /// </summary>
+    [Parameter]
+    public double[] Center { get; set; } = new[] { -71.0589, 42.3601 };
+
+    /// <summary>
+    /// The initial zoom level of the map (1-20).
+    /// </summary>
+    [Parameter]
+    public int Zoom { get; set; } = 7;
+
+    /// <summary>
+    /// The height of the map container.
+    /// </summary>
+    [Parameter]
+    public string Height { get; set; } = "600px";
+
+    /// <summary>
+    /// The width of the map container.
+    /// </summary>
+    [Parameter]
+    public string Width { get; set; } = "100%";
+
+    /// <summary>
+    /// Additional CSS classes to apply to the map container.
+    /// </summary>
+    [Parameter]
+    public string CssClass { get; set; } = "neba-card";
+
+    /// <summary>
+    /// The map style/view to display.
+    /// Supported values: "road" (default), "satellite", "satellite_road_labels" (hybrid).
+    /// </summary>
+    [Parameter]
+    public string MapStyle { get; set; } = "road";
+
+    /// <summary>
+    /// Event callback fired when a location is selected on the map.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnLocationSelected { get; set; }
+
+    /// <summary>
+    /// Event callback fired when the map is ready and initialized.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnMapReady { get; set; }
+
+    /// <summary>
+    /// Event callback fired when the map bounds change (zoom, pan, etc).
+    /// Returns a MapBounds object with the current viewport bounds.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MapBounds> OnBoundsChanged { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Maps/NebaMap.razor.js"
+            );
+
+            _dotNetHelper = DotNetObjectReference.Create(this);
+            await InitializeMapAsync();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update markers when Locations parameter changes
+        if (_jsModule is not null)
+        {
+            await UpdateMarkersAsync();
+        }
+    }
+
+    private async Task InitializeMapAsync()
+    {
+        if (_jsModule is null)
+        {
+            return;
+        }
+
+        var authConfig = new
+        {
+            accountId = MapsSettings.AccountId,
+            subscriptionKey = MapsSettings.SubscriptionKey
+        };
+
+        var mapConfig = new
+        {
+            containerId = ContainerId,
+            center = Center,
+            zoom = Zoom,
+            enableClustering = EnableClustering,
+            style = MapStyle
+        };
+
+        var locationData = Locations.Select(loc => new
+        {
+            id = loc.Id,
+            title = WebUtility.HtmlEncode(loc.Title ?? string.Empty),
+            description = WebUtility.HtmlEncode(loc.Description ?? string.Empty),
+            latitude = loc.Latitude,
+            longitude = loc.Longitude,
+            metadata = loc.Metadata ?? new Dictionary<string, object>()
+        }).ToList();
+
+        await _jsModule.InvokeVoidAsync("initializeMap", authConfig, mapConfig, locationData, _dotNetHelper);
+
+        // Notify that map is ready
+        await OnMapReady.InvokeAsync();
+    }
+
+    private async Task UpdateMarkersAsync()
+    {
+        if (_jsModule is null)
+        {
+            return;
+        }
+
+        var locationData = Locations.Select(loc => new
+        {
+            id = loc.Id,
+            title = WebUtility.HtmlEncode(loc.Title ?? string.Empty),
+            description = WebUtility.HtmlEncode(loc.Description ?? string.Empty),
+            latitude = loc.Latitude,
+            longitude = loc.Longitude,
+            metadata = loc.Metadata ?? new Dictionary<string, object>()
+        }).ToList();
+
+        await _jsModule.InvokeVoidAsync("updateMarkers", locationData);
+    }
+
+    /// <summary>
+    /// Focuses the map on a specific location by ID.
+    /// </summary>
+    /// <param name="locationId">The ID of the location to focus on</param>
+    public async Task FocusOnLocationAsync(string locationId)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("focusOnLocation", locationId);
+        }
+    }
+
+    /// <summary>
+    /// Fits the map bounds to show all locations.
+    /// </summary>
+    public async Task FitBoundsAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("fitBounds");
+        }
+    }
+
+    /// <summary>
+    /// Closes any open popup on the map.
+    /// </summary>
+    public async Task ClosePopupAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("closePopup");
+        }
+    }
+
+    /// <summary>
+    /// Enters directions preview mode for a specific location.
+    /// Zooms to the location and dims other markers.
+    /// </summary>
+    /// <param name="locationId">The ID of the destination location</param>
+    public async Task EnterDirectionsPreviewAsync(string locationId)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("enterDirectionsPreview", locationId);
+        }
+    }
+
+    /// <summary>
+    /// Calculates and displays a route from origin to destination.
+    /// </summary>
+    /// <param name="origin">Origin coordinates [longitude, latitude]</param>
+    /// <param name="destination">Destination coordinates [longitude, latitude]</param>
+    /// <returns>Route data including distance, time, and turn-by-turn instructions</returns>
+    public async Task<RouteData?> ShowRouteAsync(double[] origin, double[] destination)
+    {
+        if (_jsModule is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var routeData = await _jsModule.InvokeAsync<RouteData>("showRoute", origin, destination);
+            return routeData;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[NebaMap] Error showing route: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Exits directions mode and returns to overview mode.
+    /// Removes route and restores all markers to normal display.
+    /// </summary>
+    public async Task ExitDirectionsModeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("exitDirectionsMode");
+        }
+    }
+
+    /// <summary>
+    /// Changes the map style/view.
+    /// </summary>
+    /// <param name="style">The map style to apply: "road", "satellite", or "satellite_road_labels" (hybrid)</param>
+    public async Task SetMapStyleAsync(string style)
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.InvokeVoidAsync("setMapStyle", style);
+        }
+    }
+
+    /// <summary>
+    /// JavaScript interop callback invoked when map bounds change.
+    /// </summary>
+    [JSInvokable]
+    public async Task NotifyBoundsChanged(MapBounds bounds)
+    {
+        await OnBoundsChanged.InvokeAsync(bounds);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            try
+            {
+                // Call JavaScript cleanup to remove event listeners and dispose map
+                await _jsModule.InvokeVoidAsync("dispose");
+            }
+            catch (Exception ex)
+            {
+                // Ignore errors during disposal (component may already be disconnected)
+                Console.WriteLine($"[NebaMap] Error during dispose: {ex.Message}");
+            }
+            finally
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+
+        _dotNetHelper?.Dispose();
+    }
+}

@@ -340,7 +340,7 @@ public sealed class NotificationServiceTests
     {
         // Arrange
         var service = new NotificationService();
-        var completed = false;
+        bool completed = false;
         service.Notifications.Subscribe(
             onNext: _ => { },
             onCompleted: () => completed = true
@@ -384,7 +384,7 @@ public sealed class NotificationServiceTests
     {
         // Arrange
         using var service = new NotificationService();
-        var receivedCount = 0;
+        int receivedCount = 0;
         IDisposable subscription = service.Notifications.Subscribe(_ => receivedCount++);
 
         // Act

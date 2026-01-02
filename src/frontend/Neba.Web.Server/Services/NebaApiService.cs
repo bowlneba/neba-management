@@ -4,12 +4,14 @@ using System.Collections.ObjectModel;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Neba.Domain.Identifiers;
+using Neba.Web.Server.BowlingCenters;
 using Neba.Web.Server.Documents;
 using Neba.Web.Server.HallOfFame;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
+using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
 using Refit;
 
@@ -39,6 +41,23 @@ internal class NebaApiService(INebaApi nebaApi)
         }
 
         return result.Value.Data.ToViewModel();
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<BowlingCenterViewModel>>> GetBowlingCentersAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<BowlingCenterResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetBowlingCentersAsync);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .Select(dto => dto.ToViewModel())
+            .OrderBy(dto => dto.Name)
+            .ToList()
+            .AsReadOnly();
     }
 
     public async Task<ErrorOr<IReadOnlyCollection<TitlesByYearViewModel>>> GetTitlesByYearAsync()

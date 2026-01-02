@@ -2,6 +2,27 @@
 
 Centralized platform for managing the New England Bowlers Association (NEBA). Handles tournament operations, enforces NEBA and USBC rules, and streamlines governance and member management.
 
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+
+## Code Status
+
+### Quality Scans
+
+[![CodeQL](https://github.com/bowlneba/neba-management/workflows/CodeQL/badge.svg)](https://github.com/bowlneba/neba-management/security/code-scanning)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
+
+
 ## Architecture
 
 This application follows a **Modular Monolith** architecture with **Domain-Driven Design (DDD)** tactical patterns and **Clean Architecture** principles.
@@ -75,7 +96,7 @@ src/backend/
 - [x] Organization Bylaws
 - [x] Tournament Rules
 - [x] Hall of Fame (including HOF indicator for champions)
-- [ ] Bowling Centers
+- [x] Bowling Centers
 - [ ] Tournaments
 - [ ] News
 - [ ] Sponsors

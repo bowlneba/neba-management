@@ -15,11 +15,11 @@ COPY ["src/backend/Neba.Infrastructure/Neba.Infrastructure.csproj", "src/backend
 RUN dotnet restore "src/backend/Neba.Api/Neba.Api.csproj"
 COPY . .
 WORKDIR "/src/src/backend/Neba.Api"
-RUN dotnet build "./Neba.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Neba.Api.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Neba.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Neba.Api.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

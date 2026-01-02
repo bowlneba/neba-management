@@ -5,11 +5,11 @@ namespace Neba.UnitTests.Domain.Awards;
 
 public sealed class HallOfFameCategoryTests
 {
-    [Theory(DisplayName = "Hall of Fame Categories Have Correct Names and Values")]
-    [InlineData("None", 0)]
-    [InlineData("Superior Performance", 1)]
-    [InlineData("Meritorious Service", 2)]
-    [InlineData("Friend of NEBA", 4)]
+    [Theory(DisplayName = "Has correct name and value for all categories")]
+    [InlineData("None", 0, TestDisplayName = "None category is correct")]
+    [InlineData("Superior Performance", 1, TestDisplayName = "Superior Performance category is correct")]
+    [InlineData("Meritorious Service", 2, TestDisplayName = "Meritorious Service category is correct")]
+    [InlineData("Friend of NEBA", 4, TestDisplayName = "Friend of NEBA category is correct")]
     public void HallOfFameCategory_HasCorrectNameAndValue(string expectedName, int expectedValue)
     {
         // Arrange & Act

@@ -54,11 +54,4 @@ public sealed class BowlerOfTheYearCategory
     private BowlerOfTheYearCategory(string name, int value)
         : base(name, value)
     { }
-
-    /// <summary>
-    /// Private parameterless constructor for serialization or ORM support.
-    /// </summary>
-    private BowlerOfTheYearCategory()
-        : this(string.Empty, 0)
-    { }
 }
