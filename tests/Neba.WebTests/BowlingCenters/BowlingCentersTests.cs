@@ -1,4 +1,3 @@
-using System;
 using AngleSharp.Dom;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,13 +17,12 @@ namespace Neba.WebTests.BowlingCenters;
 public sealed class BowlingCentersTests : TestContextWrapper
 {
     private readonly Mock<INebaApi> _mockNebaApi;
-    private readonly NebaApiService _nebaApiService;
 
     public BowlingCentersTests()
     {
         _mockNebaApi = new Mock<INebaApi>();
-        _nebaApiService = new NebaApiService(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(_nebaApiService);
+        NebaApiService nebaApiService = new(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(nebaApiService);
 
         // Register AzureMapsSettings for NebaMap component
         var mapsSettings = new AzureMapsSettings
@@ -771,10 +769,7 @@ public sealed class BowlingCentersTests : TestContextWrapper
 
         // Act - Type in search box
         IElement searchInput = cut.Find("input[placeholder='Search centers...']");
-        await cut.InvokeAsync(async () =>
-        {
-            await searchInput.InputAsync("Kings");
-        });
+        await cut.InvokeAsync(async () => await searchInput.InputAsync("Kings"));
 
         // Assert - Search input should have value
         string? inputValue = searchInput.GetAttribute("value");

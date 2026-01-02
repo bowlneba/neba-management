@@ -630,10 +630,13 @@ public sealed class NebaMapTests : TestContextWrapper
         {
             DistanceMeters = 5000,
             TravelTimeSeconds = 600,
-            Instructions = new Collection<RouteInstruction>
-            {
-                new RouteInstruction { Text = "Turn left", DistanceMeters = 100 }
-            }
+            Instructions =
+            [
+                new RouteInstruction
+                {
+                    Text = "Turn left", DistanceMeters = 100
+                }
+            ]
         };
 
         BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./Maps/NebaMap.razor.js");

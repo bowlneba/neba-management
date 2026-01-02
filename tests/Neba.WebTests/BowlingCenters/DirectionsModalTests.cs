@@ -341,7 +341,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
         };
 
         // Setup JS interop to return a mock location
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.Setup<double[]>("getCurrentLocation")
             .SetResult([42.3601, -71.0589]); // Boston coordinates
 
@@ -374,7 +374,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
         };
 
         // Setup JS interop to throw a denied error
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.Setup<double[]>("getCurrentLocation")
             .SetException(new JSException("User denied geolocation prompt"));
 
@@ -407,7 +407,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
         };
 
         // Setup JS interop to throw a generic error
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.Setup<double[]>("getCurrentLocation")
             .SetException(new JSException("Network timeout"));
 
@@ -567,7 +567,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
             DestinationLocation = [-71.0636, 42.3656]
         };
 
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.SetupVoid("openInNewTab");
 
         IRenderedComponent<DirectionsModal> cut = Render<DirectionsModal>(parameters => parameters
@@ -607,7 +607,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
             DestinationLocation = [-71.0636, 42.3656]
         };
 
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.SetupVoid("openInNewTab");
 
         IRenderedComponent<DirectionsModal> cut = Render<DirectionsModal>(parameters => parameters
@@ -624,7 +624,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
         await cut.InvokeAsync(async () => await openButton.ClickAsync(new()));
 
         // Assert - Should not invoke JS when location is null
-        var invocations = jsModule.Invocations["openInNewTab"];
+        IReadOnlyList<JSRuntimeInvocation> invocations = jsModule.Invocations["openInNewTab"];
         invocations.Count.ShouldBe(0);
     }
 
@@ -647,7 +647,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
             DestinationLocation = null // No destination
         };
 
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.SetupVoid("openInNewTab");
 
         IRenderedComponent<DirectionsModal> cut = Render<DirectionsModal>(parameters => parameters
@@ -664,7 +664,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
         await cut.InvokeAsync(async () => await openButton.ClickAsync(new()));
 
         // Assert - Should not invoke JS when destination is null
-        var invocations = jsModule.Invocations["openInNewTab"];
+        IReadOnlyList<JSRuntimeInvocation> invocations = jsModule.Invocations["openInNewTab"];
         invocations.Count.ShouldBe(0);
     }
 
@@ -754,7 +754,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
             ErrorMessage = "Previous error"
         };
 
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.Setup<double[]>("getCurrentLocation")
             .SetResult([42.3601, -71.0589]);
 
@@ -784,7 +784,7 @@ public sealed class DirectionsModalTests : TestContextWrapper
             SelectedCenterName = "Test Center"
         };
 
-        var jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
+        BunitJSModuleInterop jsModule = TestContext.JSInterop.SetupModule("./BowlingCenters/DirectionsModal.razor.js");
         jsModule.Setup<double[]>("getCurrentLocation")
             .SetResult([42.3601, -71.0589]);
 

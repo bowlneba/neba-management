@@ -216,7 +216,7 @@ public sealed class AlertServiceTests
     public void OnChange_IsTriggeredWhenAlertIsShown()
     {
         // Arrange
-        var changeEventTriggered = false;
+        bool changeEventTriggered = false;
         _sut.OnChange += (sender, args) => changeEventTriggered = true;
 
         // Act
@@ -231,7 +231,7 @@ public sealed class AlertServiceTests
     {
         // Arrange
         _sut.ShowInfo("Test message");
-        var changeEventTriggered = false;
+        bool changeEventTriggered = false;
         _sut.OnChange += (sender, args) => changeEventTriggered = true;
 
         // Act
@@ -245,7 +245,7 @@ public sealed class AlertServiceTests
     public void OnChange_IsTriggeredMultipleTimes()
     {
         // Arrange
-        var eventCount = 0;
+        int eventCount = 0;
         _sut.OnChange += (sender, args) => eventCount++;
 
         // Act
@@ -306,8 +306,8 @@ public sealed class AlertServiceTests
     public void MultipleSubscribers_AllReceiveNotifications()
     {
         // Arrange
-        var subscriber1Count = 0;
-        var subscriber2Count = 0;
+        int subscriber1Count = 0;
+        int subscriber2Count = 0;
         _sut.OnChange += (sender, args) => subscriber1Count++;
         _sut.OnChange += (sender, args) => subscriber2Count++;
 

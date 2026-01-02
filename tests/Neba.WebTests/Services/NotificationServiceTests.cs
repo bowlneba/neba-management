@@ -195,8 +195,8 @@ public sealed class NotificationServiceTests : IDisposable
         var subscriber1Notifications = new List<NotificationPayload>();
         var subscriber2Notifications = new List<NotificationPayload>();
 
-        using var subscription1 = _sut.Notifications.Subscribe(n => subscriber1Notifications.Add(n));
-        using var subscription2 = _sut.Notifications.Subscribe(n => subscriber2Notifications.Add(n));
+        using IDisposable subscription1 = _sut.Notifications.Subscribe(n => subscriber1Notifications.Add(n));
+        using IDisposable subscription2 = _sut.Notifications.Subscribe(n => subscriber2Notifications.Add(n));
 
         // Act
         _sut.Info("Message 1");
@@ -212,7 +212,7 @@ public sealed class NotificationServiceTests : IDisposable
     {
         // Arrange
         var errorNotifications = new List<NotificationPayload>();
-        using var subscription = _sut.Notifications
+        using IDisposable subscription = _sut.Notifications
             .Where(n => n.Severity == NotifySeverity.Error)
             .Subscribe(n => errorNotifications.Add(n));
 
@@ -246,7 +246,7 @@ public sealed class NotificationServiceTests : IDisposable
     {
         // Arrange
         var receivedAfterDispose = new List<NotificationPayload>();
-        using var subscription = _sut.Notifications.Subscribe(n => receivedAfterDispose.Add(n));
+        using IDisposable subscription = _sut.Notifications.Subscribe(n => receivedAfterDispose.Add(n));
 
         // Act
         _sut.Info("Before dispose");
