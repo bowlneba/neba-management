@@ -179,8 +179,6 @@ jobs:
           retention-days: 30
 
   browser-tests:
-    # Disabled for PRs - run manually with workflow_dispatch or in nightly builds
-    if: github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
