@@ -46,6 +46,16 @@ public sealed class Tournament
     /// </summary>
     public LanePattern? LanePattern { get; init; }
 
+    /// <summary>
+    /// Gets the website identifier associated with the tournament.
+    /// </summary>
+    public int? WebsiteId { get; init; }
+
+    /// <summary>
+    /// Gets the application identifier associated with the tournament.
+    /// </summary>
+    public int? ApplicationId { get; init; }
+
     internal Tournament()
         : base(TournamentId.New())
     {}

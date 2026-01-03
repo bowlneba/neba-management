@@ -93,4 +93,19 @@ public sealed class ChampionsMappingExtensionsTests
         mappedTitles[1].TournamentDate.ShouldBe("Feb 2020");
         mappedTitles[2].TournamentDate.ShouldBe("Mar 2020");
     }
+
+    [Theory(DisplayName = "Maps HallOfFame from BowlerTitlesResponse to view model")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BowlerTitlesResponse_ToViewModel_ShouldMapHallOfFame(bool hallOfFame)
+    {
+        // Arrange
+        BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(hallOfFame: hallOfFame, titleCount: 1);
+
+        // Act
+        BowlerTitlesViewModel viewModel = response.ToViewModel();
+
+        // Assert
+        viewModel.HallOfFame.ShouldBe(hallOfFame);
+    }
 }

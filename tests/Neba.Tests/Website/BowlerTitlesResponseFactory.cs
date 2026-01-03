@@ -16,6 +16,7 @@ public static class BowlerTitlesResponseFactory
         Faker<BowlerTitlesResponse> faker = new Faker<BowlerTitlesResponse>()
             .RuleFor(response => response.BowlerId, _ => BowlerId.New())
             .RuleFor(response => response.BowlerName, f => f.Name.FullName())
+            .RuleFor(response => response.HallOfFame, f => f.Random.Bool())
             .RuleFor(response => response.Titles, f => BowlerTitleResponseFactory.Bogus(f.Random.Int(1, 10), seed));
 
         if (seed.HasValue)
