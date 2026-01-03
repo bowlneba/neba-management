@@ -53,6 +53,9 @@ internal sealed class TournamentConfiguration
             .IsUnique()
             .AreNullsDistinct();
 
+        builder.Property(tournament => tournament.BowlingCenterId)
+            .IsUlid<BowlingCenterId, BowlingCenterId.EfCoreValueConverter>("bowling_center_id");
+
         builder.HasOne(tournament => tournament.BowlingCenter)
             .WithMany()
             .HasForeignKey(BowlingCenterConfiguration.ForeignKeyName)
