@@ -2,13 +2,13 @@ using Neba.Domain.Tournaments;
 
 namespace Neba.UnitTests.Domain.Tournaments;
 
-public sealed class PatternLengthTests
+public sealed class PatternLengthCategoryTests
 {
     [Fact(DisplayName = "There are three defined PatternLength instances")]
     public void PatternLength_ShouldHaveThreeInstances()
     {
         // Act
-        IReadOnlyCollection<PatternLength> allPatternLengths = PatternLength.List;
+        IReadOnlyCollection<PatternLengthCategory> allPatternLengths = PatternLengthCategory.List;
 
         // Assert
         allPatternLengths.Count.ShouldBe(3);
@@ -21,7 +21,7 @@ public sealed class PatternLengthTests
     public void PatternLength_ShouldHaveCorrectProperties(string name, int expectedValue, int? expectedMinLength, int? expectedMaxLength)
     {
         // Act
-        PatternLength patternLength = PatternLength.FromName(name);
+        PatternLengthCategory patternLength = PatternLengthCategory.FromName(name);
 
         // Assert
         patternLength.Name.ShouldBe(name);

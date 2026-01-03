@@ -5,25 +5,25 @@ namespace Neba.Domain.Tournaments;
 /// <summary>
 /// Represents the ratio of a bowling pattern, including its name, unique value, and ratio range
 /// </summary>
-public sealed class PatternRatio
-    : SmartEnum<PatternRatio>
+public sealed class PatternRatioCategory
+    : SmartEnum<PatternRatioCategory>
 {
     /// <summary>
     /// Sport ratio (less than 4.0).
     /// </summary>
-    public static readonly PatternRatio Sport = new(nameof(Sport), 1, null, 4m);
+    public static readonly PatternRatioCategory Sport = new(nameof(Sport), 1, null, 4m);
 
     /// <summary>
     /// Challenge ratio (4.0 to 8.0).
     /// </summary>
-    public static readonly PatternRatio Challenge = new(nameof(Challenge), 2, 4m, 8m);
+    public static readonly PatternRatioCategory Challenge = new(nameof(Challenge), 2, 4m, 8m);
 
     /// <summary>
     /// Recreation ratio (8.0 or more).
     /// </summary>
-    public static readonly PatternRatio Recreation = new(nameof(Recreation), 3, 8m, null);
+    public static readonly PatternRatioCategory Recreation = new(nameof(Recreation), 3, 8m, null);
 
-    private PatternRatio(
+    private PatternRatioCategory(
         string name,
         int value,
         decimal? minimumRatio,

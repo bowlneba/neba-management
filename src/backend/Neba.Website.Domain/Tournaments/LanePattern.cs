@@ -15,10 +15,10 @@ public sealed record LanePattern
     /// <summary>
     /// Gets the length of the lane pattern.
     /// </summary>
-    public required PatternLength PatternLength { get; init; }
+    public required PatternLengthCategory LengthCategory { get; init; }
 
     /// <summary>
     /// Gets the ratio of the lane pattern.
     /// </summary>
-    public required PatternRatio PatternRatio { get; init; }
+    public required PatternRatioCategory RatioCategory { get; init; }
 }
