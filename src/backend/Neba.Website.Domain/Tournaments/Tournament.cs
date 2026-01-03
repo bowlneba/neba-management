@@ -56,16 +56,22 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
-    // EF Core requires a mutable backing field for this collection because when tournaments
-    // are saved to the database first and then titles are created that reference them,
-    // EF Core modifies this collection during relationship fixup to synchronize the
-    // bidirectional navigation. Using a readonly array ([]) would cause a
-    // "Collection was of a fixed size" exception. The public property remains
-    // IReadOnlyCollection<Title> to maintain the immutable API contract.
+    // Navigation property for querying tournament champions. While titles are semantically
+    // "owned" by tournaments in the domain (a title cannot exist without a tournament),
+    // this collection is not part of the Tournament aggregate's invariants and exists
+    // solely for projection/querying purposes. Titles are created separately and reference
+    // both tournaments and bowlers.
+    //
+    // Technical note: Uses a mutable backing field because when titles are created that
+    // reference existing tournaments, EF Core modifies this collection during relationship
+    // fixup. Using a readonly array ([]) would cause a "Collection was of a fixed size"
+    // exception. The public property remains IReadOnlyCollection<Title> to maintain the
+    // immutable API contract.
     private readonly List<Title> _champions = [];
 
     /// <summary>
     /// Gets the collection of champions (titles) awarded in this tournament.
+    /// This is a navigation property for projection only.
     /// </summary>
     public IReadOnlyCollection<Title> Champions
     {

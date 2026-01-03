@@ -40,16 +40,22 @@ public sealed class Bowler
         HallOfFameInductions = [];
     }
 
-    // EF Core requires a mutable backing field for this collection because when tournaments
-    // are saved to the database first and then titles are created that reference them,
-    // EF Core modifies this collection during relationship fixup to synchronize the
-    // bidirectional navigation. Using a readonly array ([]) would cause a
-    // "Collection was of a fixed size" exception. The public property remains
-    // IReadOnlyCollection<Title> to maintain the immutable API contract.
+    // Navigation property for querying a bowler's titles. Titles are not owned by the
+    // Bowler aggregate - they are owned by tournaments in the domain sense. This collection
+    // exists solely for projection/querying purposes (e.g., "show all championships this
+    // bowler has won"). Titles are created separately and reference both tournaments and
+    // bowlers.
+    //
+    // Technical note: Uses a mutable backing field because when titles are created that
+    // reference existing bowlers, EF Core modifies this collection during relationship
+    // fixup. Using a readonly array ([]) would cause a "Collection was of a fixed size"
+    // exception. The public property remains IReadOnlyCollection<Title> to maintain the
+    // immutable API contract.
     private List<Title> _titles = [];
 
     /// <summary>
-    /// Gets the read-only collection of championship titles won by the bowler.
+    /// Gets the collection of championship titles won by the bowler.
+    /// This is a navigation property for projection only - titles are owned by tournaments.
     /// </summary>
     internal IReadOnlyCollection<Title> Titles
     {
@@ -58,9 +64,16 @@ public sealed class Bowler
     }
 
     /// <summary>
-    /// Gets the read-only collection of season awards earned by the bowler (BOTY, High Average, High Block).
+    /// Gets the collection of season awards earned by the bowler (BOTY, High Average, High Block).
+    /// This is an owned collection that is part of the Bowler aggregate's state and should be
+    /// mutated only through domain methods that enforce business rules.
     /// </summary>
     internal IReadOnlyCollection<SeasonAward> SeasonAwards { get; init; }
 
+    /// <summary>
+    /// Gets the collection of hall of fame inductions for this bowler.
+    /// This is an owned collection that is part of the Bowler aggregate's state and should be
+    /// mutated only through domain methods that enforce business rules.
+    /// </summary>
     internal IReadOnlyCollection<HallOfFameInduction> HallOfFameInductions { get; init; }
 }
