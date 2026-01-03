@@ -14,9 +14,8 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
             {
                 BowlerId = title.Bowler.Id,
                 BowlerName = title.Bowler.Name,
-                TournamentMonth = title.Month,
-                TournamentYear = title.Year,
-                TournamentType = title.TournamentType
+                TournamentDate = title.Tournament.EndDate,
+                TournamentType = title.Tournament.TournamentType
             })
             .ToListAsync(cancellationToken);
 

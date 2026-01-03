@@ -63,14 +63,14 @@ internal sealed class BowlerConfiguration
 
         builder.HasIndex(bowler => bowler.WebsiteId)
             .IsUnique()
-            .HasFilter("\"website_id\" IS NOT NULL");
+            .AreNullsDistinct();
 
         builder.Property(bowler => bowler.ApplicationId)
             .ValueGeneratedNever();
 
         builder.HasIndex(bowler => bowler.ApplicationId)
             .IsUnique()
-            .HasFilter("\"application_id\" IS NOT NULL");
+            .AreNullsDistinct();
 
         builder.HasMany(bowler => bowler.Titles)
             .WithOne(title => title.Bowler)

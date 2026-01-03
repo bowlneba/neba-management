@@ -18,16 +18,14 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
-                HallOfFame = bowler.HallOfFameInductions.Any(),
+                HallOfFame = bowler.HallOfFameInductions.Count > 0,
                 Titles = bowler.Titles
-                    .OrderBy(title => title.Year)
-                    .ThenBy(title => title.Month)
-                    .ThenBy(title => title.TournamentType)
+                    .OrderBy(title => title.Tournament.EndDate)
+                    .ThenBy(title => title.Tournament.TournamentType)
                     .Select(title => new TitleDto
                     {
-                        Month = title.Month,
-                        Year = title.Year,
-                        TournamentType = title.TournamentType
+                        TournamentDate = title.Tournament.EndDate,
+                        TournamentType = title.Tournament.TournamentType
                     })
                     .ToArray()
             })

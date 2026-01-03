@@ -9,6 +9,8 @@ namespace Neba.Website.Infrastructure.Database.Configurations;
 internal sealed class BowlingCenterConfiguration
     : IEntityTypeConfiguration<BowlingCenter>
 {
+    internal const string ForeignKeyName = "bowling_center_id";
+
     internal static class QueryFilters
     {
         internal const string OpenCentersFilter = "OpenCentersFilter";
@@ -65,13 +67,13 @@ internal sealed class BowlingCenterConfiguration
 
         builder.HasIndex(bowlingCenter => bowlingCenter.WebsiteId)
             .IsUnique()
-            .HasFilter("\"website_id\" IS NOT NULL");
+            .AreNullsDistinct();
 
         builder.Property(bowlingCenter => bowlingCenter.ApplicationId)
             .ValueGeneratedNever();
 
         builder.HasIndex(bowlingCenter => bowlingCenter.ApplicationId)
             .IsUnique()
-            .HasFilter("\"application_id\" IS NOT NULL");
+            .AreNullsDistinct();
     }
 }

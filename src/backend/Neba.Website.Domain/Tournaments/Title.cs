@@ -18,24 +18,15 @@ public sealed class Title
     : Entity<TitleId>
 {
     /// <summary>
-    /// Gets the bowler entity who won the title. Used internally for navigation.
+    /// Gets the identifier of the bowler who won the title.
     /// </summary>
+    public required BowlerId BowlerId { get; init; }
+
     internal Bowler Bowler { get; init; } = null!;
 
-    /// <summary>
-    /// Gets the specific tournament format that was won (Singles, Doubles, Trios, etc.).
-    /// </summary>
-    public TournamentType TournamentType { get; init; } = null!;
+    internal Tournament Tournament { get; init; } = null!;
 
-    /// <summary>
-    /// Gets the month in which the title was won (provides multiple format options: numeric, full name, abbreviated).
-    /// </summary>
-    public Month Month { get; init; } = null!;
-
-    /// <summary>
-    /// Gets the year in which the title was won.
-    /// </summary>
-    public int Year { get; init; }
+    internal TournamentId TournamentId { get; init; }
 
     internal Title()
         : base(TitleId.New())

@@ -1,9 +1,6 @@
-using Ardalis.SmartEnum.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Neba.Domain;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Tournaments;
 
@@ -14,11 +11,9 @@ internal sealed class TitleConfiguration
 {
     public void Configure(EntityTypeBuilder<Title> builder)
     {
-        builder.ToTable("titles", WebsiteDbContext.DefaultSchema);
+        builder.ToTable("tournament_titles", WebsiteDbContext.DefaultSchema);
 
         builder.ConfigureShadowId();
-
-        builder.HasIndex(title => new { title.Year, title.Month });
 
         builder
             .Property(title => title.Id)
@@ -27,21 +22,8 @@ internal sealed class TitleConfiguration
         builder.HasIndex(title => title.Id)
             .IsUnique();
 
-        builder.Property<int>(BowlerConfiguration.ForeignKeyName)
-            .IsRequired();
-
-        builder
-            .Property(title => title.TournamentType)
-            .HasConversion<SmartEnumConverter<TournamentType, int>>()
-            .IsRequired();
-
-        builder
-            .Property(title => title.Month)
-            .HasConversion<SmartEnumConverter<Month, int>>()
-            .IsRequired();
-
-        builder
-            .Property(title => title.Year)
+        builder.Property(title => title.BowlerId)
+            .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>("bowler_id")
             .IsRequired();
     }
 }

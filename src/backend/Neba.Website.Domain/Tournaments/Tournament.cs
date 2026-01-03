@@ -56,6 +56,11 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
+    /// <summary>
+    /// Gets the collection of champions (titles) awarded in this tournament.
+    /// </summary>
+    public IReadOnlyCollection<Title> Champions { get; init; } = [];
+
     internal Tournament()
         : base(TournamentId.New())
     {}
