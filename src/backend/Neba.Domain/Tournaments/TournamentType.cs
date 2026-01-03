@@ -1,6 +1,6 @@
 using Ardalis.SmartEnum;
 
-namespace Neba.Website.Domain.Tournaments;
+namespace Neba.Domain.Tournaments;
 
 
 /// <summary>

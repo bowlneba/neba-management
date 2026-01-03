@@ -1,6 +1,6 @@
-using Neba.Website.Domain.Tournaments;
+using Neba.Domain.Tournaments;
 
-namespace Neba.UnitTests.Tournaments;
+namespace Neba.UnitTests.Domain.Tournaments;
 
 [Trait("Category", "Unit")]
 [Trait("Component", "Tournaments")]

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Ardalis.SmartEnum.SystemTextJson;
 using Neba.Domain;
-using Neba.Website.Domain.Tournaments;
+using Neba.Domain.Tournaments;
 
 namespace Neba.Website.Application.Tournaments;
 

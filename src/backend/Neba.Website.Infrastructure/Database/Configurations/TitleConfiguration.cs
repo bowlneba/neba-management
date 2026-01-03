@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
+using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Tournaments;
 

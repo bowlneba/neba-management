@@ -1,5 +1,6 @@
 using Neba.Domain;
 using Neba.Domain.Identifiers;
+using Neba.Domain.Tournaments;
 using Neba.Website.Domain.Bowlers;
 
 namespace Neba.Website.Domain.Tournaments;
@@ -13,7 +14,8 @@ namespace Neba.Website.Domain.Tournaments;
 /// For team tournaments (Doubles, Trios), each team member receives their own individual Title record.
 /// Titles are permanent records and are never deleted, even for inactive tournament formats.
 /// </remarks>
-public sealed class Title : Entity<TitleId>
+public sealed class Title
+    : Entity<TitleId>
 {
     /// <summary>
     /// Gets the bowler entity who won the title. Used internally for navigation.

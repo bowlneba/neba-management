@@ -1,7 +1,7 @@
 using Bogus;
 using Neba.Domain;
+using Neba.Domain.Tournaments;
 using Neba.Website.Application.Tournaments;
-using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Tests.Website;
 

@@ -1,8 +1,8 @@
 ﻿using Bogus;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
+using Neba.Domain.Tournaments;
 using Neba.Website.Application.Bowlers.BowlerTitles;
-using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Tests.Website;
 

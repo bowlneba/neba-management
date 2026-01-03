@@ -2,7 +2,7 @@
 using Ardalis.SmartEnum.SystemTextJson;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
-using Neba.Website.Domain.Tournaments;
+using Neba.Domain.Tournaments;
 
 namespace Neba.Website.Application.Bowlers.BowlerTitles;
 
