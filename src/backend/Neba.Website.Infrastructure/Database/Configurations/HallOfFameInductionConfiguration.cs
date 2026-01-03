@@ -23,9 +23,7 @@ internal sealed class HallOfFameInductionConfiguration
             .Property(induction => induction.Id)
             .IsUlid<HallOfFameId, HallOfFameId.EfCoreValueConverter>();
 
-        builder
-            .HasIndex(induction => induction.Id)
-            .IsUnique();
+        builder.HasAlternateKey(induction => induction.Id);
 
         builder.Property(induction => induction.Year)
             .HasColumnName("induction_year")

@@ -19,8 +19,7 @@ internal sealed class TitleConfiguration
             .Property(title => title.Id)
             .IsUlid<TitleId, TitleId.EfCoreValueConverter>();
 
-        builder.HasIndex(title => title.Id)
-            .IsUnique();
+        builder.HasAlternateKey(title => title.Id);
 
         builder.Property(title => title.BowlerId)
             .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>("bowler_id")

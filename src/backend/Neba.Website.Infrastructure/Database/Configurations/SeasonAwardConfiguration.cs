@@ -20,6 +20,8 @@ internal sealed class SeasonAwardConfiguration
         builder.Property(seasonAward => seasonAward.Id)
             .IsUlid<SeasonAwardId, SeasonAwardId.EfCoreValueConverter>();
 
+        builder.HasAlternateKey(seasonAward => seasonAward.Id);
+
         builder.Property(seasonAward => seasonAward.AwardType)
             .HasConversion<SmartEnumConverter<SeasonAwardType, int>>()
             .IsRequired();
@@ -43,10 +45,6 @@ internal sealed class SeasonAwardConfiguration
         builder.Property(seasonAward => seasonAward.SeasonTotalGames);
 
         builder.Property(seasonAward => seasonAward.Tournaments);
-
-
-        builder.HasIndex(seasonAward => seasonAward.Id)
-            .IsUnique();
 
         builder.HasIndex(seasonAward => seasonAward.Season);
     }

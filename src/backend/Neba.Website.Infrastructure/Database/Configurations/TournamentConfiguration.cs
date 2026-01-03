@@ -23,8 +23,7 @@ internal sealed class TournamentConfiguration
         builder.Property(tournament => tournament.Id)
             .IsUlid<TournamentId, TournamentId.EfCoreValueConverter>();
 
-        builder.HasIndex(tournament => tournament.Id)
-            .IsUnique();
+        builder.HasAlternateKey(tournament => tournament.Id);
 
         builder.Property(tournament => tournament.Name)
             .HasMaxLength(100)

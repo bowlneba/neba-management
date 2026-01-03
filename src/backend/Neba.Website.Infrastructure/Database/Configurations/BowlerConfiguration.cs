@@ -21,8 +21,7 @@ internal sealed class BowlerConfiguration
             .Property(bowler => bowler.Id)
             .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>();
 
-        builder.HasIndex(bowler => bowler.Id)
-            .IsUnique();
+        builder.HasAlternateKey(bowler => bowler.Id);
 
         builder
             .OwnsOne(bowler => bowler.Name, nameBuilder =>

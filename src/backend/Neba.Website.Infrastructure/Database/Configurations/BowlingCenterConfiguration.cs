@@ -28,8 +28,7 @@ internal sealed class BowlingCenterConfiguration
         builder.Property(bowlingCenter => bowlingCenter.Id)
             .IsUlid<BowlingCenterId, BowlingCenterId.EfCoreValueConverter>();
 
-        builder.HasIndex(bowlingCenter => bowlingCenter.Id)
-            .IsUnique();
+        builder.HasAlternateKey(bowlingCenter => bowlingCenter.Id);
 
         builder.Property(bowlingCenter => bowlingCenter.Name)
             .HasColumnName("name")
