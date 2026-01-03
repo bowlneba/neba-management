@@ -9,22 +9,20 @@ namespace Neba.Infrastructure.Documents;
 internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDocsSettings settings)
     : IDocumentsService
 {
-    private readonly GoogleDocsCredentials _credentials = settings.Credentials;
     private readonly IReadOnlyCollection<GoogleDocument> _documents = settings.Documents;
+    private readonly Lazy<GoogleCredential> _lazyCredential = new(() =>
+    {
+        string credentialJson = System.Text.Json.JsonSerializer.Serialize(settings.Credentials);
+        ServiceAccountCredential serviceAccountCredential = CredentialFactory.FromJson<ServiceAccountCredential>(credentialJson);
+        return serviceAccountCredential.ToGoogleCredential()
+            .CreateScoped(DocsService.Scope.DocumentsReadonly);
+    });
 
     public async Task<string> GetDocumentAsHtmlAsync(string documentName, CancellationToken cancellationToken)
     {
-        GoogleCredential googleCredential = null!;
-
-        string credentialJson = System.Text.Json.JsonSerializer.Serialize(_credentials);
-
-        ServiceAccountCredential serviceAccountCredential = CredentialFactory.FromJson<ServiceAccountCredential>(credentialJson);
-        googleCredential = serviceAccountCredential.ToGoogleCredential()
-            .CreateScoped(DocsService.Scope.DocumentsReadonly);
-
         using var service = new DocsService(new BaseClientService.Initializer()
         {
-            HttpClientInitializer = googleCredential,
+            HttpClientInitializer = _lazyCredential.Value,
             ApplicationName = "Neba Api"
         });
 
