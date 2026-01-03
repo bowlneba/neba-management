@@ -56,6 +56,12 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
+    // EF Core requires a mutable backing field for this collection because when tournaments
+    // are saved to the database first and then titles are created that reference them,
+    // EF Core modifies this collection during relationship fixup to synchronize the
+    // bidirectional navigation. Using a readonly array ([]) would cause a
+    // "Collection was of a fixed size" exception. The public property remains
+    // IReadOnlyCollection<Title> to maintain the immutable API contract.
     private readonly List<Title> _champions = [];
 
     /// <summary>
