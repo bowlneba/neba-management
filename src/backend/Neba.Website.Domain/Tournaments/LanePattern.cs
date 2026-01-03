@@ -8,11 +8,6 @@ namespace Neba.Website.Domain.Tournaments;
 public sealed record LanePattern
 {
     /// <summary>
-    /// Gets the name of the lane pattern.
-    /// </summary>
-    public required string Name { get; init; }
-
-    /// <summary>
     /// Gets the length of the lane pattern.
     /// </summary>
     public required PatternLengthCategory LengthCategory { get; init; }
