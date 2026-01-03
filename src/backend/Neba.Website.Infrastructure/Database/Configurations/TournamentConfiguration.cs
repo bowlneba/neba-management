@@ -61,5 +61,16 @@ internal sealed class TournamentConfiguration
             .HasForeignKey(BowlingCenterConfiguration.ForeignKeyName)
             .HasPrincipalKey(bowlingCenter => bowlingCenter.Id)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.ComplexProperty(tournament => tournament.LanePattern, lanePatternBuilder =>
+        {
+            lanePatternBuilder.Property(lanePattern => lanePattern.LengthCategory)
+                .HasConversion<SmartEnumConverter<PatternLengthCategory, int>>()
+                .HasColumnName("lane_pattern_length");
+
+            lanePatternBuilder.Property(lanePattern => lanePattern.RatioCategory)
+                .HasConversion<SmartEnumConverter<PatternRatioCategory, int>>()
+                .HasColumnName("lane_pattern_ratio");
+        });
     }
 }
