@@ -59,7 +59,7 @@ internal sealed class TournamentConfiguration
         builder.HasOne(tournament => tournament.BowlingCenter)
             .WithMany()
             .HasForeignKey(BowlingCenterConfiguration.ForeignKeyName)
-            .HasPrincipalKey(ShadowIdConfiguration.DefaultPropertyName)
+            .HasPrincipalKey(bowlingCenter => bowlingCenter.Id)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }
