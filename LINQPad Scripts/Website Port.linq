@@ -44,7 +44,7 @@ async Task Main()
 	}
 	
 	SeasonAwards.RemoveRange(SeasonAwards);
-	Titles.RemoveRange(Titles);
+	TournamentTitles.RemoveRange(TournamentTitles);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
 	Bowlers.RemoveRange(Bowlers);
 	
@@ -808,16 +808,19 @@ public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, 
 
 	var titles = titlesTable.AsEnumerable()
 	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
-	.Select(row => new Titles
+	.Select(row => new TournamentTitles
 	{
 		DomainId = Guid.AsDomainId(),
-		BowlerId = bowlerIdByBowlerDomainId[bowlerIdByWebsiteId[row.Field<int>("ChampionId")]],
+		BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")].ToString(),
+
+		// need to pass in tournament id based on the month/year/type of the tournament (create a lookup that returns the id)
+		
 		Month = row.Field<DateTime>("TitleDate").Month,
 		Year = row.Field<DateTime>("TitleDate").Year,
 		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
 	}).ToList();
 
-	Titles.AddRange(titles);
+	TournamentTitles.AddRange(titles);
 
 	
 	await SaveChangesAsync();
