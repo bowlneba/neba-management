@@ -25,8 +25,10 @@ internal sealed class BowlerConfiguration
             .IsUnique();
 
         builder
-            .ComplexProperty(bowler => bowler.Name, nameBuilder =>
+            .OwnsOne(bowler => bowler.Name, nameBuilder =>
             {
+                nameBuilder.HasIndex(name => new { name.LastName, name.FirstName });
+
                 nameBuilder
                     .Property(name => name.FirstName)
                     .HasColumnName("first_name")
@@ -54,9 +56,6 @@ internal sealed class BowlerConfiguration
                     .HasColumnName("nickname")
                     .HasMaxLength(30);
             });
-
-        builder
-            .HasIndex(bowler => new { bowler.Name.LastName, bowler.Name.FirstName });
 
         builder.Property(bowler => bowler.WebsiteId)
             .ValueGeneratedNever();
