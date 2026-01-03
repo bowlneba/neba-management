@@ -1,4 +1,5 @@
-﻿using Neba.Website.Application.Awards.BowlerOfTheYear;
+﻿using Neba.Domain;
+using Neba.Website.Application.Awards.BowlerOfTheYear;
 using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
@@ -37,8 +38,8 @@ internal static class AwardsMappingExtensions
                 HallOfFame = dto.HallOfFame,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
-                    Month = title.Month,
-                    Year = title.Year,
+                    Month = Month.FromValue(title.TournamentDate.Month),
+                    Year = title.TournamentDate.Year,
                     TournamentType = title.TournamentType.Name
                 }).ToList()
             };
