@@ -74,6 +74,7 @@ internal sealed class BowlerConfiguration
         builder.HasMany(bowler => bowler.Titles)
             .WithOne(title => title.Bowler)
             .HasForeignKey(ForeignKeyName)
+            .HasPrincipalKey(bowler => bowler.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(bowler => bowler.SeasonAwards)
