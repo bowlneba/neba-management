@@ -88,18 +88,17 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         {
             TitleDto dto = result.Titles.ElementAt(i);
             Title expectedTitle = seedBowler.Titles
-                .OrderBy(title => title.Year)
-                .ThenBy(title => title.Month)
-                .ThenBy(title => title.TournamentType)
+                .OrderBy(title => title.Tournament.EndDate)
+                .ThenBy(title => title.Tournament.TournamentType)
                 .ElementAt(i);
 
-            dto.Month.ShouldBe(expectedTitle.Month);
-            dto.Year.ShouldBe(expectedTitle.Year);
-            dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
+            dto.TournamentDate.Month.ShouldBe(expectedTitle.Tournament.EndDate.Month);
+            dto.TournamentDate.Year.ShouldBe(expectedTitle.Tournament.EndDate.Year);
+            dto.TournamentType.ShouldBe(expectedTitle.Tournament.TournamentType);
         }
 
-        result.Titles.ShouldAllBe(dto => dto.Month != null);
-        result.Titles.ShouldAllBe(dto => dto.Year > 0);
+        result.Titles.ShouldAllBe(dto => dto.TournamentDate.Month > 0);
+        result.Titles.ShouldAllBe(dto => dto.TournamentDate.Year > 0);
         result.Titles.ShouldAllBe(dto => dto.TournamentType != null);
     }
 }

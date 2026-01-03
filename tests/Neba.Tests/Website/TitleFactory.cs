@@ -9,15 +9,13 @@ public static class TitleFactory
 {
     public static Title Create(
         TitleId? id = null,
-        TournamentType? tournamentType = null,
-        Month? month = null,
-        int? year = null)
+        BowlerId? bowlerId = null,
+        Tournament? tournament = null)
             => new()
             {
                 Id = id ?? TitleId.New(),
-                TournamentType = tournamentType ?? TournamentType.Singles,
-                Month = month ?? Month.January,
-                Year = year ?? 2000
+                BowlerId = bowlerId ?? BowlerId.New(),
+                Tournament = tournament ?? TournamentFactory.Create()
             };
 
     public static IReadOnlyCollection<Title> Bogus(
@@ -28,9 +26,8 @@ public static class TitleFactory
             .CustomInstantiator(f => new Title
             {
                 Id = TitleId.New(),
-                TournamentType = f.PickRandom(TournamentType.List.ToArray()),
-                Month = f.PickRandom(Month.List.ToArray()),
-                Year = f.Date.Between(new DateTime(1950, 1, 1, 0, 0, 0, DateTimeKind.Local), DateTime.UtcNow).Year
+                BowlerId = BowlerId.New(),
+                Tournament = TournamentFactory.Bogus(seed)
             });
 
         if (seed.HasValue)

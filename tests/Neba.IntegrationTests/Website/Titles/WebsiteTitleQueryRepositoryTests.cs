@@ -63,15 +63,15 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
             Title expectedTitle = seedBowler.Titles.First(t =>
-                t.Month == dto.TournamentMonth &&
-                t.Year == dto.TournamentYear &&
-                t.TournamentType == dto.TournamentType);
+                t.Tournament.EndDate.Month == dto.TournamentDate.Month &&
+                t.Tournament.EndDate.Year == dto.TournamentDate.Year &&
+                t.Tournament.TournamentType == dto.TournamentType);
 
             dto.BowlerId.ShouldBe(seedBowler.Id);
             dto.BowlerName.ShouldBe(seedBowler.Name);
-            dto.TournamentMonth.ShouldBe(expectedTitle.Month);
-            dto.TournamentYear.ShouldBe(expectedTitle.Year);
-            dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
+            dto.TournamentDate.Month.ShouldBe(expectedTitle.Tournament.EndDate.Month);
+            dto.TournamentDate.Year.ShouldBe(expectedTitle.Tournament.EndDate.Year);
+            dto.TournamentType.ShouldBe(expectedTitle.Tournament.TournamentType);
         }
     }
 

@@ -47,7 +47,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
     {
         // Arrange
         Month tournamentMonth = Month.May;
-        BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentMonth: tournamentMonth);
+        BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentDate: new DateOnly(2022, tournamentMonth.Value, 1));
 
         // Act
         TitleResponse response = dto.ToResponseModel();
@@ -61,7 +61,7 @@ public sealed class BowlersTitlesMappingExtensionsTests
     {
         // Arrange
         const int tournamentYear = 2022;
-        BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentYear: tournamentYear);
+        BowlerTitleDto dto = BowlerTitleDtoFactory.Create(tournamentDate: new DateOnly(tournamentYear, 1, 1));
 
         // Act
         TitleResponse response = dto.ToResponseModel();
@@ -117,8 +117,8 @@ public sealed class BowlersTitlesMappingExtensionsTests
         // Arrange
         TitleDto[] titles =
         [
-            TitleDtoFactory.Create(month: Month.January, year: 2020, tournamentType: TournamentType.Women),
-            TitleDtoFactory.Create(month: Month.March, year: 2021, tournamentType: TournamentType.Senior)
+            TitleDtoFactory.Create(tournamentDate: new DateOnly(2020, Month.January.Value, 1), tournamentType: TournamentType.Women),
+            TitleDtoFactory.Create(tournamentDate: new DateOnly(2021, Month.March.Value, 1), tournamentType: TournamentType.Senior)
         ];
 
         BowlerTitlesDto dto = BowlerTitlesDtoFactory.Create(titles: titles);
@@ -131,8 +131,8 @@ public sealed class BowlersTitlesMappingExtensionsTests
 
         for (int i = 0; i < titles.Length; i++)
         {
-            response.Titles.ElementAt(i).Month.ShouldBe(titles[i].Month);
-            response.Titles.ElementAt(i).Year.ShouldBe(titles[i].Year);
+            response.Titles.ElementAt(i).Month.Value.ShouldBe(titles[i].TournamentDate.Month);
+            response.Titles.ElementAt(i).Year.ShouldBe(titles[i].TournamentDate.Year);
             response.Titles.ElementAt(i).TournamentType.ShouldBe(titles[i].TournamentType.Name);
         }
     }
