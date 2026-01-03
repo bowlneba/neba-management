@@ -14,13 +14,14 @@ public sealed class TournamentTypeTests
         IReadOnlyCollection<TournamentType> tournamentTypes = TournamentType.List;
 
         // Assert
-        tournamentTypes.Count.ShouldBe(14);
+        tournamentTypes.Count.ShouldBe(15);
     }
 
     [Theory(DisplayName = "Has correct properties for all types")]
     [InlineData("Singles", 10, 1, true, TestDisplayName = "Singles type is correct")]
     [InlineData("Doubles", 20, 2, true, TestDisplayName = "Doubles type is correct")]
     [InlineData("Trios", 30, 3, true, TestDisplayName = "Trios type is correct")]
+    [InlineData("Baker", 50, 5, true, TestDisplayName = "Baker type is correct")]
     [InlineData("Non-Champions", 11, 1, true, TestDisplayName = "Non-Champions type is correct")]
     [InlineData("Tournament of Champions", 12, 1, true, TestDisplayName = "Tournament of Champions type is correct")]
     [InlineData("Invitational", 13, 1, true, TestDisplayName = "Invitational type is correct")]

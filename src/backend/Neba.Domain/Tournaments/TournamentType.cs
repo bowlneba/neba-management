@@ -29,6 +29,11 @@ public sealed class TournamentType
     public static readonly TournamentType Trios = new("Trios", 30, 3, true);
 
     /// <summary>
+    /// Baker tournament (5 players per team).
+    /// </summary>
+    public static readonly TournamentType Baker = new("Baker", 50, 5, true);
+
+    /// <summary>
     /// Non-Champions tournament.
     /// </summary>
     public static readonly TournamentType NonChampions = new("Non-Champions", 11, 1, true);
