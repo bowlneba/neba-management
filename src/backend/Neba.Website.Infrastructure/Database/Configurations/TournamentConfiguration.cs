@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Configurations;
+using Neba.Website.Domain.BowlingCenters;
 using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -11,6 +12,8 @@ namespace Neba.Website.Infrastructure.Database.Configurations;
 internal sealed class TournamentConfiguration
     : IEntityTypeConfiguration<Tournament>
 {
+    internal const string ForeignKeyName = "tournament_id";
+
     public void Configure(EntityTypeBuilder<Tournament> builder)
     {
         builder.ToTable("tournaments", WebsiteDbContext.DefaultSchema);
@@ -54,11 +57,11 @@ internal sealed class TournamentConfiguration
             .AreNullsDistinct();
 
         builder.Property(tournament => tournament.BowlingCenterId)
-            .IsUlid<BowlingCenterId, BowlingCenterId.EfCoreValueConverter>("bowling_center_id");
+            .IsUlid<BowlingCenterId, BowlingCenterId.EfCoreValueConverter>(BowlingCenterConfiguration.ForeignKeyName);
 
         builder.HasOne(tournament => tournament.BowlingCenter)
             .WithMany()
-            .HasForeignKey(BowlingCenterConfiguration.ForeignKeyName)
+            .HasForeignKey(tournament => tournament.BowlingCenterId)
             .HasPrincipalKey(bowlingCenter => bowlingCenter.Id)
             .OnDelete(DeleteBehavior.NoAction);
 
@@ -72,5 +75,10 @@ internal sealed class TournamentConfiguration
                 .HasConversion<SmartEnumConverter<PatternRatioCategory, int>>()
                 .HasColumnName("lane_pattern_ratio");
         });
+
+        builder.HasMany(tournament => tournament.Champions)
+            .WithOne(champion => champion.Tournament)
+            .HasForeignKey(ForeignKeyName)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
