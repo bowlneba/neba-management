@@ -46,6 +46,7 @@ async Task Main()
 	SeasonAwards.RemoveRange(SeasonAwards);
 	TournamentTitles.RemoveRange(TournamentTitles);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
+	Tournaments.RemoveRange(Tournaments);
 	Bowlers.RemoveRange(Bowlers);
 	
 	await SaveChangesAsync();
@@ -78,6 +79,7 @@ async Task Main()
 	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
 	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
+	// Migrate Tournaments (will need to return them lke we do bowlers to get the lookups for titles migration
 	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
