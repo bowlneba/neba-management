@@ -33,12 +33,15 @@ public sealed class BowlersIntegrationTests
             await context.Tournaments.AddRangeAsync(seedTournaments);
             await context.SaveChangesAsync();
 
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1980);
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
+            await context.Bowlers.AddRangeAsync(seedBowlers);
+            await context.SaveChangesAsync();
+
+            IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
+            await context.Titles.AddRangeAsync(seedTitles);
+            await context.SaveChangesAsync();
 
             seedBowlerId = seedBowlers.First(bowler => bowler.Titles.Count > 0).Id;
-
-            context.Bowlers.AddRange(seedBowlers);
-            await context.SaveChangesAsync();
         });
 
         using HttpClient httpClient = Factory.CreateClient();
@@ -70,8 +73,12 @@ public sealed class BowlersIntegrationTests
             await context.Tournaments.AddRangeAsync(seedTournaments);
             await context.SaveChangesAsync();
 
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1980);
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
             context.Bowlers.AddRange(seedBowlers);
+            await context.SaveChangesAsync();
+
+            IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
+            await context.Titles.AddRangeAsync(seedTitles);
             await context.SaveChangesAsync();
         });
 

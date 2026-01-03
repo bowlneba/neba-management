@@ -40,10 +40,15 @@ public sealed class Bowler
         HallOfFameInductions = [];
     }
 
+    private List<Title> _titles = [];
     /// <summary>
     /// Gets the read-only collection of championship titles won by the bowler.
     /// </summary>
-    internal IReadOnlyCollection<Title> Titles { get; init; }
+    internal IReadOnlyCollection<Title> Titles
+    {
+        get => _titles;
+        init => _titles = value?.ToList() ?? [];
+    }
 
     /// <summary>
     /// Gets the read-only collection of season awards earned by the bowler (BOTY, High Average, High Block).

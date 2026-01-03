@@ -24,15 +24,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -86,15 +78,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -127,15 +111,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -189,15 +165,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -230,15 +198,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -292,15 +252,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -333,15 +285,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -394,15 +338,7 @@ public sealed class AwardsIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
-                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
-                    await context.Tournaments.AddRangeAsync(seedTournaments);
-                    await context.SaveChangesAsync();
-
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1960);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1960);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });

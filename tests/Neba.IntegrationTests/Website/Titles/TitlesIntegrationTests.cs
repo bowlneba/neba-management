@@ -31,8 +31,12 @@ public sealed class TitlesIntegrationTests
                     await context.Tournaments.AddRangeAsync(seedTournaments);
                     await context.SaveChangesAsync();
 
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
+                    context.Titles.AddRange(seedTitles);
                     await context.SaveChangesAsync();
                 });
 
@@ -70,8 +74,12 @@ public sealed class TitlesIntegrationTests
                     await context.Tournaments.AddRangeAsync(seedTournaments);
                     await context.SaveChangesAsync();
 
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
+                    context.Titles.AddRange(seedTitles);
                     await context.SaveChangesAsync();
                 });
 
