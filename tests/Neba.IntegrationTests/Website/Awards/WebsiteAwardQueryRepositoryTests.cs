@@ -7,6 +7,8 @@ using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
+using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 
@@ -43,7 +45,15 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1960);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1960);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
 
         await websiteDbContext.SaveChangesAsync();
@@ -89,7 +99,15 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1970);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1970);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
 
         await websiteDbContext.SaveChangesAsync();
@@ -135,7 +153,15 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1980);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
 
         await websiteDbContext.SaveChangesAsync();
@@ -185,7 +211,15 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1990);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters,1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, seedTournaments, 1990);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
 
         await websiteDbContext.SaveChangesAsync();

@@ -56,10 +56,16 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
+    private readonly List<Title> _champions = [];
+
     /// <summary>
     /// Gets the collection of champions (titles) awarded in this tournament.
     /// </summary>
-    public IReadOnlyCollection<Title> Champions { get; init; } = [];
+    public IReadOnlyCollection<Title> Champions
+    {
+        get => _champions;
+        init => _champions = value?.ToList() ?? [];
+    }
 
     internal Tournament()
         : base(TournamentId.New())

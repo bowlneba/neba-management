@@ -1,6 +1,4 @@
-using Neba.Domain;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
 using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Tests.Website;
@@ -11,23 +9,33 @@ public static class TitleFactory
         TitleId? id = null,
         BowlerId? bowlerId = null,
         Tournament? tournament = null)
-            => new()
-            {
-                Id = id ?? TitleId.New(),
-                BowlerId = bowlerId ?? BowlerId.New(),
-                Tournament = tournament ?? TournamentFactory.Create()
-            };
+    {
+        tournament ??= TournamentFactory.Create();
+        return new()
+        {
+            Id = id ?? TitleId.New(),
+            BowlerId = bowlerId ?? BowlerId.New(),
+            Tournament = tournament,
+            TournamentId = tournament.Id
+        };
+    }
 
     public static IReadOnlyCollection<Title> Bogus(
         int titleCount,
+        IEnumerable<Tournament> seedTournaments,
         int? seed = null)
     {
         Bogus.Faker<Title> faker = new Bogus.Faker<Title>()
-            .CustomInstantiator(f => new Title
+            .CustomInstantiator(f =>
             {
-                Id = TitleId.New(),
-                BowlerId = BowlerId.New(),
-                Tournament = TournamentFactory.Bogus(seed)
+                Tournament tournament = f.PickRandom(seedTournaments);
+                return new Title
+                {
+                    Id = TitleId.New(),
+                    BowlerId = BowlerId.New(),
+                    Tournament = tournament,
+                    TournamentId = tournament.Id
+                };
             });
 
         if (seed.HasValue)

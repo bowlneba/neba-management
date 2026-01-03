@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Website.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20260103210302_History")]
+    [Migration("20260103221717_History")]
     partial class History
     {
         /// <inheritdoc />
@@ -362,9 +362,12 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .HasColumnName("domain_id")
                         .IsFixedLength();
 
-                    b.Property<int>("tournament_id")
-                        .HasColumnType("integer")
-                        .HasColumnName("tournament_id");
+                    b.Property<string>("TournamentId")
+                        .IsRequired()
+                        .HasMaxLength(26)
+                        .HasColumnType("character(26)")
+                        .HasColumnName("tournament_id")
+                        .IsFixedLength();
 
                     b.HasKey("db_id")
                         .HasName("pk_tournament_titles");
@@ -375,7 +378,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.HasIndex("BowlerId")
                         .HasDatabaseName("ix_tournament_titles_bowler_id");
 
-                    b.HasIndex("tournament_id")
+                    b.HasIndex("TournamentId")
                         .HasDatabaseName("ix_tournament_titles_tournament_id");
 
                     b.ToTable("tournament_titles", "website");
@@ -551,7 +554,8 @@ namespace Neba.Website.Infrastructure.Database.Migrations
 
                     b.HasOne("Neba.Website.Domain.Tournaments.Tournament", "Tournament")
                         .WithMany("Champions")
-                        .HasForeignKey("tournament_id")
+                        .HasForeignKey("TournamentId")
+                        .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_tournament_titles_tournaments_tournament_id");

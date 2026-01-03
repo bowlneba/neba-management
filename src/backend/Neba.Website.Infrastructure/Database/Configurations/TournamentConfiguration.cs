@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Configurations;
-using Neba.Website.Domain.BowlingCenters;
 using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -77,7 +76,8 @@ internal sealed class TournamentConfiguration
 
         builder.HasMany(tournament => tournament.Champions)
             .WithOne(champion => champion.Tournament)
-            .HasForeignKey(ForeignKeyName)
+            .HasForeignKey(champion => champion.TournamentId)
+            .HasPrincipalKey(tournament => tournament.Id)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

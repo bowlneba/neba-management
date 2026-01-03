@@ -1,5 +1,4 @@
 using Bogus;
-using Neba.Domain;
 using Neba.Domain.Tournaments;
 using Neba.Website.Application.Tournaments;
 

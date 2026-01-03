@@ -24,5 +24,9 @@ internal sealed class TitleConfiguration
         builder.Property(title => title.BowlerId)
             .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>("bowler_id")
             .IsRequired();
+
+        builder.Property(title => title.TournamentId)
+            .IsUlid<TournamentId, TournamentId.EfCoreValueConverter>(TournamentConfiguration.ForeignKeyName)
+            .IsRequired();
     }
 }

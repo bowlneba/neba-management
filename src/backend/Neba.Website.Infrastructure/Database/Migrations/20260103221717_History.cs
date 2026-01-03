@@ -166,7 +166,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     bowler_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
-                    tournament_id = table.Column<int>(type: "integer", nullable: false),
+                    tournament_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
                     domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
                 },
                 constraints: table =>
@@ -185,7 +185,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         column: x => x.tournament_id,
                         principalSchema: "website",
                         principalTable: "tournaments",
-                        principalColumn: "id",
+                        principalColumn: "domain_id",
                         onDelete: ReferentialAction.Cascade);
                 });
 

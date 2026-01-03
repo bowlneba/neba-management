@@ -6,6 +6,8 @@ using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Titles;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.IntegrationTests.Website.Titles;
 
@@ -21,7 +23,15 @@ public sealed class TitlesIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+                    await context.Tournaments.AddRangeAsync(seedTournaments);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });
@@ -52,7 +62,15 @@ public sealed class TitlesIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
-                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
+                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+                    await context.Tournaments.AddRangeAsync(seedTournaments);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments);
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
                 });

@@ -27,11 +27,12 @@ public static class BowlerFactory
                 HallOfFameInductions = hallOfFameInductions ?? []
             };
 
-    public static Bowler Bogus(int? seed = null)
-        => Bogus(1, seed).Single();
+    public static Bowler Bogus(IReadOnlyCollection<Tournament> seedTournaments, int? seed = null)
+        => Bogus(1, seedTournaments, seed).Single();
 
     public static IReadOnlyCollection<Bowler> Bogus(
         int count,
+        IReadOnlyCollection<Tournament> seedTournaments,
         int? seed = null)
     {
         // Create pools of unique IDs to avoid collisions across tests
@@ -55,7 +56,7 @@ public static class BowlerFactory
                 Name = NameFactory.Bogus(),
                 WebsiteId = websiteIdPool.GetNext(),
                 ApplicationId = applicationIdPool.GetNext(),
-                Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
+                Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seedTournaments, seed),
                 SeasonAwards = SeasonAwardFactory
                     .BogusBowlerOfTheYear(f.Random.Int(0, 5), seed)
                     .Union(SeasonAwardFactory.BogusHighBlockAward(f.Random.Int(0, 5), seed))

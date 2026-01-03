@@ -5,6 +5,7 @@ using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.Tournaments;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
 using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
@@ -42,7 +43,15 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments, 1963);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
@@ -66,7 +75,15 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
-        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, seedTournaments, 1963);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
