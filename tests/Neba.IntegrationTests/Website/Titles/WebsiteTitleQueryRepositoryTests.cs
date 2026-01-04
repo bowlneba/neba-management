@@ -57,8 +57,8 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Titles.AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
-        int expectedTitleCount = seedBowlers.Sum(bowler => bowler.Titles.Count);
-        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 0);
+        int expectedTitleCount = seedTitles.Count;
+        Bowler seedBowler = seedBowlers.First(bowler => seedTitles.Any(t => t.BowlerId == bowler.Id));
 
         var repository = new WebsiteTitleQueryRepository(websiteDbContext);
 
@@ -70,12 +70,13 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         result.Count.ShouldBe(expectedTitleCount);
 
         var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
-        seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
+        seedBowlerResult.Count.ShouldBe(seedTitles.Count(t => t.BowlerId == seedBowler.Id));
         seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name);
 
         foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
-            Title expectedTitle = seedBowler.Titles.First(t =>
+            Title expectedTitle = seedTitles.First(t =>
+                t.BowlerId == seedBowler.Id &&
                 t.Tournament.EndDate.Month == dto.TournamentDate.Month &&
                 t.Tournament.EndDate.Year == dto.TournamentDate.Year &&
                 t.Tournament.TournamentType == dto.TournamentType);
@@ -114,12 +115,12 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         var expectedSummaries = seedBowlers
-            .Where(bowler => bowler.Titles.Count > 0)
+            .Where(bowler => seedTitles.Any(t => t.BowlerId == bowler.Id))
             .Select(bowler => new
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
-                TitleCount = bowler.Titles.Count
+                TitleCount = seedTitles.Count(t => t.BowlerId == bowler.Id)
             })
             .ToList();
 

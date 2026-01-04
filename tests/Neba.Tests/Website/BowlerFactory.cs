@@ -13,7 +13,6 @@ public static class BowlerFactory
         Name? name = null,
         int? websiteId = null,
         int? applicationId = null,
-        IReadOnlyCollection<Title>? titles = null,
         IReadOnlyCollection<SeasonAward>? seasonAwards = null,
         IReadOnlyCollection<HallOfFameInduction>? hallOfFameInductions = null)
             => new()
@@ -22,7 +21,6 @@ public static class BowlerFactory
                 Name = name ?? NameFactory.Create(),
                 WebsiteId = websiteId,
                 ApplicationId = applicationId,
-                Titles = titles ?? [],
                 SeasonAwards = seasonAwards ?? [],
                 HallOfFameInductions = hallOfFameInductions ?? []
             };

@@ -35,32 +35,8 @@ public sealed class Bowler
     internal Bowler()
         : base(BowlerId.New())
     {
-        Titles = [];
         SeasonAwards = [];
         HallOfFameInductions = [];
-    }
-
-    // Navigation property for querying a bowler's titles. Titles are not owned by the
-    // Bowler aggregate - they are owned by tournaments in the domain sense. This collection
-    // exists solely for projection/querying purposes (e.g., "show all championships this
-    // bowler has won"). Titles are created separately and reference both tournaments and
-    // bowlers.
-    //
-    // Technical note: Uses a mutable backing field because when titles are created that
-    // reference existing bowlers, EF Core modifies this collection during relationship
-    // fixup. Using a readonly array ([]) would cause a "Collection was of a fixed size"
-    // exception. The public property remains IReadOnlyCollection<Title> to maintain the
-    // immutable API contract.
-    private List<Title> _titles = [];
-
-    /// <summary>
-    /// Gets the collection of championship titles won by the bowler.
-    /// This is a navigation property for projection only - titles are owned by tournaments.
-    /// </summary>
-    internal IReadOnlyCollection<Title> Titles
-    {
-        get => _titles;
-        init => _titles = value?.ToList() ?? [];
     }
 
     /// <summary>

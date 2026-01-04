@@ -11,23 +11,41 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 {
 
     public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken)
-        => await dbContext.Bowlers
+    {
+        List<BowlerTitleDto> titles = await dbContext.Titles
             .AsNoTracking()
-            .Where(bowler => bowler.Id == bowlerId)
-            .Select(bowler => new BowlerTitlesDto
+            .Where(title => title.Bowler.Id == bowlerId)
+            .OrderBy(title => title.Tournament.EndDate)
+            .ThenBy(title => title.Tournament.TournamentType)
+            .Select(title => new BowlerTitleDto
             {
-                BowlerId = bowler.Id,
-                BowlerName = bowler.Name,
-                HallOfFame = bowler.HallOfFameInductions.Count > 0,
-                Titles = bowler.Titles
-                    .OrderBy(title => title.Tournament.EndDate)
-                    .ThenBy(title => title.Tournament.TournamentType)
-                    .Select(title => new TitleDto
-                    {
-                        TournamentDate = title.Tournament.EndDate,
-                        TournamentType = title.Tournament.TournamentType
-                    })
-                    .ToArray()
+                BowlerName = title.Bowler.Name,
+                BowlerId = title.Bowler.Id,
+                TournamentType = title.Tournament.TournamentType,
+                TournamentDate = title.Tournament.EndDate,
             })
-            .SingleOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
+
+        if (titles.Count == 0)
+        {
+            return null;
+        }
+
+        bool isInHallOfFame = await dbContext.HallOfFameInductions
+            .AsNoTracking()
+            .AnyAsync(induction => induction.Bowler.Id == bowlerId, cancellationToken);
+
+        return new BowlerTitlesDto
+        {
+            BowlerId = bowlerId,
+            BowlerName = titles[0].BowlerName,
+            HallOfFame = isInHallOfFame,
+            Titles = titles.ConvertAll(title => new TitleDto
+            {
+                TournamentType = title.TournamentType,
+                TournamentDate = title.TournamentDate,
+            })
+            .AsReadOnly()
+        };
+    }
 }

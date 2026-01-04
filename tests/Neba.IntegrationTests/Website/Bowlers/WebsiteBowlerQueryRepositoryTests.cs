@@ -91,11 +91,11 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
+        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers, 1966);
         await websiteDbContext.Titles.AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
-        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 3);
+        Bowler seedBowler = seedBowlers.First(bowler => seedTitles.Count(t => t.BowlerId == bowler.Id) > 3);
 
         var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
 
@@ -107,12 +107,13 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         result.ShouldNotBeNull();
         result!.BowlerId.ShouldBe(seedBowler.Id);
         result.BowlerName.ShouldBe(seedBowler.Name);
-        result.Titles.Count.ShouldBe(seedBowler.Titles.Count);
+        result.Titles.Count.ShouldBe(seedTitles.Count(t => t.BowlerId == seedBowler.Id));
 
         for (int i = 0; i < result.Titles.Count; i++)
         {
             TitleDto dto = result.Titles.ElementAt(i);
-            Title expectedTitle = seedBowler.Titles
+            Title expectedTitle = seedTitles
+                .Where(t => t.BowlerId == seedBowler.Id)
                 .OrderBy(title => title.Tournament.EndDate)
                 .ThenBy(title => title.Tournament.TournamentType)
                 .ElementAt(i);

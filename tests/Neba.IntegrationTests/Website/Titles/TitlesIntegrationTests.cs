@@ -41,7 +41,7 @@ public sealed class TitlesIntegrationTests
                 });
 
         int totalTitles = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking().SelectMany(b => b.Titles).CountAsync());
+            => await context.Titles.AsNoTracking().CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -84,7 +84,7 @@ public sealed class TitlesIntegrationTests
                 });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking().Where(b => b.Titles.Count > 0).CountAsync());
+            => await context.Titles.AsNoTracking().Select(t => t.BowlerId).Distinct().CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

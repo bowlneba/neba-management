@@ -41,7 +41,7 @@ public sealed class BowlersIntegrationTests
             await context.Titles.AddRangeAsync(seedTitles);
             await context.SaveChangesAsync();
 
-            seedBowlerId = seedBowlers.First(bowler => bowler.Titles.Count > 0).Id;
+            seedBowlerId = seedTitles.First().BowlerId;
         });
 
         using HttpClient httpClient = Factory.CreateClient();
