@@ -44,7 +44,7 @@ async Task Main()
 	}
 	
 	SeasonAwards.RemoveRange(SeasonAwards);
-	TournamentTitles.RemoveRange(TournamentTitles);
+	TournamentChampions.RemoveRange(TournamentChampions);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
 	Tournaments.RemoveRange(Tournaments);
 	Bowlers.RemoveRange(Bowlers);
@@ -79,8 +79,10 @@ async Task Main()
 	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
 	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
-	// Migrate Tournaments (will need to return them lke we do bowlers to get the lookups for titles migration
-	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
+	
+	var migratedTournaments = await MigrateTournamentsAsync();
+	
+	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, migratedTournaments);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighAverageAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
@@ -804,27 +806,38 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 
 #endregion
 
-public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
+#region Tournaments
+
+public async Task<IReadOnlyCollection<(Ulid id, int month, int year, int? websiteId, int? applicationId, TournamentType type)>> MigrateTournamentsAsync()
+{
+ 	
+} 
+
+#endregion
+
+public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, IReadOnlyCollection<(Ulid id, int month, int year, int? websiteId, int? applicationId, TournamentType type)> migratedTournaments)
 {
 	var titlesTable = await QueryStatsDatabaseAsync("select * from dbo.Titles");
 
 	var titles = titlesTable.AsEnumerable()
 	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
-	.Select(row => new TournamentTitles
+	.Select(row => 
 	{
-		DomainId = Guid.AsDomainId(),
-		BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")].ToString(),
-
-		// need to pass in tournament id based on the month/year/type of the tournament (create a lookup that returns the id)
+		var tournamentMonth = row.Field<DateTime>("TitleDate").Month;
+		var tournamentYear = row.Field<DateTime>("TitleDate").Year;
+		var tournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type"));
 		
-		Month = row.Field<DateTime>("TitleDate").Month,
-		Year = row.Field<DateTime>("TitleDate").Year,
-		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
+		var tournamentId = migratedTournaments.Single(t => t.month == tournamentMonth && t.year == tournamentYear && t.type == tournamentType);
+		
+		return new TournamentChampions
+		{
+			BowlerId = bowlerIdByWebsiteId[row.Field<int>("ChampionId")].ToString(),
+			TournamentId = tournamentId.ToString()
+		};
 	}).ToList();
 
-	TournamentTitles.AddRange(titles);
+	TournamentChampions.AddRange(titles);
 
-	
 	await SaveChangesAsync();
 
 	"Titles Migrated".Dump();
