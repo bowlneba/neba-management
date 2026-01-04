@@ -8,8 +8,9 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
 {
 
     public async Task<IReadOnlyCollection<BowlerTitleDto>> ListTitlesAsync(CancellationToken cancellationToken)
-        => await dbContext.Titles
+        => await dbContext.Tournaments
             .AsNoTracking()
+            .SelectMany(tournament => tournament.Champions)
             .Select(title => new BowlerTitleDto
             {
                 BowlerId = title.Bowler.Id,
@@ -20,8 +21,9 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListTitleSummariesAsync(CancellationToken cancellationToken)
-        => await dbContext.Titles
+        => await dbContext.Tournaments
             .AsNoTracking()
+            .SelectMany(tournament => tournament.Champions)
             .GroupBy(title => title.Bowler.Id)
             .Select(group => new BowlerTitleSummaryDto
             {

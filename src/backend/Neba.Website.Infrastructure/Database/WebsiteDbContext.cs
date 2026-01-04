@@ -22,9 +22,6 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
     public DbSet<Tournament> Tournaments
         => Set<Tournament>();
 
-    public DbSet<Title> Titles
-        => Set<Title>();
-
     public DbSet<SeasonAward> SeasonAwards
         => Set<SeasonAward>();
 

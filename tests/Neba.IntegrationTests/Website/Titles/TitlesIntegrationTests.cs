@@ -36,12 +36,12 @@ public sealed class TitlesIntegrationTests
                     await context.SaveChangesAsync();
 
                     IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-                    context.Titles.AddRange(seedTitles);
+                    context.Set<Title>().AddRange(seedTitles);
                     await context.SaveChangesAsync();
                 });
 
         int totalTitles = await ExecuteAsync(async context
-            => await context.Titles.AsNoTracking().CountAsync());
+            => await context.Set<Title>().AsNoTracking().CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -79,12 +79,12 @@ public sealed class TitlesIntegrationTests
                     await context.SaveChangesAsync();
 
                     IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-                    context.Titles.AddRange(seedTitles);
+                    context.Set<Title>().AddRange(seedTitles);
                     await context.SaveChangesAsync();
                 });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
-            => await context.Titles.AsNoTracking().Select(t => t.BowlerId).Distinct().CountAsync());
+            => await context.Set<Title>().AsNoTracking().Select(t => t.BowlerId).Distinct().CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

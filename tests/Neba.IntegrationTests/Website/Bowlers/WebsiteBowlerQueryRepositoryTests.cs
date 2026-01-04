@@ -56,7 +56,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Titles.AddRangeAsync(seedTitles);
+        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
         var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
@@ -92,7 +92,7 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers, 1966);
-        await websiteDbContext.Titles.AddRangeAsync(seedTitles);
+        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
         Bowler seedBowler = seedBowlers.First(bowler => seedTitles.Count(t => t.BowlerId == bowler.Id) > 3);

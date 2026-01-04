@@ -38,7 +38,7 @@ public sealed class BowlersIntegrationTests
             await context.SaveChangesAsync();
 
             IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-            await context.Titles.AddRangeAsync(seedTitles);
+            await context.Set<Title>().AddRangeAsync(seedTitles);
             await context.SaveChangesAsync();
 
             seedBowlerId = seedTitles.First().BowlerId;
@@ -78,7 +78,7 @@ public sealed class BowlersIntegrationTests
             await context.SaveChangesAsync();
 
             IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-            await context.Titles.AddRangeAsync(seedTitles);
+            await context.Set<Title>().AddRangeAsync(seedTitles);
             await context.SaveChangesAsync();
         });
 

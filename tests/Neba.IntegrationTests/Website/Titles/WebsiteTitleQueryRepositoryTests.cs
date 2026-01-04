@@ -54,7 +54,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Titles.AddRangeAsync(seedTitles);
+        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
         int expectedTitleCount = seedTitles.Count;
@@ -111,7 +111,7 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Titles.AddRangeAsync(seedTitles);
+        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
         await websiteDbContext.SaveChangesAsync();
 
         var expectedSummaries = seedBowlers
