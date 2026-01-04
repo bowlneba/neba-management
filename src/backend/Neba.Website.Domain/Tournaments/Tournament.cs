@@ -56,11 +56,9 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
-    // Navigation property for querying tournament champions. While titles are semantically
-    // "owned" by tournaments in the domain (a title cannot exist without a tournament),
-    // this collection is not part of the Tournament aggregate's invariants and exists
-    // solely for projection/querying purposes. Titles are created separately and reference
-    // both tournaments and bowlers.
+    // Owned collection of champions. The Tournament aggregate owns the business rules
+    // for champions (e.g., a singles tournament can only have one champion, doubles must
+    // have exactly two, etc.). These rules are part of the tournament's invariants.
     //
     // Technical note: Uses a mutable backing field because when titles are created that
     // reference existing tournaments, EF Core modifies this collection during relationship
@@ -71,7 +69,7 @@ public sealed class Tournament
 
     /// <summary>
     /// Gets the collection of champions (titles) awarded in this tournament.
-    /// This is a navigation property for projection only.
+    /// The tournament owns the business rules for how many and what type of champions are valid.
     /// </summary>
     public IReadOnlyCollection<Title> Champions
     {
