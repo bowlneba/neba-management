@@ -8,7 +8,7 @@ namespace Neba.Website.Domain.BowlingCenters;
 /// Represents a bowling center entity containing identity, name and address information.
 /// </summary>
 public sealed class BowlingCenter
-    : Entity<BowlingCenterId>
+    : Aggregate<BowlingCenterId>
 {
     /// <summary>
     /// Parameterless constructor used by serializers and ORM tools.
