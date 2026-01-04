@@ -37,11 +37,12 @@ public sealed class BowlersIntegrationTests
             await context.Bowlers.AddRangeAsync(seedBowlers);
             await context.SaveChangesAsync();
 
-            IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-            await context.Set<Title>().AddRangeAsync(seedTitles);
+            // Assign bowlers as champions of tournaments
+            TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
             await context.SaveChangesAsync();
 
-            seedBowlerId = seedTitles.First().BowlerId;
+            // Pick a bowler that has at least one title
+            seedBowlerId = seedTournaments.First(t => t.ChampionIds.Count > 0).ChampionIds.First();
         });
 
         using HttpClient httpClient = Factory.CreateClient();
@@ -77,8 +78,8 @@ public sealed class BowlersIntegrationTests
             context.Bowlers.AddRange(seedBowlers);
             await context.SaveChangesAsync();
 
-            IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-            await context.Set<Title>().AddRangeAsync(seedTitles);
+            // Assign bowlers as champions of tournaments
+            TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
             await context.SaveChangesAsync();
         });
 

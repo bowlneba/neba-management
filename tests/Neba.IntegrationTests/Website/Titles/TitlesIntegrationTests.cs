@@ -35,13 +35,13 @@ public sealed class TitlesIntegrationTests
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
 
-                    IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-                    context.Set<Title>().AddRange(seedTitles);
+                    // Assign bowlers as champions of tournaments
+                    TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
                     await context.SaveChangesAsync();
                 });
 
         int totalTitles = await ExecuteAsync(async context
-            => await context.Set<Title>().AsNoTracking().CountAsync());
+            => await context.Tournaments.AsNoTracking().SumAsync(t => t.ChampionIds.Count));
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -78,13 +78,16 @@ public sealed class TitlesIntegrationTests
                     context.Bowlers.AddRange(seedBowlers);
                     await context.SaveChangesAsync();
 
-                    IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-                    context.Set<Title>().AddRange(seedTitles);
+                    // Assign bowlers as champions of tournaments
+                    TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
                     await context.SaveChangesAsync();
                 });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
-            => await context.Set<Title>().AsNoTracking().Select(t => t.BowlerId).Distinct().CountAsync());
+            => await context.Tournaments.AsNoTracking()
+                .SelectMany(t => t.ChampionIds)
+                .Distinct()
+                .CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

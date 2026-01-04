@@ -1,6 +1,7 @@
 using Neba.Domain;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
+using Neba.Website.Domain.Bowlers;
 using Neba.Website.Domain.BowlingCenters;
 
 namespace Neba.Website.Domain.Tournaments;
@@ -56,22 +57,25 @@ public sealed class Tournament
     /// </summary>
     public int? ApplicationId { get; init; }
 
-    // Owned collection of champions. The Tournament aggregate owns the business rules
-    // for champions (e.g., a singles tournament can only have one champion, doubles must
-    // have exactly two, etc.). These rules are part of the tournament's invariants.
+    // Collection of champion bowlers. The Tournament aggregate owns the business
+    // rules for champions (e.g., a singles tournament can only have one champion, doubles
+    // must have exactly two, etc.). These rules are part of the tournament's invariants.
     //
-    // Technical note: Uses a mutable backing field because when titles are created that
-    // reference existing tournaments, EF Core modifies this collection during relationship
-    // fixup. Using a readonly array ([]) would cause a "Collection was of a fixed size"
-    // exception. The public property remains IReadOnlyCollection<Title> to maintain the
-    // immutable API contract.
-    private readonly List<Title> _champions = [];
+    // A "title" is a domain concept representing a bowler winning a tournament.
+    // Stored as a collection of Bowler entities for EF Core navigation, but exposed
+    // as BowlerIds through the ChampionIds property.
+    private readonly List<Bowler> _champions = [];
 
     /// <summary>
-    /// Gets the collection of champions (titles) awarded in this tournament.
-    /// The tournament owns the business rules for how many and what type of champions are valid.
+    /// Gets the collection of bowler IDs for champions of this tournament.
+    /// The tournament owns the business rules for how many champions are valid.
     /// </summary>
-    public IReadOnlyCollection<Title> Champions
+    public IReadOnlyCollection<BowlerId> ChampionIds => _champions.ConvertAll(b => b.Id);
+
+    /// <summary>
+    /// Internal navigation property to champion bowlers for EF Core many-to-many relationship.
+    /// </summary>
+    internal IReadOnlyCollection<Bowler> Champions
     {
         get => _champions;
         init => _champions = value?.ToList() ?? [];
@@ -81,4 +85,18 @@ public sealed class Tournament
         : base(TournamentId.New())
     {}
 
+    /// <summary>
+    /// Adds a champion to this tournament.
+    /// </summary>
+    /// <param name="bowler">The bowler entity to add as champion. The application service is responsible
+    /// for loading this aggregate before calling this method.</param>
+    /// <remarks>
+    /// This method enforces tournament-specific invariants about champions. Cross-aggregate business rules
+    /// (e.g., age requirements for senior tournaments) should be validated in domain services before calling.
+    /// </remarks>
+    public void AddChampion(Bowler bowler)
+    {
+        ArgumentNullException.ThrowIfNull(bowler);
+        _champions.Add(bowler);
+    }
 }

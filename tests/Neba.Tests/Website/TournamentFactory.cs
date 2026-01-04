@@ -16,8 +16,7 @@ public static class TournamentFactory
         TournamentType? tournamentType = null,
         LanePattern? lanePattern = null,
         int? websiteId = null,
-        int? applicationId = null,
-        IReadOnlyCollection<Title>? champions = null)
+        int? applicationId = null)
             => new()
             {
                 Id = id ?? TournamentId.New(),
@@ -28,8 +27,7 @@ public static class TournamentFactory
                 TournamentType = tournamentType ?? TournamentType.Singles,
                 LanePattern = lanePattern,
                 WebsiteId = websiteId,
-                ApplicationId = applicationId,
-                Champions = champions ?? []
+                ApplicationId = applicationId
             };
 
     public static Tournament Bogus(IReadOnlyCollection<BowlingCenter> seedBowlingCenters, int? seed = null)
@@ -72,8 +70,7 @@ public static class TournamentFactory
                     TournamentType = f.PickRandom(TournamentType.List.ToArray()),
                     LanePattern = f.Random.Bool(0.6f) ? LanePatternFactory.Bogus(seed) : null,
                     WebsiteId = websiteIdPool.GetNext(),
-                    ApplicationId = applicationIdPool.GetNext(),
-                    Champions = []
+                    ApplicationId = applicationIdPool.GetNext()
                 };
             });
 

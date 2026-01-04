@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
 using Neba.Infrastructure.Database.Configurations;
 using Neba.Website.Domain.Bowlers;
-using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
 
@@ -71,12 +70,6 @@ internal sealed class BowlerConfiguration
             .IsUnique()
             .AreNullsDistinct();
 
-        builder.HasMany<Title>()
-            .WithOne(title => title.Bowler)
-            .HasForeignKey(title => title.BowlerId)
-            .HasPrincipalKey(bowler => bowler.Id)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasMany(bowler => bowler.SeasonAwards)
             .WithOne(seasonAward => seasonAward.Bowler)
             .HasForeignKey(ForeignKeyName)
@@ -86,5 +79,7 @@ internal sealed class BowlerConfiguration
             .WithOne(induction => induction.Bowler)
             .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Titles navigation is configured from Tournament side as many-to-many
     }
 }

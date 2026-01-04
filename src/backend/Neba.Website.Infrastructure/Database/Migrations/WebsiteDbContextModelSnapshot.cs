@@ -336,51 +336,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.ToTable("bowling_centers", "website");
                 });
 
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.Title", b =>
-                {
-                    b.Property<int>("db_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("db_id"));
-
-                    b.Property<string>("BowlerId")
-                        .IsRequired()
-                        .HasMaxLength(26)
-                        .HasColumnType("character(26)")
-                        .HasColumnName("bowler_id")
-                        .IsFixedLength();
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasMaxLength(26)
-                        .HasColumnType("character(26)")
-                        .HasColumnName("domain_id")
-                        .IsFixedLength();
-
-                    b.Property<string>("TournamentId")
-                        .IsRequired()
-                        .HasMaxLength(26)
-                        .HasColumnType("character(26)")
-                        .HasColumnName("tournament_id")
-                        .IsFixedLength();
-
-                    b.HasKey("db_id")
-                        .HasName("pk_tournament_titles");
-
-                    b.HasAlternateKey("Id")
-                        .HasName("ak_tournament_titles_domain_id");
-
-                    b.HasIndex("BowlerId")
-                        .HasDatabaseName("ix_tournament_titles_bowler_id");
-
-                    b.HasIndex("TournamentId")
-                        .HasDatabaseName("ix_tournament_titles_tournament_id");
-
-                    b.ToTable("tournament_titles", "website");
-                });
-
             modelBuilder.Entity("Neba.Website.Domain.Tournaments.Tournament", b =>
                 {
                     b.Property<int>("db_id")
@@ -464,6 +419,25 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.ToTable("tournaments", "website");
                 });
 
+            modelBuilder.Entity("tournament_champions", b =>
+                {
+                    b.Property<string>("tournament_id")
+                        .HasColumnType("character(26)")
+                        .HasColumnName("tournament_id");
+
+                    b.Property<string>("bowler_id")
+                        .HasColumnType("character(26)")
+                        .HasColumnName("bowler_id");
+
+                    b.HasKey("tournament_id", "bowler_id")
+                        .HasName("pk_tournament_champions");
+
+                    b.HasIndex("bowler_id")
+                        .HasDatabaseName("ix_tournament_champions_bowler_id");
+
+                    b.ToTable("tournament_champions", "website");
+                });
+
             modelBuilder.Entity("Neba.Website.Domain.Awards.HallOfFameInduction", b =>
                 {
                     b.HasOne("Neba.Website.Domain.Bowlers.Bowler", "Bowler")
@@ -539,29 +513,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.Title", b =>
-                {
-                    b.HasOne("Neba.Website.Domain.Bowlers.Bowler", "Bowler")
-                        .WithMany("Titles")
-                        .HasForeignKey("BowlerId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_tournament_titles_bowlers_bowler_id");
-
-                    b.HasOne("Neba.Website.Domain.Tournaments.Tournament", "Tournament")
-                        .WithMany("Champions")
-                        .HasForeignKey("TournamentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_tournament_titles_tournaments_tournament_id");
-
-                    b.Navigation("Bowler");
-
-                    b.Navigation("Tournament");
-                });
-
             modelBuilder.Entity("Neba.Website.Domain.Tournaments.Tournament", b =>
                 {
                     b.HasOne("Neba.Website.Domain.BowlingCenters.BowlingCenter", "BowlingCenter")
@@ -574,18 +525,30 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.Navigation("BowlingCenter");
                 });
 
+            modelBuilder.Entity("tournament_champions", b =>
+                {
+                    b.HasOne("Neba.Website.Domain.Bowlers.Bowler", null)
+                        .WithMany()
+                        .HasForeignKey("bowler_id")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tournament_champions_bowlers_bowler_id");
+
+                    b.HasOne("Neba.Website.Domain.Tournaments.Tournament", null)
+                        .WithMany()
+                        .HasForeignKey("tournament_id")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tournament_champions_tournaments_tournament_id");
+                });
+
             modelBuilder.Entity("Neba.Website.Domain.Bowlers.Bowler", b =>
                 {
                     b.Navigation("HallOfFameInductions");
 
                     b.Navigation("SeasonAwards");
-
-                    b.Navigation("Titles");
-                });
-
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.Tournament", b =>
-                {
-                    b.Navigation("Champions");
                 });
 #pragma warning restore 612, 618
         }

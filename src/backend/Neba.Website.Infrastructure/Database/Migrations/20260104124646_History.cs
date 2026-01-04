@@ -159,29 +159,25 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tournament_titles",
+                name: "tournament_champions",
                 schema: "website",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    bowler_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
-                    tournament_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
-                    domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
+                    tournament_id = table.Column<string>(type: "character(26)", nullable: false),
+                    bowler_id = table.Column<string>(type: "character(26)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_tournament_titles", x => x.id);
-                    table.UniqueConstraint("ak_tournament_titles_domain_id", x => x.domain_id);
+                    table.PrimaryKey("pk_tournament_champions", x => new { x.tournament_id, x.bowler_id });
                     table.ForeignKey(
-                        name: "fk_tournament_titles_bowlers_bowler_id",
+                        name: "fk_tournament_champions_bowlers_bowler_id",
                         column: x => x.bowler_id,
                         principalSchema: "website",
                         principalTable: "bowlers",
                         principalColumn: "domain_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_tournament_titles_tournaments_tournament_id",
+                        name: "fk_tournament_champions_tournaments_tournament_id",
                         column: x => x.tournament_id,
                         principalSchema: "website",
                         principalTable: "tournaments",
@@ -252,16 +248,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 column: "season");
 
             migrationBuilder.CreateIndex(
-                name: "ix_tournament_titles_bowler_id",
+                name: "ix_tournament_champions_bowler_id",
                 schema: "website",
-                table: "tournament_titles",
+                table: "tournament_champions",
                 column: "bowler_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_tournament_titles_tournament_id",
-                schema: "website",
-                table: "tournament_titles",
-                column: "tournament_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_tournaments_application_id",
@@ -298,7 +288,7 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 schema: "website");
 
             migrationBuilder.DropTable(
-                name: "tournament_titles",
+                name: "tournament_champions",
                 schema: "website");
 
             migrationBuilder.DropTable(

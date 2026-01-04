@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Neba.Domain.Identifiers;
 using Neba.Domain.Tournaments;
 using Neba.Infrastructure.Database.Configurations;
+using Neba.Website.Domain.Bowlers;
 using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Configurations;
@@ -74,10 +75,28 @@ internal sealed class TournamentConfiguration
                 .HasColumnName("lane_pattern_ratio");
         });
 
+        // Ignore the public ChampionIds property - it's computed from Champions
+        builder.Ignore(tournament => tournament.ChampionIds);
+
+        // Configure many-to-many relationship between Tournament and Bowler
         builder.HasMany(tournament => tournament.Champions)
-            .WithOne(champion => champion.Tournament)
-            .HasForeignKey(champion => champion.TournamentId)
-            .HasPrincipalKey(tournament => tournament.Id)
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(bowler => bowler.Titles)
+            .UsingEntity<Dictionary<string, object>>(
+                "tournament_champions",
+                j => j.HasOne<Bowler>()
+                    .WithMany()
+                    .HasForeignKey(BowlerConfiguration.ForeignKeyName)
+                    .HasPrincipalKey(nameof(Bowler.Id)),
+                j => j.HasOne<Tournament>()
+                    .WithMany()
+                    .HasForeignKey(ForeignKeyName)
+                    .HasPrincipalKey(nameof(Tournament.Id)),
+                j =>
+                {
+                    j.ToTable("tournament_champions", WebsiteDbContext.DefaultSchema);
+                    j.HasKey(ForeignKeyName, BowlerConfiguration.ForeignKeyName);
+                    // Index on bowler_id for FK lookup performance
+                    j.HasIndex(BowlerConfiguration.ForeignKeyName);
+                });
     }
 }

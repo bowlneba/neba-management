@@ -53,12 +53,13 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
         await websiteDbContext.SaveChangesAsync();
 
-        int expectedTitleCount = seedTitles.Count;
-        Bowler seedBowler = seedBowlers.First(bowler => seedTitles.Any(t => t.BowlerId == bowler.Id));
+        int expectedTitleCount = seedTournaments.Sum(t => t.ChampionIds.Count);
+        Bowler seedBowler = seedBowlers.First(bowler =>
+            seedTournaments.Any(t => t.ChampionIds.Contains(bowler.Id)));
 
         var repository = new WebsiteTitleQueryRepository(websiteDbContext);
 
@@ -70,22 +71,22 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         result.Count.ShouldBe(expectedTitleCount);
 
         var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
-        seedBowlerResult.Count.ShouldBe(seedTitles.Count(t => t.BowlerId == seedBowler.Id));
+        seedBowlerResult.Count.ShouldBe(seedTournaments.Count(t => t.ChampionIds.Contains(seedBowler.Id)));
         seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name);
 
         foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
-            Title expectedTitle = seedTitles.First(t =>
-                t.BowlerId == seedBowler.Id &&
-                t.Tournament.EndDate.Month == dto.TournamentDate.Month &&
-                t.Tournament.EndDate.Year == dto.TournamentDate.Year &&
-                t.Tournament.TournamentType == dto.TournamentType);
+            Tournament expectedTournament = seedTournaments.First(t =>
+                t.ChampionIds.Contains(seedBowler.Id) &&
+                t.EndDate.Month == dto.TournamentDate.Month &&
+                t.EndDate.Year == dto.TournamentDate.Year &&
+                t.TournamentType == dto.TournamentType);
 
             dto.BowlerId.ShouldBe(seedBowler.Id);
             dto.BowlerName.ShouldBe(seedBowler.Name);
-            dto.TournamentDate.Month.ShouldBe(expectedTitle.Tournament.EndDate.Month);
-            dto.TournamentDate.Year.ShouldBe(expectedTitle.Tournament.EndDate.Year);
-            dto.TournamentType.ShouldBe(expectedTitle.Tournament.TournamentType);
+            dto.TournamentDate.Month.ShouldBe(expectedTournament.EndDate.Month);
+            dto.TournamentDate.Year.ShouldBe(expectedTournament.EndDate.Year);
+            dto.TournamentType.ShouldBe(expectedTournament.TournamentType);
         }
     }
 
@@ -110,17 +111,17 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
         await websiteDbContext.SaveChangesAsync();
 
         var expectedSummaries = seedBowlers
-            .Where(bowler => seedTitles.Any(t => t.BowlerId == bowler.Id))
+            .Where(bowler => seedTournaments.Any(t => t.ChampionIds.Contains(bowler.Id)))
             .Select(bowler => new
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
-                TitleCount = seedTitles.Count(t => t.BowlerId == bowler.Id)
+                TitleCount = seedTournaments.Count(t => t.ChampionIds.Contains(bowler.Id))
             })
             .ToList();
 

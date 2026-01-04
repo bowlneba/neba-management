@@ -55,8 +55,8 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers);
-        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
         await websiteDbContext.SaveChangesAsync();
 
         var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
@@ -91,11 +91,13 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        IReadOnlyCollection<Title> seedTitles = TitleFactory.Bogus(200, seedTournaments, seedBowlers, 1966);
-        await websiteDbContext.Set<Title>().AddRangeAsync(seedTitles);
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
         await websiteDbContext.SaveChangesAsync();
 
-        Bowler seedBowler = seedBowlers.First(bowler => seedTitles.Count(t => t.BowlerId == bowler.Id) > 3);
+        // Find a bowler that has more than 3 titles
+        Bowler seedBowler = seedBowlers.First(bowler =>
+            seedTournaments.Count(t => t.ChampionIds.Contains(bowler.Id)) > 3);
 
         var repository = new WebsiteBowlerQueryRepository(websiteDbContext);
 
@@ -107,20 +109,20 @@ public sealed class WebsiteBowlerQueryRepositoryTests : IAsyncLifetime
         result.ShouldNotBeNull();
         result!.BowlerId.ShouldBe(seedBowler.Id);
         result.BowlerName.ShouldBe(seedBowler.Name);
-        result.Titles.Count.ShouldBe(seedTitles.Count(t => t.BowlerId == seedBowler.Id));
+        result.Titles.Count.ShouldBe(seedTournaments.Count(t => t.ChampionIds.Contains(seedBowler.Id)));
 
         for (int i = 0; i < result.Titles.Count; i++)
         {
             TitleDto dto = result.Titles.ElementAt(i);
-            Title expectedTitle = seedTitles
-                .Where(t => t.BowlerId == seedBowler.Id)
-                .OrderBy(title => title.Tournament.EndDate)
-                .ThenBy(title => title.Tournament.TournamentType)
+            Tournament expectedTournament = seedTournaments
+                .Where(t => t.ChampionIds.Contains(seedBowler.Id))
+                .OrderBy(tournament => tournament.EndDate)
+                .ThenBy(tournament => tournament.TournamentType)
                 .ElementAt(i);
 
-            dto.TournamentDate.Month.ShouldBe(expectedTitle.Tournament.EndDate.Month);
-            dto.TournamentDate.Year.ShouldBe(expectedTitle.Tournament.EndDate.Year);
-            dto.TournamentType.ShouldBe(expectedTitle.Tournament.TournamentType);
+            dto.TournamentDate.Month.ShouldBe(expectedTournament.EndDate.Month);
+            dto.TournamentDate.Year.ShouldBe(expectedTournament.EndDate.Year);
+            dto.TournamentType.ShouldBe(expectedTournament.TournamentType);
         }
 
         result.Titles.ShouldAllBe(dto => dto.TournamentDate.Month > 0);
