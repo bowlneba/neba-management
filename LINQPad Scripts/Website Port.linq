@@ -55,6 +55,9 @@ async Task Main()
 	{
 		await MigrateBowlingCentersAsync();
 	}
+	
+	var bowlingCenterDomainIdByWebsiteId = BowlingCenters.Where(bc => bc.WebsiteId.HasValue).ToDictionary(bc => bc.WebsiteId!.Value, bc => bc.DomainId);
+	var bowlingCenterDomainIdBySoftwareId = BowlingCenters.Where(bc => bc.ApplicationId.HasValue).ToDictionary(bc => bc.ApplicationId!.Value, bc => bc.DomainId);
 
 	var mergedBowlers = await MigrateBowlersAsync();
 	
@@ -80,7 +83,7 @@ async Task Main()
 
 	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
 	
-	var migratedTournaments = await MigrateTournamentsAsync();
+	var migratedTournaments = await MigrateTournamentsAsync(bowlingCenterDomainIdByWebsiteId, bowlingCenterDomainIdBySoftwareId);
 	
 	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, migratedTournaments);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
@@ -808,9 +811,11 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 
 #region Tournaments
 
-public async Task<IReadOnlyCollection<(Ulid id, int month, int year, int? websiteId, int? applicationId, TournamentType type)>> MigrateTournamentsAsync()
+public async Task<IReadOnlyCollection<(Ulid id, int month, int year, int? websiteId, int? applicationId, TournamentType type)>> MigrateTournamentsAsync(IDictionary<int, string> bowlingCenterDomainIdByWebsiteId, IDictionary<int, string> bowlingCenterDomainIdBySoftwareId)
 {
- 	
+	var softwareTournamentsTable = await QuerySoftwareDatabaseAsync("SELECT * FROM dbo.Tournaments");
+	var softwareSinglesTournamentsTable = await QuerySoftwareDatabaseAsync("SELECT * FROM dbo.Tournaments_SinglesTournaments");
+	var softwareTeamTournamentsTable = await QuerySoftwareDatabaseAsync("SELECT * FROM dbo.Tournaments_TeamTournaments");
 } 
 
 #endregion
