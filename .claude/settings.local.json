@@ -145,7 +145,8 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management remote:*)",
       "Bash(./tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)",
       "Bash(git stash push:*)",
-      "Bash(xattr:*)"
+      "Bash(xattr:*)",
+      "Bash(./scripts/refresh-documents.sh)"
     ],
     "deny": [],
     "ask": []

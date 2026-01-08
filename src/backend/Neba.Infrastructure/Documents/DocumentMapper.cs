@@ -370,7 +370,8 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
         // Match Google Docs URLs like:
         // https://docs.google.com/document/d/DOCUMENT_ID/edit
         // https://docs.google.com/document/d/DOCUMENT_ID/
-        Match match = Regex.Match(url, @"docs\.google\.com/document/d/([a-zA-Z0-9_-]+)", RegexOptions.None, TimeSpan.FromSeconds(1));
+        // https://docs.google.com/document/u/0/d/DOCUMENT_ID/edit
+        Match match = Regex.Match(url, @"docs\.google\.com/document/(?:u/\d+/)?d/([a-zA-Z0-9_-]+)", RegexOptions.None, TimeSpan.FromSeconds(1));
         return match.Success ? match.Groups[1].Value : null;
     }
 
@@ -478,6 +479,18 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
                     {
                         string headingId = CreateHeadingId(headingText);
                         _headingIds[trimmedText] = headingId;
+
+                        // Also store partial match for headings like "Section X.Y Title" -> "Title"
+                        // This handles cases where Google Docs link text is just "Title" but heading is "Section X.Y Title"
+                        Match sectionMatch = Regex.Match(trimmedText, @"^Section\s+[\d.]+\s+(.+)$", RegexOptions.None, TimeSpan.FromSeconds(1));
+                        if (sectionMatch.Success)
+                        {
+                            string titleOnly = sectionMatch.Groups[1].Value.Trim();
+                            if (!_headingIds.ContainsKey(titleOnly))
+                            {
+                                _headingIds[titleOnly] = headingId;
+                            }
+                        }
                     }
                 }
             }

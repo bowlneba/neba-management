@@ -193,7 +193,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_tocInitialized || !Content.HasValue || !ShowTableOfContents)
+        if (_tocInitialized || !Content.HasValue)
             return;
 
         try

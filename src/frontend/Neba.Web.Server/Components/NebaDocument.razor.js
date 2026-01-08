@@ -111,45 +111,53 @@ export function initializeToc(configOrContentId) {
         return false;
     }
 
-    if (!tocList) {
-        console.error('[NebaDocument] TOC list element not found:', tocListId);
-        return false;
-    }
+    // TOC is optional - if not present, we'll still set up link navigation
+    const hasToc = !!tocList;
 
-    // Extract headings based on the provided levels
+    // Extract headings based on the provided levels - need this for both TOC and link navigation
     const headings = content.querySelectorAll(headingLevels);
 
     console.log('[NebaDocument] Found headings:', headings.length);
 
-    if (headings.length === 0) {
-        console.warn('[NebaDocument] No headings found in content');
-        return false;
-    }
+    if (hasToc && headings.length > 0) {
+        // Build the table of contents
+        let tocHtml = '<ul class="toc-list">';
 
-    // Build the table of contents
-    let tocHtml = '<ul class="toc-list">';
+        headings.forEach((heading, index) => {
+            const id = heading.id || `heading-${index}`;
+            if (!heading.id) {
+                heading.id = id;
+            }
 
-    headings.forEach((heading, index) => {
-        const id = heading.id || `heading-${index}`;
-        if (!heading.id) {
-            heading.id = id;
+            const level = heading.tagName.toLowerCase();
+            const text = escapeHtml(heading.textContent);
+            const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
+
+            tocHtml += `<li class="${className}">
+                <a href="#${id}" class="toc-link" data-target="${id}">${text}</a>
+            </li>`;
+        });
+
+        tocHtml += '</ul>';
+        tocList.innerHTML = tocHtml;
+
+        // Also populate the mobile TOC
+        if (tocMobileList) {
+            tocMobileList.innerHTML = tocHtml;
+        }
+    } else {
+        if (!hasToc) {
+            console.log('[NebaDocument] TOC not present, skipping TOC generation but will set up link navigation');
+        } else if (headings.length === 0) {
+            console.warn('[NebaDocument] No headings found in content');
         }
 
-        const level = heading.tagName.toLowerCase();
-        const text = escapeHtml(heading.textContent);
-        const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
-
-        tocHtml += `<li class="${className}">
-            <a href="#${id}" class="toc-link" data-target="${id}">${text}</a>
-        </li>`;
-    });
-
-    tocHtml += '</ul>';
-    tocList.innerHTML = tocHtml;
-
-    // Also populate the mobile TOC
-    if (tocMobileList) {
-        tocMobileList.innerHTML = tocHtml;
+        // Still need to assign IDs to headings for anchor navigation to work
+        headings.forEach((heading, index) => {
+            if (!heading.id) {
+                heading.id = `heading-${index}`;
+            }
+        });
     }
 
     // Mobile modal functionality
@@ -449,8 +457,12 @@ function handleAnchorNavigation(content, href) {
             behavior: 'smooth'
         });
 
-        // Update URL hash without jumping
-        history.pushState(null, '', `#${targetId}`);
+        // Update URL hash without triggering navigation
+        // Simply setting location.hash updates the URL without full page navigation
+        // and works correctly with Blazor's enhanced navigation
+        if (globalThis.location.hash !== `#${targetId}`) {
+            globalThis.location.hash = targetId;
+        }
     } else {
         console.warn('[NebaDocument] Internal link target not found:', targetId);
     }
