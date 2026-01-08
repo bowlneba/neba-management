@@ -441,21 +441,35 @@ function handleAnchorNavigation(content, href) {
     const targetElement = document.getElementById(targetId);
 
     if (targetElement) {
-        // Get the position of the target relative to the scrollable content
-        const contentRect = content.getBoundingClientRect();
-        const targetRect = targetElement.getBoundingClientRect();
-        const currentScroll = content.scrollTop;
-
-        // Calculate the scroll position
-        const offset = 20; // Small offset from the top of the container
-        const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
-
         console.log('[NebaDocument] Scrolling to internal link target:', targetId);
 
-        content.scrollTo({
-            top: scrollPosition,
-            behavior: 'smooth'
-        });
+        // Check if we're in a desktop layout with TOC sidebar or mobile/no-TOC layout
+        const hasTocSidebar = globalThis.innerWidth >= 1024 && document.querySelector('.neba-document-toc');
+
+        if (hasTocSidebar) {
+            // Desktop with TOC: content is in a scrollable container
+            const contentRect = content.getBoundingClientRect();
+            const targetRect = targetElement.getBoundingClientRect();
+            const currentScroll = content.scrollTop;
+
+            // Calculate the scroll position
+            const offset = 20; // Small offset from the top of the container
+            const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+
+            content.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+            });
+        } else {
+            // Mobile or no TOC: scroll the whole page, accounting for sticky navbar
+            const navbarHeight = 80; // Height of sticky navbar
+            const targetPosition = targetElement.getBoundingClientRect().top + globalThis.scrollY - navbarHeight;
+
+            globalThis.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
 
         // Update URL hash without triggering navigation
         // Simply setting location.hash updates the URL without full page navigation

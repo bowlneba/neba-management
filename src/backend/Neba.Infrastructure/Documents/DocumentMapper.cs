@@ -23,7 +23,7 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
     private const string HeadingPrefix = "HEADING_";
 
     private readonly Dictionary<string, Dictionary<int, int>> _listCounters = [];
-    private readonly Dictionary<string, string> _headingIds = [];
+    private readonly Dictionary<string, string> _headingIds = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _documentRouteMap
         = settings.Documents.ToDictionary(d => d.DocumentId, d => d.Route);
 
@@ -486,6 +486,18 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
                         if (sectionMatch.Success)
                         {
                             string titleOnly = sectionMatch.Groups[1].Value.Trim();
+                            if (!_headingIds.ContainsKey(titleOnly))
+                            {
+                                _headingIds[titleOnly] = headingId;
+                            }
+                        }
+
+                        // Also store partial match for headings like "ARTICLE VII - Title" -> "Title"
+                        // This handles ARTICLE headings where link text is just "Title"
+                        Match articleMatch = Regex.Match(trimmedText, @"^ARTICLE\s+[IVXLCDM\d]+\s+-\s+(.+)$", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+                        if (articleMatch.Success)
+                        {
+                            string titleOnly = articleMatch.Groups[1].Value.Trim();
                             if (!_headingIds.ContainsKey(titleOnly))
                             {
                                 _headingIds[titleOnly] = headingId;

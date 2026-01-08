@@ -194,6 +194,25 @@ public sealed class DocumentMapperTests
         html.ShouldContain("<p><a href='#section-103-annual-meeting'>Annual Meeting</a></p>\n");
     }
 
+    [Fact(DisplayName = "Maps partial heading link text to full heading ID for ARTICLE headings")]
+    public void ConvertToHtml_PartialArticleHeadingLink_MapsToFullHeadingId()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        Document document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Heading("ARTICLE VII - HALL OF FAME COMMITTEE", "HEADING_2"),
+            GoogleDocsDocumentFactory.Paragraph(("Hall of Fame Committee", GoogleDocsDocumentFactory.LinkToHeading("ignored-by-mapper"))));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldContain("<h2 id='article-vii-hall-of-fame-committee'>ARTICLE VII - HALL OF FAME COMMITTEE</h2>\n");
+        html.ShouldContain("<p><a href='#article-vii-hall-of-fame-committee'>Hall of Fame Committee</a></p>\n");
+    }
+
     [Fact(DisplayName = "Renders table with rows and cells")]
     public void ConvertToHtml_Table_RendersTableRowsAndCells()
     {
