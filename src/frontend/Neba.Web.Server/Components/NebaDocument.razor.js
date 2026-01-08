@@ -463,7 +463,8 @@ function handleAnchorNavigation(content, href) {
         } else {
             // Mobile or no TOC: scroll the whole page, accounting for sticky navbar
             const navbarHeight = 80; // Height of sticky navbar
-            const targetPosition = targetElement.getBoundingClientRect().top + globalThis.scrollY - navbarHeight;
+            const offset = 10; // Additional offset for spacing
+            const targetPosition = targetElement.getBoundingClientRect().top + globalThis.scrollY - navbarHeight - offset;
 
             globalThis.scrollTo({
                 top: targetPosition,
@@ -717,20 +718,34 @@ export function scrollToHash(contentId, tocListId) {
         return;
     }
 
-    // Scroll to the target element
-    const contentRect = content.getBoundingClientRect();
-    const targetRect = targetElement.getBoundingClientRect();
-    const currentScroll = content.scrollTop;
+    // Check if we're in a desktop layout with TOC sidebar or mobile/no-TOC layout
+    const hasTocSidebar = globalThis.innerWidth >= 1024 && document.querySelector('.neba-document-toc');
 
-    const offset = 20; // Small offset from the top of the container
-    const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+    console.log('[NebaDocument] Scrolling to position for layout:', hasTocSidebar ? 'desktop with TOC' : 'mobile/no-TOC');
 
-    console.log('[NebaDocument] Scrolling to position:', scrollPosition);
+    if (hasTocSidebar) {
+        // Desktop with TOC: content is in a scrollable container
+        const contentRect = content.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+        const currentScroll = content.scrollTop;
+        const offset = 20;
+        const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
 
-    content.scrollTo({
-        top: scrollPosition,
-        behavior: 'smooth'
-    });
+        content.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
+    } else {
+        // Mobile or no TOC: scroll the whole page, accounting for sticky navbar
+        const navbarHeight = 80;
+        const offset = 10; // Additional offset for spacing
+        const targetPosition = targetElement.getBoundingClientRect().top + globalThis.scrollY - navbarHeight - offset;
+
+        globalThis.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+    }
 
     // Also update the active link in TOC
     const tocList = document.getElementById(tocListId);
