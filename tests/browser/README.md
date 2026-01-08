@@ -142,11 +142,25 @@ npx playwright show-trace test-results/<test-name>/trace.zip
 
 ```file
 tests/browser/
-├── notifications.spec.ts    # Notification component tests
-├── playwright.config.ts     # Playwright configuration
-├── package.json            # Node dependencies
-└── README.md              # This file
+├── notifications.e2e.spec.ts        # Notification component tests
+├── modals.e2e.spec.ts              # Modal component tests
+├── document-navigation.e2e.spec.ts # Document hash navigation & scrolling tests
+├── playwright.config.ts            # Playwright configuration
+├── package.json                    # Node dependencies
+└── README.md                       # This file
 ```
+
+### Document Navigation Tests
+
+The `document-navigation.e2e.spec.ts` file contains tests for:
+
+- **Hash navigation on page load**: Verifies scrolling to correct section when URL contains a hash (e.g., `/bylaws#section-10.3-annual-meeting`)
+- **Link click navigation**: Tests clicking section links updates URL and scrolls correctly
+- **Desktop vs Mobile behavior**: Different scrolling logic for desktop (with TOC sidebar) vs mobile (full page scroll with navbar offset)
+- **Bookmark/named range links**: Ensures bookmarks like "established election cycle" work correctly
+- **Edge cases**: Invalid hashes, repeated clicks, viewport resize
+
+These tests mock the API responses so no backend is required.
 
 ## CI/CD Integration
 
@@ -243,6 +257,32 @@ test('should work on mobile', async ({ page }) => {
 });
 ```
 
+### Mocking API Responses
+
+All tests mock API responses to avoid needing a running backend. Use Playwright's route interception:
+
+```typescript
+async function mockDocumentAPI(page: Page) {
+  // Mock the HTML endpoint
+  await page.route('**/bylaws/html', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        content: '<h1 id="section-1">Section 1</h1>...',
+        metadata: { LastUpdatedUtc: '2024-01-01T00:00:00Z' }
+      })
+    });
+  });
+}
+
+test('my test', async ({ page }) => {
+  await mockDocumentAPI(page);
+  await page.goto('/bylaws');
+  // Test continues with mocked data...
+});
+```
+
 ### Best Practices
 
 1. **Use Playwright's auto-waiting**: Use `expect().toBeHidden()` instead of `waitForTimeout()`
@@ -251,6 +291,7 @@ test('should work on mobile', async ({ page }) => {
 4. **One scenario per test**: Keep tests focused and readable
 5. **Test accessibility**: Verify ARIA attributes and roles
 6. **Avoid timing assumptions**: Let Playwright handle waiting
+7. **Mock all API calls**: Use `page.route()` to intercept and mock API responses
 
 ## Test Data Configuration
 
