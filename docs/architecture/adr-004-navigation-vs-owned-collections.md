@@ -198,6 +198,175 @@ await context.SaveChangesAsync();
 
 This matches the domain flow: tournaments award titles to bowlers.
 
+## Querying Patterns
+
+### DDD Collections vs. EF Core Projections
+
+When designing aggregates with collections, we maintain two distinct interfaces:
+
+1. **ID Collections (for DDD domain logic)**: Read-only collections of identifiers exposed to domain services
+2. **Entity Collections (for EF Core queries)**: Internal navigation properties used for projections and LINQ queries
+
+**Pattern**:
+```csharp
+public sealed class Tournament : Aggregate<TournamentId>
+{
+    // Private backing field - mutable for EF Core relationship fixup
+    private readonly List<Bowler> _champions = [];
+
+    /// <summary>
+    /// Gets the collection of bowler IDs for champions of this tournament.
+    /// Use this in domain logic and domain services.
+    /// </summary>
+    public IReadOnlyCollection<BowlerId> ChampionIds => _champions.ConvertAll(b => b.Id);
+
+    /// <summary>
+    /// Internal navigation property to champion bowlers for EF Core queries.
+    /// Use this in repository queries and LINQ projections.
+    /// </summary>
+    internal IReadOnlyCollection<Bowler> Champions
+    {
+        get => _champions;
+        init => _champions = value?.ToList() ?? [];
+    }
+}
+```
+
+**Why this pattern?**
+
+- **Domain services** work with identifiers: `if (tournament.ChampionIds.Contains(bowlerId))`
+- **Repository queries** use navigation properties: `dbContext.Tournaments.Include(t => t.Champions)`
+- **DDD principle**: Don't expose full entities across aggregate boundaries in domain logic
+- **EF Core requirement**: Need entity references for relationship management and projections
+
+### Querying with Owned Entities and AsNoTracking
+
+When projecting data that includes owned entities (configured with `OwnsOne`), you must use `.AsNoTracking()` even though projections normally don't require it.
+
+**Background**: In standard EF Core queries, projections automatically create non-tracked queries:
+
+```csharp
+// This is already non-tracking - no AsNoTracking() needed
+var results = await dbContext.Bowlers
+    .Select(b => new BowlerDto { Id = b.Id, FirstName = b.FirstName })
+    .ToListAsync();
+```
+
+**However**, when projecting owned entities without their owner, EF Core requires explicit non-tracking:
+
+```csharp
+// ❌ FAILS: Tracking query cannot project owned entity without owner
+var awards = await dbContext.SeasonAwards
+    .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
+    .Select(award => new BowlerOfTheYearAwardDto
+    {
+        BowlerName = award.Bowler.Name,  // Name is an owned entity (OwnsOne)
+        Season = award.Season
+    })
+    .ToListAsync();
+// Error: "A tracking query is attempting to project an owned entity without a
+// corresponding owner in its result, but owned entities cannot be tracked
+// without their owner."
+
+// ✅ CORRECT: AsNoTracking() allows projecting owned entities
+var awards = await dbContext.SeasonAwards
+    .AsNoTracking()  // Required for owned entity projection
+    .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
+    .Select(award => new BowlerOfTheYearAwardDto
+    {
+        BowlerName = award.Bowler.Name,  // Now safe to project
+        Season = award.Season
+    })
+    .ToListAsync();
+```
+
+**Technical explanation**:
+
+- **Owned entities** (like `Name` configured with `OwnsOne`) are part of their owner's state
+- **EF Core tracking** requires the complete aggregate to maintain consistency
+- **Projecting only the owned entity** breaks this relationship in tracking queries
+- **AsNoTracking()** disables change tracking, allowing partial projections
+
+**Where this applies**:
+
+```csharp
+// Bowler.Name is owned entity (OwnsOne configuration)
+public sealed class Bowler : Aggregate<BowlerId>
+{
+    public required Name Name { get; init; }  // Owned entity
+}
+
+// BowlerConfiguration uses OwnsOne
+builder.OwnsOne(bowler => bowler.Name, nameBuilder =>
+{
+    nameBuilder.Property(n => n.FirstName).HasColumnName("first_name");
+    nameBuilder.Property(n => n.LastName).HasColumnName("last_name");
+});
+```
+
+**Repository query examples**:
+
+```csharp
+// WebsiteAwardQueryRepository - projecting owned entities requires AsNoTracking
+public async Task<IReadOnlyCollection<BowlerOfTheYearAwardDto>> ListBowlerOfTheYearAwardsAsync(
+    CancellationToken cancellationToken)
+    => await dbContext.SeasonAwards
+        .AsNoTracking()  // Required: projecting award.Bowler.Name (owned entity)
+        .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
+        .Select(award => new BowlerOfTheYearAwardDto
+        {
+            BowlerName = award.Bowler.Name,  // Owned entity
+            Season = award.Season
+        })
+        .ToListAsync(cancellationToken);
+
+// WebsiteBowlerQueryRepository - querying through navigation properties
+public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(
+    BowlerId bowlerId, CancellationToken cancellationToken)
+{
+    List<BowlerTitleDto> titles = await dbContext.Bowlers
+        .AsNoTracking()  // Required: projecting bowler.Name (owned entity)
+        .Where(bowler => bowler.Id == bowlerId)
+        .SelectMany(bowler => bowler.Titles.Select(tournament => new BowlerTitleDto
+        {
+            BowlerName = bowler.Name,  // Owned entity
+            TournamentType = tournament.TournamentType
+        }))
+        .ToListAsync(cancellationToken);
+}
+```
+
+**Testing implications**:
+
+Test queries that verify expected data must also use `.AsNoTracking()` when projecting owned entities:
+
+```csharp
+[Fact]
+public async Task ListBowlerOfTheYearAwardsAsync_ShouldReturnAllAwards()
+{
+    // Test setup...
+
+    // ✅ Test query also needs AsNoTracking when projecting owned entities
+    var expectedAwards = await websiteDbContext.SeasonAwards
+        .AsNoTracking()  // Required here too
+        .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
+        .Select(award => new
+        {
+            BowlerName = award.Bowler.Name,  // Owned entity
+            award.Season
+        })
+        .ToListAsync();
+}
+```
+
+**Summary**:
+
+- ✅ Use `.AsNoTracking()` when projecting owned entities (`OwnsOne`) without their owner
+- ✅ Standard projections without owned entities don't require `.AsNoTracking()`
+- ✅ Apply this pattern consistently in both production code and tests
+- ✅ Use internal entity collections (not ID collections) for repository LINQ queries
+- ✅ Use public ID collections for domain logic in domain services
+
 ## Consequences
 
 ### Positive
