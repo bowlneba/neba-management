@@ -41,7 +41,7 @@ void Main()
 		Entries = t.TournamentStats.Count(t => t.Stats_QualifyingStats != null) / (t.Tournaments_TeamTournament != null ? t.Tournaments_TeamTournament.TeamSize : 1)
 	});
 	
-	tournaments.Dump();
+	tournaments.OrderBy(t => t.TournamentEndDate).Dump();
 }
 
 // You can define other methods, fields, classes and namespaces here
