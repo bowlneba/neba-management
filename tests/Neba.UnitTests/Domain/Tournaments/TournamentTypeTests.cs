@@ -14,25 +14,26 @@ public sealed class TournamentTypeTests
         IReadOnlyCollection<TournamentType> tournamentTypes = TournamentType.List;
 
         // Assert
-        tournamentTypes.Count.ShouldBe(15);
+        tournamentTypes.Count.ShouldBe(16);
     }
 
     [Theory(DisplayName = "Has correct properties for all types")]
-    [InlineData("Singles", 10, 1, true, TestDisplayName = "Singles type is correct")]
-    [InlineData("Doubles", 20, 2, true, TestDisplayName = "Doubles type is correct")]
-    [InlineData("Trios", 30, 3, true, TestDisplayName = "Trios type is correct")]
-    [InlineData("Baker", 50, 5, true, TestDisplayName = "Baker type is correct")]
-    [InlineData("Non-Champions", 11, 1, true, TestDisplayName = "Non-Champions type is correct")]
-    [InlineData("Tournament of Champions", 12, 1, true, TestDisplayName = "Tournament of Champions type is correct")]
-    [InlineData("Invitational", 13, 1, true, TestDisplayName = "Invitational type is correct")]
-    [InlineData("Masters", 14, 1, true, TestDisplayName = "Masters type is correct")]
-    [InlineData("High Roller", 15, 1, false, TestDisplayName = "High Roller type is correct and inactive")]
-    [InlineData("Senior", 16, 1, true, TestDisplayName = "Senior type is correct")]
-    [InlineData("Women", 17, 1, true, TestDisplayName = "Women type is correct")]
-    [InlineData("Over 40", 18, 1, false, TestDisplayName = "Over 40 type is correct and inactive")]
-    [InlineData("40 - 49", 19, 1, false, TestDisplayName = "40 - 49 type is correct and inactive")]
-    [InlineData("Over/Under 50 Doubles", 21, 2, true, TestDisplayName = "Over/Under 50 Doubles type is correct")]
-    [InlineData("Over/Under 40 Doubles", 22, 2, false, TestDisplayName = "Over/Under 40 Doubles type is correct and inactive")]
+    [InlineData("Singles", 100, 1, true, TestDisplayName = "Singles type is correct")]
+    [InlineData("Doubles", 200, 2, true, TestDisplayName = "Doubles type is correct")]
+    [InlineData("Trios", 300, 3, true, TestDisplayName = "Trios type is correct")]
+    [InlineData("Baker", 500, 5, true, TestDisplayName = "Baker type is correct")]
+    [InlineData("Non-Champions", 101, 1, true, TestDisplayName = "Non-Champions type is correct")]
+    [InlineData("Tournament of Champions", 102, 1, true, TestDisplayName = "Tournament of Champions type is correct")]
+    [InlineData("Invitational", 103, 1, true, TestDisplayName = "Invitational type is correct")]
+    [InlineData("Masters", 104, 1, true, TestDisplayName = "Masters type is correct")]
+    [InlineData("High Roller", 105, 1, false, TestDisplayName = "High Roller type is correct and inactive")]
+    [InlineData("Senior", 106, 1, true, TestDisplayName = "Senior type is correct")]
+    [InlineData("Women", 107, 1, true, TestDisplayName = "Women type is correct")]
+    [InlineData("Over 40", 108, 1, false, TestDisplayName = "Over 40 type is correct and inactive")]
+    [InlineData("40 - 49", 109, 1, false, TestDisplayName = "40 - 49 type is correct and inactive")]
+    [InlineData("Youth", 110, 1, true, TestDisplayName = "Youth type is correct")]
+    [InlineData("Over/Under 50 Doubles", 201, 2, true, TestDisplayName = "Over/Under 50 Doubles type is correct")]
+    [InlineData("Over/Under 40 Doubles", 202, 2, false, TestDisplayName = "Over/Under 40 Doubles type is correct and inactive")]
     public void TournamentType_ShouldHaveCorrectProperties(string expectedName, int expectedValue, int expectedPlayersPerTeam, bool expectedIsActive)
     {
         // Arrange

@@ -16,77 +16,82 @@ public sealed class TournamentType
     /// <summary>
     /// Singles tournament (1 player per team).
     /// </summary>
-    public static readonly TournamentType Singles = new("Singles", 10, 1, true);
+    public static readonly TournamentType Singles = new("Singles", 100, 1, true);
 
     /// <summary>
     /// Doubles tournament (2 players per team).
     /// </summary>
-    public static readonly TournamentType Doubles = new("Doubles", 20, 2, true);
+    public static readonly TournamentType Doubles = new("Doubles", 200, 2, true);
 
     /// <summary>
     /// Trios tournament (3 players per team).
     /// </summary>
-    public static readonly TournamentType Trios = new("Trios", 30, 3, true);
+    public static readonly TournamentType Trios = new("Trios", 300, 3, true);
 
     /// <summary>
     /// Baker tournament (5 players per team).
     /// </summary>
-    public static readonly TournamentType Baker = new("Baker", 50, 5, true);
+    public static readonly TournamentType Baker = new("Baker", 500, 5, true);
 
     /// <summary>
     /// Non-Champions tournament.
     /// </summary>
-    public static readonly TournamentType NonChampions = new("Non-Champions", 11, 1, true);
+    public static readonly TournamentType NonChampions = new("Non-Champions", 101, 1, true);
 
     /// <summary>
     /// Tournament of Champions event.
     /// </summary>
-    public static readonly TournamentType TournamentOfChampions = new("Tournament of Champions", 12, 1, true);
+    public static readonly TournamentType TournamentOfChampions = new("Tournament of Champions", 102, 1, true);
 
     /// <summary>
     /// Invitational tournament.
     /// </summary>
-    public static readonly TournamentType Invitational = new("Invitational", 13, 1, true);
+    public static readonly TournamentType Invitational = new("Invitational", 103, 1, true);
 
     /// <summary>
     /// Masters tournament.
     /// </summary>
-    public static readonly TournamentType Masters = new("Masters", 14, 1, true);
+    public static readonly TournamentType Masters = new("Masters", 104, 1, true);
 
     /// <summary>
     /// High Roller tournament.
     /// </summary>
-    public static readonly TournamentType HighRoller = new("High Roller", 15, 1, false);
+    public static readonly TournamentType HighRoller = new("High Roller", 105, 1, false);
 
     /// <summary>
     /// Senior tournament.
     /// </summary>
-    public static readonly TournamentType Senior = new("Senior", 16, 1, true);
+    public static readonly TournamentType Senior = new("Senior", 106, 1, true);
 
     /// <summary>
     /// Women tournament.
     /// </summary>
-    public static readonly TournamentType Women = new("Women", 17, 1, true);
+    public static readonly TournamentType Women = new("Women", 107, 1, true);
 
     /// <summary>
     /// Over 40 tournament.
     /// </summary>
-    public static readonly TournamentType OverForty = new("Over 40", 18, 1, false);
+    public static readonly TournamentType OverForty = new("Over 40", 108, 1, false);
 
     /// <summary>
     /// 40-49 age group tournament.
     /// </summary>
-    public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1, false);
+    public static readonly TournamentType FortyToFortyNine = new("40 - 49", 109, 1, false);
+
+    /// <summary>
+    /// Youth tournament.
+    /// </summary>
+    public static readonly TournamentType Youth = new("Youth", 110, 1, true);
 
     /// <summary>
     /// Over/Under 50 Doubles tournament (2 players per team).
     /// </summary>
-    public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2, true);
+    public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 201, 2, true);
 
     /// <summary>
     /// Over/Under 40 Doubles tournament (2 players per team).
     /// </summary>
-    public static readonly TournamentType OverUnderFortyDoubles = new("Over/Under 40 Doubles", 22, 2, false);
+    public static readonly TournamentType OverUnderFortyDoubles = new("Over/Under 40 Doubles", 202, 2, false);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TournamentType"/> class.
