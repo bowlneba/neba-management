@@ -30,7 +30,7 @@ public sealed class AwardsIntegrationTests
                 });
 
         int totalBowlerOfTheYearWins = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking()
+            => await context.Bowlers
                 .SelectMany(b => b.SeasonAwards)
                 .Where(sa => sa.AwardType == SeasonAwardType.BowlerOfTheYear)
                 .CountAsync());
@@ -117,7 +117,7 @@ public sealed class AwardsIntegrationTests
                 });
 
         int totalHighBlockWins = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking()
+            => await context.Bowlers
                 .SelectMany(b => b.SeasonAwards)
                 .Where(sa => sa.AwardType == SeasonAwardType.High5GameBlock)
                 .CountAsync());
@@ -204,7 +204,7 @@ public sealed class AwardsIntegrationTests
                 });
 
         int totalHighAverageWins = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking()
+            => await context.Bowlers
                 .SelectMany(b => b.SeasonAwards)
                 .Where(sa => sa.AwardType == SeasonAwardType.HighAverage)
                 .CountAsync());
@@ -291,7 +291,7 @@ public sealed class AwardsIntegrationTests
                 });
 
         int totalInductions = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking()
+            => await context.Bowlers
                 .SelectMany(b => b.HallOfFameInductions)
                 .CountAsync());
 

@@ -10,34 +10,27 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
     public async Task<IReadOnlyCollection<BowlerTitleDto>> ListTitlesAsync(CancellationToken cancellationToken)
         => await dbContext.Tournaments
             .AsNoTracking()
-            .SelectMany(tournament => tournament.ChampionIds,
-                (tournament, bowlerId) => new { tournament, bowlerId })
-            .Join(dbContext.Bowlers,
-                tc => tc.bowlerId,
-                bowler => bowler.Id,
-                (tc, bowler) => new BowlerTitleDto
+            .SelectMany(tournament => tournament.Champions,
+                (tournament, bowler) => new BowlerTitleDto
                 {
                     BowlerId = bowler.Id,
                     BowlerName = bowler.Name,
-                    TournamentDate = tc.tournament.EndDate,
-                    TournamentType = tc.tournament.TournamentType
+                    TournamentDate = tournament.EndDate,
+                    TournamentType = tournament.TournamentType
                 })
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListTitleSummariesAsync(CancellationToken cancellationToken)
         => await dbContext.Tournaments
             .AsNoTracking()
-            .SelectMany(tournament => tournament.ChampionIds)
-            .GroupBy(bowlerId => bowlerId)
-            .Join(dbContext.Bowlers,
-                group => group.Key,
-                bowler => bowler.Id,
-                (group, bowler) => new BowlerTitleSummaryDto
-                {
-                    BowlerId = bowler.Id,
-                    BowlerName = bowler.Name,
-                    TitleCount = group.Count(),
-                    HallOfFame = bowler.HallOfFameInductions.Any()
-                })
+            .SelectMany(tournament => tournament.Champions)
+            .GroupBy(bowler => bowler.Id)
+            .Select(group => new BowlerTitleSummaryDto
+            {
+                BowlerId = group.Key,
+                BowlerName = group.First().Name,
+                TitleCount = group.Count(),
+                HallOfFame = group.First().HallOfFameInductions.Any()
+            })
             .ToListAsync(cancellationToken);
 }

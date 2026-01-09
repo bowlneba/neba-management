@@ -13,9 +13,9 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
     public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken)
     {
         List<BowlerTitleDto> titles = await (
-            from tournament in dbContext.Tournaments.AsNoTracking()
+            from tournament in dbContext.Tournaments
             where tournament.ChampionIds.Contains(bowlerId)
-            from bowler in dbContext.Bowlers.AsNoTracking()
+            from bowler in dbContext.Bowlers
             where bowler.Id == bowlerId
             orderby tournament.EndDate, tournament.TournamentType
             select new BowlerTitleDto
@@ -33,7 +33,6 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
         }
 
         bool isInHallOfFame = await dbContext.HallOfFameInductions
-            .AsNoTracking()
             .AnyAsync(induction => induction.Bowler.Id == bowlerId, cancellationToken);
 
         return new BowlerTitlesDto

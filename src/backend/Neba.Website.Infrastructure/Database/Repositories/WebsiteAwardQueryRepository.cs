@@ -14,7 +14,6 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
 
     public async Task<IReadOnlyCollection<BowlerOfTheYearAwardDto>> ListBowlerOfTheYearAwardsAsync(CancellationToken cancellationToken)
         => await dbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
             .Select(award => new BowlerOfTheYearAwardDto
             {
@@ -28,7 +27,6 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
 
     public async Task<IReadOnlyCollection<HighBlockAwardDto>> ListHigh5GameBlockAwardsAsync(CancellationToken cancellationToken)
         => await dbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.High5GameBlock)
             .Select(award => new HighBlockAwardDto
             {
@@ -42,7 +40,6 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
     public async Task<IReadOnlyCollection<HighAverageAwardDto>> ListHighAverageAwardsAsync(CancellationToken cancellationToken)
     {
         List<HighAverageAwardDto> awards = await dbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.HighAverage)
             .Select(award => new HighAverageAwardDto
             {
@@ -65,7 +62,6 @@ internal sealed class WebsiteAwardQueryRepository(WebsiteDbContext dbContext)
 
     public async Task<IReadOnlyCollection<HallOfFameInductionDto>> ListHallOfFameInductionsAsync(CancellationToken cancellationToken)
         => await dbContext.HallOfFameInductions
-            .AsNoTracking()
             .Select(induction => new HallOfFameInductionDto
             {
                 Year = induction.Year,

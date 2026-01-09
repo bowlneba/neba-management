@@ -51,7 +51,6 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         var expectedAwards = await websiteDbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.BowlerOfTheYear)
             .Select(award => new
             {
@@ -97,7 +96,6 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         var expectedAwards = await websiteDbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.High5GameBlock)
             .Select(award => new
             {
@@ -143,7 +141,6 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         var expectedAwards = await websiteDbContext.SeasonAwards
-            .AsNoTracking()
             .Where(award => award.AwardType == SeasonAwardType.HighAverage)
             .Select(award => new
             {
@@ -193,7 +190,6 @@ public sealed class WebsiteAwardQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.SaveChangesAsync();
 
         var expectedInductions = await websiteDbContext.HallOfFameInductions
-            .AsNoTracking()
             .Select(induction => new
             {
                 induction.Id,

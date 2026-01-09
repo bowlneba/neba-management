@@ -41,7 +41,7 @@ public sealed class TitlesIntegrationTests
                 });
 
         int totalTitles = await ExecuteAsync(async context
-            => await context.Tournaments.AsNoTracking().SumAsync(t => t.ChampionIds.Count));
+            => await context.Tournaments.SumAsync(t => t.ChampionIds.Count));
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -84,7 +84,7 @@ public sealed class TitlesIntegrationTests
                 });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
-            => await context.Tournaments.AsNoTracking()
+            => await context.Tournaments
                 .SelectMany(t => t.ChampionIds)
                 .Distinct()
                 .CountAsync());
