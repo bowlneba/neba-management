@@ -53,10 +53,16 @@ public sealed class Bowler
     /// </summary>
     internal IReadOnlyCollection<HallOfFameInduction> HallOfFameInductions { get; init; }
 
+    private readonly List<Tournament> _titles = [];
+
     /// <summary>
     /// Internal navigation property to tournaments where this bowler is a champion.
     /// This is a navigation property for querying only - NOT part of the Bowler aggregate's invariants.
     /// Tournaments own the business rules about champions; this is just for EF Core many-to-many navigation.
     /// </summary>
-    internal IReadOnlyCollection<Tournament> Titles { get; init; } = [];
+    internal IReadOnlyCollection<Tournament> Titles
+    {
+        get => _titles;
+        init => _titles = value?.ToList() ?? [];
+    }
 }
