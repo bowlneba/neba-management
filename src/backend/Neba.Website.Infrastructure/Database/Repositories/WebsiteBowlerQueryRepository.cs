@@ -12,20 +12,19 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 
     public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken)
     {
-        List<BowlerTitleDto> titles = await (
-            from tournament in dbContext.Tournaments
-            where tournament.ChampionIds.Contains(bowlerId)
-            from bowler in dbContext.Bowlers
-            where bowler.Id == bowlerId
-            orderby tournament.EndDate, tournament.TournamentType
-            select new BowlerTitleDto
+        List<BowlerTitleDto> titles = await dbContext.Bowlers
+            .AsNoTracking()
+            .Where(bowler => bowler.Id == bowlerId)
+            .SelectMany(bowler => bowler.Titles.Select(tournament => new BowlerTitleDto
             {
                 BowlerName = bowler.Name,
                 BowlerId = bowler.Id,
                 TournamentType = tournament.TournamentType,
                 TournamentDate = tournament.EndDate,
-            }
-        ).ToListAsync(cancellationToken);
+            }))
+            .OrderBy(title => title.TournamentDate)
+            .ThenBy(title => title.TournamentType)
+            .ToListAsync(cancellationToken);
 
         if (titles.Count == 0)
         {
