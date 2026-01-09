@@ -26,6 +26,9 @@
   <NuGetReference>Google.Apis.Auth</NuGetReference>
   <NuGetReference>Google.Apis.Sheets.v4</NuGetReference>
   <Namespace>Ardalis.SmartEnum</Namespace>
+  <Namespace>Google.Apis.Auth.OAuth2</Namespace>
+  <Namespace>Google.Apis.Services</Namespace>
+  <Namespace>Google.Apis.Sheets.v4</Namespace>
   <Namespace>HtmlAgilityPack</Namespace>
   <Namespace>Microsoft.CSharp</Namespace>
   <Namespace>Microsoft.Data.SqlClient</Namespace>
@@ -44,7 +47,7 @@
 
 async Task Main()
 {
-	bool getBowlingCenters = false;
+	bool getBowlingCenters = true;
 
 	if (getBowlingCenters)
 	{
@@ -859,7 +862,7 @@ public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync
 
 public async Task MigrateTournamentChampionsAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, IReadOnlyCollection<TournamentRecord> migratedTournaments)
 {
-	foreach (var tournament in migratedTournaments)
+	foreach (var tournament in migratedTournaments.Where(t => t.TournamentType != "Youth"))
 	{
 		foreach (var champion in tournament.Winners ?? [])
 		{
@@ -1639,7 +1642,7 @@ public static IDictionary<SinglesTournamentTypes, TournamentType> SoftwareToTour
 	{SinglesTournamentTypes.Women, TournamentType.Women},
 	{SinglesTournamentTypes.Champions, TournamentType.TournamentOfChampions},
 	{SinglesTournamentTypes.Invitational, TournamentType.Invitational},
-	{SinglesTournamentTypes.Masters, TournamentType.Masters}
+	{SinglesTournamentTypes.Masters, TournamentType.Masters},
 	{SinglesTournamentTypes.SeniorWithWomen, TournamentType.Senior}
 };
 
