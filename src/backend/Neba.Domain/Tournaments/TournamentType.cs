@@ -16,22 +16,22 @@ public sealed class TournamentType
     /// <summary>
     /// Singles tournament (1 player per team).
     /// </summary>
-    public static readonly TournamentType Singles = new("Singles", 100, 1, true);
+    public static readonly TournamentType Singles = new(nameof(Singles), 100, 1, true);
 
     /// <summary>
     /// Doubles tournament (2 players per team).
     /// </summary>
-    public static readonly TournamentType Doubles = new("Doubles", 200, 2, true);
+    public static readonly TournamentType Doubles = new(nameof(Doubles), 200, 2, true);
 
     /// <summary>
     /// Trios tournament (3 players per team).
     /// </summary>
-    public static readonly TournamentType Trios = new("Trios", 300, 3, true);
+    public static readonly TournamentType Trios = new(nameof(Trios), 300, 3, true);
 
     /// <summary>
     /// Baker tournament (5 players per team).
     /// </summary>
-    public static readonly TournamentType Baker = new("Baker", 500, 5, true);
+    public static readonly TournamentType Baker = new(nameof(Baker), 500, 5, true);
 
     /// <summary>
     /// Non-Champions tournament.
@@ -46,12 +46,12 @@ public sealed class TournamentType
     /// <summary>
     /// Invitational tournament.
     /// </summary>
-    public static readonly TournamentType Invitational = new("Invitational", 103, 1, true);
+    public static readonly TournamentType Invitational = new(nameof(Invitational), 103, 1, true);
 
     /// <summary>
     /// Masters tournament.
     /// </summary>
-    public static readonly TournamentType Masters = new("Masters", 104, 1, true);
+    public static readonly TournamentType Masters = new(nameof(Masters), 104, 1, true);
 
     /// <summary>
     /// High Roller tournament.
@@ -61,12 +61,12 @@ public sealed class TournamentType
     /// <summary>
     /// Senior tournament.
     /// </summary>
-    public static readonly TournamentType Senior = new("Senior", 106, 1, true);
+    public static readonly TournamentType Senior = new(nameof(Senior), 106, 1, true);
 
     /// <summary>
     /// Women tournament.
     /// </summary>
-    public static readonly TournamentType Women = new("Women", 107, 1, true);
+    public static readonly TournamentType Women = new(nameof(Women), 107, 1, true);
 
     /// <summary>
     /// Over 40 tournament.
@@ -81,7 +81,12 @@ public sealed class TournamentType
     /// <summary>
     /// Youth tournament.
     /// </summary>
-    public static readonly TournamentType Youth = new("Youth", 110, 1, true);
+    public static readonly TournamentType Youth = new(nameof(Youth), 110, 1, true);
+
+    /// <summary>
+    /// Eliminator tournament.
+    /// </summary>
+    public static readonly TournamentType Eliminator = new(nameof(Eliminator), 111, 1, false);
 
     /// <summary>
     /// Over/Under 50 Doubles tournament (2 players per team).

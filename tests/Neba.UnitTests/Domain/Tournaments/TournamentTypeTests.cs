@@ -14,7 +14,7 @@ public sealed class TournamentTypeTests
         IReadOnlyCollection<TournamentType> tournamentTypes = TournamentType.List;
 
         // Assert
-        tournamentTypes.Count.ShouldBe(16);
+        tournamentTypes.Count.ShouldBe(17);
     }
 
     [Theory(DisplayName = "Has correct properties for all types")]
@@ -32,6 +32,7 @@ public sealed class TournamentTypeTests
     [InlineData("Over 40", 108, 1, false, TestDisplayName = "Over 40 type is correct and inactive")]
     [InlineData("40 - 49", 109, 1, false, TestDisplayName = "40 - 49 type is correct and inactive")]
     [InlineData("Youth", 110, 1, true, TestDisplayName = "Youth type is correct")]
+    [InlineData("Eliminator", 111, 1, false, TestDisplayName = "Eliminator type is correct and inactive")]
     [InlineData("Over/Under 50 Doubles", 201, 2, true, TestDisplayName = "Over/Under 50 Doubles type is correct")]
     [InlineData("Over/Under 40 Doubles", 202, 2, false, TestDisplayName = "Over/Under 40 Doubles type is correct and inactive")]
     public void TournamentType_ShouldHaveCorrectProperties(string expectedName, int expectedValue, int expectedPlayersPerTeam, bool expectedIsActive)
