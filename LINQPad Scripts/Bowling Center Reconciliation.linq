@@ -100,7 +100,11 @@ void Main()
 	centersMatchedByUsbcName.Order().Dump("USBC Match As Entered");
 	
 	//todo: need to create new list (and remove from not matched) of centers manually accounted for in port
+	HashSet<string> centersManuallyUpdated = [];
 	centersNotMatchedByUsbcName.Remove("AMF Hamden Lanes - Hamden, CT");
+	centersManuallyUpdated.Add("AMF Hamden Lanes - Hamden, CT");
+	
+	centersManuallyUpdated.Dump("Centers Manually Handled");
 	
 	centersNotMatchedByUsbcName.Select(name => new 
 	{

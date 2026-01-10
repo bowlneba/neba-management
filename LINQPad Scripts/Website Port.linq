@@ -314,7 +314,9 @@ private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAddit
 		Street = "2300 Dixwell Ave",
 		City = "Hamden",
 		State = "CT",
-		ZipCode = "06514",
+		ZipCode = "06514-2106",
+		Latitude = 41.3734065,
+		Longitude = -72.9187806,
 		PhoneCountryCode = "1",
 		PhoneNumber = "2032485503",
 		Country = "US",
@@ -322,8 +324,7 @@ private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAddit
 	};
 	hamdenLanes.WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(hamdenLanes.PhoneNumber, out var hamdenWebsiteId) ? hamdenWebsiteId : null;
 	
-	await AzureAddressLookup(httpClient, hamdenLanes);
-	
+	manualBowlingCenters.Add(hamdenLanes);
 	
 	return manualBowlingCenters;
 }
