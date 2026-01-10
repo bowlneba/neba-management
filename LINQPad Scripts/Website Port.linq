@@ -226,43 +226,43 @@ public async Task MigrateBowlingCentersAsync()
 		centerPhoneNumbers.Add(softwareBowlingCenter.PhoneNumber);
 	}
 
-	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
-	var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
-	.Select(row => new
-	{
-		Id = row.Field<int>("ID"),
-		CenterName = row.Field<string>("CenterName")!,
-		Street = row.Field<string>("Street")!,
-		City = row.Field<string>("City")!,
-		State = row.Field<string>("State")!,
-		Zip = row.Field<string>("Zip")!,
-		Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
-	})
-	.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
-	.Where(bc => bc.Id != 23); //Norwich has old phone number
+	//// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
+	//var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
+	//.Select(row => new
+	//{
+	//	Id = row.Field<int>("ID"),
+	//	CenterName = row.Field<string>("CenterName")!,
+	//	Street = row.Field<string>("Street")!,
+	//	City = row.Field<string>("City")!,
+	//	State = row.Field<string>("State")!,
+	//	Zip = row.Field<string>("Zip")!,
+	//	Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
+	//})
+	//.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
+	//.Where(bc => bc.Id != 23); //Norwich has old phone number
 
-	websiteBowlingCenters.Dump("Website Centers not Ported Yet");
+	//websiteBowlingCenters.Dump("Website Centers not Ported Yet");
 
 	//bowlingCentersToWebsiteSchema.Where(x => string.IsNullOrWhiteSpace(x.PhoneNumber)).Dump("No phone");
 
-	foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
-	{
-		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
-		{
-			DomainId = Guid.AsDomainId(),
-			ApplicationId = null,
-			WebsiteId = websiteBowlingCenter.Id,
-			Name = websiteBowlingCenter.CenterName,
-			Street = websiteBowlingCenter.Street,
-			City = websiteBowlingCenter.City,
-			State = websiteBowlingCenter.State,
-			ZipCode = websiteBowlingCenter.Zip,
-			Country = "US",
-			Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
-			PhoneCountryCode = "1",
-			PhoneNumber = websiteBowlingCenter.Phone
-		});
-	}
+	//foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
+	//{
+	//	bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+	//	{
+	//		DomainId = Guid.AsDomainId(),
+	//		ApplicationId = null,
+	//		WebsiteId = websiteBowlingCenter.Id,
+	//		Name = websiteBowlingCenter.CenterName,
+	//		Street = websiteBowlingCenter.Street,
+	//		City = websiteBowlingCenter.City,
+	//		State = websiteBowlingCenter.State,
+	//		ZipCode = websiteBowlingCenter.Zip,
+	//		Country = "US",
+	//		Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
+	//		PhoneCountryCode = "1",
+	//		PhoneNumber = websiteBowlingCenter.Phone
+	//	});
+	//}
 
 	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
 	List<KeyValuePair<BowlingCenters, int>> multipleResultsBowlingCenters = [];
@@ -272,47 +272,99 @@ public async Task MigrateBowlingCentersAsync()
 
 	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema.Where(bc => bc.Latitude == null))
 	{
-		string address = $"{bowlingCenter.Street} {bowlingCenter.City}, {bowlingCenter.State} {bowlingCenter.ZipCode}";
-		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+		var azureResponse = await AzureAddressLookup(httpClient, bowlingCenter.Street, bowlingCenter.City, bowlingCenter.State, bowlingCenter.ZipCode);
 
-		var result = await httpClient.GetAsync(url);
-
-		if (result.IsSuccessStatusCode)
+		if (azureResponse is null)
 		{
-			using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+			failedBowlingCenterAddressLookups.Add(bowlingCenter);
+			
+			continue;
+		}
 
-			var azureResponse = JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
-
-			if (azureResponse.Results.Length == 1)
-			{
-				var azureResult = azureResponse.Results[0];
-
-				bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
-				bowlingCenter.City = azureResult.Address.LocalName;
-				bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
-
-				bowlingCenter.Latitude = azureResult.Position.Lat;
-				bowlingCenter.Longitude = azureResult.Position.Lon;
-
-				// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
-			}
-			else
-			{
-				multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
-			}
+		if (azureResponse.Results.Length == 1)
+		{
+			var azureResult = azureResponse.Results[0];
+			
+			FillBowlingCenterWithAzureDetails(azureResult, bowlingCenter);
 		}
 		else
 		{
-			failedBowlingCenterAddressLookups.Add(bowlingCenter);
+			multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
 		}
 	}
 
 	failedBowlingCenterAddressLookups.Dump("Failed Bowling Center Address Lookup");
 	multipleResultsBowlingCenters.Dump("Multiple Address Lookup Bowling Centers");
+	
+	BowlingCenters.AddRange(await ManualBowlingCenterAdditionsAsync(httpClient, bowlingCenterWebsiteIdByPhoneNumber));
 
 	BowlingCenters.AddRange(bowlingCentersToWebsiteSchema);
 
 	await SaveChangesAsync();
+}
+
+private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAdditionsAsync(HttpClient httpClient, IDictionary<string, int> bowlingCenterWebsiteIdByPhoneNumber)
+{
+	List<BowlingCenters> manualBowlingCenters = [];
+
+	var hamdenLanes = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "AMF Hamden Lanes",
+		Street = "2300 Dixwell Ave",
+		City = "Hamden",
+		State = "CT",
+		ZipCode = "06514",
+		PhoneCountryCode = "1",
+		PhoneNumber = "2032485503",
+		Country = "US",
+		Closed = true
+	};
+	hamdenLanes.WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(hamdenLanes.PhoneNumber, out var hamdenWebsiteId) ? hamdenWebsiteId : null;
+	
+	await AzureAddressLookup(httpClient, hamdenLanes);
+	
+	
+	return manualBowlingCenters;
+}
+
+private async Task AzureAddressLookup(HttpClient httpClient, BowlingCenters bowlingCenter)
+{
+	var azureResponse = await AzureAddressLookup(httpClient, bowlingCenter.Street, bowlingCenter.City, bowlingCenter.State, bowlingCenter.ZipCode);
+
+	if (azureResponse!.Results.Length == 1)
+	{
+		var result = azureResponse.Results[0];
+		
+		FillBowlingCenterWithAzureDetails(result, bowlingCenter);
+	}
+}
+
+private async Task<AzureAtlasResponse?> AzureAddressLookup(HttpClient httpClient, string street, string city, string state, string zipCode)
+{
+	string address = $"{street} {city}, {state} {zipCode}";
+	string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+
+	var result = await httpClient.GetAsync(url);
+
+	if (result.IsSuccessStatusCode)
+	{
+		using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+
+		return JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
+	}
+
+	return null;
+}
+
+private void FillBowlingCenterWithAzureDetails(AzureAtlasResult azureResult, BowlingCenters bowlingCenter)
+{
+	bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
+	bowlingCenter.City = azureResult.Address.LocalName;
+	bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
+
+	bowlingCenter.Latitude = azureResult.Position.Lat;
+	bowlingCenter.Longitude = azureResult.Position.Lon;
 }
 
 private void ManualLocationUpdates(IReadOnlyCollection<BowlingCenters> bowlingCenters)
