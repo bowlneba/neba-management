@@ -990,6 +990,12 @@ a:focus-visible {
   padding-left: 1.25rem;
 }
 
+.neba-dropdown-divider {
+  height: 1px;
+  margin: 0.5rem 0;
+  background-color: var(--neba-border);
+}
+
 /* Mobile Menu Toggle */
 .neba-menu-toggle {
   display: none;
