@@ -1,0 +1,417 @@
+@page "/tournaments"
+@using Neba.Domain.Identifiers
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Tournaments
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Upcoming Tournaments - NEBA</PageTitle>
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Upcoming Tournaments</h1>
+        <p class="mt-1 text-sm text-gray-600">View and register for upcoming NEBA tournaments</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Tournaments"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading tournaments..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Timeline View -->
+    @if (!_isLoading && _tournaments.Count > 0)
+    {
+        <div class="tournament-timeline">
+            @foreach (var tournament in _tournaments)
+            {
+                <div class="tournament-timeline-item">
+                    <div class="tournament-timeline-date">
+                        <div class="timeline-date-primary">@FormatDateRange(tournament.StartDate, tournament.EndDate)</div>
+                        <div class="timeline-date-year">@tournament.StartDate.Year</div>
+                    </div>
+                    <div class="tournament-timeline-content">
+                        @if (tournament.ThumbnailUrl != null)
+                        {
+                            <img src="@tournament.ThumbnailUrl" alt="@tournament.Name" class="tournament-timeline-image" />
+                        }
+                        else
+                        {
+                            <div class="tournament-timeline-image tournament-default-logo">
+                                <div class="tournament-logo-content">
+                                    <div class="tournament-logo-icon">⛛</div>
+                                    <div class="tournament-logo-text">NEBA 1963</div>
+                                </div>
+                            </div>
+                        }
+                        <div class="tournament-timeline-info">
+                            <div class="tournament-timeline-title">@tournament.Name</div>
+                            <div class="tournament-timeline-location">📍 @tournament.BowlingCenterName</div>
+                            <div class="tournament-tags">
+                                @if (!string.IsNullOrWhiteSpace(tournament.PatternLengthCategory))
+                                {
+                                    <span class="tournament-tag">@tournament.PatternLengthCategory</span>
+                                }
+                                <span class="tournament-tag">@tournament.TournamentType</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (!_isLoading && _tournaments.Count == 0)
+    {
+        <div class="text-center py-12 text-gray-500">
+            <p class="text-lg">No upcoming tournaments at this time.</p>
+            <p class="text-sm mt-2">Check back soon for new tournament announcements!</p>
+        </div>
+    }
+</div>
+
+<style>
+    /* Timeline Container */
+    .tournament-timeline {
+        position: relative;
+        padding-left: 140px;
+    }
+
+    .tournament-timeline::before {
+        content: '';
+        position: absolute;
+        left: 100px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #ddd;
+    }
+
+    /* Timeline Item */
+    .tournament-timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .tournament-timeline-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Timeline Date */
+    .tournament-timeline-date {
+        position: absolute;
+        left: -140px;
+        top: 0;
+        width: 80px;
+        text-align: right;
+        font-weight: 700;
+        color: #0047AB;
+    }
+
+    .timeline-date-primary {
+        font-size: 18px;
+    }
+
+    .timeline-date-year {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .tournament-timeline-date::after {
+        content: '';
+        position: absolute;
+        right: -42px;
+        top: 6px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #0047AB;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #0047AB;
+    }
+
+    /* Timeline Content */
+    .tournament-timeline-content {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .tournament-timeline-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    .tournament-default-logo {
+        background: linear-gradient(135deg, #0047AB 0%, #003d99 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .tournament-logo-content {
+        text-align: center;
+    }
+
+    .tournament-logo-icon {
+        font-size: 48px;
+    }
+
+    .tournament-logo-text {
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .tournament-timeline-info {
+        flex: 1;
+    }
+
+    .tournament-timeline-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 8px;
+    }
+
+    .tournament-timeline-location {
+        color: #888;
+        margin-bottom: 12px;
+    }
+
+    /* Tags */
+    .tournament-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .tournament-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #e3f2fd;
+        color: #0047AB;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .tournament-timeline {
+            padding-left: 20px;
+        }
+
+        .tournament-timeline::before {
+            left: 0;
+        }
+
+        .tournament-timeline-date {
+            position: static;
+            text-align: left;
+            width: auto;
+            margin-bottom: 12px;
+        }
+
+        .tournament-timeline-date::after {
+            display: none;
+        }
+
+        .tournament-timeline-content {
+            flex-direction: column;
+        }
+
+        .tournament-timeline-image {
+            width: 100%;
+            height: 200px;
+        }
+    }
+</style>
+
+@code {
+    private List<TournamentViewModel> _tournaments = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Simulate 2.5 second load time
+            await Task.Delay(2500);
+
+            // Generate dummy data
+            _tournaments = GenerateDummyTournaments();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load tournaments: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private List<TournamentViewModel> GenerateDummyTournaments()
+    {
+        const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
+        var baseDate = DateOnly.FromDateTime(DateTime.Now.AddDays(14));
+        var thumbnailUrl = new Uri(defaultThumbnailUrl);
+
+        return new List<TournamentViewModel>
+        {
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "Bowl Winkles Pro Shop Open",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Bowl-O-Rama",
+                StartDate = baseDate,
+                EndDate = baseDate,
+                TournamentType = "Open Singles",
+                PatternLengthCategory = "Short"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Regular Doubles",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "East Providence Lanes",
+                StartDate = baseDate.AddDays(28),
+                EndDate = baseDate.AddDays(29),
+                TournamentType = "Doubles",
+                PatternLengthCategory = "Medium"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Singles - Sparetime Northampton",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Spare Time Northampton",
+                StartDate = baseDate.AddDays(56),
+                EndDate = baseDate.AddDays(57),
+                TournamentType = "Open Singles",
+                PatternLengthCategory = "Medium"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Special Cuts (Women, Senior & Super Senior)",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Bowlero Worcester",
+                StartDate = baseDate.AddDays(77),
+                EndDate = baseDate.AddDays(77),
+                TournamentType = "Senior/Super Senior/Women",
+                PatternLengthCategory = "Short"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "Buddies Pro Shop Open - Nutmeg Bowl",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Nutmeg Bowl",
+                StartDate = baseDate.AddDays(91),
+                EndDate = baseDate.AddDays(92),
+                TournamentType = "Open Singles",
+                PatternLengthCategory = "Long"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Team Championship",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Bowlero Cranston",
+                StartDate = baseDate.AddDays(119),
+                EndDate = baseDate.AddDays(120),
+                TournamentType = "Team",
+                PatternLengthCategory = "Medium"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Masters Qualifier",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Lanes & Games",
+                StartDate = baseDate.AddDays(147),
+                EndDate = baseDate.AddDays(147),
+                TournamentType = "Open Singles",
+                PatternLengthCategory = "Long"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Over/Under 50 Baker Event",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "AMF Hamden Lanes",
+                StartDate = baseDate.AddDays(175),
+                EndDate = baseDate.AddDays(176),
+                TournamentType = "Over/Under 50 Doubles",
+                PatternLengthCategory = "Short"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Senior/Super Senior Singles",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Westgate Lanes",
+                StartDate = baseDate.AddDays(203),
+                EndDate = baseDate.AddDays(203),
+                TournamentType = "Senior/Super Senior",
+                PatternLengthCategory = "Medium"
+            },
+            new()
+            {
+                Id = TournamentId.New(),
+                Name = "NEBA Championship Finals",
+                ThumbnailUrl = thumbnailUrl,
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = "Bowlero Worcester",
+                StartDate = baseDate.AddDays(238),
+                EndDate = baseDate.AddDays(239),
+                TournamentType = "Open Singles",
+                PatternLengthCategory = "Long"
+            }
+        };
+    }
+
+    private static string FormatDateRange(DateOnly startDate, DateOnly endDate)
+    {
+        if (startDate == endDate)
+        {
+            return $"{startDate:MMM dd}";
+        }
+
+        if (startDate.Month == endDate.Month)
+        {
+            return $"{startDate:MMM dd}-{endDate.Day}";
+        }
+
+        return $"{startDate:MMM dd}-{endDate:MMM dd}";
+    }
+}
