@@ -26,12 +26,12 @@ public sealed record TournamentSummaryDto
     /// <summary>
     /// Gets the identifier of the bowling center where the tournament is held.
     /// </summary>
-    public required BowlingCenterId BowlingCenterId { get; init; }
+    public BowlingCenterId? BowlingCenterId { get; init; }
 
     /// <summary>
     /// Gets the name of the bowling center where the tournament is held.
     /// </summary>
-    public required string BowlingCenterName { get; init; }
+    public string? BowlingCenterName { get; init; }
 
     /// <summary>
     /// Gets the start date of the tournament.

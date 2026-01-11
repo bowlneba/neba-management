@@ -24,11 +24,41 @@ public static class TournamentFactory
                 StartDate = startDate ?? new DateOnly(2024, 1, 15),
                 EndDate = endDate ?? new DateOnly(2024, 1, 15),
                 BowlingCenterId = bowlingCenterId,
+                BowlingCenter = BowlingCenterFactory.Create(id: bowlingCenterId),
                 TournamentType = tournamentType ?? TournamentType.Singles,
                 LanePattern = lanePattern,
                 WebsiteId = websiteId,
                 ApplicationId = applicationId
             };
+
+    public static Tournament Create(
+        TournamentId? id = null,
+        string? name = null,
+        DateOnly? startDate = null,
+        DateOnly? endDate = null,
+        BowlingCenter? bowlingCenter = null,
+        TournamentType? tournamentType = null,
+        LanePattern? lanePattern = null,
+        int? websiteId = null,
+        int? applicationId = null
+    )
+    {
+        BowlingCenter bowlingCenterPopulated = bowlingCenter ?? BowlingCenterFactory.Create();
+
+        return new Tournament
+        {
+            Id = id ?? TournamentId.New(),
+            Name = name ?? "Test Tournament",
+            StartDate = startDate ?? new DateOnly(2024, 1, 15),
+            EndDate = endDate ?? new DateOnly(2024, 1, 15),
+            BowlingCenterId = bowlingCenterPopulated.Id,
+            BowlingCenter = bowlingCenterPopulated,
+            TournamentType = tournamentType ?? TournamentType.Singles,
+            LanePattern = lanePattern,
+            WebsiteId = websiteId,
+            ApplicationId = applicationId
+        };
+    }
 
     public static Tournament Bogus(IReadOnlyCollection<BowlingCenter> seedBowlingCenters, int? seed = null)
         => Bogus(1, seedBowlingCenters, seed).Single();
