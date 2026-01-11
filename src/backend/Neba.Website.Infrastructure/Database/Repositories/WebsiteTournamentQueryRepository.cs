@@ -11,7 +11,18 @@ internal sealed class WebsiteTournamentQueryRepository(WebsiteDbContext dbContex
             .AsNoTracking()
             .Where(tournament => tournament.StartDate >= afterDate)
             .OrderBy(tournament => tournament.StartDate)
-            .Select(tournament => tournament.ToTournamentSummaryDto())
+            .Select(tournament => new TournamentSummaryDto
+            {
+                Id = tournament.Id,
+                Name = tournament.Name,
+                BowlingCenterId = tournament.BowlingCenterId,
+                BowlingCenterName = tournament.BowlingCenter != null ? tournament.BowlingCenter.Name : null,
+                StartDate = tournament.StartDate,
+                EndDate = tournament.EndDate,
+                TournamentType = tournament.TournamentType,
+                PatternLengthCategory = tournament.LanePattern != null ? tournament.LanePattern.LengthCategory : null,
+                ThumbnailUrl = null
+            })
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<TournamentSummaryDto>> ListTournamentsInYearAsync(int year, CancellationToken cancellationToken)
@@ -19,6 +30,17 @@ internal sealed class WebsiteTournamentQueryRepository(WebsiteDbContext dbContex
             .AsNoTracking()
             .Where(tournament => tournament.StartDate.Year == year)
             .OrderBy(tournament => tournament.StartDate)
-            .Select(tournament => tournament.ToTournamentSummaryDto())
+            .Select(tournament => new TournamentSummaryDto
+            {
+                Id = tournament.Id,
+                Name = tournament.Name,
+                BowlingCenterId = tournament.BowlingCenterId,
+                BowlingCenterName = tournament.BowlingCenter != null ? tournament.BowlingCenter.Name : null,
+                StartDate = tournament.StartDate,
+                EndDate = tournament.EndDate,
+                TournamentType = tournament.TournamentType,
+                PatternLengthCategory = tournament.LanePattern != null ? tournament.LanePattern.LengthCategory : null,
+                ThumbnailUrl = null
+            })
             .ToListAsync(cancellationToken);
 }

@@ -276,6 +276,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddAsync(tournament2025);
         await websiteDbContext.SaveChangesAsync();
 
+        websiteDbContext.ChangeTracker.Clear();
+
         var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
         const int targetYear = 2024;
 
@@ -287,8 +289,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         result.ShouldBeEmpty();
     }
 
-    [Fact(DisplayName = "Correctly maps tournament properties to DTO")]
-    public async Task ListTournamentsAfterDateAsync_WithTournament_MapsPropertiesCorrectly()
+    [Fact(DisplayName = "Correctly maps all tournament properties to DTO including related entities")]
+    public async Task ListTournamentsAfterDateAsync_WithTournament_MapsAllPropertiesCorrectly()
     {
         // Arrange
         await using var websiteDbContext = new WebsiteDbContext(
@@ -298,17 +300,20 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
 
         // Create seed bowling center
         BowlingCenter bowlingCenter = BowlingCenterFactory.Create(
-            name: "Test Bowling Center");
+            name: "Elite Lanes Bowling Center");
         await websiteDbContext.BowlingCenters.AddAsync(bowlingCenter);
         await websiteDbContext.SaveChangesAsync();
 
-        // Create tournament with specific properties
+        // Create tournament with all properties including lane pattern
+        LanePattern lanePattern = LanePatternFactory.Create(
+            lengthCategory: Domain.Tournaments.PatternLengthCategory.LongPattern);
         Tournament tournament = TournamentFactory.Create(
-            name: "Test Tournament",
+            name: "Championship Tournament",
             startDate: new DateOnly(2024, 5, 20),
             endDate: new DateOnly(2024, 5, 22),
             bowlingCenter: bowlingCenter,
-            tournamentType: Domain.Tournaments.TournamentType.Doubles);
+            tournamentType: Domain.Tournaments.TournamentType.Doubles,
+            lanePattern: lanePattern);
 
         await websiteDbContext.Tournaments.AddAsync(tournament);
         await websiteDbContext.SaveChangesAsync();
@@ -323,11 +328,54 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         result.Count.ShouldBe(1);
         TournamentSummaryDto dto = result.Single();
 
+        // Verify all properties are mapped correctly
         dto.Id.ShouldBe(tournament.Id);
         dto.Name.ShouldBe(tournament.Name);
+        dto.BowlingCenterId.ShouldBe(bowlingCenter.Id);
+        dto.BowlingCenterName.ShouldBe(bowlingCenter.Name);
         dto.StartDate.ShouldBe(tournament.StartDate);
         dto.EndDate.ShouldBe(tournament.EndDate);
         dto.TournamentType.ShouldBe(tournament.TournamentType);
-        dto.BowlingCenterName.ShouldBe(bowlingCenter.Name);
+        dto.PatternLengthCategory.ShouldBe(lanePattern.LengthCategory);
+        dto.ThumbnailUrl.ShouldBeNull();
+    }
+
+    [Fact(DisplayName = "Maps null PatternLengthCategory when LanePattern is null")]
+    public async Task ListTournamentsAfterDateAsync_WithoutLanePattern_MapsNullPatternLengthCategory()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(_database.ConnectionString)
+                .Options);
+
+        // Create seed bowling center
+        BowlingCenter bowlingCenter = BowlingCenterFactory.Create(
+            name: "Test Bowling Center");
+        await websiteDbContext.BowlingCenters.AddAsync(bowlingCenter);
+        await websiteDbContext.SaveChangesAsync();
+
+        // Create tournament without lane pattern
+        Tournament tournament = TournamentFactory.Create(
+            name: "House Shot Tournament",
+            startDate: new DateOnly(2024, 6, 1),
+            endDate: new DateOnly(2024, 6, 1),
+            bowlingCenter: bowlingCenter,
+            lanePattern: null);
+
+        await websiteDbContext.Tournaments.AddAsync(tournament);
+        await websiteDbContext.SaveChangesAsync();
+
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+
+        // Act
+        IReadOnlyCollection<TournamentSummaryDto> result
+            = await repository.ListTournamentsAfterDateAsync(new DateOnly(2024, 1, 1), CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(1);
+        TournamentSummaryDto dto = result.Single();
+
+        dto.PatternLengthCategory.ShouldBeNull();
     }
 }
