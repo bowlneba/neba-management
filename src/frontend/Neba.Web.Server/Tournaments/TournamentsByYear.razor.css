@@ -58,8 +58,8 @@
 }
 
 .tournament-split-item.past-tournament .tournament-default-logo {
-    opacity: 0.7;
-    filter: grayscale(50%);
+    opacity: 0.85;
+    filter: none;
 }
 
 .tournament-logo-content {
@@ -148,6 +148,14 @@
 .tournament-tag:hover {
     background: #0047AB;
     color: white;
+}
+
+/* Hide dropdown panel when page is loading */
+.neba-loading-overlay ~ .year-selector-container .neba-dropdown-panel,
+.year-selector-container .neba-dropdown-panel {
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
 }
 
 /* Responsive adjustments */
