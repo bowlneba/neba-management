@@ -916,7 +916,7 @@ public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync
 			EndDate = entry.EndDate,
 			//BowlingCenterId = "ULID", // todo: need to do look ups (domainId in the bowling centers collection (location / name?)
 			TournamentType = TournamentType.FromName(entry.TournamentType),
-			WebsiteId = 0, // todo: need to get website events and figure out if it is already there and provide the id (start/end date? tournament type?)
+			WebsiteId = null, // todo: need to get website events and figure out if it is already there and provide the id (start/end date? tournament type?)
 			ApplicationId = entry.SoftwareId,
 			LanePatternLength = null,
 			LanePatternRatio = null
@@ -936,7 +936,7 @@ public async Task MigrateTournamentChampionsAsync(Dictionary<int, Ulid> bowlerId
 {
 	foreach (var tournament in migratedTournaments.Where(t => t.TournamentType != "Youth"))
 	{
-		foreach (var champion in tournament.Winners ?? [])
+		foreach (var champion in (tournament.Winners ?? []).Where(x => x > 0))
 		{
 			var tournamentChampion = new TournamentChampions
 			{
@@ -1660,11 +1660,11 @@ public sealed class TournamentType
 	/// </summary>
 	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40", 202, 2, 9);
 
-	public static readonly TournamentType Youth = new(nameof(Youth), 110, 1, 0);
+	public static readonly TournamentType Youth = new(nameof(Youth), 110, 1, null);
 	
 	public static readonly TournamentType Eliminator = new(nameof(Eliminator), 111 , 1, 10);
 	
-	public static readonly TournamentType Baker = new(nameof(Baker), 500, 5, 0);
+	public static readonly TournamentType Baker = new(nameof(Baker), 500, 5, null);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TournamentType"/> class.
@@ -1672,7 +1672,7 @@ public sealed class TournamentType
 	/// <param name="name">The display name of the tournament type.</param>
 	/// <param name="value">The unique integer value for the tournament type.</param>
 	/// <param name="teamSize">The number of players per team for this tournament type.</param>
-	private TournamentType(string name, int value, int teamSize, int websiteId)
+	private TournamentType(string name, int value, int teamSize, int? websiteId)
 		: base(name, value)
 	{
 		TeamSize = teamSize;
@@ -1691,7 +1691,7 @@ public sealed class TournamentType
 	/// </summary>
 	public int TeamSize { get; }
 
-	public int WebsiteId { get; }
+	public int? WebsiteId { get; }
 
 	public static TournamentType FromWebsiteId(int websiteId)
 		=> List.Single(tournamentType => tournamentType.WebsiteId == websiteId);
