@@ -15,9 +15,9 @@ public sealed class PatternLengthCategoryTests
     }
 
     [Theory(DisplayName = "Pattern Length has the correct name, value, minimum, and maximum lengths")]
-    [InlineData("ShortPattern", 1, null, 37)]
-    [InlineData("MediumPattern", 2, 38, 42)]
-    [InlineData("LongPattern", 3, 43, null)]
+    [InlineData("Short", 1, null, 37)]
+    [InlineData("Medium", 2, 38, 42)]
+    [InlineData("Long", 3, 43, null)]
     public void PatternLength_ShouldHaveCorrectProperties(string name, int expectedValue, int? expectedMinLength, int? expectedMaxLength)
     {
         // Act

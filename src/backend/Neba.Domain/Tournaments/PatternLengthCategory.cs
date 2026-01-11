@@ -13,17 +13,17 @@ public sealed class PatternLengthCategory
     /// <summary>
     /// Short pattern (less than 38 feet).
     /// </summary>
-    public static readonly PatternLengthCategory ShortPattern = new(nameof(ShortPattern), 1, null, 37);
+    public static readonly PatternLengthCategory ShortPattern = new("Short", 1, null, 37);
 
     /// <summary>
     /// Medium pattern (38 to 42 feet).
     /// </summary>
-    public static readonly PatternLengthCategory MediumPattern = new(nameof(MediumPattern), 2, 38, 42);
+    public static readonly PatternLengthCategory MediumPattern = new("Medium", 2, 38, 42);
 
     /// <summary>
     /// Long pattern (43 feet or more).
     /// </summary>
-    public static readonly PatternLengthCategory LongPattern = new(nameof(LongPattern), 3, 43, null);
+    public static readonly PatternLengthCategory LongPattern = new("Long", 3, 43, null);
 
     private PatternLengthCategory(
         string name,
