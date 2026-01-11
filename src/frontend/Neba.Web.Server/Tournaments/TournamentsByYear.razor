@@ -1,0 +1,213 @@
+@page "/tournaments/{year:int}"
+@using Neba.Domain.Identifiers
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Tournaments
+@inject NavigationManager Navigation
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>@Year Tournaments - NEBA</PageTitle>
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">@Year Tournaments</h1>
+        <p class="mt-1 text-sm text-gray-600">Browse all NEBA tournaments from @Year</p>
+    </div>
+
+    <!-- Year Selector -->
+    <div class="year-selector-container">
+        <label for="year-select" class="year-selector-label">View tournaments from:</label>
+        <select id="year-select" class="year-selector" value="@Year" @onchange="OnYearChanged">
+            <option value="@DateTime.Now.Year">Upcoming</option>
+            @for (int year = DateTime.Now.Year; year >= 1963; year--)
+            {
+                <option value="@year" selected="@(year == Year)">@year</option>
+            }
+        </select>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Tournaments"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading tournaments..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Split Image Layout -->
+    @if (!_isLoading && _tournaments.Count > 0)
+    {
+        <div class="tournament-split-layout">
+            @foreach (var tournament in _tournaments)
+            {
+                var isPast = tournament.EndDate < DateOnly.FromDateTime(DateTime.Now);
+
+                <div class="tournament-split-item @(isPast ? "past-tournament" : "")">
+                    <!-- Tournament Image/Logo -->
+                    <div class="tournament-split-image-container">
+                        @if (tournament.ThumbnailUrl != null)
+                        {
+                            <img src="@tournament.ThumbnailUrl" alt="@tournament.Name" class="tournament-split-image" />
+                        }
+                        else
+                        {
+                            <div class="tournament-split-image tournament-default-logo @(isPast ? "past-logo" : "")">
+                                <div class="tournament-logo-content">
+                                    <div class="tournament-logo-icon">⛛</div>
+                                    <div class="tournament-logo-text">NEBA 1963</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Tournament Content -->
+                    <div class="tournament-split-content">
+                        <div class="tournament-split-header">
+                            <div class="tournament-split-date @(isPast ? "past-date" : "")">
+                                @FormatFullDateRange(tournament.StartDate, tournament.EndDate)
+                            </div>
+                            @if (isPast)
+                            {
+                                <span class="past-badge">Past</span>
+                            }
+                        </div>
+                        <div class="tournament-split-title">@tournament.Name</div>
+                        <div class="tournament-split-location">📍 @tournament.BowlingCenterName</div>
+                        <div class="tournament-tags">
+                            @if (!string.IsNullOrWhiteSpace(tournament.PatternLengthCategory))
+                            {
+                                <span class="tournament-tag">@tournament.PatternLengthCategory</span>
+                            }
+                            <span class="tournament-tag">@tournament.TournamentType</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (!_isLoading && _tournaments.Count == 0)
+    {
+        <div class="text-center py-12 text-gray-500">
+            <p class="text-lg">No tournaments found for @Year.</p>
+            <p class="text-sm mt-2">Try selecting a different year.</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Year { get; set; }
+
+    private List<TournamentViewModel> _tournaments = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTournamentsAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadTournamentsAsync();
+    }
+
+    private async Task LoadTournamentsAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+
+            // Simulate API delay
+            await Task.Delay(1500);
+
+            // Generate dummy data for the selected year
+            _tournaments = GenerateDummyTournamentsForYear(Year);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load tournaments: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void OnYearChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int selectedYear))
+        {
+            Navigation.NavigateTo($"/tournaments/{selectedYear}");
+        }
+    }
+
+    private List<TournamentViewModel> GenerateDummyTournamentsForYear(int year)
+    {
+        const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
+        var thumbnailUrl = new Uri(defaultThumbnailUrl);
+
+        // Generate 8-12 tournaments for the year
+        var random = new Random(year); // Use year as seed for consistent data
+        var tournamentCount = random.Next(8, 13);
+        var tournaments = new List<TournamentViewModel>();
+
+        var startMonth = 1;
+        for (int i = 0; i < tournamentCount; i++)
+        {
+            var monthsToAdd = random.Next(0, 2); // 0-2 months apart
+            startMonth += monthsToAdd;
+            if (startMonth > 12) break;
+
+            var startDay = random.Next(1, 28);
+            var startDate = new DateOnly(year, startMonth, startDay);
+            var isMultiDay = random.Next(0, 3) == 0; // 33% chance of multi-day
+            var endDate = isMultiDay ? startDate.AddDays(1) : startDate;
+
+            var tournamentTypes = new[] { "Open Singles", "Doubles", "Team", "Senior/Super Senior", "Over/Under 50 Doubles", "Senior/Super Senior/Women" };
+            var patternCategories = new[] { "Short", "Medium", "Long" };
+            var bowlingCenters = new[] { "Bowl-O-Rama", "East Providence Lanes", "Spare Time Northampton", "Bowlero Worcester", "Nutmeg Bowl", "Bowlero Cranston", "Lanes & Games", "AMF Hamden Lanes", "Westgate Lanes" };
+
+            tournaments.Add(new TournamentViewModel
+            {
+                Id = TournamentId.New(),
+                Name = $"NEBA Tournament {i + 1}",
+                ThumbnailUrl = i % 3 == 0 ? thumbnailUrl : null, // Every 3rd tournament has image
+                BowlingCenterId = BowlingCenterId.New(),
+                BowlingCenterName = bowlingCenters[random.Next(bowlingCenters.Length)],
+                StartDate = startDate,
+                EndDate = endDate,
+                TournamentType = tournamentTypes[random.Next(tournamentTypes.Length)],
+                PatternLengthCategory = patternCategories[random.Next(patternCategories.Length)]
+            });
+
+            startMonth++;
+        }
+
+        return tournaments.OrderBy(t => t.StartDate).ToList();
+    }
+
+    private static string FormatFullDateRange(DateOnly startDate, DateOnly endDate)
+    {
+        if (startDate == endDate)
+        {
+            return $"{startDate:MMMM dd, yyyy}";
+        }
+
+        if (startDate.Month == endDate.Month)
+        {
+            return $"{startDate:MMMM dd}-{endDate.Day}, {endDate.Year}";
+        }
+
+        return $"{startDate:MMMM dd}-{endDate:MMMM dd}, {endDate.Year}";
+    }
+}

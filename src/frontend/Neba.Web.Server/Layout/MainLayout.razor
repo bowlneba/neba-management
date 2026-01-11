@@ -68,7 +68,7 @@
                            aria-expanded="false"
                            onclick="event.preventDefault();">Tournaments</a>
                         <div class="neba-dropdown" role="menu">
-                            <a href="/tournaments" class="neba-dropdown-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)" role="menuitem">Upcoming</a>
+                            <a href="@($"/tournaments/{CurrentYear}")" class="neba-dropdown-link @(IsActive($"tournaments/{CurrentYear}") ? "active" : null)" aria-current="@(IsActive($"tournaments/{CurrentYear}") ? "page" : null)" role="menuitem">Past Tournaments</a>
                             <div class="neba-dropdown-divider"></div>
                             <a href="/tournaments/rules" class="neba-dropdown-link @(IsActive("tournaments/rules") ? "active" : null)" aria-current="@(IsActive("tournaments/rules") ? "page" : null)" role="menuitem">Tournament Rules</a>
                         </div>
@@ -174,6 +174,8 @@
     private bool IsProduction =>
         string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(HostEnv.EnvironmentName, "Docker", StringComparison.OrdinalIgnoreCase);
+
+    private static int CurrentYear => DateTime.Now.Year;
 
     bool IsActive(string path)
     {
