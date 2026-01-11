@@ -14,8 +14,8 @@ public static class TournamentFactory
         DateOnly? endDate = null,
         BowlingCenterId? bowlingCenterId = null,
         TournamentType? tournamentType = null,
+        int? entries = null,
         LanePattern? lanePattern = null,
-        int? websiteId = null,
         int? applicationId = null)
             => new()
             {
@@ -27,7 +27,7 @@ public static class TournamentFactory
                 BowlingCenter = BowlingCenterFactory.Create(id: bowlingCenterId),
                 TournamentType = tournamentType ?? TournamentType.Singles,
                 LanePattern = lanePattern,
-                WebsiteId = websiteId,
+                EntryCount = entries ?? 50,
                 ApplicationId = applicationId
             };
 
@@ -38,8 +38,8 @@ public static class TournamentFactory
         DateOnly? endDate = null,
         BowlingCenter? bowlingCenter = null,
         TournamentType? tournamentType = null,
+        int? entries = null,
         LanePattern? lanePattern = null,
-        int? websiteId = null,
         int? applicationId = null
     )
     {
@@ -53,9 +53,9 @@ public static class TournamentFactory
             EndDate = endDate ?? new DateOnly(2024, 1, 15),
             BowlingCenterId = bowlingCenterPopulated.Id,
             BowlingCenter = bowlingCenterPopulated,
+            EntryCount = entries ?? 50,
             TournamentType = tournamentType ?? TournamentType.Singles,
             LanePattern = lanePattern,
-            WebsiteId = websiteId,
             ApplicationId = applicationId
         };
     }
@@ -68,13 +68,6 @@ public static class TournamentFactory
         IEnumerable<BowlingCenter> seedBowlingCenters,
         int? seed = null)
     {
-        // Create pools of unique IDs to avoid collisions across tests
-        UniqueIdPool websiteIdPool = UniqueIdPool.Create(
-            poolSize: 100000,
-            baseOffset: 0,
-            seed,
-            probabilityOfValue: 0.5f);
-
         UniqueIdPool applicationIdPool = UniqueIdPool.Create(
             poolSize: 100000,
             baseOffset: 100_000_000,
@@ -99,7 +92,7 @@ public static class TournamentFactory
                     BowlingCenterId = bowlingCenter.Id,
                     TournamentType = f.PickRandom(TournamentType.List.ToArray()),
                     LanePattern = f.Random.Bool(0.6f) ? LanePatternFactory.Bogus(seed) : null,
-                    WebsiteId = websiteIdPool.GetNext(),
+                    EntryCount = f.Random.Int(25, 300),
                     ApplicationId = applicationIdPool.GetNext()
                 };
             });
