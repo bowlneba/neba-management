@@ -314,7 +314,7 @@ private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAddit
 		Street = "2300 Dixwell Ave",
 		City = "Hamden",
 		State = "CT",
-		ZipCode = "06514-2106",
+		ZipCode = "065142106",
 		Latitude = 41.3734065,
 		Longitude = -72.9187806,
 		PhoneCountryCode = "1",
@@ -325,6 +325,25 @@ private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAddit
 	hamdenLanes.WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(hamdenLanes.PhoneNumber, out var hamdenWebsiteId) ? hamdenWebsiteId : null;
 	
 	manualBowlingCenters.Add(hamdenLanes);
+
+	var colonyLanes = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "Brunswick Colony Lanes",
+		Street = "600 South Colony Road",
+		City = "Wallingford",
+		State = "CT",
+		ZipCode = "064925128",
+		Latitude = 41.442736,
+		Longitude = -72.830042,
+		PhoneCountryCode = "1",
+		PhoneNumber = "2032691415",
+		Country = "US",
+		Closed = true,
+		WebsiteId = null
+	};
+	
+	manualBowlingCenters.Add(colonyLanes);
 	
 	return manualBowlingCenters;
 }
