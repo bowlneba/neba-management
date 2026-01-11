@@ -16,7 +16,6 @@ public partial class NebaDropdown<TValue, TItem> : ComponentBase, IAsyncDisposab
 {
 #pragma warning disable CS8618
     private ElementReference _dropdownRef;
-    private ElementReference _searchInputRef;
 #pragma warning restore CS8618
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<NebaDropdown<TValue, TItem>>? _dotNetRef;
@@ -115,24 +114,14 @@ public partial class NebaDropdown<TValue, TItem> : ComponentBase, IAsyncDisposab
 
         if (_isOpen && _jsModule != null && _dotNetRef != null)
         {
-            await _jsModule.InvokeVoidAsync("initializeDropdown", _dropdownRef, _dotNetRef);
-
-            // Auto-focus the search input for better UX - use a small delay to ensure DOM is ready
-            _ = Task.Run(async () =>
+            try
             {
-                await Task.Delay(50);
-                if (_searchInputRef.Context != null)
-                {
-                    try
-                    {
-                        await _searchInputRef.FocusAsync();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // Silently ignore focus errors in test environments
-                    }
-                }
-            });
+                await _jsModule.InvokeVoidAsync("initializeDropdown", _dropdownRef, _dotNetRef);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Component was disposed before JS interop completed
+            }
         }
     }
 

@@ -194,7 +194,14 @@
             path = "/";
         }
 
-        // Exact match or section match (e.g., stats or stats/details)
-        return current == path || current.StartsWith(path + "/");
+        // For exact matches
+        if (current == path)
+            return true;
+
+        // For section matches, only if followed by / (to avoid /tournaments matching /tournaments/{year})
+        if (current.StartsWith(path + "/"))
+            return true;
+
+        return false;
     }
 }

@@ -19,8 +19,8 @@
     <div class="year-selector-container">
         <NebaDropdown TValue="int"
                       TItem="int"
-                      @bind-Value="@Year"
-                      @bind-Value:event="onchange"
+                      Value="@Year"
+                      ValueChanged="@HandleYearChangeAsync"
                       Items="@_availableYears"
                       Label="View tournaments from:"
                       Placeholder="Select a year..." />
@@ -120,18 +120,31 @@
             .ToList();
 
         _previousYear = Year;
-        await LoadTournamentsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load tournaments after first render when Year parameter is definitely set
+            await LoadTournamentsAsync();
+        }
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        // Navigate to new year URL if year changed
+        // Load new tournaments if year changed
         if (_previousYear != Year)
         {
             _previousYear = Year;
-            Navigation.NavigateTo($"/tournaments/{Year}");
             await LoadTournamentsAsync();
         }
+    }
+
+    private async Task HandleYearChangeAsync(int newYear)
+    {
+        Year = newYear;
+        await OnParametersSetAsync();
     }
 
     private async Task LoadTournamentsAsync()

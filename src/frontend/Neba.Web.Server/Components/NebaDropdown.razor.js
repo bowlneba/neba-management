@@ -6,9 +6,10 @@
 let dropdownElement = null;
 let dotNetHelper = null;
 let clickOutsideHandler = null;
+let searchInput = null;
 
 /**
- * Initialize dropdown click-outside detection
+ * Initialize dropdown click-outside detection and auto-focus
  * @param {HTMLElement} element - The dropdown container element
  * @param {any} helper - DotNet object reference for callbacks
  */
@@ -18,6 +19,18 @@ export function initializeDropdown(element, helper) {
 
     dropdownElement = element;
     dotNetHelper = helper;
+
+    // Find the search input and focus it
+    searchInput = element?.querySelector('input[type="search"], input[type="text"]');
+    if (searchInput) {
+        setTimeout(() => {
+            try {
+                searchInput.focus();
+            } catch (e) {
+                // Silently ignore focus errors
+            }
+        }, 50);
+    }
 
     // Add click-outside handler with a small delay to avoid immediate triggering
     setTimeout(() => {
@@ -52,4 +65,6 @@ export function cleanup() {
 
     dropdownElement = null;
     dotNetHelper = null;
+    searchInput = null;
 }
+
