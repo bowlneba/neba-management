@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 using Neba.Api.ErrorHandling;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
@@ -76,5 +77,12 @@ app.MapWebsiteEndpoints();
 app.MapGet("/", () => "Neba API is running...");
 
 #endif
+
+app.MapGet("/debug/clear-cache", async (HybridCache cache) =>
+{
+    await cache.RemoveByTagAsync("*");
+
+    return Results.Ok("Cache cleared.");
+});
 
 await app.RunAsync();

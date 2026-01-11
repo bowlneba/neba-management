@@ -47,7 +47,7 @@
 
 async Task Main()
 {
-	bool getBowlingCenters = true;
+	bool getBowlingCenters = false;
 
 	if (getBowlingCenters)
 	{
@@ -914,7 +914,7 @@ public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync
 			Name = entry.TournamentName,
 			StartDate = entry.StartDate,
 			EndDate = entry.EndDate,
-			BowlingCenterId = "0", // todo: need to do look ups (domainId in the bowling centers collection (location / name?)
+			//BowlingCenterId = "ULID", // todo: need to do look ups (domainId in the bowling centers collection (location / name?)
 			TournamentType = TournamentType.FromName(entry.TournamentType),
 			WebsiteId = 0, // todo: need to get website events and figure out if it is already there and provide the id (start/end date? tournament type?)
 			ApplicationId = entry.SoftwareId,
@@ -1608,12 +1608,12 @@ public sealed class TournamentType
 	/// <summary>
 	/// Non-Champions tournament.
 	/// </summary>
-	public static readonly TournamentType NonChampions = new("Non-Champs", 101, 1, 8);
+	public static readonly TournamentType NonChampions = new("Non-Champions", 101, 1, 8);
 
 	/// <summary>
 	/// Tournament of Champions event.
 	/// </summary>
-	public static readonly TournamentType TournamentOfChampions = new("T of C", 102, 1, 7);
+	public static readonly TournamentType TournamentOfChampions = new("Tournament of Champions", 102, 1, 7);
 
 	/// <summary>
 	/// Invitational tournament.
@@ -1638,7 +1638,7 @@ public sealed class TournamentType
 	/// <summary>
 	/// Women tournament.
 	/// </summary>
-	public static readonly TournamentType Women = new("Women's", 107, 1, 15);
+	public static readonly TournamentType Women = new("Women", 107, 1, 15);
 
 	/// <summary>
 	/// Over 40 tournament.
@@ -1658,9 +1658,13 @@ public sealed class TournamentType
 	/// <summary>
 	/// Over/Under 40 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 202, 2, 9);
+	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40", 202, 2, 9);
 
 	public static readonly TournamentType Youth = new(nameof(Youth), 110, 1, 0);
+	
+	public static readonly TournamentType Eliminator = new(nameof(Eliminator), 111 , 1, 10);
+	
+	public static readonly TournamentType Baker = new(nameof(Baker), 500, 5, 0);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TournamentType"/> class.
@@ -2238,6 +2242,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(null, 4738),  // Cory Martin
 	new(519, 658),	// Zac Gentile
 	new(null, 2900),  // David Anton
+	new(null, 4948),  // Jonathan A Gibson, Sr
 	new(457, 701),	// Dave Paquin Jr
 	new(null, 1914),  // David Travers
 	new(17, 943), 	// Stephen Dale Jr

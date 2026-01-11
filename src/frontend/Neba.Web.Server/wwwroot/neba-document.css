@@ -1035,7 +1035,7 @@
   color: var(--neba-gray-600);
   padding: 0.25rem 0 0 0;
   margin: 0;
-  z-index: 9999; /* ensure the text sits above surrounding elements */
+  z-index: 10; /* ensure the text sits above surrounding elements but below modals */
 }
 
 /* Last Updated Header (Slide-out) */
