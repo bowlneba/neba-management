@@ -98,8 +98,9 @@ src/backend/
 - [x] Hall of Fame (including HOF indicator for champions)
 - [x] Bowling Centers
 - [ ] Tournaments
-- [ ] News
+- [ ] Tournament Documents
 - [ ] Sponsors
+- [ ] News
 - [ ] About
 - [ ] Stats
 
