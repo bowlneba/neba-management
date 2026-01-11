@@ -39,14 +39,6 @@ internal sealed class TournamentConfiguration
             .HasConversion<SmartEnumConverter<TournamentType, int>>()
             .IsRequired();
 
-        builder.Property(tournament => tournament.WebsiteId)
-            .HasColumnName("website_id")
-            .ValueGeneratedNever();
-
-        builder.HasIndex(tournament => tournament.WebsiteId)
-            .IsUnique()
-            .AreNullsDistinct();
-
         builder.Property(tournament => tournament.ApplicationId)
             .HasColumnName("application_id")
             .ValueGeneratedNever();
@@ -54,6 +46,9 @@ internal sealed class TournamentConfiguration
         builder.HasIndex(tournament => tournament.ApplicationId)
             .IsUnique()
             .AreNullsDistinct();
+
+        builder.Property(tournament => tournament.EntryCount)
+            .HasColumnName("entries");
 
         builder.Property(tournament => tournament.BowlingCenterId)
             .IsUlid<BowlingCenterId, BowlingCenterId.EfCoreValueConverter>(BowlingCenterConfiguration.ForeignKeyName);

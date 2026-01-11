@@ -140,8 +140,8 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     end_date = table.Column<DateOnly>(type: "date", nullable: false),
                     bowling_center_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: true),
                     tournament_type = table.Column<int>(type: "integer", nullable: false),
-                    website_id = table.Column<int>(type: "integer", nullable: true),
                     application_id = table.Column<int>(type: "integer", nullable: true),
+                    entries = table.Column<int>(type: "integer", nullable: true),
                     lane_pattern_length = table.Column<int>(type: "integer", nullable: true),
                     lane_pattern_ratio = table.Column<int>(type: "integer", nullable: true),
                     domain_id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false)
@@ -266,14 +266,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                 schema: "website",
                 table: "tournaments",
                 column: "bowling_center_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_tournaments_website_id",
-                schema: "website",
-                table: "tournaments",
-                column: "website_id",
-                unique: true)
-                .Annotation("Npgsql:NullsDistinct", true);
         }
 
         /// <inheritdoc />

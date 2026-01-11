@@ -916,8 +916,8 @@ public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync
 			EndDate = entry.EndDate,
 			//BowlingCenterId = "ULID", // todo: need to do look ups (domainId in the bowling centers collection (location / name?)
 			TournamentType = TournamentType.FromName(entry.TournamentType),
-			WebsiteId = null, // todo: need to get website events and figure out if it is already there and provide the id (start/end date? tournament type?)
 			ApplicationId = entry.SoftwareId,
+			Entries = entry.Entries,
 			LanePatternLength = null,
 			LanePatternRatio = null
 		};

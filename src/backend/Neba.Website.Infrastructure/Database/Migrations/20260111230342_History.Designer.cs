@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Neba.Website.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(WebsiteDbContext))]
-    [Migration("20260104124646_History")]
+    [Migration("20260111230342_History")]
     partial class History
     {
         /// <inheritdoc />
@@ -362,6 +362,10 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .HasColumnType("date")
                         .HasColumnName("end_date");
 
+                    b.Property<int?>("EntryCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("entries");
+
                     b.Property<string>("Id")
                         .IsRequired()
                         .HasMaxLength(26)
@@ -382,10 +386,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.Property<int>("TournamentType")
                         .HasColumnType("integer")
                         .HasColumnName("tournament_type");
-
-                    b.Property<int?>("WebsiteId")
-                        .HasColumnType("integer")
-                        .HasColumnName("website_id");
 
                     b.ComplexProperty(typeof(Dictionary<string, object>), "LanePattern", "Neba.Website.Domain.Tournaments.Tournament.LanePattern#LanePattern", b1 =>
                         {
@@ -412,12 +412,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
 
                     b.HasIndex("BowlingCenterId")
                         .HasDatabaseName("ix_tournaments_bowling_center_id");
-
-                    b.HasIndex("WebsiteId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tournaments_website_id");
-
-                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("WebsiteId"), true);
 
                     b.ToTable("tournaments", "website");
                 });
