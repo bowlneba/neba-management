@@ -116,7 +116,7 @@ public partial class NebaDropdown<TValue, TItem> : ComponentBase, IAsyncDisposab
         if (_isOpen && _jsModule != null && _dotNetRef != null)
         {
             await _jsModule.InvokeVoidAsync("initializeDropdown", _dropdownRef, _dotNetRef);
-            
+
             // Auto-focus the search input for better UX - use a small delay to ensure DOM is ready
             _ = Task.Run(async () =>
             {
