@@ -1,4 +1,7 @@
-/* Timeline Container */
+/* ========================================
+   TIMELINE LAYOUT (for Tournaments.razor)
+   ======================================== */
+
 .tournament-timeline {
     position: relative;
     padding-left: 140px;
@@ -14,7 +17,6 @@
     background: #ddd;
 }
 
-/* Timeline Item */
 .tournament-timeline-item {
     position: relative;
     margin-bottom: 40px;
@@ -26,7 +28,6 @@
     border-bottom: none;
 }
 
-/* Timeline Date */
 .tournament-timeline-date {
     position: absolute;
     left: -140px;
@@ -60,7 +61,6 @@
     box-shadow: 0 0 0 2px #0047AB;
 }
 
-/* Timeline Content */
 .tournament-timeline-content {
     display: flex;
     gap: 20px;
@@ -73,27 +73,6 @@
     object-fit: cover;
     border-radius: 8px;
     flex-shrink: 0;
-}
-
-.tournament-default-logo {
-    background: linear-gradient(135deg, #0047AB 0%, #003d99 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.tournament-logo-content {
-    text-align: center;
-}
-
-.tournament-logo-icon {
-    font-size: 48px;
-}
-
-.tournament-logo-text {
-    font-size: 14px;
-    margin-top: 8px;
 }
 
 .tournament-timeline-info {
@@ -112,12 +91,100 @@
     margin-bottom: 12px;
 }
 
+/* ========================================
+   OPTION 4: Split Image Layout (for TournamentsByYear.razor)
+   ======================================== */
+
+.tournament-split-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.tournament-split-item {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.tournament-split-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.tournament-split-image-container {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+.tournament-split-image {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    object-fit: cover;
+}
+
+.tournament-split-content {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tournament-split-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.tournament-split-date {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0047AB;
+}
+
+.tournament-split-date.past-date {
+    color: #999;
+}
+
+.tournament-split-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.tournament-split-location {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.past-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #ddd;
+    color: #666;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
 /* Tags */
 .tournament-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 12px;
 }
 
 .tournament-tag {
@@ -131,8 +198,49 @@
     transition: all 0.2s;
 }
 
+.tournament-tag:hover {
+    background: #0047AB;
+    color: white;
+}
+
+/* Default Logo Styles */
+.tournament-default-logo {
+    background: linear-gradient(135deg, #0047AB 0%, #003d99 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    width: 100%;
+    height: 100%;
+}
+
+.tournament-logo-content {
+    text-align: center;
+}
+
+.tournament-logo-icon {
+    font-size: 48px;
+}
+
+.tournament-logo-text {
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+/* Past Tournament Styling */
+.tournament-split-item.past-tournament {
+    opacity: 0.8;
+}
+
+.tournament-split-item.past-tournament .tournament-default-logo {
+    opacity: 0.7;
+    filter: grayscale(50%);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    /* Timeline responsive */
     .tournament-timeline {
         padding-left: 20px;
     }
@@ -162,116 +270,24 @@
         height: auto;
         aspect-ratio: 1;
     }
-}
 
-/* Split Layout for TournamentsByYear */
-.tournament-split-layout {
-    display: grid;
-    gap: 24px;
-}
-
-.tournament-split-item {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 24px;
-    align-items: start;
-    padding: 20px;
-    background: var(--neba-bg-panel);
-    border: 1px solid var(--neba-border);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.tournament-split-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: var(--neba-blue-500);
-}
-
-.tournament-split-item.past-tournament {
-    opacity: 0.75;
-    background: var(--neba-gray-050);
-}
-
-.tournament-split-item.past-tournament:hover {
-    opacity: 0.85;
-}
-
-.tournament-split-image-container {
-    width: 100%;
-}
-
-.tournament-split-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 6px;
-    display: block;
-}
-
-.tournament-split-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.tournament-split-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    gap: 12px;
-}
-
-.tournament-split-date {
-    font-size: 14px;
-    color: var(--neba-gray-400);
-    font-weight: 500;
-}
-
-.tournament-split-date.past-date {
-    color: var(--neba-gray-400);
-}
-
-.past-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--neba-gray-200);
-    color: var(--neba-gray-700);
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.tournament-split-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--neba-text);
-}
-
-.tournament-split-location {
-    color: var(--neba-gray-400);
-    font-size: 14px;
-}
-
-.past-logo {
-    opacity: 0.6;
-    filter: grayscale(100%);
-}
-
-/* Responsive adjustments for split layout */
-@media (max-width: 768px) {
+    /* Split layout responsive */
     .tournament-split-item {
         grid-template-columns: 1fr;
-        gap: 16px;
     }
 
     .tournament-split-image-container {
-        width: 100%;
+        min-height: 240px;
     }
 
-    .tournament-split-image {
-        height: 240px;
+    .tournament-split-content {
+        padding: 20px;
+    }
+
+    .tournament-split-title {
+        font-size: 18px;
     }
 }
+
 
 
