@@ -80,7 +80,7 @@
 </div>
 
 @code {
-    private List<TournamentViewModel> _tournaments = new();
+    private List<TournamentSummaryViewModel> _tournaments = new();
     private string? _errorMessage;
     private bool _isLoading = true;
 
@@ -104,13 +104,13 @@
         }
     }
 
-    private List<TournamentViewModel> GenerateDummyTournaments()
+    private List<TournamentSummaryViewModel> GenerateDummyTournaments()
     {
         const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
         var baseDate = DateOnly.FromDateTime(DateTime.Now.AddDays(14));
         var thumbnailUrl = new Uri(defaultThumbnailUrl);
 
-        return new List<TournamentViewModel>
+        return new List<TournamentSummaryViewModel>
         {
             new()
             {

@@ -5,7 +5,7 @@ namespace Neba.Web.Server.Tournaments;
 /// <summary>
 /// Represents the view model for a tournament.
 /// </summary>
-public sealed record TournamentViewModel
+public sealed record TournamentSummaryViewModel
 {
     /// <summary>>
     /// Gets or sets the unique identifier of the tournament.

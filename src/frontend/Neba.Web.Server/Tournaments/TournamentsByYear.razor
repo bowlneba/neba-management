@@ -106,7 +106,7 @@
     [Parameter]
     public int Year { get; set; }
 
-    private List<TournamentViewModel> _tournaments = new();
+    private List<TournamentSummaryViewModel> _tournaments = new();
     private List<int> _availableYears = new();
     private string? _errorMessage;
     private bool _isLoading = true;
@@ -171,7 +171,7 @@
         }
     }
 
-    private List<TournamentViewModel> GenerateDummyTournamentsForYear(int year)
+    private List<TournamentSummaryViewModel> GenerateDummyTournamentsForYear(int year)
     {
         const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
         var thumbnailUrl = new Uri(defaultThumbnailUrl);
@@ -179,7 +179,7 @@
         // Generate 8-12 tournaments for the year
         var random = new Random(year); // Use year as seed for consistent data
         var tournamentCount = random.Next(8, 13);
-        var tournaments = new List<TournamentViewModel>();
+        var tournaments = new List<TournamentSummaryViewModel>();
 
         var startMonth = 1;
         for (int i = 0; i < tournamentCount; i++)
@@ -197,7 +197,7 @@
             var patternCategories = new[] { "Short", "Medium", "Long" };
             var bowlingCenters = new[] { "Bowl-O-Rama", "East Providence Lanes", "Spare Time Northampton", "Bowlero Worcester", "Nutmeg Bowl", "Bowlero Cranston", "Lanes & Games", "AMF Hamden Lanes", "Westgate Lanes" };
 
-            tournaments.Add(new TournamentViewModel
+            tournaments.Add(new TournamentSummaryViewModel
             {
                 Id = TournamentId.New(),
                 Name = $"NEBA Tournament {i + 1}",
