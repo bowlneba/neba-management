@@ -2,6 +2,7 @@
 @using Neba.Domain.Identifiers
 @using Neba.Web.Server.Notifications
 @using Neba.Web.Server.Tournaments
+@using Neba.Web.Server.Components
 @inject NavigationManager Navigation
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -16,14 +17,13 @@
 
     <!-- Year Selector -->
     <div class="year-selector-container">
-        <label for="year-select" class="year-selector-label">View tournaments from:</label>
-        <select id="year-select" class="year-selector" value="@Year" @onchange="OnYearChanged">
-            <option value="@DateTime.Now.Year">Upcoming</option>
-            @for (int year = DateTime.Now.Year; year >= 1963; year--)
-            {
-                <option value="@year" selected="@(year == Year)">@year</option>
-            }
-        </select>
+        <NebaDropdown TValue="int"
+                      TItem="int"
+                      @bind-Value="@Year"
+                      @bind-Value:event="onchange"
+                      Items="@_availableYears"
+                      Label="View tournaments from:"
+                      Placeholder="Select a year..." />
     </div>
 
     <!-- Error Alert -->
@@ -107,17 +107,31 @@
     public int Year { get; set; }
 
     private List<TournamentViewModel> _tournaments = new();
+    private List<int> _availableYears = new();
     private string? _errorMessage;
     private bool _isLoading = true;
+    private int _previousYear;
 
     protected override async Task OnInitializedAsync()
     {
+        // Generate available years from 1963 to current year
+        _availableYears = Enumerable.Range(1963, DateTime.Now.Year - 1963 + 1)
+            .OrderByDescending(y => y)
+            .ToList();
+
+        _previousYear = Year;
         await LoadTournamentsAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await LoadTournamentsAsync();
+        // Navigate to new year URL if year changed
+        if (_previousYear != Year)
+        {
+            _previousYear = Year;
+            Navigation.NavigateTo($"/tournaments/{Year}");
+            await LoadTournamentsAsync();
+        }
     }
 
     private async Task LoadTournamentsAsync()
@@ -140,14 +154,6 @@
         finally
         {
             _isLoading = false;
-        }
-    }
-
-    private void OnYearChanged(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out int selectedYear))
-        {
-            Navigation.NavigateTo($"/tournaments/{selectedYear}");
         }
     }
 

@@ -68,6 +68,7 @@
                            aria-expanded="false"
                            onclick="event.preventDefault();">Tournaments</a>
                         <div class="neba-dropdown" role="menu">
+                            <a href="/tournaments" class="neba-dropdown-link @(IsActive("tournaments") ? "active" : null)" aria-current="@(IsActive("tournaments") ? "page" : null)" role="menuitem">Upcoming Tournaments</a>
                             <a href="@($"/tournaments/{CurrentYear}")" class="neba-dropdown-link @(IsActive($"tournaments/{CurrentYear}") ? "active" : null)" aria-current="@(IsActive($"tournaments/{CurrentYear}") ? "page" : null)" role="menuitem">Past Tournaments</a>
                             <div class="neba-dropdown-divider"></div>
                             <a href="/tournaments/rules" class="neba-dropdown-link @(IsActive("tournaments/rules") ? "active" : null)" aria-current="@(IsActive("tournaments/rules") ? "page" : null)" role="menuitem">Tournament Rules</a>

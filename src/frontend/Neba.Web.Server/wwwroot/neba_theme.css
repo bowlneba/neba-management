@@ -611,7 +611,7 @@ a.neba-link:focus-visible {
 .neba-toast-warning {
   background-color: rgba(245, 158, 11, 0.95);
   border-color: #F59E0B;
-  color: white;
+  color: #1f2937;
 }
 
 .neba-toast-error {

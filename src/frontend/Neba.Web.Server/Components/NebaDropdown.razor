@@ -1,0 +1,104 @@
+@namespace Neba.Web.Server.Components
+@typeparam TValue
+@typeparam TItem
+
+<div class="neba-dropdown-container" @ref="_dropdownRef">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label id="@($"{_componentId}-label")" for="@_componentId" class="neba-dropdown-label">
+            @Label
+            @if (Required)
+            {
+                <span class="neba-dropdown-required" aria-label="required">*</span>
+            }
+        </label>
+    }
+
+    <div class="neba-dropdown-wrapper @(Disabled ? "disabled" : "") @(_isOpen ? "open" : "")">
+        <div class="neba-dropdown-input-container"
+             role="combobox"
+             aria-controls="@($"{_componentId}-listbox")"
+             aria-expanded="@_isOpen.ToString().ToLower()"
+             aria-haspopup="listbox"
+             aria-labelledby="@($"{_componentId}-label")"
+             @onclick="OnInputClickAsync"
+             tabindex="@(Disabled ? -1 : 0)"
+             @onkeydown="OnKeyDownAsync">
+
+            @if (_isOpen)
+            {
+                <input id="@_componentId"
+                       type="text"
+                       class="neba-dropdown-search-input"
+                       placeholder="@Placeholder"
+                       value="@_filterText"
+                       @ref="_searchInputRef"
+                       @oninput="OnFilterTextChangedAsync"
+                       @onkeydown="OnKeyDownAsync"
+                       @onkeydown:stopPropagation="false"
+                       disabled="@Disabled"
+                       autocomplete="off"
+                       aria-autocomplete="list"
+                       aria-activedescendant="@($"{_componentId}-option-{_highlightedIndex}")" />
+            }
+            else
+            {
+                <div class="neba-dropdown-display-value">
+                    @if (string.IsNullOrWhiteSpace(GetSelectedDisplayText()))
+                    {
+                        <span class="neba-dropdown-placeholder">@Placeholder</span>
+                    }
+                    else
+                    {
+                        @GetSelectedDisplayText()
+                    }
+                </div>
+            }
+
+            <div class="neba-dropdown-icon @(_isOpen ? "open" : "")">
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+
+        @if (_isOpen)
+        {
+            <div id="@($"{_componentId}-listbox")"
+                 class="neba-dropdown-panel"
+                 role="listbox"
+                 aria-labelledby="@($"{_componentId}-label")">
+
+                @if (_filteredItems.Count == 0)
+                {
+                    <div class="neba-dropdown-no-results">
+                        No matches found
+                    </div>
+                }
+                else
+                {
+                    @for (int i = 0; i < _filteredItems.Count; i++)
+                    {
+                        var index = i;
+                        var item = _filteredItems[i];
+                        var isHighlighted = index == _highlightedIndex;
+                        var isSelectedItem = IsSelected(item);
+
+                        <div id="@($"{_componentId}-option-{index}")"
+                             class="neba-dropdown-item @(isHighlighted ? "highlighted" : "") @(isSelectedItem ? "selected" : "")"
+                             role="option"
+                             aria-selected="@isSelectedItem.ToString().ToLower()"
+                             @onclick="@(() => SelectItemAsync(item))"
+                             @onmouseenter="@((MouseEventArgs e) => OnMouseEnter(index))">
+                            @GetDisplayText(item)
+                            @if (isSelectedItem)
+                            {
+                                <span class="neba-dropdown-checkmark" aria-hidden="true">✓</span>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
