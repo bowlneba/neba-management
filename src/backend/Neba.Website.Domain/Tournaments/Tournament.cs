@@ -83,7 +83,7 @@ public sealed class Tournament
 
     internal Tournament()
         : base(TournamentId.New())
-    {}
+    { }
 
     /// <summary>
     /// Adds a champion to this tournament.
