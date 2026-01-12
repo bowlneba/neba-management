@@ -76,22 +76,21 @@ internal sealed class TournamentConfiguration
         // Configure many-to-many relationship between Tournament and Bowler
         builder.HasMany(tournament => tournament.Champions)
             .WithMany(bowler => bowler.Titles)
-            .UsingEntity<Dictionary<string, object>>(
-                "tournament_champions",
+            .UsingEntity<TournamentChampion>(
                 j => j.HasOne<Bowler>()
                     .WithMany()
-                    .HasForeignKey(BowlerConfiguration.ForeignKeyName)
+                    .HasForeignKey(tournamentChampion => tournamentChampion.BowlerId)
                     .HasPrincipalKey(nameof(Bowler.Id)),
                 j => j.HasOne<Tournament>()
                     .WithMany()
-                    .HasForeignKey(ForeignKeyName)
+                    .HasForeignKey(tournamentChampion => tournamentChampion.TournamentId)
                     .HasPrincipalKey(nameof(Tournament.Id)),
                 j =>
                 {
                     j.ToTable("tournament_champions", WebsiteDbContext.DefaultSchema);
-                    j.HasKey(ForeignKeyName, BowlerConfiguration.ForeignKeyName);
+                    j.HasKey(tournamentChampion => new { tournamentChampion.TournamentId, tournamentChampion.BowlerId });
                     // Index on bowler_id for FK lookup performance
-                    j.HasIndex(BowlerConfiguration.ForeignKeyName);
+                    j.HasIndex(tournamentChampion => tournamentChampion.BowlerId);
                 });
     }
 }
