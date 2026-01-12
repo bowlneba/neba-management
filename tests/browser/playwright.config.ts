@@ -29,12 +29,22 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'ASPNETCORE_ENVIRONMENT=Development dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Debug --urls http://localhost:5200',
-    url: 'http://localhost:5200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  webServer: [
+    {
+      command: 'npx tsx mock-api-server-runner.ts',
+      url: 'http://localhost:5151/bylaws',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30 * 1000,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+    {
+      command: 'ASPNETCORE_ENVIRONMENT=Development NebaApi__BaseUrl=http://localhost:5151 dotnet run --project ../../src/frontend/Neba.Web.Server/Neba.Web.Server.csproj --configuration Debug --urls http://localhost:5200',
+      url: 'http://localhost:5200',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+  ],
 });

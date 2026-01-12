@@ -26,6 +26,7 @@
   "homepage": "https://github.com/bowlneba/neba-management#readme",
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "tsx": "^4.19.2"
   }
 }
