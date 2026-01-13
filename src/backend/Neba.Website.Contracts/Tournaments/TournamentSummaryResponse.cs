@@ -1,7 +1,4 @@
-using System.Text.Json.Serialization;
-using Ardalis.SmartEnum.SystemTextJson;
 using Neba.Domain.Identifiers;
-using Neba.Domain.Tournaments;
 
 namespace Neba.Website.Contracts.Tournaments;
 
@@ -48,12 +45,12 @@ public sealed record TournamentSummaryResponse
     /// <summary>
     /// Gets the type of the tournament.
     /// </summary>
-    [JsonConverter(typeof(SmartEnumValueConverter<TournamentType, int>))]
-    public required TournamentType TournamentType { get; init; }
+    /// <example>"Singles"</example>
+    public required string TournamentType { get; init; }
 
     /// <summary>
     /// Gets the pattern length category of the tournament, if applicable.
     /// </summary>
-    [JsonConverter(typeof(SmartEnumValueConverter<PatternLengthCategory, int>))]
-    public PatternLengthCategory? PatternLengthCategory { get; init; }
+    /// <example>"Short"</example>
+    public string? PatternLengthCategory { get; init; }
 }

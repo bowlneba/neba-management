@@ -19,8 +19,8 @@ internal static class TournamentMappingExtensions
                 BowlingCenterName = dto.BowlingCenterName,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
-                TournamentType = dto.TournamentType,
-                PatternLengthCategory = dto.PatternLengthCategory,
+                TournamentType = dto.TournamentType.Name,
+                PatternLengthCategory = dto.PatternLengthCategory?.Name,
             };
     }
 }
