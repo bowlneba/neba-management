@@ -97,9 +97,10 @@ src/backend/
 - [x] Tournament Rules
 - [x] Hall of Fame (including HOF indicator for champions)
 - [x] Bowling Centers
-- [ ] Tournaments
+- [x] Tournaments
 - [ ] Tournament Documents
 - [ ] Sponsors
+- [ ] Tournament Detail (Individual Tournament Info)
 - [ ] News
 - [ ] About
 - [ ] Stats
