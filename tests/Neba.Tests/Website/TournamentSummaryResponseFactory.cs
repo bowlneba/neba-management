@@ -14,8 +14,8 @@ public static class TournamentSummaryResponseFactory
         string? bowlingCenterName = null,
         DateOnly? startDate = null,
         DateOnly? endDate = null,
-        TournamentType tournamentType = null!,
-        PatternLengthCategory? patternLengthCategory = null)
+        TournamentType? tournamentType = null,
+        string? patternLengthCategory = null)
     {
         return new TournamentSummaryResponse
         {
@@ -26,7 +26,7 @@ public static class TournamentSummaryResponseFactory
             BowlingCenterName = bowlingCenterName,
             StartDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow),
             EndDate = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
-            TournamentType = tournamentType ?? TournamentType.Singles,
+            TournamentType = tournamentType?.Name ?? TournamentType.Singles.Name,
             PatternLengthCategory = patternLengthCategory,
         };
     }

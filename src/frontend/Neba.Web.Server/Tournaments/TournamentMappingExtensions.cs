@@ -22,8 +22,8 @@ internal static class TournamentMappingExtensions
                 BowlingCenterName = response.BowlingCenterName ?? "TBD",
                 StartDate = response.StartDate,
                 EndDate = response.EndDate,
-                TournamentType = response.TournamentType.Name,
-                PatternLengthCategory = response.PatternLengthCategory?.Name,
+                TournamentType = response.TournamentType,
+                PatternLengthCategory = response.PatternLengthCategory,
             };
     }
 }
