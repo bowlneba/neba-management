@@ -3,7 +3,7 @@ using Neba.Contracts;
 using Neba.Tests.Documents;
 using Neba.Website.Endpoints.Documents;
 
-namespace Neba.UnitTests.Website;
+namespace Neba.UnitTests.Website.Documents;
 
 [Trait("Category", "Unit")]
 [Trait("Component", "Website")]

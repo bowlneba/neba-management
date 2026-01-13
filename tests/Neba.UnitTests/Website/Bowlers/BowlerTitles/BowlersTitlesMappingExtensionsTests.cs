@@ -8,7 +8,7 @@ using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;
 using Neba.Website.Endpoints.Bowlers;
 
-namespace Neba.UnitTests.Website;
+namespace Neba.UnitTests.Website.Bowlers.BowlerTitles;
 
 [Trait("Category", "Unit")]
 [Trait("Component", "Website")]
