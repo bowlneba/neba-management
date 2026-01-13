@@ -41,7 +41,7 @@ internal interface INebaWebsiteApi
     [Get("/tournaments/future")]
     Task<Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>> GetFutureTournamentsAsync();
 
-    [Get("/tournaments/year/{year}")]
+    [Get("/tournaments/{year}")]
     Task<Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>> GetTournamentsInAYearAsync(int year);
 
     [Get("/bylaws")]

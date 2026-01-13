@@ -4,6 +4,7 @@
 @using Neba.Web.Server.Tournaments
 @using Neba.Web.Server.Components
 @inject NavigationManager Navigation
+@inject NebaWebsiteApiService NebaWebsiteService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>@Year Tournaments - NEBA</PageTitle>
@@ -106,7 +107,7 @@
     [Parameter]
     public int Year { get; set; }
 
-    private List<TournamentSummaryViewModel> _tournaments = new();
+    private IReadOnlyCollection<TournamentSummaryViewModel> _tournaments = [];
     private List<int> _availableYears = new();
     private string? _errorMessage;
     private bool _isLoading = true;
@@ -154,11 +155,16 @@
             _isLoading = true;
             _errorMessage = null;
 
-            // Simulate API delay
-            await Task.Delay(1500);
+            var tournamentsResult = await NebaWebsiteService.GetTournamentsInAYearAsync(Year);
 
-            // Generate dummy data for the selected year
-            _tournaments = GenerateDummyTournamentsForYear(Year);
+            if (tournamentsResult.IsError)
+            {
+                _errorMessage = $"Error retrieving tournaments: {tournamentsResult.FirstError.Description}";
+                _tournaments = [];
+                return;
+            }
+
+            _tournaments = tournamentsResult.Value;
         }
         catch (Exception ex)
         {
@@ -170,52 +176,6 @@
             StateHasChanged();
         }
     }
-
-    private List<TournamentSummaryViewModel> GenerateDummyTournamentsForYear(int year)
-    {
-        const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
-        var thumbnailUrl = new Uri(defaultThumbnailUrl);
-
-        // Generate 8-12 tournaments for the year
-        var random = new Random(year); // Use year as seed for consistent data
-        var tournamentCount = random.Next(8, 13);
-        var tournaments = new List<TournamentSummaryViewModel>();
-
-        var startMonth = 1;
-        for (int i = 0; i < tournamentCount; i++)
-        {
-            var monthsToAdd = random.Next(0, 2); // 0-2 months apart
-            startMonth += monthsToAdd;
-            if (startMonth > 12) break;
-
-            var startDay = random.Next(1, 28);
-            var startDate = new DateOnly(year, startMonth, startDay);
-            var isMultiDay = random.Next(0, 3) == 0; // 33% chance of multi-day
-            var endDate = isMultiDay ? startDate.AddDays(1) : startDate;
-
-            var tournamentTypes = new[] { "Open Singles", "Doubles", "Team", "Senior/Super Senior", "Over/Under 50 Doubles", "Senior/Super Senior/Women" };
-            var patternCategories = new[] { "Short", "Medium", "Long" };
-            var bowlingCenters = new[] { "Bowl-O-Rama", "East Providence Lanes", "Spare Time Northampton", "Bowlero Worcester", "Nutmeg Bowl", "Bowlero Cranston", "Lanes & Games", "AMF Hamden Lanes", "Westgate Lanes" };
-
-            tournaments.Add(new TournamentSummaryViewModel
-            {
-                Id = TournamentId.New(),
-                Name = $"NEBA Tournament {i + 1}",
-                ThumbnailUrl = i % 3 == 0 ? thumbnailUrl : null, // Every 3rd tournament has image
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = bowlingCenters[random.Next(bowlingCenters.Length)],
-                StartDate = startDate,
-                EndDate = endDate,
-                TournamentType = tournamentTypes[random.Next(tournamentTypes.Length)],
-                PatternLengthCategory = patternCategories[random.Next(patternCategories.Length)]
-            });
-
-            startMonth++;
-        }
-
-        return tournaments.OrderBy(t => t.StartDate).ToList();
-    }
-
     private static string FormatFullDateRange(DateOnly startDate, DateOnly endDate)
     {
         if (startDate == endDate)

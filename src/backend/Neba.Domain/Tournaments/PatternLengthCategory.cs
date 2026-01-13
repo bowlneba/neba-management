@@ -1,4 +1,5 @@
-﻿using Ardalis.SmartEnum;
+﻿using System.Text.Json.Serialization;
+using Ardalis.SmartEnum;
 
 namespace Neba.Domain.Tournaments;
 
@@ -35,6 +36,14 @@ public sealed class PatternLengthCategory
         MinimumLength = minimumLength;
         MaximumLength = maximumLength;
     }
+
+    /// <summary>
+    /// Here for EF Core materialization and JSON deserialization purposes only.
+    /// </summary>
+    [JsonConstructor]
+    private PatternLengthCategory()
+        : base("default", 0)
+    { }
 
     /// <summary>
     /// Gets the minimum length of the pattern in feet, if applicable.

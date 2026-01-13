@@ -2,6 +2,7 @@
 @using Neba.Domain.Identifiers
 @using Neba.Web.Server.Notifications
 @using Neba.Web.Server.Tournaments
+@inject NebaWebsiteApiService NebaWebsiteService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Future Tournaments - NEBA</PageTitle>
@@ -80,7 +81,7 @@
 </div>
 
 @code {
-    private List<TournamentSummaryViewModel> _tournaments = new();
+    private IReadOnlyCollection<TournamentSummaryViewModel> _tournaments = [];
     private string? _errorMessage;
     private bool _isLoading = true;
 
@@ -88,11 +89,15 @@
     {
         try
         {
-            // Simulate 2.5 second load time
-            await Task.Delay(2500);
+            var tournamentsResult = await NebaWebsiteService.GetFutureTournamentsAsync();
 
-            // Generate dummy data
-            _tournaments = GenerateDummyTournaments();
+            if (tournamentsResult.IsError)
+            {
+                _errorMessage = $"Error retrieving tournaments: {tournamentsResult.FirstError.Description}";
+                return;
+            }
+
+            _tournaments = tournamentsResult.Value;
         }
         catch (Exception ex)
         {
@@ -102,137 +107,6 @@
         {
             _isLoading = false;
         }
-    }
-
-    private List<TournamentSummaryViewModel> GenerateDummyTournaments()
-    {
-        const string defaultThumbnailUrl = "https://www.bowlneba.com/sites/bowlneba/cache/file/343F5E50-B1D3-22CC-D12C3ECF79B6424D_main.jpg";
-        var baseDate = DateOnly.FromDateTime(DateTime.Now.AddDays(14));
-        var thumbnailUrl = new Uri(defaultThumbnailUrl);
-
-        return new List<TournamentSummaryViewModel>
-        {
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "Bowl Winkles Pro Shop Open",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Bowl-O-Rama",
-                StartDate = baseDate,
-                EndDate = baseDate,
-                TournamentType = "Open Singles",
-                PatternLengthCategory = "Short"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Regular Doubles",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "East Providence Lanes",
-                StartDate = baseDate.AddDays(28),
-                EndDate = baseDate.AddDays(29),
-                TournamentType = "Doubles",
-                PatternLengthCategory = "Medium"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Singles - Sparetime Northampton",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Spare Time Northampton",
-                StartDate = baseDate.AddDays(56),
-                EndDate = baseDate.AddDays(57),
-                TournamentType = "Open Singles",
-                PatternLengthCategory = "Medium"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Special Cuts (Women, Senior & Super Senior)",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Bowlero Worcester",
-                StartDate = baseDate.AddDays(77),
-                EndDate = baseDate.AddDays(77),
-                TournamentType = "Senior/Super Senior/Women",
-                PatternLengthCategory = "Short"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "Buddies Pro Shop Open - Nutmeg Bowl",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Nutmeg Bowl",
-                StartDate = baseDate.AddDays(91),
-                EndDate = baseDate.AddDays(92),
-                TournamentType = "Open Singles",
-                PatternLengthCategory = "Long"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Team Championship",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Bowlero Cranston",
-                StartDate = baseDate.AddDays(119),
-                EndDate = baseDate.AddDays(120),
-                TournamentType = "Team",
-                PatternLengthCategory = "Medium"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Masters Qualifier",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Lanes & Games",
-                StartDate = baseDate.AddDays(147),
-                EndDate = baseDate.AddDays(147),
-                TournamentType = "Open Singles",
-                PatternLengthCategory = "Long"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Over/Under 50 Baker Event",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "AMF Hamden Lanes",
-                StartDate = baseDate.AddDays(175),
-                EndDate = baseDate.AddDays(176),
-                TournamentType = "Over/Under 50 Doubles",
-                PatternLengthCategory = "Short"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Senior/Super Senior Singles",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Westgate Lanes",
-                StartDate = baseDate.AddDays(203),
-                EndDate = baseDate.AddDays(203),
-                TournamentType = "Senior/Super Senior",
-                PatternLengthCategory = "Medium"
-            },
-            new()
-            {
-                Id = TournamentId.New(),
-                Name = "NEBA Championship Finals",
-                ThumbnailUrl = thumbnailUrl,
-                BowlingCenterId = BowlingCenterId.New(),
-                BowlingCenterName = "Bowlero Worcester",
-                StartDate = baseDate.AddDays(238),
-                EndDate = baseDate.AddDays(239),
-                TournamentType = "Open Singles",
-                PatternLengthCategory = "Long"
-            }
-        };
     }
 
     private static string FormatDateRange(DateOnly startDate, DateOnly endDate)

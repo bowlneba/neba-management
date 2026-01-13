@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ardalis.SmartEnum;
 
 namespace Neba.Domain.Tournaments;
@@ -113,10 +114,11 @@ public sealed class TournamentType
     }
 
     /// <summary>
-    /// Here for EF Core materialization purposes only.
+    /// Here for EF Core materialization and JSON deserialization purposes only.
     /// </summary>
+    [JsonConstructor]
     private TournamentType()
-        : base("", 0)
+        : base("default", 0)
     { }
 
     /// <summary>

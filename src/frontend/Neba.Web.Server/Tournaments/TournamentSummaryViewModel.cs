@@ -20,7 +20,7 @@ public sealed record TournamentSummaryViewModel
     /// <summary>
     /// Gets or sets the URL of the tournament thumbnail image.
     /// </summary>
-    public Uri? ThumbnailUrl { get; init; }
+    public required Uri ThumbnailUrl { get; init; }
 
     /// <summary>
     /// Gets or sets the identifier of the bowling center where the tournament is held.

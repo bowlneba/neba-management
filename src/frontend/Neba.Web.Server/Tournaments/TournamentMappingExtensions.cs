@@ -7,6 +7,9 @@ namespace Neba.Web.Server.Tournaments;
 
 internal static class TournamentMappingExtensions
 {
+    private static readonly Uri s_defaultThumbnailUri
+        = new("/images/tournaments/default-logo.jpg");
+
     extension(TournamentSummaryResponse response)
     {
         public TournamentSummaryViewModel ToViewModel()
@@ -14,7 +17,7 @@ internal static class TournamentMappingExtensions
             {
                 Id = response.Id,
                 Name = response.Name,
-                ThumbnailUrl = response.ThumbnailUrl,
+                ThumbnailUrl = response.ThumbnailUrl ?? s_defaultThumbnailUri,
                 BowlingCenterId = response.BowlingCenterId ?? BowlingCenterId.Empty,
                 BowlingCenterName = response.BowlingCenterName ?? "TBD",
                 StartDate = response.StartDate,

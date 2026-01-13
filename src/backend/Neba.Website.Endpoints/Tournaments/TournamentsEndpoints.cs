@@ -76,7 +76,7 @@ internal static class TournamentEndpoints
         private IEndpointRouteBuilder MapGetTournamentsInAYearEndpoint()
         {
             app.MapGet(
-                "/year/{year:int}",
+                "/{year:int}",
                 async (
                     int year,
                     IQueryHandler<ListTournamentInAYearQuery, IReadOnlyCollection<TournamentSummaryDto>> queryHandler,
