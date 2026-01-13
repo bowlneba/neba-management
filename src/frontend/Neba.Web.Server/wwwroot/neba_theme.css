@@ -1021,10 +1021,34 @@ a:focus-visible {
   border-radius: 2px;
 }
 
-/* Mobile (< 768px): Logo + Hamburger only, no top banner */
+/* Mobile (< 768px): Compact top banner with search, logo + hamburger in navbar */
 @media (max-width: 767px) {
   .neba-top-banner {
-    display: none;
+    padding: 0.75rem 0;
+  }
+
+  .neba-banner-content {
+    flex-direction: column;
+    gap: 0;
+    padding: 0 1rem;
+  }
+
+  .neba-top-banner .flex.items-center.gap-4 {
+    display: none; /* Hide logo in top banner on mobile */
+  }
+
+  .neba-top-banner .flex.items-center.gap-2 {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .neba-top-banner form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .neba-top-banner input[type="search"] {
+    width: 100% !important;
   }
 
   .neba-navbar-wrapper {

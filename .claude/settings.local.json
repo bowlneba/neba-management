@@ -147,7 +147,9 @@
       "Bash(git stash push:*)",
       "Bash(xattr:*)",
       "Bash(./scripts/refresh-documents.sh)",
-      "Bash(BASE_URL=http://localhost:5100 bash scripts/refresh-documents.sh:*)"
+      "Bash(BASE_URL=http://localhost:5100 bash scripts/refresh-documents.sh:*)",
+      "Bash(git log:*)",
+      "Bash(npm run test:browser:*)"
     ],
     "deny": [],
     "ask": []
