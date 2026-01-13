@@ -1,3 +1,4 @@
+using Ardalis.SmartEnum.SystemTextJson;
 using Azure.Identity;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
@@ -44,7 +45,14 @@ builder.Services.AddRefitClient<INebaWebsiteApi>(new RefitSettings
     ContentSerializer = new SystemTextJsonContentSerializer(
             new System.Text.Json.JsonSerializerOptions
             {
-                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new SmartEnumNameConverter<Neba.Domain.Tournaments.TournamentType, int>(),
+                    new SmartEnumValueConverter<Neba.Domain.Tournaments.TournamentType, int>(),
+                    new SmartEnumNameConverter<Neba.Domain.Tournaments.PatternLengthCategory, int>(),
+                    new SmartEnumValueConverter<Neba.Domain.Tournaments.PatternLengthCategory, int>()
+                }
             })
 })
     .ConfigureHttpClient((sp, client) =>

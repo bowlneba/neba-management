@@ -142,10 +142,10 @@
         }
     }
 
-    private async Task HandleYearChangeAsync(int newYear)
+    private Task HandleYearChangeAsync(int newYear)
     {
-        Year = newYear;
-        await OnParametersSetAsync();
+        Navigation.NavigateTo($"/tournaments/{newYear}");
+        return Task.CompletedTask;
     }
 
     private async Task LoadTournamentsAsync()
