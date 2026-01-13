@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Neba.Contracts;
 using Neba.Domain;
 using Neba.Domain.Identifiers;
+using Neba.Domain.Tournaments;
 using Neba.Tests;
 using Neba.Tests.Website;
 using Neba.Web.Server.BowlingCenters;
@@ -11,10 +12,12 @@ using Neba.Web.Server.Documents;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
 using Neba.Web.Server.Services;
+using Neba.Web.Server.Tournaments;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
+using Neba.Website.Contracts.Tournaments;
 using Refit;
 
 namespace Neba.UnitTests.Ui.Server.Services;
@@ -1521,6 +1524,524 @@ public sealed class NebaWebsiteApiServiceTests
         centersList[1].Name.ShouldBe("Bowl-O-Rama");
         centersList[2].Name.ShouldBe("Downtown Bowl");
         centersList[3].Name.ShouldBe("Strikes & Spares");
+    }
+
+    #endregion
+
+    #region GetFutureTournamentsAsync Tests
+
+    [Fact(DisplayName = "Returns future tournaments ordered by start date on successful response")]
+    public async Task GetFutureTournamentsAsync_SuccessfulResponse_ReturnsTournamentsOrderedByStartDate()
+    {
+        // Arrange
+        var tournaments = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                name: "Summer Championship",
+                startDate: new DateOnly(2026, 7, 15),
+                endDate: new DateOnly(2026, 7, 17),
+                bowlingCenterName: "Strike Zone Lanes"),
+            TournamentSummaryResponseFactory.Create(
+                name: "Spring Open",
+                startDate: new DateOnly(2026, 4, 10),
+                endDate: new DateOnly(2026, 4, 12),
+                bowlingCenterName: "Downtown Bowl"),
+            TournamentSummaryResponseFactory.Create(
+                name: "Winter Classic",
+                startDate: new DateOnly(2026, 12, 5),
+                endDate: new DateOnly(2026, 12, 7),
+                bowlingCenterName: "Perfect Strike")
+        };
+
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = tournaments
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(3);
+
+        var tournamentsList = result.Value.ToList();
+        tournamentsList[0].Name.ShouldBe("Spring Open"); // April comes first
+        tournamentsList[1].Name.ShouldBe("Summer Championship"); // July
+        tournamentsList[2].Name.ShouldBe("Winter Classic"); // December
+    }
+
+    [Fact(DisplayName = "Returns empty collection when no future tournaments exist")]
+    public async Task GetFutureTournamentsAsync_EmptyResponse_ReturnsEmptyCollection()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = new List<TournamentSummaryResponse>()
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(0);
+    }
+
+    [Fact(DisplayName = "Returns error when future tournaments API call fails")]
+    public async Task GetFutureTournamentsAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = new List<TournamentSummaryResponse>()
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns error when future tournaments response content is null")]
+    public async Task GetFutureTournamentsAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns error when future tournaments API exception is thrown")]
+    public async Task GetFutureTournamentsAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns network error when future tournaments request fails")]
+    public async Task GetFutureTournamentsAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns timeout error when future tournaments task is canceled")]
+    public async Task GetFutureTournamentsAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns unexpected error for unhandled future tournaments exceptions")]
+    public async Task GetFutureTournamentsAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Correctly maps TournamentSummaryResponse to TournamentSummaryViewModel")]
+    public async Task GetFutureTournamentsAsync_SuccessfulResponse_CorrectlyMapsToViewModel()
+    {
+        // Arrange
+        var tournamentId = TournamentId.New();
+        var bowlingCenterId = BowlingCenterId.New();
+        var startDate = new DateOnly(2026, 6, 1);
+        var endDate = new DateOnly(2026, 6, 3);
+        var thumbnailUrl = new Uri("https://example.com/thumbnail.jpg");
+
+        var tournaments = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                id: tournamentId,
+                name: "Test Tournament",
+                startDate: startDate,
+                endDate: endDate,
+                bowlingCenterId: bowlingCenterId,
+                bowlingCenterName: "Test Center",
+                thumbnailUrl: thumbnailUrl,
+                tournamentType: TournamentType.Doubles)
+        };
+
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = tournaments
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetFutureTournamentsAsync())
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetFutureTournamentsAsync();
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        var tournament = result.Value.First();
+        tournament.Id.ShouldBe(tournamentId);
+        tournament.Name.ShouldBe("Test Tournament");
+        tournament.StartDate.ShouldBe(startDate);
+        tournament.EndDate.ShouldBe(endDate);
+        tournament.BowlingCenterId.ShouldBe(bowlingCenterId);
+        tournament.BowlingCenterName.ShouldBe("Test Center");
+        tournament.ThumbnailUrl.ShouldBe(thumbnailUrl);
+        tournament.TournamentType.ShouldBe(TournamentType.Doubles.Name);
+    }
+
+    #endregion
+
+    #region GetTournamentsInAYearAsync Tests
+
+    [Fact(DisplayName = "Returns tournaments in year ordered by start date on successful response")]
+    public async Task GetTournamentsInAYearAsync_SuccessfulResponse_ReturnsTournamentsOrderedByStartDate()
+    {
+        // Arrange
+        const int year = 2025;
+        var tournaments = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                name: "Fall Classic",
+                startDate: new DateOnly(2025, 10, 15),
+                endDate: new DateOnly(2025, 10, 17),
+                bowlingCenterName: "Strike Zone"),
+            TournamentSummaryResponseFactory.Create(
+                name: "Spring Open",
+                startDate: new DateOnly(2025, 3, 10),
+                endDate: new DateOnly(2025, 3, 12),
+                bowlingCenterName: "Downtown Bowl"),
+            TournamentSummaryResponseFactory.Create(
+                name: "Summer Championship",
+                startDate: new DateOnly(2025, 7, 5),
+                endDate: new DateOnly(2025, 7, 7),
+                bowlingCenterName: "Perfect Strike")
+        };
+
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = tournaments
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(3);
+
+        var tournamentsList = result.Value.ToList();
+        tournamentsList[0].Name.ShouldBe("Spring Open"); // March
+        tournamentsList[1].Name.ShouldBe("Summer Championship"); // July
+        tournamentsList[2].Name.ShouldBe("Fall Classic"); // October
+    }
+
+    [Fact(DisplayName = "Returns empty collection when no tournaments in year")]
+    public async Task GetTournamentsInAYearAsync_EmptyResponse_ReturnsEmptyCollection()
+    {
+        // Arrange
+        const int year = 2020;
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = new List<TournamentSummaryResponse>()
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        result.Value.Count.ShouldBe(0);
+    }
+
+    [Fact(DisplayName = "Returns error when tournaments in year API call fails")]
+    public async Task GetTournamentsInAYearAsync_ApiError_ReturnsError()
+    {
+        // Arrange
+        const int year = 2024;
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = new List<TournamentSummaryResponse>()
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateResponse(collectionResponse, HttpStatusCode.InternalServerError);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns error when tournaments in year response content is null")]
+    public async Task GetTournamentsInAYearAsync_NullContent_ReturnsError()
+    {
+        // Arrange
+        const int year = 2023;
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
+        using var apiResponse = new Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>(
+            httpResponse,
+            null,
+            new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns error when tournaments in year API exception is thrown")]
+    public async Task GetTournamentsInAYearAsync_ApiException_ReturnsError()
+    {
+        // Arrange
+        const int year = 2024;
+        using var httpRequest = new HttpRequestMessage();
+        using var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "API Error" };
+        ApiException apiException = await ApiException.Create(httpRequest, HttpMethod.Get, httpResponse, new RefitSettings());
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ThrowsAsync(apiException);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns network error when tournaments in year request fails")]
+    public async Task GetTournamentsInAYearAsync_HttpRequestException_ReturnsNetworkError()
+    {
+        // Arrange
+        const int year = 2025;
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ThrowsAsync(new HttpRequestException("Network error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns timeout error when tournaments in year task is canceled")]
+    public async Task GetTournamentsInAYearAsync_TaskCanceledException_ReturnsTimeoutError()
+    {
+        // Arrange
+        const int year = 2026;
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Returns unexpected error for unhandled tournaments in year exceptions")]
+    public async Task GetTournamentsInAYearAsync_UnexpectedException_ReturnsUnexpectedError()
+    {
+        // Arrange
+        const int year = 2024;
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeTrue();
+    }
+
+    [Fact(DisplayName = "Correctly maps tournaments with different years")]
+    public async Task GetTournamentsInAYearAsync_DifferentYears_HandlesCorrectly()
+    {
+        // Arrange
+        const int year2024 = 2024;
+        const int year2025 = 2025;
+
+        var tournaments2024 = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                name: "2024 Tournament",
+                startDate: new DateOnly(2024, 5, 10))
+        };
+
+        var tournaments2025 = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                name: "2025 Tournament",
+                startDate: new DateOnly(2025, 5, 10))
+        };
+
+        var collectionResponse2024 = new CollectionResponse<TournamentSummaryResponse> { Items = tournaments2024 };
+        var collectionResponse2025 = new CollectionResponse<TournamentSummaryResponse> { Items = tournaments2025 };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse2024 = ApiResponseFactory.CreateSuccessResponse(collectionResponse2024);
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse2025 = ApiResponseFactory.CreateSuccessResponse(collectionResponse2025);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year2024))
+            .ReturnsAsync(apiResponse2024.ApiResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year2025))
+            .ReturnsAsync(apiResponse2025.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result2024 = await _sut.GetTournamentsInAYearAsync(year2024);
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result2025 = await _sut.GetTournamentsInAYearAsync(year2025);
+
+        // Assert
+        result2024.IsError.ShouldBeFalse();
+        result2024.Value.First().Name.ShouldBe("2024 Tournament");
+
+        result2025.IsError.ShouldBeFalse();
+        result2025.Value.First().Name.ShouldBe("2025 Tournament");
+    }
+
+    [Fact(DisplayName = "Correctly maps TournamentSummaryResponse to TournamentSummaryViewModel for year query")]
+    public async Task GetTournamentsInAYearAsync_SuccessfulResponse_CorrectlyMapsToViewModel()
+    {
+        // Arrange
+        const int year = 2025;
+        var tournamentId = TournamentId.New();
+        var bowlingCenterId = BowlingCenterId.New();
+        var startDate = new DateOnly(2025, 8, 15);
+        var endDate = new DateOnly(2025, 8, 17);
+        var thumbnailUrl = new Uri("https://example.com/tournament-thumb.jpg");
+
+        var tournaments = new List<TournamentSummaryResponse>
+        {
+            TournamentSummaryResponseFactory.Create(
+                id: tournamentId,
+                name: "2025 Championship",
+                startDate: startDate,
+                endDate: endDate,
+                bowlingCenterId: bowlingCenterId,
+                bowlingCenterName: "Championship Lanes",
+                thumbnailUrl: thumbnailUrl,
+                tournamentType: TournamentType.Trios)
+        };
+
+        var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
+        {
+            Items = tournaments
+        };
+
+        using TestApiResponse<CollectionResponse<TournamentSummaryResponse>> apiResponse = ApiResponseFactory.CreateSuccessResponse(collectionResponse);
+
+        _mockNebaApi
+            .Setup(x => x.GetTournamentsInAYearAsync(year))
+            .ReturnsAsync(apiResponse.ApiResponse);
+
+        // Act
+        ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>> result = await _sut.GetTournamentsInAYearAsync(year);
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        var tournament = result.Value.First();
+        tournament.Id.ShouldBe(tournamentId);
+        tournament.Name.ShouldBe("2025 Championship");
+        tournament.StartDate.ShouldBe(startDate);
+        tournament.EndDate.ShouldBe(endDate);
+        tournament.BowlingCenterId.ShouldBe(bowlingCenterId);
+        tournament.BowlingCenterName.ShouldBe("Championship Lanes");
+        tournament.ThumbnailUrl.ShouldBe(thumbnailUrl);
+        tournament.TournamentType.ShouldBe(TournamentType.Trios.Name);
     }
 
     #endregion

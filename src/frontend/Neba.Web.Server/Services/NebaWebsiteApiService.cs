@@ -9,10 +9,12 @@ using Neba.Web.Server.Documents;
 using Neba.Web.Server.HallOfFame;
 using Neba.Web.Server.History.Awards;
 using Neba.Web.Server.History.Champions;
+using Neba.Web.Server.Tournaments;
 using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
+using Neba.Website.Contracts.Tournaments;
 using Refit;
 
 namespace Neba.Web.Server.Services;
@@ -204,6 +206,40 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
             Content = new MarkupString(result.Value.Content),
             Metadata = result.Value.Metadata
         };
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>>> GetFutureTournamentsAsync()
+    {
+        ErrorOr<Contracts.CollectionResponse<TournamentSummaryResponse>> result
+            = await ExecuteApiCallAsync(nebaApi.GetFutureTournamentsAsync);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .Select(dto => dto.ToViewModel())
+            .OrderBy(t => t.StartDate)
+            .ToList()
+            .AsReadOnly();
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<TournamentSummaryViewModel>>> GetTournamentsInAYearAsync(int year)
+    {
+        ErrorOr<Contracts.CollectionResponse<TournamentSummaryResponse>> result
+            = await ExecuteApiCallAsync(() => nebaApi.GetTournamentsInAYearAsync(year));
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.Items
+            .Select(dto => dto.ToViewModel())
+            .OrderBy(t => t.StartDate)
+            .ToList()
+            .AsReadOnly();
     }
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)

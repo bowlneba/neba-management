@@ -4,6 +4,7 @@ using Neba.Website.Contracts.Awards;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.BowlingCenters;
 using Neba.Website.Contracts.Titles;
+using Neba.Website.Contracts.Tournaments;
 using Refit;
 
 namespace Neba.Web.Server.Services;
@@ -36,6 +37,12 @@ internal interface INebaWebsiteApi
 
     [Get("/tournaments/rules")]
     Task<Refit.ApiResponse<DocumentResponse<string>>> GetTournamentRulesAsync();
+
+    [Get("/tournaments/future")]
+    Task<Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>> GetFutureTournamentsAsync();
+
+    [Get("/tournaments/year/{year}")]
+    Task<Refit.ApiResponse<CollectionResponse<TournamentSummaryResponse>>> GetTournamentsInAYearAsync(int year);
 
     [Get("/bylaws")]
     Task<Refit.ApiResponse<DocumentResponse<string>>> GetBylawsAsync();
