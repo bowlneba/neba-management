@@ -6,6 +6,7 @@ using Neba.Website.Application.Awards;
 using Neba.Website.Application.Bowlers;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Application.BowlingCenters;
+using Neba.Website.Application.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 
@@ -71,6 +72,7 @@ public static class WebsiteInfrastructureDependencyInjection
             services.AddScoped<IWebsiteTitleQueryRepository, WebsiteTitleQueryRepository>();
             services.AddScoped<IWebsiteAwardQueryRepository, WebsiteAwardQueryRepository>();
             services.AddScoped<IWebsiteBowlingCenterQueryRepository, WebsiteBowlingCenterQueryRepository>();
+            services.AddScoped<IWebsiteTournamentQueryRepository, WebsiteTournamentQueryRepository>();
 
             return services;
         }
