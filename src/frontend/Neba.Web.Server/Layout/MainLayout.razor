@@ -198,8 +198,12 @@
         if (current == path)
             return true;
 
+        // Special case: /tournaments should only match /tournaments or /tournaments/, not /tournaments/{year}
+        if (path == "tournaments" && (current == "tournaments" || current == "tournaments/"))
+            return true;
+
         // For section matches, only if followed by / (to avoid /tournaments matching /tournaments/{year})
-        if (current.StartsWith(path + "/"))
+        if (path != "tournaments" && current.StartsWith(path + "/"))
             return true;
 
         return false;
