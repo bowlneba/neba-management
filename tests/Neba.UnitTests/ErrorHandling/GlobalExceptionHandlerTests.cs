@@ -14,19 +14,18 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
 {
     private const string GenericDetail = "An error occurred while processing your request";
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
     private readonly ServiceProvider _serviceProvider;
-    private readonly IProblemDetailsService _problemDetailsService;
     private readonly GlobalExceptionHandler _sut;
 
     public GlobalExceptionHandlerTests()
     {
         _serviceProvider = BuildServiceProvider();
-        _problemDetailsService = _serviceProvider.GetRequiredService<IProblemDetailsService>();
-        _sut = new GlobalExceptionHandler(_problemDetailsService, NullLogger<GlobalExceptionHandler>.Instance);
+        IProblemDetailsService problemDetailsService = _serviceProvider.GetRequiredService<IProblemDetailsService>();
+        _sut = new GlobalExceptionHandler(problemDetailsService, NullLogger<GlobalExceptionHandler>.Instance);
     }
 
     [Fact(DisplayName = "Sets 500 status code for unhandled exceptions")]
@@ -185,11 +184,11 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
         // Assert
         httpContext.Response.Body.Position = 0;
         using var reader = new StreamReader(httpContext.Response.Body);
-        string responseText = await reader.ReadToEndAsync();
+        string responseText = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
         responseText.ShouldNotBeNullOrWhiteSpace();
         httpContext.Response.ContentType.ShouldStartWith("application/problem+json");
 
-        ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, JsonOptions);
+        ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, s_jsonOptions);
 
         problemDetails.ShouldNotBeNull();
     }
@@ -242,7 +241,7 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
             JsonElement jsonElement => jsonElement.GetString(),
             JsonValue jsonValue => jsonValue.GetValue<string>(),
             string str => str,
-            _ => null,
+            var _ => null
         };
 
         traceId.ShouldBe(httpContext.TraceIdentifier);
@@ -277,10 +276,15 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
         {
             RequestServices = _serviceProvider,
             TraceIdentifier = Guid.NewGuid().ToString(),
+            Request =
+            {
+                Path = "/test"
+            },
+            Response =
+            {
+                Body = new MemoryStream()
+            }
         };
-
-        httpContext.Request.Path = "/test";
-        httpContext.Response.Body = new MemoryStream();
 
         return httpContext;
     }
@@ -291,7 +295,7 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
         using var reader = new StreamReader(httpContext.Response.Body);
         string responseText = await reader.ReadToEndAsync();
 
-        ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, JsonOptions);
+        ProblemDetails? problemDetails = JsonSerializer.Deserialize<ProblemDetails>(responseText, s_jsonOptions);
 
         return problemDetails ?? throw new InvalidOperationException("Failed to deserialize ProblemDetails");
     }
