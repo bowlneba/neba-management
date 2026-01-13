@@ -15,19 +15,19 @@ public static class TournamentSummaryResponseFactory
         DateOnly? startDate = null,
         DateOnly? endDate = null,
         TournamentType? tournamentType = null,
-        string? patternLengthCategory = null)
+        PatternLengthCategory? patternLengthCategory = null)
     {
         return new TournamentSummaryResponse
         {
             Id = id ?? TournamentId.New(),
             Name = name ?? "Sample Tournament",
             ThumbnailUrl = thumbnailUrl,
-            BowlingCenterId = bowlingCenterId ?? BowlingCenterId.New(),
+            BowlingCenterId = bowlingCenterId,
             BowlingCenterName = bowlingCenterName,
             StartDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow),
             EndDate = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
             TournamentType = tournamentType?.Name ?? TournamentType.Singles.Name,
-            PatternLengthCategory = patternLengthCategory,
+            PatternLengthCategory = patternLengthCategory?.Name,
         };
     }
 }
