@@ -53,9 +53,9 @@ public static class TournamentSummaryDtoFactory
         int count,
         int? seed = null)
     {
-        BowlingCenter bowlingCenter = BowlingCenterFactory.Bogus(1, seed).Single();
+        IReadOnlyCollection<BowlingCenter> bowlingCenters = BowlingCenterFactory.Bogus(count * 10, seed);
 
-        return Bogus(bowlingCenter, count, seed);
+        return Bogus(bowlingCenters, count, seed);
     }
 
     private static List<TournamentSummaryDto> Bogus(
@@ -75,8 +75,8 @@ public static class TournamentSummaryDtoFactory
                     BowlingCenterName = bowlingCenter.Name,
                     StartDate = DateOnly.FromDateTime(faker.Date.Soon(30)),
                     EndDate = DateOnly.FromDateTime(faker.Date.Soon(35)),
-                    TournamentType = faker.PickRandom<TournamentType>(),
-                    PatternLengthCategory = faker.PickRandom<PatternLengthCategory?>()
+                    TournamentType = faker.PickRandom(TournamentType.List.ToArray()),
+                    PatternLengthCategory = faker.Random.Bool() ? faker.PickRandom(PatternLengthCategory.List.ToArray()) : null
                 };
             });
 

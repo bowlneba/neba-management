@@ -6,7 +6,7 @@ namespace Neba.Website.Application.Tournaments.ListTournaments;
 /// <summary>
 /// Query to retrieve all tournaments for a specific year.
 /// </summary>
-public sealed record ListTournamentsForAYearQuery
+public sealed record ListTournamentInAYearQuery
     : ICachedQuery<IReadOnlyCollection<TournamentSummaryDto>>
 {
     /// <summary>
@@ -16,7 +16,7 @@ public sealed record ListTournamentsForAYearQuery
 
     /// <inheritdoc />
     public string Key
-        => CacheKeys.Queries.Build(nameof(ListTournamentsForAYearQuery), Year);
+        => CacheKeys.Queries.Build(nameof(ListTournamentInAYearQuery), Year);
 
     /// <inheritdoc />
     public TimeSpan Expiry
