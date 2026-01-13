@@ -328,10 +328,10 @@ public sealed record SegmentedControlOption
                       OnValueChanged="@HandleViewChanged" />
 
 @code {
-    private string _selectedView = "upcoming";
+    private string _selectedView = "future";
     private List<SegmentedControlOption> _viewOptions = new()
     {
-        new() { Label = "Upcoming", Value = "upcoming" },
+        new() { Label = "Future", Value = "future" },
         new() { Label = "Past", Value = "past" },
         new() { Label = "All", Value = "all" }
     };
