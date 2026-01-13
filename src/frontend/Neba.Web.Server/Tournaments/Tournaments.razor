@@ -41,19 +41,7 @@
                         <div class="timeline-date-year">@tournament.StartDate.Year</div>
                     </div>
                     <div class="tournament-timeline-content">
-                        @if (tournament.ThumbnailUrl != null)
-                        {
-                            <img src="@tournament.ThumbnailUrl" alt="@tournament.Name" class="tournament-timeline-image" />
-                        }
-                        else
-                        {
-                            <div class="tournament-timeline-image tournament-default-logo">
-                                <div class="tournament-logo-content">
-                                    <div class="tournament-logo-icon">⛛</div>
-                                    <div class="tournament-logo-text">NEBA 1963</div>
-                                </div>
-                            </div>
-                        }
+                        <img src="@tournament.ThumbnailUrl" alt="@tournament.Name" class="tournament-timeline-image" />
                         <div class="tournament-timeline-info">
                             <div class="tournament-timeline-title">@tournament.Name</div>
                             <div class="tournament-timeline-location">📍 @tournament.BowlingCenterName</div>

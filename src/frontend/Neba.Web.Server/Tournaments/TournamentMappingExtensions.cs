@@ -8,7 +8,7 @@ namespace Neba.Web.Server.Tournaments;
 internal static class TournamentMappingExtensions
 {
     private static readonly Uri s_defaultThumbnailUri
-        = new("/images/tournaments/default-logo.jpg");
+        = new("/images/tournaments/default-logo.jpg", UriKind.Relative);
 
     extension(TournamentSummaryResponse response)
     {
