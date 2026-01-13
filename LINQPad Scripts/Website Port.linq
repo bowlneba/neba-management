@@ -344,6 +344,25 @@ private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAddit
 	};
 	
 	manualBowlingCenters.Add(colonyLanes);
+
+	var madisonSquareGarden = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "Madison Square Garden",
+		Street = "4 7th Avenue",
+		City = "New York",
+		State = "NY",
+		ZipCode = "100011880",
+		Latitude = 40.7498662,
+		Longitude = -73.991985,
+		PhoneCountryCode = "1",
+		PhoneNumber = "2124656225",
+		Country = "US",
+		Closed = true,
+		WebsiteId = null
+	};
+	
+	manualBowlingCenters.Add(madisonSquareGarden);
 	
 	return manualBowlingCenters;
 }

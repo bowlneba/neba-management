@@ -101,8 +101,15 @@ void Main()
 	
 	//todo: need to create new list (and remove from not matched) of centers manually accounted for in port
 	HashSet<string> centersManuallyUpdated = [];
+	
 	centersNotMatchedByUsbcName.Remove("AMF Hamden Lanes - Hamden, CT");
 	centersManuallyUpdated.Add("AMF Hamden Lanes - Hamden, CT");
+	
+	centersNotMatchedByUsbcName.Remove("Brunswick Colony Lanes - Wallingford, CT");
+	centersManuallyUpdated.Add("Brunswick Colony Lanes - Wallingford, CT");
+	
+	centersNotMatchedByUsbcName.Remove("Madison Square Garden - New York, NY");
+	centersManuallyUpdated.Add("Madison Square Garden - New York, NY");
 	
 	centersManuallyUpdated.Dump("Centers Manually Handled");
 	
