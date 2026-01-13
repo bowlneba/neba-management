@@ -3,7 +3,7 @@
 @using Neba.Web.Server.Components
 @using Neba.Web.Server.Notifications
 
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -168,7 +168,7 @@
 
     private async Task<List<YearGroup>> GetHallOfFameInductionsAsync()
     {
-        var allInducteesResult = await NebaApiService.GetHallOfFameInductionsAsync();
+        var allInducteesResult = await NebaWebsiteApiService.GetHallOfFameInductionsAsync();
 
         if (allInducteesResult.IsError)
         {

@@ -39,7 +39,7 @@ builder.Services.AddOptions<AzureMapsSettings>()
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<AzureMapsSettings>>().Value);
 
-builder.Services.AddRefitClient<INebaApi>(new RefitSettings
+builder.Services.AddRefitClient<INebaWebsiteApi>(new RefitSettings
 {
     ContentSerializer = new SystemTextJsonContentSerializer(
             new System.Text.Json.JsonSerializerOptions
@@ -56,7 +56,7 @@ builder.Services.AddRefitClient<INebaApi>(new RefitSettings
 builder.Services.AddBackgroundJobs(builder.Configuration);
 
 // API services
-builder.Services.AddScoped<NebaApiService>();
+builder.Services.AddScoped<NebaWebsiteApiService>();
 
 // Notification services
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -91,9 +91,9 @@ app.MapRazorComponents<App>()
 app.UseBackgroundJobsDashboard();
 
 // API endpoints for slide-over panel to fetch document content
-app.MapGet("/api/documents/bylaws", async (NebaApiService apiService) =>
+app.MapGet("/api/documents/bylaws", async (NebaWebsiteApiService nebaWebsiteApiService) =>
 {
-    ErrorOr<DocumentViewModel<MarkupString>> result = await apiService.GetBylawsAsync();
+    ErrorOr<DocumentViewModel<MarkupString>> result = await nebaWebsiteApiService.GetBylawsAsync();
     return result.IsError
         ? Results.Problem(detail: result.FirstError.Description, statusCode: 500)
         : Results.Ok(new
@@ -103,9 +103,9 @@ app.MapGet("/api/documents/bylaws", async (NebaApiService apiService) =>
         });
 });
 
-app.MapGet("/api/documents/tournaments/rules", async (NebaApiService apiService) =>
+app.MapGet("/api/documents/tournaments/rules", async (NebaWebsiteApiService nebaWebsiteApiService) =>
 {
-    ErrorOr<DocumentViewModel<MarkupString>> result = await apiService.GetTournamentRulesAsync();
+    ErrorOr<DocumentViewModel<MarkupString>> result = await nebaWebsiteApiService.GetTournamentRulesAsync();
 
     return result.IsError
         ? Results.Problem(detail: result.FirstError.Description, statusCode: 500)

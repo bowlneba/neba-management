@@ -15,14 +15,14 @@ namespace Neba.WebTests.HallOfFame;
 
 public sealed class HallOfFameTests : TestContextWrapper
 {
-    private readonly Mock<INebaApi> _mockNebaApi;
-    private readonly NebaApiService _nebaApiService;
+    private readonly Mock<INebaWebsiteApi> _mockNebaApi;
+    private readonly NebaWebsiteApiService _NebaWebsiteApiService;
 
     public HallOfFameTests()
     {
-        _mockNebaApi = new Mock<INebaApi>();
-        _nebaApiService = new NebaApiService(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(_nebaApiService);
+        _mockNebaApi = new Mock<INebaWebsiteApi>();
+        _NebaWebsiteApiService = new NebaWebsiteApiService(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(_NebaWebsiteApiService);
     }
 
     [Fact]

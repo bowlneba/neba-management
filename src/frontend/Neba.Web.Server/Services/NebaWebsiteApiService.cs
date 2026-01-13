@@ -17,7 +17,7 @@ using Refit;
 
 namespace Neba.Web.Server.Services;
 
-internal class NebaApiService(INebaApi nebaApi)
+internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 {
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetTitlesSummaryAsync()
     {

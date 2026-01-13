@@ -19,13 +19,13 @@ namespace Neba.WebTests.BowlingCenters;
 
 public sealed class BowlingCentersTests : TestContextWrapper
 {
-    private readonly Mock<INebaApi> _mockNebaApi;
+    private readonly Mock<INebaWebsiteApi> _mockNebaApi;
 
     public BowlingCentersTests()
     {
-        _mockNebaApi = new Mock<INebaApi>();
-        NebaApiService nebaApiService = new(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(nebaApiService);
+        _mockNebaApi = new Mock<INebaWebsiteApi>();
+        NebaWebsiteApiService NebaWebsiteApiService = new(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(NebaWebsiteApiService);
 
         // Register AzureMapsSettings for NebaMap component
         var mapsSettings = new AzureMapsSettings

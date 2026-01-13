@@ -16,14 +16,14 @@ namespace Neba.WebTests.History.Awards;
 
 public sealed class HighBlockTests : TestContextWrapper
 {
-    private readonly Mock<INebaApi> _mockNebaApi;
-    private readonly NebaApiService _nebaApiService;
+    private readonly Mock<INebaWebsiteApi> _mockNebaApi;
+    private readonly NebaWebsiteApiService _NebaWebsiteApiService;
 
     public HighBlockTests()
     {
-        _mockNebaApi = new Mock<INebaApi>();
-        _nebaApiService = new NebaApiService(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(_nebaApiService);
+        _mockNebaApi = new Mock<INebaWebsiteApi>();
+        _NebaWebsiteApiService = new NebaWebsiteApiService(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(_NebaWebsiteApiService);
     }
 
     [Fact]

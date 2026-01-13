@@ -1,6 +1,6 @@
 @using Neba.Domain.Identifiers
 @using Neba.Web.Server.Notifications
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 @* Modal for displaying detailed title information for a bowler *@
 
@@ -198,7 +198,7 @@
         {
             var bowlerId = BowlerId ?? throw new InvalidOperationException("BowlerId is required to load titles.");
 
-            var result = await NebaApiService.GetBowlerTitlesAsync(bowlerId);
+            var result = await NebaWebsiteApiService.GetBowlerTitlesAsync(bowlerId);
 
             if (result.IsError)
             {

@@ -3,7 +3,7 @@
 @using Neba.Web.Server.Notifications
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 <PageTitle>Champions - NEBA</PageTitle>
 
@@ -92,7 +92,7 @@
     {
         try
         {
-            var result = await NebaApiService.GetTitlesSummaryAsync();
+            var result = await NebaWebsiteApiService.GetTitlesSummaryAsync();
 
             if (result.IsError)
             {
@@ -120,7 +120,7 @@
 
         try
         {
-            var result = await NebaApiService.GetTitlesByYearAsync();
+            var result = await NebaWebsiteApiService.GetTitlesByYearAsync();
 
             if (result.IsError)
             {

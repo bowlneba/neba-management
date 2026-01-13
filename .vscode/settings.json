@@ -3,8 +3,8 @@
   "testExplorer.useNativeTesting": true,
   "dotnet-test-explorer.testProjectPath": "tests/**/*.csproj",
   "dotnet.testWindow.useTestingPlatformProtocol": true,
-  "dotnet.codeLens.enableTestCodeLens": true,
-  "csharp.experimental.testCodeLens.enabled": true,
+  "dotnet.codeLens.enableTestCodeLens": false,
+  "csharp.experimental.testCodeLens.enabled": false,
   "dotnet.debug.sourceFileMap": {
     ".": "${workspaceFolder}"
   },

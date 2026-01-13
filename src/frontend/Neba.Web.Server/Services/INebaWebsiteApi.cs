@@ -8,7 +8,7 @@ using Refit;
 
 namespace Neba.Web.Server.Services;
 
-internal interface INebaApi
+internal interface INebaWebsiteApi
 {
     [Get("/titles")]
     Task<Refit.ApiResponse<CollectionResponse<TitleResponse>>> GetAllTitlesAsync();

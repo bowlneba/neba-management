@@ -1,7 +1,7 @@
 @page "/bylaws"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 <PageTitle>Bylaws - NEBA</PageTitle>
 
@@ -32,7 +32,7 @@
     {
         try
         {
-            var result = await NebaApiService.GetBylawsAsync();
+            var result = await NebaWebsiteApiService.GetBylawsAsync();
 
             if (result.IsError)
             {

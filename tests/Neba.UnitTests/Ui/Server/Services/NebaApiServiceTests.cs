@@ -22,15 +22,15 @@ namespace Neba.UnitTests.Ui.Server.Services;
 [Trait("Category", "Unit")]
 [Trait("Component", "Ui.Server.Services")]
 
-public sealed class NebaApiServiceTests
+public sealed class NebaWebsiteApiServiceTests
 {
-    private readonly Mock<INebaApi> _mockNebaApi;
-    private readonly NebaApiService _sut;
+    private readonly Mock<INebaWebsiteApi> _mockNebaApi;
+    private readonly NebaWebsiteApiService _sut;
 
-    public NebaApiServiceTests()
+    public NebaWebsiteApiServiceTests()
     {
-        _mockNebaApi = new Mock<INebaApi>();
-        _sut = new NebaApiService(_mockNebaApi.Object);
+        _mockNebaApi = new Mock<INebaWebsiteApi>();
+        _sut = new NebaWebsiteApiService(_mockNebaApi.Object);
     }
 
     [Fact(DisplayName = "Returns grouped Bowler of the Year awards on successful response")]

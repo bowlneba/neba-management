@@ -1,6 +1,6 @@
 @page "/history/bowler-of-the-year"
 @using Neba.Web.Server.Notifications
-@inject NebaApiService ApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Bowler of the Year Awards - NEBA</PageTitle>
@@ -96,7 +96,7 @@
     {
         try
         {
-            var result = await ApiService.GetBowlerOfTheYearAwardsAsync();
+            var result = await NebaWebsiteApiService.GetBowlerOfTheYearAwardsAsync();
 
             if (result.IsError)
             {
