@@ -29,10 +29,13 @@ public static class TitleSummaryResponseFactory
         int? seed = null)
     {
         Faker<TitleSummaryResponse> faker = new Faker<TitleSummaryResponse>()
-            .RuleFor(b => b.BowlerId, _ => BowlerId.New())
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
-            .RuleFor(b => b.HallOfFame, f => f.Random.Bool())
-            .RuleFor(b => b.TitleCount, f => f.Random.Int(0, 20));
+            .CustomInstantiator(f => new TitleSummaryResponse
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = f.Name.FullName(),
+                HallOfFame = f.Random.Bool(),
+                TitleCount = f.Random.Int(0, 20)
+            });
 
         if (seed.HasValue)
         {

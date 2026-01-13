@@ -27,9 +27,12 @@ public static class BowlerTitleResponseFactory
         int? seed = null)
     {
         Faker<BowlerTitleResponse> faker = new Faker<BowlerTitleResponse>()
-            .RuleFor(response => response.Month, f => f.PickRandom(Month.List.ToArray()))
-            .RuleFor(response => response.Year, f => f.Date.Past(70).Year)
-            .RuleFor(response => response.TournamentType, f => f.Lorem.Word());
+            .CustomInstantiator(f => new BowlerTitleResponse
+            {
+                Month = f.PickRandom(Month.List.ToArray()),
+                Year = f.Date.Past(70).Year,
+                TournamentType = f.Lorem.Word()
+            });
 
         if (seed.HasValue)
         {

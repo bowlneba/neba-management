@@ -20,18 +20,18 @@ public sealed partial record PhoneNumber
     /// <summary>
     /// Gets the ISO country calling code for the phone number (e.g. "1" for North America).
     /// </summary>
-    public string CountryCode { get; internal init; } = string.Empty;
+    public string CountryCode { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the digits-only phone number (no formatting characters).
     /// For North American numbers this will be 10 digits (NPA-NXX-XXXX).
     /// </summary>
-    public string Number { get; internal init; } = string.Empty;
+    public string Number { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the optional phone extension (digits only) or <c>null</c> when none is present.
     /// </summary>
-    public string? Extension { get; internal init; }
+    public string? Extension { get; init; }
 
     /// <summary>
     /// Creates a <see cref="PhoneNumber"/> for North American Numbering Plan (NANP) numbers.

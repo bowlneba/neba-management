@@ -31,10 +31,13 @@ public static class HighBlockAwardDtoFactory
         int? seed = null)
     {
         Faker<HighBlockAwardDto>? faker = new Faker<HighBlockAwardDto>()
-            .RuleFor(award => award.Id, _ => SeasonAwardId.New())
-            .RuleFor(award => award.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Score, f => f.Random.Int(1200, 1350));
+            .CustomInstantiator(f => new HighBlockAwardDto
+            {
+                Id = SeasonAwardId.New(),
+                BowlerName = NameFactory.Bogus(1).Single(),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture),
+                Score = f.Random.Int(1200, 1350)
+            });
 
         if (seed.HasValue)
         {

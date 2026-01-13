@@ -29,14 +29,18 @@ public static class HallOfFameInductionResponseFactory
         int? seed = null)
     {
         Faker<HallOfFameInductionResponse> faker = new Faker<HallOfFameInductionResponse>()
-            .RuleFor(h => h.BowlerName, f => f.Name.FullName())
-            .RuleFor(h => h.Year, f => f.Date.Past(60).Year)
-            .RuleFor(h => h.PhotoUrl, f => f.Random.Bool(0.4f) ? new Uri(f.Internet.Avatar()) : null)
-            .RuleFor(h => h.Categories, f =>
+            .CustomInstantiator(f =>
             {
                 string[] availableCategories = ["Superior Performance", "Meritorious Service", "Friend of NEBA"];
                 int categoryCount = f.Random.Int(1, 2);
-                return f.PickRandom(availableCategories, categoryCount).ToList();
+
+                return new HallOfFameInductionResponse
+                {
+                    BowlerName = f.Name.FullName(),
+                    Year = f.Date.Past(60).Year,
+                    PhotoUrl = f.Random.Bool(0.4f) ? new Uri(f.Internet.Avatar()) : null,
+                    Categories = f.PickRandom(availableCategories, categoryCount).ToList()
+                };
             });
 
         if (seed.HasValue)

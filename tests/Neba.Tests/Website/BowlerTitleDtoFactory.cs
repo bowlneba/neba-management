@@ -33,10 +33,13 @@ public static class BowlerTitleDtoFactory
         )
     {
         Faker<BowlerTitleDto> faker = new Faker<BowlerTitleDto>()
-            .RuleFor(bowler => bowler.BowlerId, _ => BowlerId.New())
-            .RuleFor(bowler => bowler.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(bowler => bowler.TournamentDate, f => DateOnly.FromDateTime(f.Date.Past(70)))
-            .RuleFor(bowler => bowler.TournamentType, f => f.PickRandom(TournamentType.List.ToArray()));
+            .CustomInstantiator(f => new BowlerTitleDto
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = NameFactory.Bogus(1).Single(),
+                TournamentDate = DateOnly.FromDateTime(f.Date.Past(70)),
+                TournamentType = f.PickRandom(TournamentType.List.ToArray())
+            });
 
         if (seed.HasValue)
         {

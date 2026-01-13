@@ -29,9 +29,12 @@ public static class HighBlockAwardResponseFactory
         int? seed = null)
     {
         Faker<HighBlockAwardResponse> faker = new Faker<HighBlockAwardResponse>()
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
-            .RuleFor(b => b.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture))
-            .RuleFor(b => b.Score, f => f.Random.Int(900, 1300));
+            .CustomInstantiator(f => new HighBlockAwardResponse
+            {
+                BowlerName = f.Name.FullName(),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture),
+                Score = f.Random.Int(900, 1300)
+            });
 
         if (seed.HasValue)
         {

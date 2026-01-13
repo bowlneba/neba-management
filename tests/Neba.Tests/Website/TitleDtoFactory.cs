@@ -25,8 +25,11 @@ public static class TitleDtoFactory
     )
     {
         Faker<TitleDto> faker = new Faker<TitleDto>()
-            .RuleFor(title => title.TournamentDate, f => DateOnly.FromDateTime(f.Date.Past(70)))
-            .RuleFor(title => title.TournamentType, f => f.PickRandom(TournamentType.List.ToArray()));
+            .CustomInstantiator(f => new TitleDto
+            {
+                TournamentDate = DateOnly.FromDateTime(f.Date.Past(70)),
+                TournamentType = f.PickRandom(TournamentType.List.ToArray())
+            });
 
         if (seed.HasValue)
         {

@@ -30,10 +30,13 @@ public static class BowlerTitleSummaryViewModelFactory
         int? seed = null)
     {
         Faker<BowlerTitleSummaryViewModel> faker = new Faker<BowlerTitleSummaryViewModel>()
-            .RuleFor(vm => vm.BowlerId, _ => BowlerId.New())
-            .RuleFor(vm => vm.BowlerName, f => f.Name.FullName())
-            .RuleFor(vm => vm.TitleCount, f => f.Random.Int(1, 30))
-            .RuleFor(vm => vm.HallOfFame, f => f.Random.Bool(0.2f));
+            .CustomInstantiator(f => new BowlerTitleSummaryViewModel
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = f.Name.FullName(),
+                TitleCount = f.Random.Int(1, 30),
+                HallOfFame = f.Random.Bool(0.2f)
+            });
 
         if (seed.HasValue)
         {
