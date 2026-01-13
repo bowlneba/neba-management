@@ -3,19 +3,13 @@ using Neba.Application.Messaging;
 
 namespace Neba.Website.Application.Tournaments.ListTournaments;
 
-internal sealed class ListFutureTournamentsQueryHandler
-    : IQueryHandler<ListFutureTournamentsQuery, IReadOnlyCollection<TournamentSummaryDto>>
+internal sealed class ListFutureTournamentsQueryHandler(
+    IWebsiteTournamentQueryRepository tournamentQueryRepository,
+    IDateTimeProvider dateTimeProvider)
+        : IQueryHandler<ListFutureTournamentsQuery, IReadOnlyCollection<TournamentSummaryDto>>
 {
-    private readonly IWebsiteTournamentQueryRepository _tournamentQueryRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
-
-    public ListFutureTournamentsQueryHandler(
-        IWebsiteTournamentQueryRepository tournamentQueryRepository,
-        IDateTimeProvider dateTimeProvider)
-    {
-        _tournamentQueryRepository = tournamentQueryRepository;
-        _dateTimeProvider = dateTimeProvider;
-    }
+    private readonly IWebsiteTournamentQueryRepository _tournamentQueryRepository = tournamentQueryRepository;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task<IReadOnlyCollection<TournamentSummaryDto>> HandleAsync(ListFutureTournamentsQuery query, CancellationToken cancellationToken)
     {
