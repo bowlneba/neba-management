@@ -8,7 +8,10 @@ using Neba.Application.Messaging;
 using Neba.Contracts;
 using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Http;
+using Neba.Website.Application.Tournaments;
+using Neba.Website.Application.Tournaments.ListTournaments;
 using Neba.Website.Application.Tournaments.TournamentRules;
+using Neba.Website.Contracts.Tournaments;
 using Neba.Website.Endpoints.Documents;
 
 namespace Neba.Website.Endpoints.Tournaments;
@@ -27,6 +30,10 @@ internal static class TournamentEndpoints
                 .WithTags("tournaments", "website")
                 .AllowAnonymous();
 
+            tournamentGroup
+                .MapGetFutureTournamentsEndpoint()
+                .MapGetTournamentsInAYearEndpoint();
+
             RouteGroupBuilder tournamentRulesGroup = tournamentGroup
                 .MapGroup("/rules")
                 .WithTags("tournaments", "website", "documents")
@@ -36,6 +43,59 @@ internal static class TournamentEndpoints
                 .MapGetTournamentRulesEndpoint()
                 .MapRefreshTournamentRulesCacheEndpoint()
                 .MapTournamentRulesRefreshStatusSseEndpoint();
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapGetFutureTournamentsEndpoint()
+        {
+            app.MapGet(
+                "/future",
+                async (
+                    IQueryHandler<ListFutureTournamentsQuery, IReadOnlyCollection<TournamentSummaryDto>> queryHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var query = new ListFutureTournamentsQuery();
+
+                    IReadOnlyCollection<TournamentSummaryDto> result = await queryHandler.HandleAsync(query, cancellationToken);
+
+                    IReadOnlyCollection<TournamentSummaryResponse> response = result.Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetFutureTournaments")
+                .WithSummary("Get all future NEBA tournaments.")
+                .WithDescription("Retrieves a list of all upcoming NEBA tournaments.")
+                .Produces<CollectionResponse<TournamentSummaryResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
+                .WithTags("tournaments", "website");
+
+            return app;
+        }
+
+        private IEndpointRouteBuilder MapGetTournamentsInAYearEndpoint()
+        {
+            app.MapGet(
+                "/year/{year:int}",
+                async (
+                    int year,
+                    IQueryHandler<ListTournamentInAYearQuery, IReadOnlyCollection<TournamentSummaryDto>> queryHandler,
+                    CancellationToken cancellationToken) =>
+                {
+                    var query = new ListTournamentInAYearQuery {Year = year};
+
+                    IReadOnlyCollection<TournamentSummaryDto> result = await queryHandler.HandleAsync(query, cancellationToken);
+
+                    IReadOnlyCollection<TournamentSummaryResponse> response = result.Select(dto => dto.ToResponseModel()).ToList();
+
+                    return TypedResults.Ok(CollectionResponse.Create(response));
+                })
+                .WithName("GetTournamentsInAYear")
+                .WithSummary("Get all NEBA tournaments in a specific year.")
+                .WithDescription("Retrieves a list of all NEBA tournaments that took place in the specified year.")
+                .Produces<CollectionResponse<TournamentSummaryResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+                .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
+                .WithTags("tournaments", "website");
 
             return app;
         }

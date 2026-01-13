@@ -1,0 +1,59 @@
+using System.Text.Json.Serialization;
+using Ardalis.SmartEnum.SystemTextJson;
+using Neba.Domain.Identifiers;
+using Neba.Domain.Tournaments;
+
+namespace Neba.Website.Contracts.Tournaments;
+
+/// <summary>
+/// Response DTO representing a summary of a tournament returned by the website API.
+/// </summary>
+public sealed record TournamentSummaryResponse
+{
+    /// <summary>
+    /// Gets the unique identifier of the tournament.
+    /// </summary>
+    public required TournamentId Id { get; init; }
+
+    /// <summary>
+    /// Gets the name of the tournament.
+    /// </summary>
+    public required string Name { get; init; }
+
+    /// <summary>
+    /// Gets the URL of the tournament thumbnail image.
+    /// </summary>
+    public Uri? ThumbnailUrl { get; init; }
+
+    /// <summary>
+    /// Gets the identifier of the bowling center where the tournament is held.
+    /// </summary>
+    public BowlingCenterId? BowlingCenterId { get; init; }
+
+    /// <summary>
+    /// Gets the name of the bowling center where the tournament is held.
+    /// </summary>
+    public string? BowlingCenterName { get; init; }
+
+    /// <summary>
+    /// Gets the start date of the tournament.
+    /// </summary>
+    public required DateOnly StartDate { get; init; }
+
+    /// <summary>
+    /// Gets the end date of the tournament.
+    /// </summary>
+    public required DateOnly EndDate { get; init; }
+
+    /// <summary>
+    /// Gets the type of the tournament.
+    /// </summary>
+    [JsonConverter(typeof(SmartEnumValueConverter<TournamentType, int>))]
+    public required TournamentType TournamentType { get; init; }
+
+    /// <summary>
+    /// Gets the pattern length category of the tournament, if applicable.
+    /// </summary>
+    [JsonConverter(typeof(SmartEnumValueConverter<PatternLengthCategory, int>))]
+    public PatternLengthCategory? PatternLengthCategory { get; init; }
+}
