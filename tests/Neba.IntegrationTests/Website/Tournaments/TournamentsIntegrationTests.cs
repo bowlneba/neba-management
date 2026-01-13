@@ -232,7 +232,7 @@ public sealed class TournamentsIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/year/{testYear}", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/{testYear}", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -277,7 +277,7 @@ public sealed class TournamentsIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/year/{testYear}", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/{testYear}", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -315,7 +315,7 @@ public sealed class TournamentsIntegrationTests
         using HttpClient httpClient = Factory.CreateClient();
 
         // Act
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/year/{testYear}", UriKind.Relative));
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri($"/tournaments/{testYear}", UriKind.Relative));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
