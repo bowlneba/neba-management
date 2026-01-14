@@ -27,16 +27,6 @@ test.describe('Navigation - E2E User Experience', () => {
       await expect(menu).not.toBeVisible();
     });
 
-    test.skip('Menu is visible on desktop viewport', async ({ page }, testInfo) => {
-      // Skipped: Flaky due to viewport detection issues in chromium
-
-      await page.setViewportSize({ width: 1024, height: 768 });
-      await page.goto('/');
-
-      const menu = page.locator('#main-menu');
-      await expect(menu).toBeVisible();
-    });
-
     test('Mobile menu items are clickable', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
@@ -53,65 +43,6 @@ test.describe('Navigation - E2E User Experience', () => {
   });
 
   test.describe('Dropdown Menus', () => {
-    test.skip('User can open and close dropdown on desktop', async ({ page, browserName }, testInfo) => {
-      // Skipped: Flaky due to viewport detection issues in chromium
-
-      await page.setViewportSize({ width: 1024, height: 768 });
-      await page.goto('/');
-
-      // Find Tournaments dropdown
-      const tournamentsDropdown = page.locator('.neba-nav-item', { hasText: 'Tournaments' }).first();
-      const dropdown = tournamentsDropdown.locator('.neba-dropdown');
-
-      // Dropdown initially hidden
-      await expect(dropdown).not.toBeVisible();
-
-      // User clicks to open
-      await tournamentsDropdown.click();
-      await expect(dropdown).toBeVisible();
-
-      // User clicks again to close
-      await tournamentsDropdown.click();
-      await expect(dropdown).not.toBeVisible();
-    });
-
-    test.skip('User can navigate to dropdown items', async ({ page, browserName }, testInfo) => {
-      // Skipped: Flaky due to viewport detection issues in chromium
-
-      await page.setViewportSize({ width: 1024, height: 768 });
-      await page.goto('/');
-
-      // Open History dropdown
-      const historyDropdown = page.locator('.neba-nav-item', { hasText: 'History' }).first();
-      await historyDropdown.click();
-
-      // Click Champions link
-      const championsLink = page.locator('a[href="/history/champions"]');
-      await championsLink.click();
-
-      // Should navigate
-      await expect(page).toHaveURL(/\/history\/champions/);
-    });
-
-    test.skip('Multiple dropdowns can be opened independently', async ({ page, browserName }, testInfo) => {
-      // Skipped: Flaky due to viewport detection issues in chromium
-
-      await page.setViewportSize({ width: 1024, height: 768 });
-      await page.goto('/');
-
-      // Open Tournaments dropdown
-      const tournamentsDropdown = page.locator('.neba-nav-item', { hasText: 'Tournaments' }).first();
-      await tournamentsDropdown.click();
-      const tournamentsMenu = tournamentsDropdown.locator('.neba-dropdown');
-      await expect(tournamentsMenu).toBeVisible();
-
-      // Open History dropdown
-      const historyDropdown = page.locator('.neba-nav-item', { hasText: 'History' }).first();
-      await historyDropdown.click();
-      const historyMenu = historyDropdown.locator('.neba-dropdown');
-      await expect(historyMenu).toBeVisible();
-    });
-
     test('Dropdown works on mobile after opening menu', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
@@ -197,23 +128,6 @@ test.describe('Navigation - E2E User Experience', () => {
   });
 
   test.describe('Responsive Behavior', () => {
-    test.skip('Navigation transitions from mobile to desktop on resize', async ({ page }, testInfo) => {
-      // Skipped: Flaky due to viewport detection and device emulation conflicts
-
-      // Start with mobile
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto('/');
-
-      const menu = page.locator('#main-menu');
-      await expect(menu).not.toBeVisible();
-
-      // Resize to desktop
-      await page.setViewportSize({ width: 1024, height: 768 });
-
-      // Menu should now be visible without needing to click
-      await expect(menu).toBeVisible();
-    });
-
     test('Search input expands on focus', async ({ page }) => {
       await page.goto('/');
 

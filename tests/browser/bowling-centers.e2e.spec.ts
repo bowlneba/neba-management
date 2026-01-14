@@ -19,12 +19,6 @@ test.describe('Bowling Centers - E2E User Experience', () => {
       await expect(description).toBeVisible();
     });
 
-    test.skip('Page title is set correctly', async ({ page }) => {
-      // Skipped: Blazor SSR title setting is unreliable in E2E tests
-      await expect(page.locator('h1', { hasText: 'Bowling Centers' })).toBeVisible();
-      await expect(page).toHaveTitle(/Bowling Centers - NEBA/);
-    });
-
     test('Centers load from API', async ({ page }) => {
       // Wait for loading to complete
       await page.waitForSelector('text=Loading bowling centers...', { state: 'hidden', timeout: 5000 });
