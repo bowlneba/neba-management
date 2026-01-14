@@ -933,7 +933,7 @@ public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync
 			Name = entry.TournamentName,
 			StartDate = entry.StartDate,
 			EndDate = entry.EndDate,
-			//BowlingCenterId = "ULID", // todo: need to do look ups (domainId in the bowling centers collection (location / name?)
+			BowlingCenterId = bowlingCenters.SingleOrDefault(bc => bc.Name == entry.BowlingCenter)?.DomainId,
 			TournamentType = TournamentType.FromName(entry.TournamentType),
 			ApplicationId = entry.SoftwareId,
 			Entries = entry.Entries,
