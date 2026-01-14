@@ -82,7 +82,7 @@ internal static class TournamentEndpoints
                     IQueryHandler<ListTournamentInAYearQuery, IReadOnlyCollection<TournamentSummaryDto>> queryHandler,
                     CancellationToken cancellationToken) =>
                 {
-                    var query = new ListTournamentInAYearQuery {Year = year};
+                    var query = new ListTournamentInAYearQuery { Year = year };
 
                     IReadOnlyCollection<TournamentSummaryDto> result = await queryHandler.HandleAsync(query, cancellationToken);
 
