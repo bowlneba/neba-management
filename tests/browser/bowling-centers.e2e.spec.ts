@@ -337,7 +337,7 @@ test.describe('Bowling Centers - E2E User Experience', () => {
       await expect(searchInput).toBeFocused();
 
       // Type with keyboard
-      await searchInput.type('Boston');
+      await searchInput.fill('Boston');
       await expect(searchInput).toHaveValue('Boston');
     });
   });
