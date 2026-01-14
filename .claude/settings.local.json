@@ -150,7 +150,9 @@
       "Bash(BASE_URL=http://localhost:5100 bash scripts/refresh-documents.sh:*)",
       "Bash(git log:*)",
       "Bash(npm run test:browser:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(docker pull:*)",
+      "Bash(docker-compose:*)"
     ],
     "deny": [],
     "ask": []
