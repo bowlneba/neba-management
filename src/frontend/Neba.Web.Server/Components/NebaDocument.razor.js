@@ -455,8 +455,8 @@ function handleAnchorNavigation(content, href) {
         // Determine if we should scroll the content container or the whole page
         // Check if content is scrollable by checking if it has scroll height greater than client height
         // In test environments where layout isn't calculated, we assume a content container with scrollTo is scrollable
-        const isContentScrollable = 
-            (content.scrollHeight > content.clientHeight) || 
+        const isContentScrollable =
+            (content.scrollHeight > content.clientHeight) ||
             (content.scrollHeight === 0 && content.scrollTo); // Fallback for test environments
 
         if (isContentScrollable) {
@@ -524,7 +524,7 @@ function getPageTitle(pathname) {
  * @returns {string} HTML string for the last updated header
  */
 function buildLastUpdatedHeader(metadata) {
-    if (!metadata || !metadata.LastUpdatedUtc) {
+    if (!metadata?.LastUpdatedUtc) {
         return '';
     }
 
@@ -533,7 +533,7 @@ function buildLastUpdatedHeader(metadata) {
         const utcDate = new Date(metadata.LastUpdatedUtc);
 
         // Check if date is valid
-        if (isNaN(utcDate.getTime())) {
+        if (Number.isNaN(utcDate.getTime())) {
             return '';
         }
 
@@ -734,8 +734,8 @@ export function scrollToHash(contentId, tocListId) {
     // Determine if we should scroll the content container or the whole page
     // Check if content is scrollable by checking if it has scroll height greater than client height
     // In test environments where layout isn't calculated, we assume a content container with scrollTo is scrollable
-    const isContentScrollable = 
-        (content.scrollHeight > content.clientHeight) || 
+    const isContentScrollable =
+        (content.scrollHeight > content.clientHeight) ||
         (content.scrollHeight === 0 && content.scrollTo); // Fallback for test environments
 
     console.log('[NebaDocument] Scrolling to position, content scrollable:', isContentScrollable);
