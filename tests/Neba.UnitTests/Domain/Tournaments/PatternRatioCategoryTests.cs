@@ -2,6 +2,8 @@ using Neba.Domain.Tournaments;
 
 namespace Neba.UnitTests.Domain.Tournaments;
 
+[Trait("Category", "Unit")]
+[Trait("Component", "Domain.Tournaments")]
 public sealed class PatternRatioCategoryTests
 {
     [Fact(DisplayName = "There are three defined PatternRatio instances")]

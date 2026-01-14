@@ -350,7 +350,7 @@ test.describe('Bowling Centers - E2E User Experience', () => {
       await page.waitForSelector('text=Loading bowling centers...', { state: 'hidden', timeout: 5000 });
 
       // Look for the two-column grid layout
-      const gridLayout = page.locator('.grid.grid-cols-1.lg\\:grid-cols-2');
+      const gridLayout = page.locator(String.raw`.grid.grid-cols-1.lg\:grid-cols-2`);
       await expect(gridLayout).toBeVisible();
     });
 

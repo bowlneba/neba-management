@@ -241,7 +241,7 @@ public sealed class GlobalExceptionHandlerTests : IDisposable
             JsonElement jsonElement => jsonElement.GetString(),
             JsonValue jsonValue => jsonValue.GetValue<string>(),
             string str => str,
-            var _ => null
+            _ => null
         };
 
         traceId.ShouldBe(httpContext.TraceIdentifier);

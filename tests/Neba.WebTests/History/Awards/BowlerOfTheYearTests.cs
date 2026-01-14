@@ -17,13 +17,13 @@ namespace Neba.WebTests.History.Awards;
 public sealed class BowlerOfTheYearTests : TestContextWrapper
 {
     private readonly Mock<INebaWebsiteApi> _mockNebaApi;
-    private readonly NebaWebsiteApiService _NebaWebsiteApiService;
+    private readonly NebaWebsiteApiService _nebaWebsiteApiService;
 
     public BowlerOfTheYearTests()
     {
         _mockNebaApi = new Mock<INebaWebsiteApi>();
-        _NebaWebsiteApiService = new NebaWebsiteApiService(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(_NebaWebsiteApiService);
+        _nebaWebsiteApiService = new NebaWebsiteApiService(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(_nebaWebsiteApiService);
     }
 
     [Fact]

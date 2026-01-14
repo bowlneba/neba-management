@@ -3,12 +3,12 @@ using Neba.Domain.Tournaments;
 namespace Neba.UnitTests.Domain.Tournaments;
 
 [Trait("Category", "Unit")]
-[Trait("Component", "Tournaments")]
+[Trait("Component", "Domain.Tournaments")]
 
 public sealed class TournamentTypeTests
 {
-    [Fact(DisplayName = "TournamentType should have 14 different tournament types")]
-    public void TournamentType_ShouldHave14DifferentTournamentTypes()
+    [Fact(DisplayName = "TournamentType should have 17 different tournament types")]
+    public void TournamentType_ShouldHave17DifferentTournamentTypes()
     {
         // Arrange & Act
         IReadOnlyCollection<TournamentType> tournamentTypes = TournamentType.List;

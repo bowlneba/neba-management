@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 /**
  * E2E Tests for Document Navigation - Hash Navigation & Scrolling
@@ -24,7 +24,7 @@ test.describe('Document Navigation - Desktop with TOC', () => {
     await page.goto('/bylaws#section-10.3-annual-meeting');
 
     // Wait for content to load and scroll to complete
-    const heading = page.locator('h1#section-10\\.3-annual-meeting');
+    const heading = page.locator(String.raw`h1#section-10\.3-annual-meeting`);
     await expect(heading).toBeVisible({ timeout: 5000 });
 
     // Verify the heading is in viewport (scrolled to)
@@ -42,7 +42,7 @@ test.describe('Document Navigation - Desktop with TOC', () => {
     await page.goto('/bylaws');
 
     // Wait for content to load
-    await page.waitForSelector('h1#section-10\\.3-annual-meeting', { timeout: 5000 });
+    await page.waitForSelector(String.raw`h1#section-10\.3-annual-meeting`, { timeout: 5000 });
 
     // Get reference to the target heading before clicking
     const targetHeading = page.locator('h2#established-election-cycle');
@@ -52,7 +52,7 @@ test.describe('Document Navigation - Desktop with TOC', () => {
 
     // Navigate to the hash directly to avoid Blazor interception issues
     await page.evaluate(() => {
-      window.location.hash = 'established-election-cycle';
+      globalThis.location.hash = 'established-election-cycle';
     });
 
     // Wait for scroll animation
@@ -76,7 +76,7 @@ test.describe('Document Navigation - Desktop with TOC', () => {
     await page.goto('/bylaws');
 
     // Wait for content to load
-    await page.waitForSelector('h1#section-10\\.3-annual-meeting', { timeout: 5000 });
+    await page.waitForSelector(String.raw`h1#section-10\.3-annual-meeting`, { timeout: 5000 });
 
     // Get reference to the target heading before clicking
     const targetHeading = page.locator('h2#quorum-provisions');
@@ -84,7 +84,7 @@ test.describe('Document Navigation - Desktop with TOC', () => {
 
     // Navigate to the hash directly to avoid Blazor interception issues
     await page.evaluate(() => {
-      window.location.hash = 'quorum-provisions';
+      globalThis.location.hash = 'quorum-provisions';
     });
 
     // Wait for scroll
@@ -134,7 +134,7 @@ test.describe('Document Navigation - Mobile without TOC', () => {
     await page.goto('/bylaws#section-10.3-annual-meeting');
 
     // Wait for content to load and scroll to complete
-    const heading = page.locator('h1#section-10\\.3-annual-meeting');
+    const heading = page.locator(String.raw`h1#section-10\.3-annual-meeting`);
     await expect(heading).toBeVisible({ timeout: 5000 });
 
     // Wait for scroll animation
@@ -161,15 +161,15 @@ test.describe('Document Navigation - Mobile without TOC', () => {
     await page.goto('/bylaws');
 
     // Wait for content to load
-    await page.waitForSelector('h1#section-10\\.3-annual-meeting', { timeout: 5000 });
+    await page.waitForSelector(String.raw`h1#section-10\.3-annual-meeting`, { timeout: 5000 });
 
     // Get reference to the target heading before clicking
-    const targetHeading = page.locator('h2#section-12\\.1-amendments');
+    const targetHeading = page.locator(String.raw`h2#section-12\.1-amendments`);
     await expect(targetHeading).toBeAttached({ timeout: 5000 });
 
     // Navigate to the hash directly to avoid Blazor interception issues
     await page.evaluate(() => {
-      window.location.hash = 'section-12.1-amendments';
+      globalThis.location.hash = 'section-12.1-amendments';
     });
 
     // Wait for scroll animation
@@ -248,7 +248,7 @@ test.describe('Document Navigation - Internal Document Links', () => {
     await page.goto('/bylaws');
 
     // Wait for content to load
-    await page.waitForSelector('h1#section-10\\.3-annual-meeting', { timeout: 5000 });
+    await page.waitForSelector(String.raw`h1#section-10\.3-annual-meeting`, { timeout: 5000 });
 
     // Click link to another document in the content (not navigation menu)
     const tournamentRulesLink = page.locator('.neba-document-content a[href="/tournaments/rules"]');
@@ -261,7 +261,7 @@ test.describe('Document Navigation - Internal Document Links', () => {
 
       // Verify slide-over is visible (if implemented)
       const slideover = page.locator('.neba-document-slideover');
-      const isVisible = await slideover.isVisible().catch(() => false);
+      await slideover.isVisible().catch(() => false);
 
       // This depends on implementation - either opens slide-over or navigates
       // For now, just verify the click doesn't error
@@ -287,7 +287,7 @@ test.describe('Document Navigation - Edge Cases', () => {
     await page.goto('/bylaws#section-10.3-annual-meeting');
 
     // Wait for initial load
-    await page.waitForSelector('h1#section-10\\.3-annual-meeting', { timeout: 5000 });
+    await page.waitForSelector(String.raw`h1#section-10\.3-annual-meeting`, { timeout: 5000 });
     await page.waitForTimeout(500);
 
     // Click the same section link again in the content
@@ -297,7 +297,7 @@ test.describe('Document Navigation - Edge Cases', () => {
     }
 
     // Should still scroll/stay at the section without error
-    const heading = page.locator('h1#section-10\\.3-annual-meeting');
+    const heading = page.locator(String.raw`h1#section-10\.3-annual-meeting`);
     await expect(heading).toBeVisible();
   });
 
@@ -308,7 +308,7 @@ test.describe('Document Navigation - Edge Cases', () => {
     await page.waitForTimeout(1000);
 
     // Get current scroll position
-    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await page.evaluate(() => window.scrollY);
 
     // Resize viewport (desktop to mobile)
     await page.setViewportSize({ width: 375, height: 667 });

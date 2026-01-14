@@ -24,8 +24,8 @@ public sealed class BowlingCentersTests : TestContextWrapper
     public BowlingCentersTests()
     {
         _mockNebaApi = new Mock<INebaWebsiteApi>();
-        NebaWebsiteApiService NebaWebsiteApiService = new(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(NebaWebsiteApiService);
+        NebaWebsiteApiService nebaWebsiteApiService = new(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(nebaWebsiteApiService);
 
         // Register AzureMapsSettings for NebaMap component
         var mapsSettings = new AzureMapsSettings
