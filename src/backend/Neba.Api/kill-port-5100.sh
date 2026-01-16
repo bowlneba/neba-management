@@ -4,7 +4,7 @@
 PORT=5100
 PID=$(lsof -ti:$PORT)
 
-if [ -z "$PID" ]; then
+if [[ -z "$PID" ]]; then
     echo "No process found running on port $PORT"
 else
     echo "Killing process $PID running on port $PORT"

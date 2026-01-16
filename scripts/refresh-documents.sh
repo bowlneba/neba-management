@@ -21,7 +21,7 @@ BYLAWS_RESPONSE=$(curl -s -X POST "$BASE_URL/bylaws/refresh" \
 BYLAWS_HTTP_CODE=$(echo "$BYLAWS_RESPONSE" | tail -n1)
 BYLAWS_BODY=$(echo "$BYLAWS_RESPONSE" | sed '$d')
 
-if [ "$BYLAWS_HTTP_CODE" -eq 200 ]; then
+if [[ "$BYLAWS_HTTP_CODE" -eq 200 ]]; then
   echo "✅ Bylaws refresh triggered successfully"
   echo "   Job ID: $(echo "$BYLAWS_BODY" | grep -o '"data":"[^"]*"' | cut -d'"' -f4)"
 else
@@ -41,7 +41,7 @@ RULES_RESPONSE=$(curl -s -X POST "$BASE_URL/tournaments/rules/refresh" \
 RULES_HTTP_CODE=$(echo "$RULES_RESPONSE" | tail -n1)
 RULES_BODY=$(echo "$RULES_RESPONSE" | sed '$d')
 
-if [ "$RULES_HTTP_CODE" -eq 200 ]; then
+if [[ "$RULES_HTTP_CODE" -eq 200 ]]; then
   echo "✅ Tournament Rules refresh triggered successfully"
   echo "   Job ID: $(echo "$RULES_BODY" | grep -o '"data":"[^"]*"' | cut -d'"' -f4)"
 else
