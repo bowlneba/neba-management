@@ -118,148 +118,124 @@ const MOCK_HALL_OF_FAME = {
   totalItems: 3
 };
 
+function setCorsHeaders(res: ServerResponse): void {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+function sendJsonResponse(res: ServerResponse, data: unknown, statusCode: number = 200): void {
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+}
+
+function routeRequest(req: IncomingMessage, res: ServerResponse): boolean {
+  if (req.method !== 'GET') {
+    return false;
+  }
+
+  const routes: Record<string, unknown> = {
+    '/bylaws': {
+      content: MOCK_DOCUMENT_HTML,
+      metadata: {
+        LastUpdatedUtc: '2024-01-01T00:00:00Z',
+        LastUpdatedBy: 'Test User'
+      }
+    },
+    '/bylaws/refresh/status': 'data: {"status":"Completed"}\n\n',
+    '/bowling-centers': MOCK_BOWLING_CENTERS,
+    '/hall-of-fame': MOCK_HALL_OF_FAME,
+    '/tournaments/rules': {
+      content: '<div><h1>Tournament Rules</h1><p>Official NEBA tournament rules...</p></div>',
+      metadata: {
+        LastUpdatedUtc: '2024-01-01T00:00:00Z',
+        LastUpdatedBy: 'Test User'
+      }
+    },
+    '/titles': {
+      items: [
+        { bowlerName: 'John Smith', year: 2023, tournamentName: 'Spring Classic', division: 'A' },
+        { bowlerName: 'Jane Doe', year: 2023, tournamentName: 'Fall Championship', division: 'A' }
+      ],
+      totalItems: 2
+    },
+    '/titles/summary': {
+      items: [
+        { bowlerName: 'John Smith', titleCount: 5 },
+        { bowlerName: 'Jane Doe', titleCount: 3 }
+      ],
+      totalItems: 2
+    },
+    '/awards/bowler-of-the-year': {
+      items: [
+        { year: 2023, bowlerName: 'John Smith', division: 'Open' },
+        { year: 2022, bowlerName: 'Jane Doe', division: 'Open' }
+      ],
+      totalItems: 2
+    },
+    '/awards/high-block': {
+      items: [
+        { year: 2023, bowlerName: 'John Smith', score: 850 },
+        { year: 2022, bowlerName: 'Jane Doe', score: 840 }
+      ],
+      totalItems: 2
+    },
+    '/awards/high-average': {
+      items: [
+        { year: 2023, bowlerName: 'John Smith', average: 235.5 },
+        { year: 2022, bowlerName: 'Jane Doe', average: 232.8 }
+      ],
+      totalItems: 2
+    }
+  };
+
+  const data = routes[req.url || ''];
+  if (data) {
+    if (typeof data === 'string') {
+      res.writeHead(200, { 'Content-Type': 'text/event-stream' });
+      res.end(data);
+    } else {
+      sendJsonResponse(res, data);
+    }
+    return true;
+  }
+
+  return false;
+}
+
+function handleRequest(req: IncomingMessage, res: ServerResponse): void {
+  setCorsHeaders(res);
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
+  if (routeRequest(req, res)) {
+    return;
+  }
+
+  sendJsonResponse(res, { error: 'Not Found' }, 404);
+}
+
+function closeServer(server: ReturnType<typeof createServer>): Promise<void> {
+  return new Promise((resolveClose) => {
+    server.close(() => {
+      console.log('Mock API server closed');
+      resolveClose();
+    });
+  });
+}
+
 export function startMockApiServer(port: number = 5150): Promise<{ close: () => Promise<void> }> {
   return new Promise((resolve) => {
-    const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-      // Enable CORS
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-      if (req.method === 'OPTIONS') {
-        res.writeHead(200);
-        res.end();
-        return;
-      }
-
-      // Handle /bylaws endpoint
-      if (req.url === '/bylaws' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          content: MOCK_DOCUMENT_HTML,
-          metadata: {
-            LastUpdatedUtc: '2024-01-01T00:00:00Z',
-            LastUpdatedBy: 'Test User'
-          }
-        }));
-        return;
-      }
-
-      // Handle /bylaws/refresh/status endpoint
-      if (req.url === '/bylaws/refresh/status' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'text/event-stream' });
-        res.end('data: {"status":"Completed"}\n\n');
-        return;
-      }
-
-      // Handle /bowling-centers endpoint
-      if (req.url === '/bowling-centers' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(MOCK_BOWLING_CENTERS));
-        return;
-      }
-
-      // Handle /hall-of-fame endpoint
-      if (req.url === '/hall-of-fame' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(MOCK_HALL_OF_FAME));
-        return;
-      }
-
-      // Handle /tournaments/rules endpoint
-      if (req.url === '/tournaments/rules' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          content: '<div><h1>Tournament Rules</h1><p>Official NEBA tournament rules...</p></div>',
-          metadata: {
-            LastUpdatedUtc: '2024-01-01T00:00:00Z',
-            LastUpdatedBy: 'Test User'
-          }
-        }));
-        return;
-      }
-
-      // Handle /titles endpoint
-      if (req.url === '/titles' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          items: [
-            { bowlerName: 'John Smith', year: 2023, tournamentName: 'Spring Classic', division: 'A' },
-            { bowlerName: 'Jane Doe', year: 2023, tournamentName: 'Fall Championship', division: 'A' }
-          ],
-          totalItems: 2
-        }));
-        return;
-      }
-
-      // Handle /titles/summary endpoint
-      if (req.url === '/titles/summary' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          items: [
-            { bowlerName: 'John Smith', titleCount: 5 },
-            { bowlerName: 'Jane Doe', titleCount: 3 }
-          ],
-          totalItems: 2
-        }));
-        return;
-      }
-
-      // Handle /awards/bowler-of-the-year endpoint
-      if (req.url === '/awards/bowler-of-the-year' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          items: [
-            { year: 2023, bowlerName: 'John Smith', division: 'Open' },
-            { year: 2022, bowlerName: 'Jane Doe', division: 'Open' }
-          ],
-          totalItems: 2
-        }));
-        return;
-      }
-
-      // Handle /awards/high-block endpoint
-      if (req.url === '/awards/high-block' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          items: [
-            { year: 2023, bowlerName: 'John Smith', score: 850 },
-            { year: 2022, bowlerName: 'Jane Doe', score: 840 }
-          ],
-          totalItems: 2
-        }));
-        return;
-      }
-
-      // Handle /awards/high-average endpoint
-      if (req.url === '/awards/high-average' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          items: [
-            { year: 2023, bowlerName: 'John Smith', average: 235.5 },
-            { year: 2022, bowlerName: 'Jane Doe', average: 232.8 }
-          ],
-          totalItems: 2
-        }));
-        return;
-      }
-
-      // Default 404 response
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Not Found' }));
-    });
+    const server = createServer(handleRequest);
 
     server.listen(port, () => {
       console.log(`Mock API server listening on http://localhost:${port}`);
       resolve({
-        close: () => {
-          return new Promise((resolveClose) => {
-            server.close(() => {
-              console.log('Mock API server closed');
-              resolveClose();
-            });
-          });
-        }
+        close: () => closeServer(server)
       });
     });
   });
