@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
+import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { toggleMobileMenu, toggleDropdown } from './MainLayout.razor.js';
 
 describe('MainLayout', () => {
@@ -9,6 +9,13 @@ describe('MainLayout', () => {
     // Mock globalThis
     globalThis.innerWidth = 1024;
     globalThis.scrollY = 0;
+
+    // Set up CSS variable for breakpoint
+    document.documentElement.style.setProperty('--neba-breakpoint-tablet-max', '1024');
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
   });
 
   describe('toggleMobileMenu', () => {
@@ -573,6 +580,222 @@ describe('MainLayout', () => {
       // Assert - On mobile, keyboard events shouldn't toggle (unless implemented)
       // The dropdown should remain inactive since keyboard nav is desktop-only
       expect(navItem.classList.contains('active')).toBe(false);
+    });
+  });
+
+  describe('event handlers after initialization', () => {
+    // These tests verify that event handlers work after re-initialization via enhancedload
+
+    test('should toggle dropdown via click handler after enhancedload', () => {
+      // Arrange - set up DOM before triggering initialization
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <a href="/page" aria-haspopup="true" aria-expanded="false">Dropdown Link</a>
+        </div>
+      `;
+
+      // Trigger re-initialization via enhancedload event
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const navItem = document.querySelector('.neba-nav-item');
+      const link = navItem.querySelector('[aria-haspopup]');
+
+      // Act - click on the dropdown link
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link.dispatchEvent(clickEvent);
+
+      // Assert
+      expect(navItem.classList.contains('active')).toBe(true);
+      expect(link.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    test('should prevent default on dropdown link click', () => {
+      // Arrange
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <a href="/page" aria-haspopup="true" aria-expanded="false">Dropdown Link</a>
+        </div>
+      `;
+
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const link = document.querySelector('[aria-haspopup]');
+
+      // Act
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link.dispatchEvent(clickEvent);
+
+      // Assert - default should have been prevented
+      expect(clickEvent.defaultPrevented).toBe(true);
+    });
+
+    test('should toggle dropdown on Enter key at desktop width', () => {
+      // Arrange
+      Object.defineProperty(globalThis, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 1200 // Desktop width (> tablet-max 1024)
+      });
+
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <a href="#" aria-haspopup="true" aria-expanded="false">Menu</a>
+        </div>
+      `;
+
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const navItem = document.querySelector('.neba-nav-item');
+      const link = navItem.querySelector('[aria-haspopup]');
+
+      // Act - press Enter key
+      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+      link.dispatchEvent(enterEvent);
+
+      // Assert
+      expect(navItem.classList.contains('active')).toBe(true);
+      expect(link.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    test('should toggle dropdown on Space key at desktop width', () => {
+      // Arrange
+      Object.defineProperty(globalThis, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 1200
+      });
+
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <a href="#" aria-haspopup="true" aria-expanded="false">Menu</a>
+        </div>
+      `;
+
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const navItem = document.querySelector('.neba-nav-item');
+      const link = navItem.querySelector('[aria-haspopup]');
+
+      // Act - press Space key
+      const spaceEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+      link.dispatchEvent(spaceEvent);
+
+      // Assert
+      expect(navItem.classList.contains('active')).toBe(true);
+    });
+
+    test('should close dropdown and focus link on Escape at desktop width', () => {
+      // Arrange
+      Object.defineProperty(globalThis, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 1200
+      });
+
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item active" data-action="toggle-dropdown">
+          <a href="#" aria-haspopup="true" aria-expanded="true">Menu</a>
+        </div>
+      `;
+
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const navItem = document.querySelector('.neba-nav-item');
+      const link = navItem.querySelector('[aria-haspopup]');
+      link.focus = jest.fn();
+
+      // Act - press Escape key
+      const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+      link.dispatchEvent(escapeEvent);
+
+      // Assert
+      expect(navItem.classList.contains('active')).toBe(false);
+      expect(link.getAttribute('aria-expanded')).toBe('false');
+      expect(link.focus).toHaveBeenCalled();
+    });
+
+    test('should NOT toggle dropdown on Enter key at mobile width', () => {
+      // Arrange
+      Object.defineProperty(globalThis, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 800 // Mobile width (< tablet-max 1024)
+      });
+
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <a href="#" aria-haspopup="true" aria-expanded="false">Menu</a>
+        </div>
+      `;
+
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const navItem = document.querySelector('.neba-nav-item');
+      const link = navItem.querySelector('[aria-haspopup]');
+
+      // Act - press Enter key at mobile width
+      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+      link.dispatchEvent(enterEvent);
+
+      // Assert - should NOT toggle (keyboard nav is desktop-only)
+      expect(navItem.classList.contains('active')).toBe(false);
+    });
+
+    test('should handle dropdown without aria-haspopup link', () => {
+      // Arrange - dropdown toggle without a proper link inside
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <div class="neba-nav-item" data-action="toggle-dropdown">
+          <span>No link here</span>
+        </div>
+      `;
+
+      // Act & Assert - should not throw during initialization
+      expect(() => document.dispatchEvent(new Event('enhancedload'))).not.toThrow();
+    });
+  });
+
+  describe('initialization paths', () => {
+    test('should initialize immediately when document already loaded', () => {
+      // The module initializes immediately when document.readyState !== 'loading'
+      // This is the default case in jsdom, so we just verify the module works
+      document.body.innerHTML = `
+        <nav class="neba-navbar"></nav>
+        <button data-action="toggle-menu" aria-expanded="false"></button>
+        <nav id="main-menu"></nav>
+      `;
+
+      // Re-initialize via enhancedload (simulates what happens after Blazor navigation)
+      document.dispatchEvent(new Event('enhancedload'));
+
+      const toggle = document.querySelector('[data-action="toggle-menu"]');
+
+      // Act - click the toggle
+      toggle.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      // Assert
+      expect(document.querySelector('#main-menu').classList.contains('active')).toBe(true);
+    });
+
+    test('should set up scroll handler during initialization', () => {
+      // Arrange
+      const addEventListenerSpy = jest.spyOn(globalThis, 'addEventListener');
+
+      document.body.innerHTML = `<nav class="neba-navbar"></nav>`;
+
+      // Act
+      document.dispatchEvent(new Event('enhancedload'));
+
+      // Assert - scroll listener should have been added
+      expect(addEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+
+      addEventListenerSpy.mockRestore();
     });
   });
 });
