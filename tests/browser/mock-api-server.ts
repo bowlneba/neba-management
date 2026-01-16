@@ -101,7 +101,7 @@ const MOCK_BOWLING_CENTERS = {
       zipCode: '02903',
       phoneNumber: '14015551234',
       phoneExtension: null,
-      latitude: 41.8240,
+      latitude: 41.824,
       longitude: -71.4128,
       isClosed: true
     }
