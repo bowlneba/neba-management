@@ -459,52 +459,65 @@ internal sealed class DocumentMapper(GoogleDocsSettings settings)
     {
         if (document.Body?.Content == null) return;
 
-        IEnumerable<Paragraph> paragraphs = document.Body.Content
+        IEnumerable<Paragraph> headingParagraphs = document.Body.Content
             .Where(e => e.Paragraph != null)
-            .Select(e => e.Paragraph!);
+            .Select(e => e.Paragraph!)
+            .Where(p => IsHeadingParagraph(p.ParagraphStyle));
 
-        foreach (Paragraph paragraph in paragraphs)
+        foreach (Paragraph paragraph in headingParagraphs)
         {
-            ParagraphStyle style = paragraph.ParagraphStyle;
-
-            // Check if this is a heading
-            if (style?.NamedStyleType != null && style.NamedStyleType.StartsWith(HeadingPrefix, StringComparison.Ordinal))
+            string headingText = GetPlainTextFromParagraph(paragraph);
+            if (!string.IsNullOrWhiteSpace(headingText))
             {
-                string headingText = GetPlainTextFromParagraph(paragraph);
-                if (!string.IsNullOrWhiteSpace(headingText))
-                {
-                    string trimmedText = headingText.Trim();
-                    // Store the mapping from heading text to ID if not already present
-                    if (!_headingIds.ContainsKey(trimmedText))
-                    {
-                        string headingId = CreateHeadingId(headingText);
-                        _headingIds[trimmedText] = headingId;
+                RegisterHeadingAndVariants(headingText);
+            }
+        }
+    }
 
-                        // Also store partial match for headings like "Section X.Y Title" -> "Title"
-                        // This handles cases where Google Docs link text is just "Title" but heading is "Section X.Y Title"
-                        Match sectionMatch = Regex.Match(trimmedText, @"^Section\s+[\d.]+\s+(.+)$", RegexOptions.None, TimeSpan.FromSeconds(1));
-                        if (sectionMatch.Success)
-                        {
-                            string titleOnly = sectionMatch.Groups[1].Value.Trim();
-                            if (!_headingIds.ContainsKey(titleOnly))
-                            {
-                                _headingIds[titleOnly] = headingId;
-                            }
-                        }
+    private static bool IsHeadingParagraph(ParagraphStyle? style)
+    {
+        return style?.NamedStyleType != null &&
+               style.NamedStyleType.StartsWith(HeadingPrefix, StringComparison.Ordinal);
+    }
 
-                        // Also store partial match for headings like "ARTICLE VII - Title" -> "Title"
-                        // This handles ARTICLE headings where link text is just "Title"
-                        Match articleMatch = Regex.Match(trimmedText, @"^ARTICLE\s+[IVXLCDM\d]+\s+-\s+(.+)$", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-                        if (articleMatch.Success)
-                        {
-                            string titleOnly = articleMatch.Groups[1].Value.Trim();
-                            if (!_headingIds.ContainsKey(titleOnly))
-                            {
-                                _headingIds[titleOnly] = headingId;
-                            }
-                        }
-                    }
-                }
+    private void RegisterHeadingAndVariants(string headingText)
+    {
+        string trimmedText = headingText.Trim();
+
+        if (_headingIds.ContainsKey(trimmedText))
+        {
+            return;
+        }
+
+        string headingId = CreateHeadingId(headingText);
+        _headingIds[trimmedText] = headingId;
+
+        RegisterSectionTitleVariant(trimmedText, headingId);
+        RegisterArticleTitleVariant(trimmedText, headingId);
+    }
+
+    private void RegisterSectionTitleVariant(string headingText, string headingId)
+    {
+        Match sectionMatch = Regex.Match(headingText, @"^Section\s+[\d.]+\s+(.+)$", RegexOptions.None, TimeSpan.FromSeconds(1));
+        if (sectionMatch.Success)
+        {
+            string titleOnly = sectionMatch.Groups[1].Value.Trim();
+            if (!_headingIds.ContainsKey(titleOnly))
+            {
+                _headingIds[titleOnly] = headingId;
+            }
+        }
+    }
+
+    private void RegisterArticleTitleVariant(string headingText, string headingId)
+    {
+        Match articleMatch = Regex.Match(headingText, @"^ARTICLE\s+[IVXLCDM\d]+\s+-\s+(.+)$", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+        if (articleMatch.Success)
+        {
+            string titleOnly = articleMatch.Groups[1].Value.Trim();
+            if (!_headingIds.ContainsKey(titleOnly))
+            {
+                _headingIds[titleOnly] = headingId;
             }
         }
     }
