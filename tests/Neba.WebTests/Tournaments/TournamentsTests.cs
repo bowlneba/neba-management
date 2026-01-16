@@ -1,5 +1,5 @@
-using Bunit;
 using System.Globalization;
+using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Neba.Contracts;
