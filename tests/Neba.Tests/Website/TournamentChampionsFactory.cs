@@ -17,14 +17,17 @@ public static class TournamentChampionsFactory
         int count)
     {
         var faker = new Bogus.Faker();
+        var assignedPairs = new HashSet<(int TournamentIndex, int BowlerIndex)>();
 
-        for (int i = 0; i < count; i++)
+        while (assignedPairs.Count < count)
         {
+            int tournamentIndex = faker.Random.Int(0, tournaments.Length - 1);
+            int bowlerIndex = faker.Random.Int(0, bowlers.Length - 1);
 
-            Tournament tournament = faker.PickRandom(tournaments);
-            Bowler bowler = faker.PickRandom(bowlers);
-
-            tournament.AddChampion(bowler);
+            if (assignedPairs.Add((tournamentIndex, bowlerIndex)))
+            {
+                tournaments[tournamentIndex].AddChampion(bowlers[bowlerIndex]);
+            }
         }
     }
 }
