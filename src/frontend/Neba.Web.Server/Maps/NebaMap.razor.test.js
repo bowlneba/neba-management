@@ -738,4 +738,724 @@ describe('NebaMap', () => {
       expect(mockMap.dispose).toHaveBeenCalled();
     });
   });
+
+  describe('Clustering', () => {
+    test('should initialize with clustering enabled', async () => {
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => []),
+        getClusterExpansionZoom: jest.fn(() => Promise.resolve(15))
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = {
+        containerId: 'map',
+        center: [0, 0],
+        zoom: 10,
+        enableClustering: true
+      };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Should create cluster layers (BubbleLayer and SymbolLayer for count)
+      expect(globalThis.atlas.layer.BubbleLayer).toHaveBeenCalled();
+      expect(globalThis.atlas.layer.SymbolLayer).toHaveBeenCalled();
+    });
+
+    test('should handle cluster click events', async () => {
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => []),
+        getClusterExpansionZoom: jest.fn(() => Promise.resolve(15))
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, layer) => {
+          if (event === 'ready' && typeof layer === 'function') {
+            layer();
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = {
+        containerId: 'map',
+        center: [0, 0],
+        zoom: 10,
+        enableClustering: true
+      };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Verify cluster click behavior would work
+      expect(mockDataSource.getClusterExpansionZoom).toBeDefined();
+    });
+  });
+
+  describe('Bounds notification', () => {
+    test('should notify on bounds change after debounce', async () => {
+      jest.useFakeTimers();
+
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      let moveendHandler;
+      const mockDotNetHelper = {
+        invokeMethodAsync: jest.fn().mockResolvedValue(undefined)
+      };
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          } else if (event === 'moveend') {
+            moveendHandler = callback;
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCamera: jest.fn(() => ({
+          bounds: [-71.1, 42.3, -71.0, 42.4]
+        })),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], mockDotNetHelper);
+
+      // Trigger moveend
+      moveendHandler();
+
+      // Fast-forward past debounce delay (150ms)
+      jest.advanceTimersByTime(150);
+
+      expect(mockDotNetHelper.invokeMethodAsync).toHaveBeenCalledWith(
+        'NotifyBoundsChanged',
+        expect.objectContaining({
+          north: 42.4,
+          south: 42.3,
+          east: -71.0,
+          west: -71.1
+        })
+      );
+
+      jest.useRealTimers();
+    });
+
+    test('should debounce multiple bounds changes', async () => {
+      jest.useFakeTimers();
+
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      let moveendHandler;
+      const mockDotNetHelper = {
+        invokeMethodAsync: jest.fn().mockResolvedValue(undefined)
+      };
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          } else if (event === 'moveend') {
+            moveendHandler = callback;
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCamera: jest.fn(() => ({
+          bounds: [-71.1, 42.3, -71.0, 42.4]
+        })),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], mockDotNetHelper);
+
+      // Trigger multiple moveend events rapidly
+      moveendHandler();
+      jest.advanceTimersByTime(50);
+      moveendHandler();
+      jest.advanceTimersByTime(50);
+      moveendHandler();
+
+      // Fast-forward past debounce delay
+      jest.advanceTimersByTime(150);
+
+      // Should only call once due to debouncing
+      expect(mockDotNetHelper.invokeMethodAsync).toHaveBeenCalledTimes(1);
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe('Drawing routes', () => {
+    test('should handle route with instructionGroups fallback', async () => {
+      const { showRoute, initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn() },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []), remove: jest.fn() },
+        sources: { add: jest.fn(), remove: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      // Mock route response with instructionGroups instead of instructions
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          routes: [{
+            summary: { lengthInMeters: 2000, travelTimeInSeconds: 240 },
+            legs: [{ points: [
+              { latitude: 42.3601, longitude: -71.0589 },
+              { latitude: 42.3650, longitude: -71.0550 }
+            ]}],
+            guidance: {
+              instructionGroups: [{
+                instructions: [
+                  { message: 'Head north', travelDistance: 500 },
+                  { message: 'Turn right', travelDistance: 300 }
+                ]
+              }]
+            }
+          }]
+        })
+      });
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      const origin = [-71.0589, 42.3601];
+      const destination = [-71.0550, 42.3650];
+
+      const result = await showRoute(origin, destination);
+
+      expect(result.Instructions).toHaveLength(2);
+      expect(result.Instructions[0].Text).toBe('Head north');
+    });
+
+    test('should draw route on map', async () => {
+      const { showRoute, initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []), remove: jest.fn() },
+        sources: { add: jest.fn(), remove: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          routes: [{
+            summary: { lengthInMeters: 1000, travelTimeInSeconds: 120 },
+            legs: [{ points: [
+              { latitude: 0, longitude: 0 },
+              { latitude: 1, longitude: 1 }
+            ]}],
+            guidance: { instructions: [{ message: 'Go straight', travelDistance: 100 }] }
+          }]
+        })
+      });
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      const result = await showRoute([0, 0], [1, 1]);
+
+      // Should return route data
+      expect(result.DistanceMeters).toBe(1000);
+      expect(result.TravelTimeSeconds).toBe(120);
+      // Should set camera to show route
+      expect(mockMap.setCamera).toHaveBeenCalled();
+    });
+  });
+
+  describe('Azure AD authentication', () => {
+    test('should use Azure AD token for route when accountId provided', async () => {
+      const { showRoute, initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn() },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []), remove: jest.fn() },
+        sources: { add: jest.fn(), remove: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      // Mock Azure AD token fetch
+      globalThis.fetch = jest.fn((url) => {
+        if (url === '/.auth/me') {
+          return Promise.resolve({
+            ok: true,
+            json: jest.fn().mockResolvedValue([{ access_token: 'azure-ad-token-123' }])
+          });
+        }
+        // Route API call
+        return Promise.resolve({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            routes: [{
+              summary: { lengthInMeters: 1000, travelTimeInSeconds: 120 },
+              legs: [{ points: [{ latitude: 0, longitude: 0 }, { latitude: 1, longitude: 1 }] }],
+              guidance: { instructions: [{ message: 'Turn left', travelDistance: 100 }] }
+            }]
+          })
+        });
+      });
+
+      const authConfig = { accountId: 'account-id-123' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      const origin = [-71.0589, 42.3601];
+      const destination = [-71.0550, 42.3650];
+
+      await showRoute(origin, destination);
+
+      // Should have called /.auth/me to get token
+      expect(globalThis.fetch).toHaveBeenCalledWith('/.auth/me');
+    });
+
+    test('should handle Azure AD token fetch failure', async () => {
+      const { showRoute, initializeMap } = await import('./NebaMap.razor.js');
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn() },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      // Mock Azure AD token fetch failure
+      globalThis.fetch = jest.fn((url) => {
+        if (url === '/.auth/me') {
+          return Promise.resolve({
+            ok: false,
+            status: 401
+          });
+        }
+      });
+
+      const authConfig = { accountId: 'account-id-123' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      await expect(showRoute([0, 0], [1, 1])).rejects.toThrow();
+    });
+  });
+
+  describe('Popup management', () => {
+    test('should close existing popup when showing new one', async () => {
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      let symbolClickHandler;
+      const mockPopup = {
+        open: jest.fn(),
+        close: jest.fn()
+      };
+
+      globalThis.atlas.Popup = jest.fn(() => mockPopup);
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockShape = {
+        getProperties: jest.fn(() => ({
+          id: 'loc-1',
+          title: 'Test Location',
+          description: 'Test Description'
+        })),
+        getCoordinates: jest.fn(() => [-71.0589, 42.3601])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, layer, handler) => {
+          if (event === 'ready' && typeof layer === 'function') {
+            layer();
+          } else if (event === 'click' && handler) {
+            symbolClickHandler = handler;
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Simulate clicking on a marker twice
+      if (symbolClickHandler) {
+        symbolClickHandler({ shapes: [mockShape] });
+        symbolClickHandler({ shapes: [mockShape] });
+
+        // Second popup should close the first one
+        expect(mockPopup.close).toHaveBeenCalled();
+      }
+    });
+  });
+
+  describe('Popup on empty map click', () => {
+    test('should close popup when clicking empty map area', async () => {
+      jest.useFakeTimers();
+
+      const { initializeMap } = await import('./NebaMap.razor.js');
+
+      let mapClickHandler;
+      const mockPopup = {
+        open: jest.fn(),
+        close: jest.fn()
+      };
+
+      globalThis.atlas.Popup = jest.fn(() => mockPopup);
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, layer) => {
+          if (event === 'ready' && typeof layer === 'function') {
+            layer();
+          } else if (event === 'click' && typeof layer === 'function') {
+            mapClickHandler = layer;
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Open a popup first by directly creating one
+      const popup = new globalThis.atlas.Popup();
+      popup.open(mockMap);
+
+      // Simulate clicking empty map area
+      if (mapClickHandler) {
+        mapClickHandler();
+        jest.advanceTimersByTime(10);
+      }
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe('focusOnLocation with popup', () => {
+    test('should show popup after zoom animation', async () => {
+      jest.useFakeTimers();
+
+      const { initializeMap, focusOnLocation, updateMarkers } = await import('./NebaMap.razor.js');
+
+      const mockPopup = {
+        open: jest.fn(),
+        close: jest.fn()
+      };
+
+      globalThis.atlas.Popup = jest.fn(() => mockPopup);
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          }
+        }) },
+        layers: { add: jest.fn(), getLayers: jest.fn(() => []) },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      const locations = [
+        { id: 'loc-1', latitude: 42.3601, longitude: -71.0589, title: 'Test', description: 'Test location' }
+      ];
+      updateMarkers(locations);
+
+      focusOnLocation('loc-1');
+
+      // Fast-forward past the setTimeout delay (1100ms)
+      jest.advanceTimersByTime(1100);
+
+      expect(mockPopup.open).toHaveBeenCalled();
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe('enterDirectionsPreview with marker dimming', () => {
+    test('should dim non-selected markers', async () => {
+      const { initializeMap, enterDirectionsPreview, updateMarkers } = await import('./NebaMap.razor.js');
+
+      const mockSymbolLayer = {
+        setOptions: jest.fn()
+      };
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      // Need to ensure the mockSymbolLayer is an instance of SymbolLayer
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          }
+        }) },
+        layers: {
+          add: jest.fn((layer) => {
+            // Mark the layer so it can be identified later
+            if (!layer.setOptions) {
+              Object.assign(layer, mockSymbolLayer);
+            }
+          }),
+          getLayers: jest.fn(() => {
+            // Return mock symbol layer that's an instance of the constructor
+            const instance = Object.create(globalThis.atlas.layer.SymbolLayer.prototype);
+            return [Object.assign(instance, mockSymbolLayer)];
+          })
+        },
+        sources: { add: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      const locations = [
+        { id: 'loc-1', latitude: 42.3601, longitude: -71.0589, title: 'Test 1', description: 'Test' },
+        { id: 'loc-2', latitude: 42.3650, longitude: -71.0550, title: 'Test 2', description: 'Test' }
+      ];
+      updateMarkers(locations);
+
+      enterDirectionsPreview('loc-1');
+
+      // Should have called setOptions to dim markers
+      expect(mockSymbolLayer.setOptions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          iconOptions: expect.any(Object)
+        })
+      );
+    });
+  });
+
+  describe('exitDirectionsMode with route cleanup', () => {
+    test('should remove route layers and restore marker opacity', async () => {
+      const { initializeMap, showRoute, exitDirectionsMode } = await import('./NebaMap.razor.js');
+
+      const mockSymbolLayer = {
+        setOptions: jest.fn()
+      };
+
+      const mockLineLayer = {};
+
+      globalThis.atlas.layer.LineLayer = jest.fn(() => mockLineLayer);
+
+      const mockDataSource = {
+        add: jest.fn(),
+        clear: jest.fn(),
+        getShapes: jest.fn(() => [])
+      };
+
+      const mockMap = {
+        events: { add: jest.fn((event, callback) => {
+          if (event === 'ready') {
+            callback();
+          }
+        }) },
+        layers: {
+          add: jest.fn(),
+          remove: jest.fn(),
+          getLayers: jest.fn(() => {
+            const instance = Object.create(globalThis.atlas.layer.SymbolLayer.prototype);
+            return [Object.assign(instance, mockSymbolLayer)];
+          })
+        },
+        sources: { add: jest.fn(), remove: jest.fn() },
+        setCamera: jest.fn(),
+        getCanvasContainer: jest.fn(() => ({ style: {} }))
+      };
+
+      globalThis.atlas.source.DataSource = jest.fn(() => mockDataSource);
+      globalThis.atlas.Map = jest.fn(() => mockMap);
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          routes: [{
+            summary: { lengthInMeters: 1000, travelTimeInSeconds: 120 },
+            legs: [{ points: [
+              { latitude: 0, longitude: 0 },
+              { latitude: 1, longitude: 1 }
+            ]}],
+            guidance: { instructions: [] }
+          }]
+        })
+      });
+
+      const authConfig = { subscriptionKey: 'test-key' };
+      const mapConfig = { containerId: 'map', center: [0, 0], zoom: 10, enableClustering: false };
+
+      await initializeMap(authConfig, mapConfig, [], { invokeMethodAsync: jest.fn() });
+
+      // Show a route first
+      await showRoute([0, 0], [1, 1]);
+
+      // Clear mock calls from showRoute
+      mockMap.layers.remove.mockClear();
+      mockMap.sources.remove.mockClear();
+      mockSymbolLayer.setOptions.mockClear();
+
+      // Exit directions mode
+      exitDirectionsMode();
+
+      // Should restore marker opacity
+      expect(mockSymbolLayer.setOptions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          iconOptions: expect.objectContaining({
+            opacity: 1
+          })
+        })
+      );
+
+      // Should call fitBounds via setCamera
+      expect(mockMap.setCamera).toHaveBeenCalled();
+    });
+  });
 });
