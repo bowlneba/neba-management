@@ -100,7 +100,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     public async Task OnInitializedAsync_DisplaysTournamentDetails()
     {
         // Arrange
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Championship Tournament",
             bowlingCenterName: "Bowlarama",
             startDate: new DateOnly(2024, 5, 10),
@@ -244,7 +244,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     {
         // Arrange
         var pastDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(-1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Past Tournament",
             startDate: pastDate,
             endDate: pastDate);
@@ -275,7 +275,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     {
         // Arrange
         var date = new DateOnly(2024, 5, 15);
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "One Day Tournament",
             startDate: date,
             endDate: date);
@@ -304,7 +304,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     public async Task FormatFullDateRange_SameMonth_DisplaysCompactRange()
     {
         // Arrange
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Weekend Tournament",
             startDate: new DateOnly(2024, 6, 15),
             endDate: new DateOnly(2024, 6, 16));
@@ -333,7 +333,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     public async Task FormatFullDateRange_DifferentMonths_DisplaysFullRange()
     {
         // Arrange
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Cross Month Tournament",
             startDate: new DateOnly(2024, 5, 30),
             endDate: new DateOnly(2024, 6, 2));
@@ -362,7 +362,7 @@ public sealed class TournamentsByYearTests : TestContextWrapper
     public async Task OnInitializedAsync_TournamentWithoutPatternLength_DoesNotShowPatternTag()
     {
         // Arrange
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "No Pattern Tournament",
             patternLengthCategory: null);
 

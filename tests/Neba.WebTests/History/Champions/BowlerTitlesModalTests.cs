@@ -1,3 +1,4 @@
+using AngleSharp.Dom;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +40,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
             BowlerTitleResponseFactory.Create(month: Month.June, year: 2023, tournamentType: "Doubles")
         };
 
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(
             bowlerId: bowlerId,
             bowlerName: "John Champion",
             hallOfFame: false,
@@ -82,7 +83,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
             BowlerTitleResponseFactory.Create(month: Month.May, year: 2024, tournamentType: "Singles")
         };
 
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(
             bowlerId: bowlerId,
             bowlerName: "Hall of Fame Bowler",
             hallOfFame: true,
@@ -121,7 +122,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
         // Arrange
         var bowlerId = BowlerId.New();
 
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
 
         ApiResponse<BowlerTitlesResponse> apiResponse = new()
         {
@@ -178,7 +179,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
         // Arrange
         var bowlerId = BowlerId.New();
 
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(
             bowlerId: bowlerId,
             bowlerName: "No Titles Bowler",
             hallOfFame: false,
@@ -216,7 +217,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
         var bowlerId = BowlerId.New();
 
         // Act - Render modal in closed state
-        IRenderedComponent<BowlerTitlesModal> cut = Render<BowlerTitlesModal>(p => p
+        Render<BowlerTitlesModal>(p => p
             .Add(c => c.IsOpen, false)
             .Add(c => c.BowlerId, bowlerId)
             .Add(c => c.BowlerName, "Test Bowler")
@@ -239,7 +240,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
             BowlerTitleResponseFactory.Create(month: Month.October, year: 2023, tournamentType: "Doubles")
         };
 
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(
             bowlerId: bowlerId,
             bowlerName: "Champion",
             hallOfFame: false,
@@ -278,7 +279,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
     {
         // Arrange
         var bowlerId = BowlerId.New();
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
 
         ApiResponse<BowlerTitlesResponse> apiResponse = new()
         {
@@ -308,7 +309,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
     public async Task WhenNoBowlerId_DoesNotCallApi()
     {
         // Act
-        IRenderedComponent<BowlerTitlesModal> cut = Render<BowlerTitlesModal>(p => p
+        Render<BowlerTitlesModal>(p => p
             .Add(c => c.IsOpen, true)
             .Add(c => c.BowlerId, null)
             .Add(c => c.BowlerName, "Unknown")
@@ -339,7 +340,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
     {
         // Arrange
         var bowlerId = BowlerId.New();
-        var bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
+        BowlerTitlesResponse bowlerTitles = BowlerTitlesResponseFactory.Create(bowlerId: bowlerId, titleCount: 1);
 
         ApiResponse<BowlerTitlesResponse> apiResponse = new()
         {
@@ -365,7 +366,7 @@ public sealed class BowlerTitlesModalTests : TestContextWrapper
         await Task.Delay(100);
 
         // Find and click close button
-        var closeButton = cut.Find("button.neba-modal-close");
+        IElement closeButton = cut.Find("button.neba-modal-close");
         await closeButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         // Assert

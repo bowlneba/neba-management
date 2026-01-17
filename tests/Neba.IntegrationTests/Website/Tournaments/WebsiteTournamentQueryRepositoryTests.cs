@@ -109,7 +109,7 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
 
         // Verify tournaments are ordered by start date
         DateOnly[] startDates = result.Select(dto => dto.StartDate).ToArray();
-        startDates.ShouldBe(startDates.OrderBy(d => d).ToArray());
+        startDates.ShouldBe(startDates.Order().ToArray());
 
         // Count bogus tournaments that meet the criteria
         int bogusTournamentsAfterDate = bogusTournaments.Count(t => t.StartDate >= cutoffDate);
@@ -201,7 +201,7 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
 
         // Verify tournaments are ordered by start date
         DateOnly[] startDates = result.Select(dto => dto.StartDate).ToArray();
-        startDates.ShouldBe(startDates.OrderBy(d => d).ToArray());
+        startDates.ShouldBe(startDates.Order().ToArray());
 
         // Count bogus tournaments that meet the criteria
         int bogusTournamentsInYear = bogusTournaments.Count(t => t.StartDate.Year == targetYear);

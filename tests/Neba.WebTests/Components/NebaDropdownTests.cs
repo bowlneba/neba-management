@@ -279,7 +279,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.InputAsync(new ChangeEventArgs { Value = "ap" });
 
         // Assert
@@ -302,7 +302,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.InputAsync(new ChangeEventArgs { Value = "APPLE" });
 
         // Assert
@@ -324,7 +324,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.InputAsync(new ChangeEventArgs { Value = "xyz" });
 
         // Assert
@@ -364,7 +364,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "ArrowDown" });
         cut.Render(); // Force render to process state changes
 
@@ -386,7 +386,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "ArrowDown" });
         cut.Render();
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "ArrowDown" });
@@ -413,7 +413,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "ArrowDown" });
         cut.Render();
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "Enter" });
@@ -435,7 +435,7 @@ public sealed class NebaDropdownTests : TestContextWrapper
         await input.ClickAsync();
 
         // Wait for the search input to be rendered
-        var searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
+        IElement searchInput = await cut.WaitForElementAsync(".neba-dropdown-search-input");
         await searchInput.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "Escape" });
 
         // Assert

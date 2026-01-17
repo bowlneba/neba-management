@@ -102,7 +102,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var futureDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Championship Tournament",
             bowlingCenterName: "Strike Zone",
             startDate: futureDate,
@@ -217,7 +217,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var date = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "One Day Event",
             startDate: date,
             endDate: date);
@@ -249,7 +249,7 @@ public sealed class TournamentsTests : TestContextWrapper
         // Arrange
         var startDate = new DateOnly(DateTime.Now.Year + 1, 6, 15);
         var endDate = new DateOnly(DateTime.Now.Year + 1, 6, 16);
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Weekend Event",
             startDate: startDate,
             endDate: endDate);
@@ -281,7 +281,7 @@ public sealed class TournamentsTests : TestContextWrapper
         // Arrange
         var startDate = new DateOnly(DateTime.Now.Year + 1, 5, 30);
         var endDate = new DateOnly(DateTime.Now.Year + 1, 6, 2);
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Cross Month Event",
             startDate: startDate,
             endDate: endDate);
@@ -312,7 +312,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var futureDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "No Pattern Tournament",
             startDate: futureDate,
             endDate: futureDate,
@@ -344,7 +344,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var futureDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Timeline Tournament",
             startDate: futureDate,
             endDate: futureDate);
@@ -376,7 +376,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var futureDate = new DateOnly(DateTime.Now.Year + 1, 3, 15);
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Next Year Tournament",
             startDate: futureDate,
             endDate: futureDate);
@@ -406,7 +406,7 @@ public sealed class TournamentsTests : TestContextWrapper
     {
         // Arrange
         var futureDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-        var tournament = TournamentSummaryResponseFactory.Create(
+        TournamentSummaryResponse tournament = TournamentSummaryResponseFactory.Create(
             name: "Location Test",
             bowlingCenterName: "Test Lanes",
             startDate: futureDate,

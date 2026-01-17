@@ -117,7 +117,7 @@
     private bool _isOpen;
     private string _filterText = string.Empty;
     private int _highlightedIndex;
-    private List<TItem> _filteredItems = new();
+    private List<TItem> _filteredItems = [];
     private string _componentId = string.Empty;
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
