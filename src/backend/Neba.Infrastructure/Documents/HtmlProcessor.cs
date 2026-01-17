@@ -22,15 +22,13 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
         string processedHtml = ReplaceGoogleDocsLinks(bodyContent);
 
         // Generate human-readable IDs for headings and update anchor links
-        processedHtml = GenerateHumanReadableIds(processedHtml);
-
-        return processedHtml;
+        return GenerateHumanReadableIds(processedHtml);
     }
 
     private static string ExtractBodyContent(string rawHtml)
     {
         // Extract content between <body> tags
-        Match bodyMatch = Regex.Match(rawHtml, @"<body[^>]*>(.*?)</body>", RegexOptions.Singleline | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+        Match bodyMatch = Regex.Match(rawHtml, "<body[^>]*>(.*?)</body>", RegexOptions.Singleline | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
         if (!bodyMatch.Success)
         {
             return rawHtml;
@@ -49,7 +47,7 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
 
         // Replace Google Docs URLs with internal routes
         // Pattern: https://docs.google.com/document/d/DOCUMENT_ID/edit or /u/0/d/DOCUMENT_ID/edit
-        string pattern = @"https://docs\.google\.com/document/(?:u/\d+/)?d/([a-zA-Z0-9_-]+)(?:/[^""']*)?";
+        const string pattern = @"https://docs\.google\.com/document/(?:u/\d+/)?d/([a-zA-Z0-9_-]+)(?:/[^""']*)?";
 
         return Regex.Replace(html, pattern, match =>
         {
@@ -74,14 +72,14 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
 
         // First pass: Find all elements with IDs and generate human-readable versions
         // Match headings like <h1 id="h.abc123">Section 10.3 Hall of Fame</h1>
-        string headingPattern = @"<(h[1-6])\s+[^>]*id=""([^""]+)""[^>]*>(.*?)</\1>";
+        const string headingPattern = @"<(h[1-6])\s+[^>]*id=""([^""]+)""[^>]*>(.*?)</\1>";
         html = Regex.Replace(html, headingPattern, match =>
         {
             string oldId = match.Groups[2].Value;
             string content = match.Groups[3].Value;
 
             // Extract plain text from HTML content
-            string plainText = Regex.Replace(content, @"<[^>]+>", "", RegexOptions.None, TimeSpan.FromSeconds(1));
+            string plainText = Regex.Replace(content, "<[^>]+>", "", RegexOptions.None, TimeSpan.FromSeconds(1));
 
             // Generate human-readable ID
             string newId = GenerateSlug(plainText, usedIds);
@@ -93,8 +91,8 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
 
         // Also handle bookmark spans like <span id="h.abc123"></span> or <a id="h.abc123"></a>
         // For these, we'll try to use the link text that references them
-        string bookmarkPattern = @"<(span|a)\s+[^>]*id=""([^""]+)""[^>]*></\1>";
-        var bookmarkMatches = Regex.Matches(html, bookmarkPattern, RegexOptions.None, TimeSpan.FromSeconds(5));
+        const string bookmarkPattern = @"<(span|a)\s+[^>]*id=""([^""]+)""[^>]*></\1>";
+        MatchCollection bookmarkMatches = Regex.Matches(html, bookmarkPattern, RegexOptions.None, TimeSpan.FromSeconds(5));
 
         foreach (Match bookmarkMatch in bookmarkMatches)
         {
@@ -121,7 +119,7 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
         }
 
         // Replace bookmark IDs in the HTML
-        foreach (var kvp in idMap)
+        foreach (KeyValuePair<string, string> kvp in idMap)
         {
             string oldId = kvp.Key;
             string newId = kvp.Value;
@@ -134,7 +132,7 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
         }
 
         // Second pass: Update all anchor links to use new IDs
-        foreach (var kvp in idMap)
+        foreach (KeyValuePair<string, string> kvp in idMap)
         {
             string oldId = kvp.Key;
             string newId = kvp.Value;
@@ -169,7 +167,7 @@ internal sealed class HtmlProcessor(GoogleDocsSettings settings)
         text = text.Trim().Replace(" ", "-", StringComparison.Ordinal);
 
         // Remove multiple consecutive hyphens
-        text = Regex.Replace(text, @"-+", "-", RegexOptions.None, TimeSpan.FromSeconds(1));
+        text = Regex.Replace(text, "-+", "-", RegexOptions.None, TimeSpan.FromSeconds(1));
 
         // Trim hyphens from start and end
         text = text.Trim('-');

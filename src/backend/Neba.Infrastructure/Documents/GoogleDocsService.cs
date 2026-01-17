@@ -30,7 +30,7 @@ internal sealed class GoogleDocsService(HtmlProcessor htmlProcessor, GoogleDocsS
 
         // Export the document as HTML
         FilesResource.ExportRequest request = service.Files.Export(documentId, "text/html");
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await request.DownloadAsync(stream, cancellationToken);
 
         // Convert the stream to a string
