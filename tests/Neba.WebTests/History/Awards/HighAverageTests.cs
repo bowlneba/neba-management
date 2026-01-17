@@ -352,7 +352,7 @@ public sealed class HighAverageTests : TestContextWrapper
 
         // Assert
         // Dashes are displayed for null values
-        var markup = cut.Markup;
+        string markup = cut.Markup;
         markup.ShouldContain("\u2014"); // Em dash
     }
 
@@ -383,7 +383,7 @@ public sealed class HighAverageTests : TestContextWrapper
         IRenderedComponent<HighAverage> cut = Render<HighAverage>();
 
         // Assert - Both tied bowlers should show RECORD
-        var recordCount = cut.Markup.Split("RECORD").Length - 1;
+        int recordCount = cut.Markup.Split("RECORD").Length - 1;
         recordCount.ShouldBe(2);
     }
 }
