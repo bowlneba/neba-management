@@ -386,13 +386,16 @@ public sealed class HtmlProcessorTests
         // Arrange
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
         var processor = new HtmlProcessor(settings);
-        const string rawHtml = @"<body>
-<h2 id=""h.h2"">Heading 2</h2>
-<h3 id=""h.h3"">Heading 3</h3>
-<h4 id=""h.h4"">Heading 4</h4>
-<h5 id=""h.h5"">Heading 5</h5>
-<h6 id=""h.h6"">Heading 6</h6>
-</body>";
+        const string rawHtml =
+        """
+            <body>
+                <h2 id="h.h2">Heading 2</h2>
+                <h3 id="h.h3">Heading 3</h3>
+                <h4 id="h.h4">Heading 4</h4>
+                <h5 id="h.h5">Heading 5</h5>
+                <h6 id="h.h6">Heading 6</h6>
+            </body>
+        """;
 
         // Act
         string result = processor.ProcessExportedHtml(rawHtml);
