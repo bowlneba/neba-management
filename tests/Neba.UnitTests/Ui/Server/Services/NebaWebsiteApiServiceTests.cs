@@ -1538,19 +1538,19 @@ public sealed class NebaWebsiteApiServiceTests
         {
             TournamentSummaryResponseFactory.Create(
                 name: "Summer Championship",
+                bowlingCenterName: "Strike Zone Lanes",
                 startDate: new DateOnly(2026, 7, 15),
-                endDate: new DateOnly(2026, 7, 17),
-                bowlingCenterName: "Strike Zone Lanes"),
+                endDate: new DateOnly(2026, 7, 17)),
             TournamentSummaryResponseFactory.Create(
                 name: "Spring Open",
+                bowlingCenterName: "Downtown Bowl",
                 startDate: new DateOnly(2026, 4, 10),
-                endDate: new DateOnly(2026, 4, 12),
-                bowlingCenterName: "Downtown Bowl"),
+                endDate: new DateOnly(2026, 4, 12)),
             TournamentSummaryResponseFactory.Create(
                 name: "Winter Classic",
+                bowlingCenterName: "Perfect Strike",
                 startDate: new DateOnly(2026, 12, 5),
-                endDate: new DateOnly(2026, 12, 7),
-                bowlingCenterName: "Perfect Strike")
+                endDate: new DateOnly(2026, 12, 7))
         };
 
         var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
@@ -1722,11 +1722,11 @@ public sealed class NebaWebsiteApiServiceTests
             TournamentSummaryResponseFactory.Create(
                 id: tournamentId,
                 name: "Test Tournament",
-                startDate: startDate,
-                endDate: endDate,
+                thumbnailUrl: thumbnailUrl,
                 bowlingCenterId: bowlingCenterId,
                 bowlingCenterName: "Test Center",
-                thumbnailUrl: thumbnailUrl,
+                startDate: startDate,
+                endDate: endDate,
                 tournamentType: TournamentType.Doubles)
         };
 
@@ -1770,19 +1770,19 @@ public sealed class NebaWebsiteApiServiceTests
         {
             TournamentSummaryResponseFactory.Create(
                 name: "Fall Classic",
+                bowlingCenterName: "Strike Zone",
                 startDate: new DateOnly(2025, 10, 15),
-                endDate: new DateOnly(2025, 10, 17),
-                bowlingCenterName: "Strike Zone"),
+                endDate: new DateOnly(2025, 10, 17)),
             TournamentSummaryResponseFactory.Create(
                 name: "Spring Open",
+                bowlingCenterName: "Downtown Bowl",
                 startDate: new DateOnly(2025, 3, 10),
-                endDate: new DateOnly(2025, 3, 12),
-                bowlingCenterName: "Downtown Bowl"),
+                endDate: new DateOnly(2025, 3, 12)),
             TournamentSummaryResponseFactory.Create(
                 name: "Summer Championship",
+                bowlingCenterName: "Perfect Strike",
                 startDate: new DateOnly(2025, 7, 5),
-                endDate: new DateOnly(2025, 7, 7),
-                bowlingCenterName: "Perfect Strike")
+                endDate: new DateOnly(2025, 7, 7))
         };
 
         var collectionResponse = new CollectionResponse<TournamentSummaryResponse>
@@ -2009,11 +2009,11 @@ public sealed class NebaWebsiteApiServiceTests
             TournamentSummaryResponseFactory.Create(
                 id: tournamentId,
                 name: "2025 Championship",
-                startDate: startDate,
-                endDate: endDate,
+                thumbnailUrl: thumbnailUrl,
                 bowlingCenterId: bowlingCenterId,
                 bowlingCenterName: "Championship Lanes",
-                thumbnailUrl: thumbnailUrl,
+                startDate: startDate,
+                endDate: endDate,
                 tournamentType: TournamentType.Trios)
         };
 
