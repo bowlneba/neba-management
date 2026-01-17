@@ -81,7 +81,7 @@ public static class TournamentFactory
                     f.Date.Between(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local), new DateTime(2025, 12, 31, 0, 0, 0, DateTimeKind.Local)));
                 DateOnly endDate = startDate.AddDays(f.Random.Int(0, 7));
 
-                var bowlingCenter = f.PickRandom(seedBowlingCenters);
+                BowlingCenter bowlingCenter = f.PickRandom(seedBowlingCenters);
 
                 return new Tournament
                 {
