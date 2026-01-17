@@ -1,4 +1,4 @@
-import { createServer, IncomingMessage, ServerResponse } from 'http';
+import { createServer, IncomingMessage, ServerResponse } from 'node:http';
 
 const MOCK_DOCUMENT_HTML = `
 <div>

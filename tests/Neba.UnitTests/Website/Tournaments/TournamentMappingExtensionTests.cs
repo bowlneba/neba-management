@@ -62,7 +62,7 @@ public sealed class TournamentMappingExtensionTests
         TournamentSummaryViewModel viewModel = response.ToViewModel();
 
         // Assert
-        viewModel.ThumbnailUrl.ShouldBe(new Uri(@"/images/tournaments/default-logo.jpg", UriKind.Relative));
+        viewModel.ThumbnailUrl.ShouldBe(new Uri("/images/tournaments/default-logo.jpg", UriKind.Relative));
     }
 
     [Fact(DisplayName = "Maps bowling center id from response to view model")]
