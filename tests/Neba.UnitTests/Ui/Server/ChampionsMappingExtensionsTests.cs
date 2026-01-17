@@ -100,7 +100,7 @@ public sealed class ChampionsMappingExtensionsTests
     public void BowlerTitlesResponse_ToViewModel_ShouldMapHallOfFame(bool hallOfFame)
     {
         // Arrange
-        BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(hallOfFame: hallOfFame, titleCount: 1);
+        BowlerTitlesResponse response = BowlerTitlesResponseFactory.Create(titleCount: 1, hallOfFame: hallOfFame);
 
         // Act
         BowlerTitlesViewModel viewModel = response.ToViewModel();
