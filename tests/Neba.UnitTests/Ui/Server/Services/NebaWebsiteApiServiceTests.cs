@@ -1746,7 +1746,7 @@ public sealed class NebaWebsiteApiServiceTests
 
         // Assert
         result.IsError.ShouldBeFalse();
-        var tournament = result.Value.First();
+        TournamentSummaryViewModel tournament = result.Value.First();
         tournament.Id.ShouldBe(tournamentId);
         tournament.Name.ShouldBe("Test Tournament");
         tournament.StartDate.ShouldBe(startDate);
@@ -2033,7 +2033,7 @@ public sealed class NebaWebsiteApiServiceTests
 
         // Assert
         result.IsError.ShouldBeFalse();
-        var tournament = result.Value.First();
+        TournamentSummaryViewModel tournament = result.Value.First();
         tournament.Id.ShouldBe(tournamentId);
         tournament.Name.ShouldBe("2025 Championship");
         tournament.StartDate.ShouldBe(startDate);
