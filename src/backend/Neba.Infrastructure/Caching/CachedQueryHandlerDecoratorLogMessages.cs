@@ -5,6 +5,13 @@ namespace Neba.Infrastructure.Caching;
 internal static partial class CachedQueryHandlerDecoratorLogMessages
 {
     [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Cache hit for key '{CacheKey}'")]
+    public static partial void LogCacheHit(
+        this ILogger logger,
+        string cacheKey);
+
+    [LoggerMessage(
         Level = LogLevel.Information,
         Message = "Cache miss for key '{CacheKey}', executing query handler")]
     public static partial void LogCacheMiss(

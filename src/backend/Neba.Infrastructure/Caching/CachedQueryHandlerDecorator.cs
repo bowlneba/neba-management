@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
@@ -55,6 +56,9 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
         string cacheKey,
         CancellationToken cancellationToken)
     {
+        long startTimestamp = Stopwatch.GetTimestamp();
+        string queryType = typeof(TQuery).Name;
+
         // Track whether factory was called and capture error result if needed
         bool factoryCalled = false;
         TResponse? errorResult = default;
@@ -66,6 +70,7 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
             {
                 factoryCalled = true;
                 _logger.LogCacheMiss(cacheKey);
+                CacheMetrics.RecordCacheMiss(cacheKey, queryType);
 
                 TResponse response = await _innerHandler.HandleAsync((TQuery)cachedQuery, cancel);
 
@@ -88,9 +93,13 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
             tags: cachedQuery.Tags,
             cancellationToken: cancellationToken);
 
+        double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
         // Handle null result (error or cache miss)
         if (cachedValue is null)
         {
+            CacheMetrics.RecordOperationDuration(durationMs, cacheKey, queryType, hit: false);
+
             if (factoryCalled)
             {
                 // Factory executed and returned error - return saved result (avoid double execution)
@@ -102,6 +111,15 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
                 return await _innerHandler.HandleAsync((TQuery)cachedQuery, cancellationToken);
             }
         }
+
+        // Cache hit - record metrics
+        if (!factoryCalled)
+        {
+            _logger.LogCacheHit(cacheKey);
+            CacheMetrics.RecordCacheHit(cacheKey, queryType);
+        }
+
+        CacheMetrics.RecordOperationDuration(durationMs, cacheKey, queryType, hit: !factoryCalled);
 
         // HybridCache deserializes as JsonElement when using object type
         // Convert back to the actual inner type
@@ -120,16 +138,19 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
         string cacheKey,
         CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync(
+        long startTimestamp = Stopwatch.GetTimestamp();
+        string queryType = typeof(TQuery).Name;
+        bool factoryCalled = false;
+
+        TResponse result = await _cache.GetOrCreateAsync(
             cacheKey,
-            (handler: _innerHandler, query: (TQuery)cachedQuery, logger: _logger, cacheKey),
-            static async (state, cancel) =>
+            async cancel =>
             {
-                state.logger.LogCacheMiss(state.cacheKey);
+                factoryCalled = true;
+                _logger.LogCacheMiss(cacheKey);
+                CacheMetrics.RecordCacheMiss(cacheKey, queryType);
 
-                TResponse response = await state.handler.HandleAsync(state.query, cancel);
-
-                return response;
+                return await _innerHandler.HandleAsync((TQuery)cachedQuery, cancel);
             },
             options: new HybridCacheEntryOptions
             {
@@ -137,5 +158,17 @@ internal sealed class CachedQueryHandlerDecorator<TQuery, TResponse>
             },
             tags: cachedQuery.Tags,
             cancellationToken: cancellationToken);
+
+        double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+        if (!factoryCalled)
+        {
+            _logger.LogCacheHit(cacheKey);
+            CacheMetrics.RecordCacheHit(cacheKey, queryType);
+        }
+
+        CacheMetrics.RecordOperationDuration(durationMs, cacheKey, queryType, hit: !factoryCalled);
+
+        return result;
     }
 }
