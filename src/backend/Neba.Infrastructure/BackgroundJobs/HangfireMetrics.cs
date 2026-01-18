@@ -7,21 +7,21 @@ namespace Neba.Infrastructure.BackgroundJobs;
 /// </summary>
 internal static class HangfireMetrics
 {
-    private static readonly Meter Meter = new("Neba.Hangfire");
+    private static readonly Meter s_meter = new("Neba.Hangfire");
 
-    private static readonly Counter<long> JobExecutions = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobExecutions = s_meter.CreateCounter<long>(
         "neba.hangfire.job.executions",
         description: "Number of Hangfire job executions");
 
-    private static readonly Counter<long> JobSuccesses = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobSuccesses = s_meter.CreateCounter<long>(
         "neba.hangfire.job.successes",
         description: "Number of successful Hangfire job executions");
 
-    private static readonly Counter<long> JobFailures = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobFailures = s_meter.CreateCounter<long>(
         "neba.hangfire.job.failures",
         description: "Number of failed Hangfire job executions");
 
-    private static readonly Histogram<double> JobDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_jobDuration = s_meter.CreateHistogram<double>(
         "neba.hangfire.job.duration",
         unit: "ms",
         description: "Duration of Hangfire job executions");
@@ -32,7 +32,7 @@ internal static class HangfireMetrics
     /// <param name="jobType">The type of job being executed.</param>
     public static void RecordJobStart(string jobType)
     {
-        JobExecutions.Add(1,
+        s_jobExecutions.Add(1,
             new KeyValuePair<string, object?>("job.type", jobType));
     }
 
@@ -43,10 +43,10 @@ internal static class HangfireMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string jobType, double durationMs)
     {
-        JobSuccesses.Add(1,
+        s_jobSuccesses.Add(1,
             new KeyValuePair<string, object?>("job.type", jobType));
 
-        JobDuration.Record(durationMs,
+        s_jobDuration.Record(durationMs,
             new KeyValuePair<string, object?>("job.type", jobType),
             new KeyValuePair<string, object?>("result", "success"));
     }
@@ -59,11 +59,11 @@ internal static class HangfireMetrics
     /// <param name="errorType">Type of error that occurred.</param>
     public static void RecordJobFailure(string jobType, double durationMs, string errorType)
     {
-        JobFailures.Add(1,
+        s_jobFailures.Add(1,
             new KeyValuePair<string, object?>("job.type", jobType),
             new KeyValuePair<string, object?>("error.type", errorType));
 
-        JobDuration.Record(durationMs,
+        s_jobDuration.Record(durationMs,
             new KeyValuePair<string, object?>("job.type", jobType),
             new KeyValuePair<string, object?>("result", "failure"),
             new KeyValuePair<string, object?>("error.type", errorType));

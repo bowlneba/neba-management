@@ -7,31 +7,31 @@ namespace Neba.Application.Documents;
 /// </summary>
 internal static class SyncHtmlDocumentToStorageMetrics
 {
-    private static readonly Meter Meter = new("Neba.BackgroundJobs");
+    private static readonly Meter s_meter = new("Neba.BackgroundJobs");
 
-    private static readonly Counter<long> JobExecutions = Meter.CreateCounter<long>(
+    private static readonly Counter<long> JobExecutions = s_meter.CreateCounter<long>(
         "neba.backgroundjob.sync_document.executions",
         description: "Number of document sync job executions");
 
-    private static readonly Counter<long> JobSuccesses = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobSuccesses = s_meter.CreateCounter<long>(
         "neba.backgroundjob.sync_document.successes",
         description: "Number of successful document sync job executions");
 
-    private static readonly Counter<long> JobFailures = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobFailures = s_meter.CreateCounter<long>(
         "neba.backgroundjob.sync_document.failures",
         description: "Number of failed document sync job executions");
 
-    private static readonly Histogram<double> JobDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_jobDuration = s_meter.CreateHistogram<double>(
         "neba.backgroundjob.sync_document.duration",
         unit: "ms",
         description: "Duration of document sync job executions");
 
-    private static readonly Histogram<double> RetrieveDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_retrieveDuration = s_meter.CreateHistogram<double>(
         "neba.backgroundjob.sync_document.retrieve.duration",
         unit: "ms",
         description: "Duration of document retrieval phase");
 
-    private static readonly Histogram<double> UploadDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_uploadDuration = s_meter.CreateHistogram<double>(
         "neba.backgroundjob.sync_document.upload.duration",
         unit: "ms",
         description: "Duration of document upload phase");
@@ -55,10 +55,10 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string documentKey, double durationMs)
     {
-        JobSuccesses.Add(1,
+        s_jobSuccesses.Add(1,
             new KeyValuePair<string, object?>("document.key", documentKey));
 
-        JobDuration.Record(durationMs,
+        s_jobDuration.Record(durationMs,
             new KeyValuePair<string, object?>("document.key", documentKey),
             new KeyValuePair<string, object?>("result", "success"));
     }
@@ -71,11 +71,11 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="errorType">Type of error that occurred.</param>
     public static void RecordJobFailure(string documentKey, double durationMs, string errorType)
     {
-        JobFailures.Add(1,
+        s_jobFailures.Add(1,
             new KeyValuePair<string, object?>("document.key", documentKey),
             new KeyValuePair<string, object?>("error.type", errorType));
 
-        JobDuration.Record(durationMs,
+        s_jobDuration.Record(durationMs,
             new KeyValuePair<string, object?>("document.key", documentKey),
             new KeyValuePair<string, object?>("result", "failure"),
             new KeyValuePair<string, object?>("error.type", errorType));
@@ -88,7 +88,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordRetrieveDuration(string documentKey, double durationMs)
     {
-        RetrieveDuration.Record(durationMs,
+        s_retrieveDuration.Record(durationMs,
             new KeyValuePair<string, object?>("document.key", documentKey),
             new KeyValuePair<string, object?>("phase", "retrieve"));
     }
@@ -100,7 +100,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordUploadDuration(string documentKey, double durationMs)
     {
-        UploadDuration.Record(durationMs,
+        s_uploadDuration.Record(durationMs,
             new KeyValuePair<string, object?>("document.key", documentKey),
             new KeyValuePair<string, object?>("phase", "upload"));
     }
