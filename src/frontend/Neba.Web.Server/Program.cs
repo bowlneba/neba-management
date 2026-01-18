@@ -3,6 +3,7 @@ using Azure.Identity;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using Neba.ServiceDefaults;
 using Neba.Web.Server;
 using Neba.Web.Server.BackgroundJobs;
 using Neba.Web.Server.Documents;
@@ -12,6 +13,8 @@ using Neba.Web.Server.Services;
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 // Add Key Vault configuration if enabled
 bool useKeyVault = builder.Configuration.GetValue("KeyVault:Enabled", false);
@@ -86,6 +89,9 @@ else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
+
+app.UseDefaultEndpoints();
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
 app.UseAntiforgery();

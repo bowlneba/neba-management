@@ -1,3 +1,5 @@
+using Neba.ServiceDefaults.HealthChecks;
+
 namespace Neba.Api.HealthChecks;
 
 internal static class HealthCheckExtensions
@@ -13,12 +15,6 @@ internal static class HealthCheckExtensions
         public WebApplication UseHealthChecks()
         {
             app.MapGet("/ping", () => Results.Ok("Pong"));
-
-            app.MapHealthChecks("/health", new()
-            {
-                Predicate = _ => true,
-                ResponseWriter = HealthCheckResponseWriter.Default()
-            });
 
             app.MapHealthChecks("/health/website", new()
             {

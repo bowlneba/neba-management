@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
+using Neba.ServiceDefaults.HealthChecks;
 
 namespace Neba.ServiceDefaults;
 
@@ -20,8 +22,24 @@ public static class ServiceDefaultsExtensions
         /// </summary>
         public TBuilder AddServiceDefaults()
         {
+            builder
+                .AddOpenTelemetry()
+                .AddDefaultHealthChecks();
 
             return builder;
+        }
+    }
+
+    extension(WebApplication app)
+    {
+        /// <summary>
+        /// Uses service default endpoints in the web application.
+        /// </summary>
+        public WebApplication UseDefaultEndpoints()
+        {
+            app.UseDefaultHealthChecks();
+
+            return app;
         }
     }
 }

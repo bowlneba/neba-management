@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Infrastructure\Neba.Infrastructure.csproj" />
     <ProjectReference Include="..\Neba.Website.Endpoints\Neba.Website.Endpoints.csproj" />
+    <ProjectReference Include="..\..\shared-kernel\Neba.ServiceDefaults\Neba.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

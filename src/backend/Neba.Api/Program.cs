@@ -4,11 +4,14 @@ using Neba.Api.ErrorHandling;
 using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
+using Neba.ServiceDefaults;
 using Neba.Website.Application;
 using Neba.Website.Endpoints;
 using Neba.Website.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -53,7 +56,7 @@ app.UseExceptionHandler();
 
 app
     .UseOpenApi()
-    .UseHealthChecks();
+    .UseDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
