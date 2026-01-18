@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Storage;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Application.Documents;
 
@@ -62,14 +63,11 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
 
         using Activity? activity = s_activitySource.StartActivity("backgroundjob.sync_document");
 
-        if (activity is not null)
-        {
-            activity.SetTag("job.type", "sync_document");
-            activity.SetTag("document.key", job.DocumentKey);
-            activity.SetTag("storage.container", job.Container);
-            activity.SetTag("storage.path", job.Path);
-            activity.SetTag("triggered.by", job.TriggeredBy);
-        }
+        activity?.SetCodeAttributes("SyncHtmlDocumentToStorageJob", "Neba.BackgroundJobs");
+        activity?.SetTag("document.key", job.DocumentKey);
+        activity?.SetTag("storage.container", job.Container);
+        activity?.SetTag("storage.path", job.Path);
+        activity?.SetTag("triggered.by", job.TriggeredBy);
 
         long jobStartTimestamp = Stopwatch.GetTimestamp();
         SyncHtmlDocumentToStorageMetrics.RecordJobStart(job.DocumentKey, job.TriggeredBy);

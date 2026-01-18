@@ -2,6 +2,7 @@ using System.Diagnostics;
 using ErrorOr;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Messaging;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Infrastructure.Tracing;
 
@@ -36,12 +37,9 @@ internal sealed class TracedCommandHandlerDecorator<TCommand, TResponse>
     {
         using Activity? activity = s_activitySource.StartActivity($"command.{_commandType}");
 
-        if (activity is not null)
-        {
-            activity.SetTag("handler.type", "command");
-            activity.SetTag("command.type", _commandType);
-            activity.SetTag("response.type", _responseType);
-        }
+        activity?.SetCodeAttributes(_commandType, "Neba.Handlers");
+        activity?.SetTag("handler.type", "command");
+        activity?.SetTag("response.type", _responseType);
 
         long startTimestamp = Stopwatch.GetTimestamp();
 
@@ -76,9 +74,7 @@ internal sealed class TracedCommandHandlerDecorator<TCommand, TResponse>
 
             activity?.SetTag("command.duration_ms", durationMs);
             activity?.SetTag("command.success", false);
-            activity?.SetTag("error.type", ex.GetType().Name);
-            activity?.SetTag("error.message", ex.Message);
-            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.SetExceptionTags(ex);
 
             _logger.LogCommandExecutionFailed(_commandType, durationMs, ex);
 

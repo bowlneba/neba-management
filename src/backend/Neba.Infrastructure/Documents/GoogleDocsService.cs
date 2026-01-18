@@ -4,6 +4,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Documents;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Infrastructure.Documents;
 
@@ -29,6 +30,8 @@ internal sealed class GoogleDocsService(
             ?? throw new InvalidOperationException($"Google Document with name '{documentName}' not found in configuration.");
 
         using Activity? activity = s_activitySource.StartActivity("google.docs.export", ActivityKind.Client);
+
+        activity?.SetCodeAttributes("GetDocumentAsHtmlAsync", "Neba.GoogleDocs");
         activity?.SetTag("document.name", documentName);
         activity?.SetTag("document.id", documentId);
         activity?.SetTag("export.format", "text/html");

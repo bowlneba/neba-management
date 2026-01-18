@@ -4,6 +4,7 @@ using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Infrastructure.BackgroundJobs;
 
@@ -86,11 +87,8 @@ internal sealed class HangfireBackgroundJobScheduler(
 
         using Activity? activity = s_activitySource.StartActivity($"hangfire.execute_job.{jobType}");
 
-        if (activity is not null)
-        {
-            activity.SetTag("job.type", jobType);
-            activity.SetTag("job.display_name", displayName);
-        }
+        activity?.SetCodeAttributes(jobType, "Neba.Hangfire");
+        activity?.SetTag("job.display_name", displayName);
 
         long startTimestamp = Stopwatch.GetTimestamp();
         HangfireMetrics.RecordJobStart(jobType);
@@ -113,12 +111,10 @@ internal sealed class HangfireBackgroundJobScheduler(
         catch (Exception ex)
         {
             double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
-            HangfireMetrics.RecordJobFailure(jobType, durationMs, ex.GetType().Name);
+            HangfireMetrics.RecordJobFailure(jobType, durationMs, ex.GetErrorType());
 
             activity?.SetTag("job.duration_ms", durationMs);
-            activity?.SetTag("error.type", ex.GetType().Name);
-            activity?.SetTag("error.message", ex.Message);
-            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.SetExceptionTags(ex);
 
             throw;
         }

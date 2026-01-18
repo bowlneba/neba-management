@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Neba.Application.Messaging;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Infrastructure.Tracing;
 
@@ -37,17 +38,14 @@ internal sealed class TracedQueryHandlerDecorator<TQuery, TResponse>
     {
         using Activity? activity = s_activitySource.StartActivity($"query.{_queryType}");
 
-        if (activity is not null)
-        {
-            activity.SetTag("handler.type", "query");
-            activity.SetTag("query.type", _queryType);
-            activity.SetTag("response.type", _responseType);
-            activity.SetTag("query.cached", _isCached);
+        activity?.SetCodeAttributes(_queryType, "Neba.Handlers");
+        activity?.SetTag("handler.type", "query");
+        activity?.SetTag("response.type", _responseType);
+        activity?.SetTag("query.cached", _isCached);
 
-            if (_isCached && query is ICachedQuery<TResponse> cachedQuery)
-            {
-                activity.SetTag("cache.key", cachedQuery.Key);
-            }
+        if (_isCached && query is ICachedQuery<TResponse> cachedQuery)
+        {
+            activity?.SetTag("cache.key", cachedQuery.Key);
         }
 
         long startTimestamp = Stopwatch.GetTimestamp();
@@ -68,9 +66,7 @@ internal sealed class TracedQueryHandlerDecorator<TQuery, TResponse>
             double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
 
             activity?.SetTag("query.duration_ms", durationMs);
-            activity?.SetTag("error.type", ex.GetType().Name);
-            activity?.SetTag("error.message", ex.Message);
-            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.SetExceptionTags(ex);
 
             _logger.LogQueryExecutionFailed(_queryType, durationMs, ex);
 
