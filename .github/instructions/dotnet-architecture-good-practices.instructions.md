@@ -71,7 +71,38 @@ You are an AI assistant specialized in Domain-Driven Design (DDD), Clean Archite
 * **Caching Strategies**: Cache data appropriately, respecting data volatility.
 * **Memory Efficiency**: Properly sized aggregates and value objects.
 
-### 6. **Simplicity & Pragmatism** 🎯
+### 6. **Observability & Telemetry** 📊
+
+> **See [ADR-0050: OpenTelemetry](../../docs/architecture/adr-0050-opentelemetry-without-aspire-apphost.md) for detailed guidance**
+
+* **Metrics**: Add custom metrics for key operations using `System.Diagnostics.Metrics.Meter` API
+  - Format: `neba.{component}.{resource}.{action}` (e.g., `neba.cache.hits`, `neba.document.sync.duration`)
+  - Use counters for event counts, histograms for durations/sizes, gauges for current values
+  - Tag metrics with relevant context (operation type, resource names, success/failure)
+
+* **Distributed Tracing**: Create spans for operations using `System.Diagnostics.ActivitySource`
+  - Format: `{component}.{action}` (e.g., `query.GetBylawsQuery`, `google.docs.export`)
+  - ActivitySource name format: `Neba.{Component}` (e.g., `Neba.MediatR`, `Neba.Database`)
+  - Tag spans with operation metadata (IDs, names, types, durations, sizes)
+  - Set error status on exceptions
+
+* **Structured Logging**: Use `[LoggerMessage]` attributes for performance and consistency
+  - Format: `Log{Action}{Resource}` (e.g., `LogExportingDocument`, `LogQueryCompleted`)
+  - Include relevant context in log messages (IDs, durations, error details)
+  - Use appropriate log levels (Debug, Information, Warning, Error)
+
+* **Timing**: Use `Stopwatch.GetTimestamp()` and `Stopwatch.GetElapsedTime()` for efficient timing
+  - Avoid `new Stopwatch()` - use static methods for lower allocation overhead
+
+**When to Add Telemetry:**
+- **New features**: Add metrics and traces for key operations
+- **External service calls**: Always add spans and metrics (Google APIs, Azure Storage, etc.)
+- **Background jobs**: Add metrics for duration, success/failure counts
+- **Performance-critical paths**: Add duration metrics and slow operation detection
+- **Error-prone operations**: Add structured logging with exception details
+- **Cache operations**: Track hit/miss ratios and operation durations
+
+### 7. **Simplicity & Pragmatism** 🎯
 
 > **"Make it work, make it right, make it fast - in that order."**
 
@@ -204,6 +235,7 @@ When implementing solutions, **ALWAYS follow this process**:
 * Test cases using `MethodName_Condition_ExpectedResult()` pattern.
 * Error handling and validation strategy.
 * Performance and scalability considerations.
+* Telemetry strategy: What metrics, traces, and logs will be added for observability.
 
 ### Step 4: Implementation Execution
 
@@ -283,6 +315,7 @@ public void MethodName_Condition_ExpectedResult()
 * **Security**: "I have implemented authorization at aggregate boundaries."
 * **Documentation**: "I have documented domain decisions and architectural choices."
 * **.NET Best Practices**: "I have followed .NET best practices for async, DI, and error handling."
+* **Observability**: "I have added appropriate telemetry (metrics/traces/logs) for new features, external services, and performance-critical operations per ADR-0050."
 
 ### Financial Domain Validation
 
