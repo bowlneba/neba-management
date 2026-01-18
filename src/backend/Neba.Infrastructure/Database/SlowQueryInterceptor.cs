@@ -18,15 +18,15 @@ public sealed class SlowQueryInterceptor(
     ILogger<SlowQueryInterceptor> logger,
     double slowQueryThresholdMs = 1000) : DbCommandInterceptor
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.Database");
-    private static readonly Meter Meter = new("Neba.Database");
+    private static readonly ActivitySource s_activitySource = new("Neba.Database");
+    private static readonly Meter s_meter = new("Neba.Database");
 
-    private static readonly Histogram<double> QueryDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_queryDuration = s_meter.CreateHistogram<double>(
         "neba.database.query.duration",
         unit: "ms",
         description: "Database query execution duration");
 
-    private static readonly Counter<long> SlowQueries = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_slowQueries = s_meter.CreateCounter<long>(
         "neba.database.query.slow",
         description: "Number of slow database queries");
 
@@ -106,7 +106,7 @@ public sealed class SlowQueryInterceptor(
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(eventData);
-        
+
         RecordQueryMetrics(command, eventData);
         return base.NonQueryExecutedAsync(command, eventData, result, cancellationToken);
     }
@@ -117,20 +117,23 @@ public sealed class SlowQueryInterceptor(
         string commandType = command.CommandType.ToString();
         bool isSlow = durationMs >= slowQueryThresholdMs;
 
-        // Record metrics
-        QueryDuration.Record(
-            durationMs,
-            new KeyValuePair<string, object?>("db.operation", commandType),
-            new KeyValuePair<string, object?>("db.slow", isSlow));
+        TagList tags = new()
+        {
+            { "db.operation", commandType },
+            { "db.slow", isSlow }
+        };
+        s_queryDuration.Record(durationMs, tags);
 
         if (isSlow)
         {
-            SlowQueries.Add(1,
-                new KeyValuePair<string, object?>("db.operation", commandType),
-                new KeyValuePair<string, object?>("db.command_type", commandType));
+            TagList slowTags = new()
+            {
+                { "db.operation", commandType },
+                { "db.command_type", commandType }
+            };
+            s_slowQueries.Add(1, slowTags);
 
-            // Create span for slow query
-            using Activity? activity = ActivitySource.StartActivity(
+            using Activity? activity = s_activitySource.StartActivity(
                 "database.slow_query",
                 ActivityKind.Internal);
 

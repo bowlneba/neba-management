@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Neba.Infrastructure.Caching;
@@ -7,17 +8,17 @@ namespace Neba.Infrastructure.Caching;
 /// </summary>
 internal static class CacheMetrics
 {
-    private static readonly Meter Meter = new("Neba.Cache");
+    private static readonly Meter s_meter = new("Neba.Cache");
 
-    private static readonly Counter<long> CacheHits = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_cacheHits = s_meter.CreateCounter<long>(
         "neba.cache.hits",
         description: "Number of cache hits");
 
-    private static readonly Counter<long> CacheMisses = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_cacheMisses = s_meter.CreateCounter<long>(
         "neba.cache.misses",
         description: "Number of cache misses");
 
-    private static readonly Histogram<double> CacheOperationDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_cacheOperationDuration = s_meter.CreateHistogram<double>(
         "neba.cache.operation.duration",
         unit: "ms",
         description: "Duration of cache operations");
@@ -29,10 +30,13 @@ internal static class CacheMetrics
     /// <param name="queryType">The type of query being cached.</param>
     public static void RecordCacheHit(string cacheKey, string queryType)
     {
-        CacheHits.Add(1,
-            new KeyValuePair<string, object?>("cache.key", cacheKey),
-            new KeyValuePair<string, object?>("query.type", queryType),
-            new KeyValuePair<string, object?>("cache.hit", true));
+        TagList tags = new()
+        {
+            { "cache.key", cacheKey },
+            { "query.type", queryType },
+            { "cache.hit", true }
+        };
+        s_cacheHits.Add(1, tags);
     }
 
     /// <summary>
@@ -42,10 +46,13 @@ internal static class CacheMetrics
     /// <param name="queryType">The type of query being cached.</param>
     public static void RecordCacheMiss(string cacheKey, string queryType)
     {
-        CacheMisses.Add(1,
-            new KeyValuePair<string, object?>("cache.key", cacheKey),
-            new KeyValuePair<string, object?>("query.type", queryType),
-            new KeyValuePair<string, object?>("cache.hit", false));
+        TagList tags = new()
+        {
+            { "cache.key", cacheKey },
+            { "query.type", queryType },
+            { "cache.hit", false }
+        };
+        s_cacheMisses.Add(1, tags);
     }
 
     /// <summary>
@@ -57,9 +64,12 @@ internal static class CacheMetrics
     /// <param name="hit">Whether the operation was a cache hit.</param>
     public static void RecordOperationDuration(double durationMs, string cacheKey, string queryType, bool hit)
     {
-        CacheOperationDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("cache.key", cacheKey),
-            new KeyValuePair<string, object?>("query.type", queryType),
-            new KeyValuePair<string, object?>("cache.hit", hit));
+        TagList tags = new()
+        {
+            { "cache.key", cacheKey },
+            { "query.type", queryType },
+            { "cache.hit", hit }
+        };
+        s_cacheOperationDuration.Record(durationMs, tags);
     }
 }

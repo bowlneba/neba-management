@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Neba.Infrastructure.BackgroundJobs;
@@ -32,8 +33,8 @@ internal static class HangfireMetrics
     /// <param name="jobType">The type of job being executed.</param>
     public static void RecordJobStart(string jobType)
     {
-        s_jobExecutions.Add(1,
-            new KeyValuePair<string, object?>("job.type", jobType));
+        TagList tags = new() { { "job.type", jobType } };
+        s_jobExecutions.Add(1, tags);
     }
 
     /// <summary>
@@ -43,12 +44,15 @@ internal static class HangfireMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string jobType, double durationMs)
     {
-        s_jobSuccesses.Add(1,
-            new KeyValuePair<string, object?>("job.type", jobType));
+        TagList tags = new() { { "job.type", jobType } };
+        s_jobSuccesses.Add(1, tags);
 
-        s_jobDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("job.type", jobType),
-            new KeyValuePair<string, object?>("result", "success"));
+        TagList durationTags = new()
+        {
+            { "job.type", jobType },
+            { "result", "success" }
+        };
+        s_jobDuration.Record(durationMs, durationTags);
     }
 
     /// <summary>
@@ -59,13 +63,19 @@ internal static class HangfireMetrics
     /// <param name="errorType">Type of error that occurred.</param>
     public static void RecordJobFailure(string jobType, double durationMs, string errorType)
     {
-        s_jobFailures.Add(1,
-            new KeyValuePair<string, object?>("job.type", jobType),
-            new KeyValuePair<string, object?>("error.type", errorType));
+        TagList failureTags = new()
+        {
+            { "job.type", jobType },
+            { "error.type", errorType }
+        };
+        s_jobFailures.Add(1, failureTags);
 
-        s_jobDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("job.type", jobType),
-            new KeyValuePair<string, object?>("result", "failure"),
-            new KeyValuePair<string, object?>("error.type", errorType));
+        TagList durationTags = new()
+        {
+            { "job.type", jobType },
+            { "result", "failure" },
+            { "error.type", errorType }
+        };
+        s_jobDuration.Record(durationMs, durationTags);
     }
 }

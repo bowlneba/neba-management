@@ -8,22 +8,22 @@ namespace Neba.Infrastructure.Documents;
 /// </summary>
 internal static class GoogleDocsMetrics
 {
-    private static readonly Meter Meter = new("Neba.GoogleDocs");
+    private static readonly Meter s_meter = new("Neba.GoogleDocs");
 
-    private static readonly Histogram<double> ExportDuration = Meter.CreateHistogram<double>(
+    private static readonly Histogram<double> s_exportDuration = s_meter.CreateHistogram<double>(
         "neba.google.docs.export.duration",
         unit: "ms",
         description: "Duration of Google Docs export operations");
 
-    private static readonly Counter<long> ExportSuccess = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_exportSuccess = s_meter.CreateCounter<long>(
         "neba.google.docs.export.success",
         description: "Number of successful Google Docs exports");
 
-    private static readonly Counter<long> ExportFailure = Meter.CreateCounter<long>(
+    private static readonly Counter<long> s_exportFailure = s_meter.CreateCounter<long>(
         "neba.google.docs.export.failure",
         description: "Number of failed Google Docs exports");
 
-    private static readonly Histogram<long> ExportSize = Meter.CreateHistogram<long>(
+    private static readonly Histogram<long> s_exportSize = s_meter.CreateHistogram<long>(
         "neba.google.docs.export.size",
         unit: "bytes",
         description: "Size of exported Google Docs HTML");
@@ -44,9 +44,9 @@ internal static class GoogleDocsMetrics
             { "export.format", "text/html" }
         };
 
-        ExportSuccess.Add(1, tags);
-        ExportDuration.Record(durationMs, tags);
-        ExportSize.Record(sizeBytes, tags);
+        s_exportSuccess.Add(1, tags);
+        s_exportDuration.Record(durationMs, tags);
+        s_exportSize.Record(sizeBytes, tags);
     }
 
     /// <summary>
@@ -56,9 +56,12 @@ internal static class GoogleDocsMetrics
     /// <param name="documentId">The Google Docs document ID.</param>
     public static void RecordExportFailure(string documentName, string documentId)
     {
-        ExportFailure.Add(1,
-            new KeyValuePair<string, object?>("document.name", documentName),
-            new KeyValuePair<string, object?>("document.id", documentId),
-            new KeyValuePair<string, object?>("export.format", "text/html"));
+        TagList tags = new()
+        {
+            { "document.name", documentName },
+            { "document.id", documentId },
+            { "export.format", "text/html" }
+        };
+        s_exportFailure.Add(1, tags);
     }
 }

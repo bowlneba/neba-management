@@ -12,7 +12,7 @@ internal sealed class HangfireBackgroundJobScheduler(
     ILogger<HangfireBackgroundJobScheduler> logger)
         : IBackgroundJobScheduler
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.Hangfire");
+    private static readonly ActivitySource s_activitySource = new("Neba.Hangfire");
 
     public string Enqueue<TJob>(TJob job) where TJob : IBackgroundJob
     {
@@ -84,7 +84,7 @@ internal sealed class HangfireBackgroundJobScheduler(
     {
         string jobType = typeof(TJob).Name;
 
-        using Activity? activity = ActivitySource.StartActivity($"hangfire.execute_job.{jobType}");
+        using Activity? activity = s_activitySource.StartActivity($"hangfire.execute_job.{jobType}");
 
         if (activity is not null)
         {

@@ -32,7 +32,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
     ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
         : IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.BackgroundJobs");
+    private static readonly ActivitySource s_activitySource = new("Neba.BackgroundJobs");
 
     /// <summary>
     /// Executes the sync job: retrieves the document HTML and uploads it to the
@@ -60,7 +60,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
             throw new ArgumentException("Job.Path cannot be null or whitespace.", nameof(job));
         }
 
-        using Activity? activity = ActivitySource.StartActivity("backgroundjob.sync_document");
+        using Activity? activity = s_activitySource.StartActivity("backgroundjob.sync_document");
 
         if (activity is not null)
         {

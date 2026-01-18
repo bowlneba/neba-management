@@ -13,7 +13,7 @@ internal sealed class GoogleDocsService(
     ILogger<GoogleDocsService> logger)
     : IDocumentsService
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.GoogleDocs");
+    private static readonly ActivitySource s_activitySource = new("Neba.GoogleDocs");
     private readonly IReadOnlyCollection<GoogleDocument> _documents = settings.Documents;
     private readonly Lazy<GoogleCredential> _lazyCredential = new(() =>
     {
@@ -28,7 +28,7 @@ internal sealed class GoogleDocsService(
         string documentId = _documents.SingleOrDefault(doc => doc.Name == documentName)?.DocumentId
             ?? throw new InvalidOperationException($"Google Document with name '{documentName}' not found in configuration.");
 
-        using Activity? activity = ActivitySource.StartActivity("google.docs.export", ActivityKind.Client);
+        using Activity? activity = s_activitySource.StartActivity("google.docs.export", ActivityKind.Client);
         activity?.SetTag("document.name", documentName);
         activity?.SetTag("document.id", documentId);
         activity?.SetTag("export.format", "text/html");

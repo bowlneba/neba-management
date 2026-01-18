@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Neba.Application.Documents;
@@ -9,7 +10,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
 {
     private static readonly Meter s_meter = new("Neba.BackgroundJobs");
 
-    private static readonly Counter<long> JobExecutions = s_meter.CreateCounter<long>(
+    private static readonly Counter<long> s_jobExecutions = s_meter.CreateCounter<long>(
         "neba.backgroundjob.sync_document.executions",
         description: "Number of document sync job executions");
 
@@ -43,9 +44,12 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="triggeredBy">Who triggered the sync.</param>
     public static void RecordJobStart(string documentKey, string triggeredBy)
     {
-        JobExecutions.Add(1,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("triggered.by", triggeredBy));
+        TagList tags = new()
+        {
+            { "document.key", documentKey },
+            { "triggered.by", triggeredBy }
+        };
+        s_jobExecutions.Add(1, tags);
     }
 
     /// <summary>
@@ -55,12 +59,15 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string documentKey, double durationMs)
     {
-        s_jobSuccesses.Add(1,
-            new KeyValuePair<string, object?>("document.key", documentKey));
+        TagList tags = new() { { "document.key", documentKey } };
+        s_jobSuccesses.Add(1, tags);
 
-        s_jobDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("result", "success"));
+        TagList durationTags = new()
+        {
+            { "document.key", documentKey },
+            { "result", "success" }
+        };
+        s_jobDuration.Record(durationMs, durationTags);
     }
 
     /// <summary>
@@ -71,14 +78,20 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="errorType">Type of error that occurred.</param>
     public static void RecordJobFailure(string documentKey, double durationMs, string errorType)
     {
-        s_jobFailures.Add(1,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("error.type", errorType));
+        TagList failureTags = new()
+        {
+            { "document.key", documentKey },
+            { "error.type", errorType }
+        };
+        s_jobFailures.Add(1, failureTags);
 
-        s_jobDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("result", "failure"),
-            new KeyValuePair<string, object?>("error.type", errorType));
+        TagList durationTags = new()
+        {
+            { "document.key", documentKey },
+            { "result", "failure" },
+            { "error.type", errorType }
+        };
+        s_jobDuration.Record(durationMs, durationTags);
     }
 
     /// <summary>
@@ -88,9 +101,12 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordRetrieveDuration(string documentKey, double durationMs)
     {
-        s_retrieveDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("phase", "retrieve"));
+        TagList tags = new()
+        {
+            { "document.key", documentKey },
+            { "phase", "retrieve" }
+        };
+        s_retrieveDuration.Record(durationMs, tags);
     }
 
     /// <summary>
@@ -100,8 +116,11 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordUploadDuration(string documentKey, double durationMs)
     {
-        s_uploadDuration.Record(durationMs,
-            new KeyValuePair<string, object?>("document.key", documentKey),
-            new KeyValuePair<string, object?>("phase", "upload"));
+        TagList tags = new()
+        {
+            { "document.key", documentKey },
+            { "phase", "upload" }
+        };
+        s_uploadDuration.Record(durationMs, tags);
     }
 }

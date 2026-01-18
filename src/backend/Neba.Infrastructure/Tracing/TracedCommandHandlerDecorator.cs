@@ -15,7 +15,7 @@ internal sealed class TracedCommandHandlerDecorator<TCommand, TResponse>
     : ICommandHandler<TCommand, TResponse>
       where TCommand : ICommand<TResponse>
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.Handlers");
+    private static readonly ActivitySource s_activitySource = new("Neba.Handlers");
 
     private readonly ICommandHandler<TCommand, TResponse> _innerHandler;
     private readonly ILogger<TracedCommandHandlerDecorator<TCommand, TResponse>> _logger;
@@ -34,7 +34,7 @@ internal sealed class TracedCommandHandlerDecorator<TCommand, TResponse>
 
     public async Task<ErrorOr<TResponse>> HandleAsync(TCommand command, CancellationToken cancellationToken)
     {
-        using Activity? activity = ActivitySource.StartActivity($"command.{_commandType}");
+        using Activity? activity = s_activitySource.StartActivity($"command.{_commandType}");
 
         if (activity is not null)
         {

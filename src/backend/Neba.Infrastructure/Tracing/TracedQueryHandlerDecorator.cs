@@ -14,7 +14,7 @@ internal sealed class TracedQueryHandlerDecorator<TQuery, TResponse>
     : IQueryHandler<TQuery, TResponse>
       where TQuery : IQuery<TResponse>
 {
-    private static readonly ActivitySource ActivitySource = new("Neba.Handlers");
+    private static readonly ActivitySource s_activitySource = new("Neba.Handlers");
 
     private readonly IQueryHandler<TQuery, TResponse> _innerHandler;
     private readonly ILogger<TracedQueryHandlerDecorator<TQuery, TResponse>> _logger;
@@ -35,7 +35,7 @@ internal sealed class TracedQueryHandlerDecorator<TQuery, TResponse>
 
     public async Task<TResponse> HandleAsync(TQuery query, CancellationToken cancellationToken)
     {
-        using Activity? activity = ActivitySource.StartActivity($"query.{_queryType}");
+        using Activity? activity = s_activitySource.StartActivity($"query.{_queryType}");
 
         if (activity is not null)
         {
