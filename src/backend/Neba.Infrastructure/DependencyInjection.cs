@@ -10,6 +10,7 @@ using Neba.Infrastructure.Caching;
 using Neba.Infrastructure.Database;
 using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Storage;
+using Neba.Infrastructure.Tracing;
 
 namespace Neba.Infrastructure;
 
@@ -126,7 +127,19 @@ public static class InfrastructureDependencyInjection
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
+            services.Scan(scan => scan
+                .FromAssemblies(assemblies)
+                .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            // Apply tracing decorator first (outermost), then caching decorator for queries
+            // This ensures traces wrap cache operations, giving complete visibility
+            services.Decorate(typeof(IQueryHandler<,>), typeof(TracedQueryHandlerDecorator<,>));
             services.Decorate(typeof(IQueryHandler<,>), typeof(CachedQueryHandlerDecorator<,>));
+
+            // Apply tracing decorator to command handlers
+            services.Decorate(typeof(ICommandHandler<,>), typeof(TracedCommandHandlerDecorator<,>));
 
             return services;
         }

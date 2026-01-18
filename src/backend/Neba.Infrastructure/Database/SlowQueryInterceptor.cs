@@ -14,7 +14,7 @@ namespace Neba.Infrastructure.Database;
 /// </remarks>
 /// <param name="logger">Logger for recording slow query warnings.</param>
 /// <param name="slowQueryThresholdMs">Threshold in milliseconds for slow query detection.</param>
-internal sealed class SlowQueryInterceptor(
+public sealed class SlowQueryInterceptor(
     ILogger<SlowQueryInterceptor> logger,
     double slowQueryThresholdMs = 1000) : DbCommandInterceptor
 {
@@ -30,59 +30,83 @@ internal sealed class SlowQueryInterceptor(
         "neba.database.query.slow",
         description: "Number of slow database queries");
 
+    /// <inheritdoc/>
     public override DbDataReader ReaderExecuted(
         DbCommand command,
         CommandExecutedEventData eventData,
         DbDataReader result)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+
         RecordQueryMetrics(command, eventData);
         return base.ReaderExecuted(command, eventData, result);
     }
 
+    /// <inheritdoc/>
     public override ValueTask<DbDataReader> ReaderExecutedAsync(
         DbCommand command,
         CommandExecutedEventData eventData,
         DbDataReader result,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+
         RecordQueryMetrics(command, eventData);
         return base.ReaderExecutedAsync(command, eventData, result, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public override object? ScalarExecuted(
         DbCommand command,
         CommandExecutedEventData eventData,
         object? result)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+
         RecordQueryMetrics(command, eventData);
         return base.ScalarExecuted(command, eventData, result);
     }
 
+    /// <inheritdoc/>
     public override ValueTask<object?> ScalarExecutedAsync(
         DbCommand command,
         CommandExecutedEventData eventData,
         object? result,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+
         RecordQueryMetrics(command, eventData);
         return base.ScalarExecutedAsync(command, eventData, result, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public override int NonQueryExecuted(
         DbCommand command,
         CommandExecutedEventData eventData,
         int result)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+
         RecordQueryMetrics(command, eventData);
         return base.NonQueryExecuted(command, eventData, result);
     }
 
+    /// <inheritdoc/>
     public override ValueTask<int> NonQueryExecutedAsync(
         DbCommand command,
         CommandExecutedEventData eventData,
         int result,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(eventData);
+        
         RecordQueryMetrics(command, eventData);
         return base.NonQueryExecutedAsync(command, eventData, result, cancellationToken);
     }
