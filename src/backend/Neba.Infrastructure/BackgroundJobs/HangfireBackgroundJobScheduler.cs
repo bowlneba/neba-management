@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ internal sealed class HangfireBackgroundJobScheduler(
     ILogger<HangfireBackgroundJobScheduler> logger)
         : IBackgroundJobScheduler
 {
+    private static readonly ActivitySource ActivitySource = new("Neba.Hangfire");
 
     public string Enqueue<TJob>(TJob job) where TJob : IBackgroundJob
     {
@@ -80,12 +82,46 @@ internal sealed class HangfireBackgroundJobScheduler(
     [DisplayName("{1}")]
     public async Task ExecuteJobAsync<TJob>(TJob job, string displayName, CancellationToken cancellationToken) where TJob : IBackgroundJob
     {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        IBackgroundJobHandler<TJob> handler = scope.ServiceProvider.GetRequiredService<IBackgroundJobHandler<TJob>>();
+        string jobType = typeof(TJob).Name;
 
-        logger.LogJobStarted(typeof(TJob).Name);
+        using Activity? activity = ActivitySource.StartActivity($"hangfire.execute_job.{jobType}");
 
-        await handler.ExecuteAsync(job, cancellationToken);
+        if (activity is not null)
+        {
+            activity.SetTag("job.type", jobType);
+            activity.SetTag("job.display_name", displayName);
+        }
+
+        long startTimestamp = Stopwatch.GetTimestamp();
+        HangfireMetrics.RecordJobStart(jobType);
+
+        try
+        {
+            using IServiceScope scope = serviceScopeFactory.CreateScope();
+            IBackgroundJobHandler<TJob> handler = scope.ServiceProvider.GetRequiredService<IBackgroundJobHandler<TJob>>();
+
+            logger.LogJobStarted(jobType);
+
+            await handler.ExecuteAsync(job, cancellationToken);
+
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+            HangfireMetrics.RecordJobSuccess(jobType, durationMs);
+
+            activity?.SetTag("job.duration_ms", durationMs);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+        }
+        catch (Exception ex)
+        {
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+            HangfireMetrics.RecordJobFailure(jobType, durationMs, ex.GetType().Name);
+
+            activity?.SetTag("job.duration_ms", durationMs);
+            activity?.SetTag("error.type", ex.GetType().Name);
+            activity?.SetTag("error.message", ex.Message);
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+
+            throw;
+        }
     }
 
     private static string GetJobDisplayName<TJob>(TJob job) where TJob : IBackgroundJob
