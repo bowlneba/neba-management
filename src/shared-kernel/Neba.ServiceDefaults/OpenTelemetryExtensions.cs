@@ -32,6 +32,7 @@ internal static class OpenTelemetryExtensions
             });
 
             builder.Services.AddOpenTelemetry()
+                .ConfigureResource(rb => rb.AddService(serviceName: builder.Environment.ApplicationName))
                 .WithMetrics(metrics => metrics
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
@@ -56,8 +57,6 @@ internal static class OpenTelemetryExtensions
             if (useOtlpExporter)
             {
                 var otelUri = new Uri(builder.Configuration.GetValue<string>("Otel:OtlpEndpoint")!);
-
-                builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter(option => option.Endpoint = otelUri));
 
                 builder.Services.AddOpenTelemetry()
                     .UseOtlpExporter(OpenTelemetry.Exporter.OtlpExportProtocol.Grpc, otelUri);

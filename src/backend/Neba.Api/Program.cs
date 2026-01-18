@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Hybrid;
 using Neba.Api.ErrorHandling;
-using Neba.Api.HealthChecks;
 using Neba.Api.OpenApi;
 using Neba.Infrastructure;
 using Neba.ServiceDefaults;
