@@ -39,6 +39,8 @@ internal static class OpenTelemetryExtensions
                     .AddRuntimeInstrumentation())
                 .WithTracing(tracing => tracing
                     .AddSource(builder.Environment.ApplicationName)
+                    .AddSource("Neba.*")              // Custom application sources
+                    .AddSource("Azure.Storage.Blobs") // Azure SDK traces
                     .AddAspNetCoreInstrumentation(x => x
                         .Filter = context =>
                             !context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase) &&
