@@ -45,9 +45,9 @@ public static class DocumentRefreshSseStreamHandler
         HybridCache cache,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        Stopwatch connectionTimer = SseStreamTelemetry.RecordConnectionStart("document-refresh");
+        const string streamType = "document-refresh";
+        Stopwatch connectionTimer = SseStreamTelemetry.RecordConnectionStart(streamType);
         int eventCount = 0;
-        bool errorOccurred = false;
 
         // Send the initial state if available from cache, otherwise send a default "ready" state
         string cacheKey = $"{documentType}:refresh:current";
@@ -69,7 +69,7 @@ public static class DocumentRefreshSseStreamHandler
         {
             // No cached state means no refresh has been performed yet, send "Completed" as default
             var initialEvent = DocumentRefreshStatusEvent.FromStatus(DocumentRefreshStatus.Completed.Name);
-            SseStreamTelemetry.RecordEventPublished("document-refresh", DocumentRefreshStatus.Completed.Name);
+            SseStreamTelemetry.RecordEventPublished(streamType, DocumentRefreshStatus.Completed.Name);
             eventCount++;
             yield return initialEvent;
         }
@@ -77,15 +77,11 @@ public static class DocumentRefreshSseStreamHandler
         // Stream updates from the channel
         await foreach (DocumentRefreshStatusEvent statusEvent in channelReader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
         {
-            SseStreamTelemetry.RecordEventPublished("document-refresh", statusEvent.Status);
+            SseStreamTelemetry.RecordEventPublished(streamType, statusEvent.Status);
             eventCount++;
             yield return statusEvent;
         }
 
-        // If we get here, connection completed successfully
-        if (!errorOccurred)
-        {
-            SseStreamTelemetry.RecordConnectionEnd("document-refresh", connectionTimer, eventCount);
-        }
+        SseStreamTelemetry.RecordConnectionEnd(streamType, connectionTimer, eventCount);
     }
 }
