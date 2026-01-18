@@ -4,7 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace Neba.ServiceDefaults;
@@ -24,6 +26,9 @@ internal static class OpenTelemetryExtensions
             {
                 logging.IncludeFormattedMessage = true;
                 logging.IncludeScopes = true;
+
+                logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                    .AddService(serviceName: builder.Environment.ApplicationName));
             });
 
             builder.Services.AddOpenTelemetry()
@@ -50,8 +55,12 @@ internal static class OpenTelemetryExtensions
 
             if (useOtlpExporter)
             {
+                var otelUri = new Uri(builder.Configuration.GetValue<string>("Otel:OtlpEndpoint")!);
+
+                builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter(option => option.Endpoint = otelUri));
+
                 builder.Services.AddOpenTelemetry()
-                    .UseOtlpExporter(OpenTelemetry.Exporter.OtlpExportProtocol.Grpc, new Uri(builder.Configuration.GetValue<string>("Otel:OtlpEndpoint")!));
+                    .UseOtlpExporter(OpenTelemetry.Exporter.OtlpExportProtocol.Grpc, otelUri);
             }
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
