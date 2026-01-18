@@ -24,6 +24,9 @@ namespace Neba.Web.Server.Services;
 
 internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 {
+    private const string ApiEndpointKey = "api.endpoint";
+    private const string DurationKey = "api.duration_ms";
+    private const string HttpStatusCodeKey = "http.status_code";
     private static readonly ActivitySource s_activitySource = new("Neba.Web.Server");
     private static readonly Meter s_meter = new("Neba.Web.Server");
 
@@ -266,10 +269,10 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
         using Activity? activity = s_activitySource.StartActivity("frontend.api_call");
 
         activity?.SetCodeAttributes(endpointName, "Neba.Web.Server");
-        activity?.SetTag("api.endpoint", endpointName);
+        activity?.SetTag(ApiEndpointKey, endpointName);
 
         long startTimestamp = Stopwatch.GetTimestamp();
-        TagList apiTags = new() { { "api.endpoint", endpointName } };
+        TagList apiTags = new() { { ApiEndpointKey, endpointName } };
         s_apiCalls.Add(1, apiTags);
 
         try
@@ -277,13 +280,13 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
             ApiResponse<T> response = await apiCall();
             double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
 
-            activity?.SetTag("api.duration_ms", durationMs);
-            activity?.SetTag("http.status_code", (int)response.StatusCode);
+            activity?.SetTag(DurationKey, durationMs);
+            activity?.SetTag(HttpStatusCodeKey, (int)response.StatusCode);
 
             TagList durationTags = new()
             {
-                { "api.endpoint", endpointName },
-                { "http.status_code", (int)response.StatusCode },
+                { ApiEndpointKey, endpointName },
+                { HttpStatusCodeKey, (int)response.StatusCode },
                 { "api.success", response.IsSuccessStatusCode }
             };
             s_apiDuration.Record(durationMs, durationTags);
@@ -292,8 +295,8 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
             {
                 TagList errorTags = new()
                 {
-                    { "api.endpoint", endpointName },
-                    { "http.status_code", (int)response.StatusCode },
+                    { ApiEndpointKey, endpointName },
+                    { HttpStatusCodeKey, (int)response.StatusCode },
                     { "error.type", "HttpError" }
                 };
                 s_apiErrors.Add(1, errorTags);
@@ -306,8 +309,8 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
             {
                 TagList errorTags = new()
                 {
-                    { "api.endpoint", endpointName },
-                    { "http.status_code", (int)response.StatusCode },
+                    { ApiEndpointKey, endpointName },
+                    { HttpStatusCodeKey, (int)response.StatusCode },
                     { "error.type", "NoContent" }
                 };
                 s_apiErrors.Add(1, errorTags);
@@ -325,14 +328,14 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 
             TagList errorTags = new()
             {
-                { "api.endpoint", endpointName },
-                { "http.status_code", (int)ex.StatusCode },
+                { ApiEndpointKey, endpointName },
+                { HttpStatusCodeKey, (int)ex.StatusCode },
                 { "error.type", "ApiException" }
             };
             s_apiErrors.Add(1, errorTags);
             s_apiDuration.Record(durationMs, errorTags);
 
-            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetTag(DurationKey, durationMs);
             activity?.SetExceptionTags(ex);
 
             return ApiErrors.RequestFailed(ex.StatusCode, ex.Message);
@@ -343,13 +346,13 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 
             TagList errorTags = new()
             {
-                { "api.endpoint", endpointName },
+                { ApiEndpointKey, endpointName },
                 { "error.type", "NetworkError" }
             };
             s_apiErrors.Add(1, errorTags);
             s_apiDuration.Record(durationMs, errorTags);
 
-            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetTag(DurationKey, durationMs);
             activity?.SetExceptionTags(ex);
 
             return ApiErrors.NetworkError(ex.Message);
@@ -360,13 +363,13 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 
             TagList errorTags = new()
             {
-                { "api.endpoint", endpointName },
+                { ApiEndpointKey, endpointName },
                 { "error.type", "Timeout" }
             };
             s_apiErrors.Add(1, errorTags);
             s_apiDuration.Record(durationMs, errorTags);
 
-            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetTag(DurationKey, durationMs);
             activity?.SetExceptionTags(ex);
 
             return ApiErrors.Timeout();
@@ -377,13 +380,13 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 
             TagList errorTags = new()
             {
-                { "api.endpoint", endpointName },
+                { ApiEndpointKey, endpointName },
                 { "error.type", ex.GetErrorType() }
             };
             s_apiErrors.Add(1, errorTags);
             s_apiDuration.Record(durationMs, errorTags);
 
-            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetTag(DurationKey, durationMs);
             activity?.SetExceptionTags(ex);
 
             return ApiErrors.Unexpected(ex.Message);

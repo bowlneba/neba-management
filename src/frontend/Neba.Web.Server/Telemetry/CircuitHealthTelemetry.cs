@@ -9,6 +9,7 @@ namespace Neba.Web.Server.Telemetry;
 /// </summary>
 public sealed class CircuitHealthTelemetry : CircuitHandler
 {
+    private const string CircuitIdKey = "circuit.id";
     private static readonly ActivitySource s_activitySource = new("Neba.Web.Server.SignalR");
     private static readonly Meter s_meter = new("Neba.Web.Server.SignalR");
 
@@ -45,9 +46,9 @@ public sealed class CircuitHealthTelemetry : CircuitHandler
         string circuitId = circuit.Id;
 
         using Activity? activity = s_activitySource.StartActivity("circuit.opened");
-        activity?.SetTag("circuit.id", circuitId);
+        activity?.SetTag(CircuitIdKey, circuitId);
 
-        TagList tags = new() { { "circuit.id", circuitId } };
+        TagList tags = new() { { CircuitIdKey, circuitId } };
         s_circuitOpened.Add(1, tags);
         s_activeCircuits.Add(1);
 
@@ -66,9 +67,9 @@ public sealed class CircuitHealthTelemetry : CircuitHandler
         string circuitId = circuit.Id;
 
         using Activity? activity = s_activitySource.StartActivity("circuit.closed");
-        activity?.SetTag("circuit.id", circuitId);
+        activity?.SetTag(CircuitIdKey, circuitId);
 
-        TagList tags = new() { { "circuit.id", circuitId } };
+        TagList tags = new() { { CircuitIdKey, circuitId } };
         s_circuitClosed.Add(1, tags);
         s_activeCircuits.Add(-1);
 
@@ -95,9 +96,9 @@ public sealed class CircuitHealthTelemetry : CircuitHandler
         string circuitId = circuit.Id;
 
         using Activity? activity = s_activitySource.StartActivity("circuit.connection_down");
-        activity?.SetTag("circuit.id", circuitId);
+        activity?.SetTag(CircuitIdKey, circuitId);
 
-        TagList tags = new() { { "circuit.id", circuitId }, { "error.type", "connection_down" } };
+        TagList tags = new() { { CircuitIdKey, circuitId }, { "error.type", "connection_down" } };
         s_connectionErrors.Add(1, tags);
 
         await base.OnConnectionDownAsync(circuit, cancellationToken);
@@ -113,7 +114,7 @@ public sealed class CircuitHealthTelemetry : CircuitHandler
         string circuitId = circuit.Id;
 
         using Activity? activity = s_activitySource.StartActivity("circuit.connection_up");
-        activity?.SetTag("circuit.id", circuitId);
+        activity?.SetTag(CircuitIdKey, circuitId);
 
         await base.OnConnectionUpAsync(circuit, cancellationToken);
     }
