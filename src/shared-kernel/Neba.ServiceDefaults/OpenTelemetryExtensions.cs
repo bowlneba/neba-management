@@ -50,7 +50,8 @@ internal static class OpenTelemetryExtensions
 
             if (useOtlpExporter)
             {
-                builder.Services.AddOpenTelemetry().UseOtlpExporter();
+                builder.Services.AddOpenTelemetry()
+                    .UseOtlpExporter(OpenTelemetry.Exporter.OtlpExportProtocol.Grpc, new Uri(builder.Configuration.GetValue<string>("Otel:OtlpEndpoint")!));
             }
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
