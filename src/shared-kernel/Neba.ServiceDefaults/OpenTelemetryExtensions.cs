@@ -34,6 +34,7 @@ internal static class OpenTelemetryExtensions
             builder.Services.AddOpenTelemetry()
                 .ConfigureResource(rb => rb.AddService(serviceName: builder.Environment.ApplicationName))
                 .WithMetrics(metrics => metrics
+                    .AddMeter("Neba.*")                // Custom application meters
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation())
