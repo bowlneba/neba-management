@@ -1,7 +1,9 @@
 @using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Telemetry
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
 @inject IWebHostEnvironment HostEnv
+@inject NavigationTelemetry NavTelemetry
 
 <script src="./Layout/MainLayout.razor.js" type="module"></script>
 
@@ -172,6 +174,8 @@
 </div>
 
 @code {
+    // NavigationTelemetry is injected and automatically tracks navigation events
+
     private bool IsProduction =>
         string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(HostEnv.EnvironmentName, "Docker", StringComparison.OrdinalIgnoreCase);

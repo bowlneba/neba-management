@@ -75,6 +75,7 @@ builder.Services.AddScoped<AlertService>();
 
 // Telemetry services
 builder.Services.AddScoped<Neba.Web.Server.Telemetry.JavaScriptTelemetryBridge>();
+builder.Services.AddScoped<Neba.Web.Server.Telemetry.NavigationTelemetry>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
