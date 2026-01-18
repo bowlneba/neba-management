@@ -1,5 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
 @inject IWebHostEnvironment HostEnv
+@using Neba.Web.Server.Telemetry
 
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
@@ -16,6 +17,10 @@
                 <FocusOnNavigate RouteData="routeData" Selector="h1" />
             </ChildContent>
             <ErrorContent Context="ex">
+                @{
+                    // Track the component error with telemetry
+                    TrackComponentError(ex, routeData.PageType.Name, NavigationManager.Uri);
+                }
                 <article class="px-4 py-6">
                     <h1 class="text-2xl font-semibold mb-2 text-[var(--neba-accent-red)]">Something went wrong</h1>
                     <p class="mb-4 text-[var(--neba-text)]">An unexpected error occurred while rendering this page.</p>
@@ -48,5 +53,10 @@
     private static RouteData CreateNotFoundRouteData()
     {
         return new RouteData(typeof(Pages.NotFound), new Dictionary<string, object?>());
+    }
+
+    private static void TrackComponentError(Exception ex, string componentName, string routePath)
+    {
+        ComponentTelemetry.RecordComponentError(ex, componentName, routePath);
     }
 }

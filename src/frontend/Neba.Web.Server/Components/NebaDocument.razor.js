@@ -3,6 +3,8 @@
  * Provides TOC generation, scroll spy, smooth scrolling, and hash navigation
  */
 
+import { trackEvent, trackError, createTimer } from '../wwwroot/js/telemetry-helper.js';
+
 /**
  * Escapes HTML special characters to prevent XSS attacks
  * @param {string} text - The text to escape
@@ -576,6 +578,8 @@ function buildLastUpdatedHeader(metadata) {
  * @param {HTMLElement} originalContent - The original document content (for context)
  */
 async function openInSlideover(url, slideover, slideoverContent, slideoverTitle, originalContent) {
+    const timer = createTimer('document.slideover_open');
+
     // Show loading state
     slideoverTitle.textContent = 'Loading...';
     slideoverContent.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--neba-gray-600);">Loading document...</div>';
@@ -598,7 +602,10 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to load: ${response.status} ${response.statusText}`);
+            const error = new Error(`Failed to load: ${response.status} ${response.statusText}`);
+            trackError(error.message, 'document.slideover', error.stack);
+            timer.stop(false, { error: 'api_error', status_code: response.status, document: pathname });
+            throw error;
         }
 
         const data = await response.json();
@@ -608,7 +615,10 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
         const metadata = data.metadata || {};
 
         if (!html) {
-            throw new Error('No content returned from API');
+            const error = new Error('No content returned from API');
+            trackError(error.message, 'document.slideover', error.stack);
+            timer.stop(false, { error: 'no_content', document: pathname });
+            throw error;
         }
 
         // Get the page title from the route name
@@ -641,8 +651,17 @@ async function openInSlideover(url, slideover, slideoverContent, slideoverTitle,
 
         // Set up nested link navigation within the slide-over
         setupNestedLinkNavigation(slideoverContent, slideover, slideoverTitle, originalContent);
+
+        // Track successful document load
+        timer.stop(true, {
+            document: pathname,
+            has_hash: !!url.hash,
+            content_length: html.length
+        });
     } catch (error) {
         console.error('[NebaDocument] Error loading slide-over content:', error);
+        trackError(error.message, 'document.slideover', error.stack);
+        timer.stop(false, { error: error.message });
         slideoverTitle.textContent = 'Error Loading Document';
         slideoverContent.innerHTML = `
             <div style="padding: 2rem; text-align: center;">

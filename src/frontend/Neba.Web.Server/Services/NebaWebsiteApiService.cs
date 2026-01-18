@@ -1,9 +1,12 @@
 #pragma warning disable CA1031 // Do not catch general exception types - We intentionally catch all exceptions to convert to ErrorOr
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using ErrorOr;
 using Microsoft.AspNetCore.Components;
 using Neba.Domain.Identifiers;
+using Neba.ServiceDefaults.Telemetry;
 using Neba.Web.Server.BowlingCenters;
 using Neba.Web.Server.Documents;
 using Neba.Web.Server.HallOfFame;
@@ -21,6 +24,21 @@ namespace Neba.Web.Server.Services;
 
 internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 {
+    private static readonly ActivitySource s_activitySource = new("Neba.Web.Server");
+    private static readonly Meter s_meter = new("Neba.Web.Server");
+
+    private static readonly Counter<long> s_apiCalls = s_meter.CreateCounter<long>(
+        "neba.frontend.api.calls",
+        description: "Number of frontend API calls");
+
+    private static readonly Counter<long> s_apiErrors = s_meter.CreateCounter<long>(
+        "neba.frontend.api.errors",
+        description: "Number of frontend API errors");
+
+    private static readonly Histogram<double> s_apiDuration = s_meter.CreateHistogram<double>(
+        "neba.frontend.api.duration",
+        unit: "ms",
+        description: "Frontend API call duration");
     public async Task<ErrorOr<IReadOnlyCollection<BowlerTitleSummaryViewModel>>> GetTitlesSummaryAsync()
     {
         ErrorOr<Contracts.CollectionResponse<TitleSummaryResponse>> result = await ExecuteApiCallAsync(() => nebaApi.GetTitlesSummaryAsync());
@@ -244,40 +262,130 @@ internal class NebaWebsiteApiService(INebaWebsiteApi nebaApi)
 
     private static async Task<ErrorOr<T>> ExecuteApiCallAsync<T>(Func<Task<ApiResponse<T>>> apiCall)
     {
+        string endpointName = typeof(T).Name;
+        using Activity? activity = s_activitySource.StartActivity("frontend.api_call");
+
+        activity?.SetCodeAttributes(endpointName, "Neba.Web.Server");
+        activity?.SetTag("api.endpoint", endpointName);
+
+        long startTimestamp = Stopwatch.GetTimestamp();
+        TagList apiTags = new() { { "api.endpoint", endpointName } };
+        s_apiCalls.Add(1, apiTags);
+
         try
         {
             ApiResponse<T> response = await apiCall();
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetTag("http.status_code", (int)response.StatusCode);
+
+            TagList durationTags = new()
+            {
+                { "api.endpoint", endpointName },
+                { "http.status_code", (int)response.StatusCode },
+                { "api.success", response.IsSuccessStatusCode }
+            };
+            s_apiDuration.Record(durationMs, durationTags);
 
             if (!response.IsSuccessStatusCode)
             {
+                TagList errorTags = new()
+                {
+                    { "api.endpoint", endpointName },
+                    { "http.status_code", (int)response.StatusCode },
+                    { "error.type", "HttpError" }
+                };
+                s_apiErrors.Add(1, errorTags);
+                activity?.SetStatus(ActivityStatusCode.Error, response.ReasonPhrase);
+
                 return ApiErrors.RequestFailed(response.StatusCode, response.ReasonPhrase);
             }
 
             if (response.Content is null)
             {
+                TagList errorTags = new()
+                {
+                    { "api.endpoint", endpointName },
+                    { "http.status_code", (int)response.StatusCode },
+                    { "error.type", "NoContent" }
+                };
+                s_apiErrors.Add(1, errorTags);
+                activity?.SetStatus(ActivityStatusCode.Error, "No content");
+
                 return ApiErrors.RequestFailed(response.StatusCode, "No content returned from API");
             }
 
+            activity?.SetStatus(ActivityStatusCode.Ok);
             return response.Content;
         }
         catch (ApiException ex)
         {
-            // Refit API exceptions
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+            TagList errorTags = new()
+            {
+                { "api.endpoint", endpointName },
+                { "http.status_code", (int)ex.StatusCode },
+                { "error.type", "ApiException" }
+            };
+            s_apiErrors.Add(1, errorTags);
+            s_apiDuration.Record(durationMs, errorTags);
+
+            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetExceptionTags(ex);
+
             return ApiErrors.RequestFailed(ex.StatusCode, ex.Message);
         }
         catch (HttpRequestException ex)
         {
-            // Network-related errors (DNS failures, connection issues, etc.)
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+            TagList errorTags = new()
+            {
+                { "api.endpoint", endpointName },
+                { "error.type", "NetworkError" }
+            };
+            s_apiErrors.Add(1, errorTags);
+            s_apiDuration.Record(durationMs, errorTags);
+
+            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetExceptionTags(ex);
+
             return ApiErrors.NetworkError(ex.Message);
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException ex)
         {
-            // Timeout or cancellation
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+            TagList errorTags = new()
+            {
+                { "api.endpoint", endpointName },
+                { "error.type", "Timeout" }
+            };
+            s_apiErrors.Add(1, errorTags);
+            s_apiDuration.Record(durationMs, errorTags);
+
+            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetExceptionTags(ex);
+
             return ApiErrors.Timeout();
         }
         catch (Exception ex)
         {
-            // Unexpected errors
+            double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+
+            TagList errorTags = new()
+            {
+                { "api.endpoint", endpointName },
+                { "error.type", ex.GetErrorType() }
+            };
+            s_apiErrors.Add(1, errorTags);
+            s_apiDuration.Record(durationMs, errorTags);
+
+            activity?.SetTag("api.duration_ms", durationMs);
+            activity?.SetExceptionTags(ex);
+
             return ApiErrors.Unexpected(ex.Message);
         }
     }
