@@ -85,3 +85,146 @@ export function withTelemetry(eventName, fn) {
         }
     };
 }
+
+/**
+ * Tracks resource loading performance using the Resource Timing API
+ * @param {string} resourceType - Type of resource (script, stylesheet, image, etc.)
+ */
+export function trackResourcePerformance(resourceType = null) {
+    if (!window.performance || !window.performance.getEntriesByType) {
+        console.warn('[Telemetry] Performance API not available');
+        return;
+    }
+
+    const resources = performance.getEntriesByType('resource');
+
+    resources.forEach(resource => {
+        const url = new URL(resource.name);
+        const resourceName = url.pathname.split('/').pop();
+
+        // Filter by resource type if specified
+        if (resourceType && resource.initiatorType !== resourceType) {
+            return;
+        }
+
+        // Calculate timing metrics
+        const metrics = {
+            resource_name: resourceName,
+            resource_type: resource.initiatorType,
+            duration_ms: resource.duration,
+            transfer_size: resource.transferSize || 0,
+            dns_time: resource.domainLookupEnd - resource.domainLookupStart,
+            tcp_time: resource.connectEnd - resource.connectStart,
+            ttfb: resource.responseStart - resource.requestStart,
+            download_time: resource.responseEnd - resource.responseStart
+        };
+
+        trackEvent('resource.loaded', metrics);
+    });
+
+    // Clear resource timing buffer to avoid re-reporting
+    if (performance.clearResourceTimings) {
+        performance.clearResourceTimings();
+    }
+}
+
+/**
+ * Tracks page navigation performance using Navigation Timing API
+ */
+export function trackNavigationPerformance() {
+    if (!window.performance || !window.performance.timing) {
+        console.warn('[Telemetry] Navigation Timing API not available');
+        return;
+    }
+
+    // Wait for page to fully load
+    if (document.readyState !== 'complete') {
+        window.addEventListener('load', () => {
+            setTimeout(trackNavigationPerformance, 0);
+        });
+        return;
+    }
+
+    const timing = performance.timing;
+    const navigation = performance.navigation;
+
+    const metrics = {
+        navigation_type: navigation.type, // 0=navigate, 1=reload, 2=back_forward
+        redirect_count: navigation.redirectCount,
+        dns_time: timing.domainLookupEnd - timing.domainLookupStart,
+        tcp_time: timing.connectEnd - timing.connectStart,
+        request_time: timing.responseStart - timing.requestStart,
+        response_time: timing.responseEnd - timing.responseStart,
+        dom_processing_time: timing.domComplete - timing.domLoading,
+        dom_interactive_time: timing.domInteractive - timing.domLoading,
+        dom_content_loaded_time: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
+        load_event_time: timing.loadEventEnd - timing.loadEventStart,
+        total_load_time: timing.loadEventEnd - timing.navigationStart
+    };
+
+    trackEvent('page.performance', metrics);
+}
+
+/**
+ * Tracks Core Web Vitals (LCP, FID, CLS) using the web-vitals library pattern
+ * Note: This is a simplified version. Consider using the actual web-vitals library for production.
+ */
+export function trackWebVitals() {
+    // Largest Contentful Paint (LCP)
+    if ('PerformanceObserver' in window) {
+        try {
+            const lcpObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                const lastEntry = entries[entries.length - 1];
+                trackEvent('web_vitals.lcp', {
+                    value: lastEntry.renderTime || lastEntry.loadTime,
+                    element: lastEntry.element?.tagName || 'unknown'
+                });
+            });
+            lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+            // First Input Delay (FID)
+            const fidObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                entries.forEach(entry => {
+                    trackEvent('web_vitals.fid', {
+                        value: entry.processingStart - entry.startTime,
+                        event_type: entry.name
+                    });
+                });
+            });
+            fidObserver.observe({ entryTypes: ['first-input'] });
+
+            // Cumulative Layout Shift (CLS)
+            let clsValue = 0;
+            const clsObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (!entry.hadRecentInput) {
+                        clsValue += entry.value;
+                    }
+                }
+            });
+            clsObserver.observe({ entryTypes: ['layout-shift'] });
+
+            // Report CLS on page unload
+            window.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    trackEvent('web_vitals.cls', { value: clsValue });
+                }
+            });
+        } catch (error) {
+            console.warn('[Telemetry] Failed to track Web Vitals:', error);
+        }
+    }
+}
+
+/**
+ * Initialize all performance tracking
+ */
+export function initializePerformanceTracking() {
+    trackNavigationPerformance();
+    trackWebVitals();
+
+    // Track resources after a short delay to capture initial resources
+    setTimeout(() => trackResourcePerformance(), 1000);
+}
