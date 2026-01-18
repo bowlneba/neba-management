@@ -91,7 +91,7 @@ export function withTelemetry(eventName, fn) {
  * @param {string} resourceType - Type of resource (script, stylesheet, image, etc.)
  */
 export function trackResourcePerformance(resourceType = null) {
-    if (!window.performance || !window.performance.getEntriesByType) {
+    if (!globalThis.performance?.getEntriesByType) {
         console.warn('[Telemetry] Performance API not available');
         return;
     }
@@ -132,7 +132,7 @@ export function trackResourcePerformance(resourceType = null) {
  * Tracks page navigation performance using Navigation Timing API
  */
 export function trackNavigationPerformance() {
-    if (!window.performance || !window.performance.timing) {
+    if (!globalThis.performance?.getEntriesByType) {
         console.warn('[Telemetry] Navigation Timing API not available');
         return;
     }
@@ -145,21 +145,24 @@ export function trackNavigationPerformance() {
         return;
     }
 
-    const timing = performance.timing;
-    const navigation = performance.navigation;
+    const navigationEntries = performance.getEntriesByType('navigation')[0];
+    if (!navigationEntries) {
+        console.warn('[Telemetry] Navigation timing data not available');
+        return;
+    }
 
     const metrics = {
-        navigation_type: navigation.type, // 0=navigate, 1=reload, 2=back_forward
-        redirect_count: navigation.redirectCount,
-        dns_time: timing.domainLookupEnd - timing.domainLookupStart,
-        tcp_time: timing.connectEnd - timing.connectStart,
-        request_time: timing.responseStart - timing.requestStart,
-        response_time: timing.responseEnd - timing.responseStart,
-        dom_processing_time: timing.domComplete - timing.domLoading,
-        dom_interactive_time: timing.domInteractive - timing.domLoading,
-        dom_content_loaded_time: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
-        load_event_time: timing.loadEventEnd - timing.loadEventStart,
-        total_load_time: timing.loadEventEnd - timing.navigationStart
+        navigation_type: navigationEntries.type,
+        redirect_count: navigationEntries.redirectCount,
+        dns_time: navigationEntries.domainLookupEnd - navigationEntries.domainLookupStart,
+        tcp_time: navigationEntries.connectEnd - navigationEntries.connectStart,
+        request_time: navigationEntries.responseStart - navigationEntries.requestStart,
+        response_time: navigationEntries.responseEnd - navigationEntries.responseStart,
+        dom_processing_time: navigationEntries.domComplete - navigationEntries.domLoading,
+        dom_interactive_time: navigationEntries.domInteractive - navigationEntries.domLoading,
+        dom_content_loaded_time: navigationEntries.domContentLoadedEventEnd - navigationEntries.domContentLoadedEventStart,
+        load_event_time: navigationEntries.loadEventEnd - navigationEntries.loadEventStart,
+        total_load_time: navigationEntries.loadEventEnd - navigationEntries.navigationStart
     };
 
     trackEvent('page.performance', metrics);
@@ -171,11 +174,11 @@ export function trackNavigationPerformance() {
  */
 export function trackWebVitals() {
     // Largest Contentful Paint (LCP)
-    if ('PerformanceObserver' in window) {
+    if ('PerformanceObserver' in globalThis) {
         try {
             const lcpObserver = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
-                const lastEntry = entries[entries.length - 1];
+                const lastEntry = entries.at(-1);
                 trackEvent('web_vitals.lcp', {
                     value: lastEntry.renderTime || lastEntry.loadTime,
                     element: lastEntry.element?.tagName || 'unknown'
@@ -207,7 +210,7 @@ export function trackWebVitals() {
             clsObserver.observe({ entryTypes: ['layout-shift'] });
 
             // Report CLS on page unload
-            window.addEventListener('visibilitychange', () => {
+            globalThis.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
                     trackEvent('web_vitals.cls', { value: clsValue });
                 }
