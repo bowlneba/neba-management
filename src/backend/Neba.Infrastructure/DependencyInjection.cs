@@ -7,6 +7,7 @@ using Neba.Application;
 using Neba.Application.Messaging;
 using Neba.Infrastructure.BackgroundJobs;
 using Neba.Infrastructure.Caching;
+using Neba.Infrastructure.Database;
 using Neba.Infrastructure.Documents;
 using Neba.Infrastructure.Storage;
 
@@ -36,6 +37,8 @@ public static class InfrastructureDependencyInjection
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(cachingAssemblies);
+
+            services.AddDatabaseTelemetry();
 
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 

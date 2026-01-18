@@ -42,7 +42,8 @@ internal static class OpenTelemetryExtensions
                     .AddAspNetCoreInstrumentation(x => x
                         .Filter = context =>
                             !context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase) &&
-                            !context.Request.Path.StartsWithSegments("/alive", StringComparison.OrdinalIgnoreCase))
+                            !context.Request.Path.StartsWithSegments("/alive", StringComparison.OrdinalIgnoreCase) &&
+                            !context.Request.Path.StartsWithSegments("/background-jobs", StringComparison.OrdinalIgnoreCase))
                     .AddHttpClientInstrumentation());
 
             builder.AddOpenTelemetryExporters();
