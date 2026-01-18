@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Neba.ServiceDefaults.HealthChecks;
 
@@ -25,6 +26,11 @@ public static class ServiceDefaultsExtensions
             builder
                 .AddOpenTelemetry()
                 .AddDefaultHealthChecks();
+
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                http.AddStandardResilienceHandler();
+            });
 
             return builder;
         }
