@@ -38,7 +38,7 @@ public static class InfrastructureDependencyInjection
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(cachingAssemblies);
 
-            services.AddDatabaseTelemetry();
+            services.AddDatabaseTelemetry(config);
 
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
