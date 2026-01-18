@@ -1,6 +1,6 @@
 @using Neba.Domain.Identifiers
 @using Neba.Web.Server.Notifications
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 @* Modal for displaying detailed title information for a bowler *@
 
@@ -17,9 +17,9 @@
                 {
                     <div class="bowler-titles-header-stats flex items-center gap-2">
                         <span class="text-sm font-medium text-[var(--neba-blue-700)]">@_titles.Count Titles</span>
-                        @if (HallOfFame)
+                        @if (_hallOfFame)
                         {
-                            <img src="/neba-hof.jpg"
+                            <img src="/images/neba-hof.jpg"
                                  alt="Hall of Fame"
                                  class="w-8 h-8 object-contain"
                                  title="NEBA Hall of Fame" />
@@ -75,10 +75,10 @@
                             <p class="text-xs sm:text-sm text-[var(--neba-blue-700)] font-medium">Titles</p>
                             <p class="text-2xl sm:text-3xl font-bold text-[var(--neba-blue-900)] mt-1">@_titles.Count</p>
                         </div>
-                        @if (HallOfFame)
+                        @if (_hallOfFame)
                         {
                             <div class="flex items-center gap-2">
-                                <img src="/neba-hof.jpg"
+                                <img src="/images/neba-hof.jpg"
                                      alt="Hall of Fame"
                                      class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                                      title="NEBA Hall of Fame" />
@@ -167,6 +167,7 @@
     public bool HallOfFame { get; set; }
 
     private List<TitleViewModel> _titles = [];
+    private bool _hallOfFame = false;
     private string? _errorMessage;
     private bool _isLoading = false;
 
@@ -182,6 +183,7 @@
         if (!IsOpen)
         {
             _titles.Clear();
+            _hallOfFame = false;
             _errorMessage = null;
             _isLoading = false;
         }
@@ -196,7 +198,7 @@
         {
             var bowlerId = BowlerId ?? throw new InvalidOperationException("BowlerId is required to load titles.");
 
-            var result = await NebaApiService.GetBowlerTitlesAsync(bowlerId);
+            var result = await NebaWebsiteApiService.GetBowlerTitlesAsync(bowlerId);
 
             if (result.IsError)
             {
@@ -206,6 +208,7 @@
             }
 
             _titles = result.Value.Titles.ToList();
+            _hallOfFame = result.Value.HallOfFame;
         }
         catch (Exception ex)
         {

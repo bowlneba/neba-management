@@ -1,4 +1,13 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS base
+
+# Install tzdata for proper time synchronization to prevent JWT clock skew issues
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set timezone to UTC for consistent time handling
+ENV TZ=UTC
+
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -15,7 +24,7 @@ WORKDIR /src/src/frontend/Neba.Web.Server
 # Use npm install with --ignore-scripts to prevent execution of potentially malicious scripts
 RUN npm install --ignore-scripts && npm run build:css
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Build.props", "./"]

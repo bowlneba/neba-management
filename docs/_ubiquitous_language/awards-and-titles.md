@@ -163,37 +163,55 @@ A tournament is stat-eligible if:
 
 ## Titles Domain
 
-### Title
+### Title / Champion
 
-**Definition:** A title represents a championship win in a NEBA tournament. Titles are awarded to the winner(s) of each tournament event and serve as a permanent record of competitive achievement. Earning at least one title grants eligibility for the Tournament of Champions.
+**Definition:** Title and Champion are two perspectives of the same domain concept: a bowler winning a NEBA tournament championship.
 
-**Properties:**
+- **Title** (Bowler's perspective): A championship win earned by a bowler. When discussing what a bowler has accomplished, we say they "won a title" or "have X titles"
+- **Champion** (Tournament's perspective): The winner(s) of a tournament. When discussing who won a tournament, we say "the tournament champions" or "X is the champion"
 
-- `TitleId` - Unique identifier
-- `BowlerId` - The bowler who won the title
-- `TournamentType` - The specific tournament format that was won (Singles, Doubles, Trios, etc.)
-- `Month` - The month in which the title was won (value object providing multiple format options: numeric, full name, abbreviated)
-- `Year` - The year in which the title was won
+This is not an entity with separate records - it's a many-to-many relationship between Tournament and Bowler, stored in the `tournament_champions` join table. Each row represents one bowler winning one tournament.
+
+**Data Model:**
+
+The title/champion relationship is implemented as a many-to-many navigation:
+
+- `Tournament.Champions` - Collection of Bowler entities who won the tournament
+- `Bowler.Titles` - Collection of Tournament entities the bowler won
+
+**Domain Information:**
+
+From either perspective, the relationship captures:
+
+- Which bowler won which tournament
+- Tournament type (Singles, Doubles, Trios, etc.) - from the Tournament entity
+- Tournament date (StartDate, EndDate) - from the Tournament entity
+- Bowler name and identity - from the Bowler entity
 
 **Business Rules:**
 
-- **One title per winner per tournament:** Each tournament awards a title to its winner(s)
-- **Multiple titles possible:** A bowler can win the same tournament type multiple times in the same year (e.g., Singles in January and Singles again in March)
-- **Team tournament titles:** For team tournaments (Doubles, Trios), each team member receives their own individual Title record
-  - Example: A winning Doubles team results in two Title records, one for each bowler
-  - Example: A winning Trios team results in three Title records, one for each bowler
-- **Tournament of Champions eligibility:** Any bowler with at least one Title record is eligible to compete in the Tournament of Champions
-  - Note: The current system uses a `Champion` property on the Bowler entity to track this eligibility; this design may be revisited in future iterations
-- **Historical preservation:** Titles are permanent records and are never deleted, even for inactive tournament formats
+- **One championship per tournament entry:** Each tournament may have one or more champions depending on tournament type
+- **Multiple titles possible:** A bowler can win the same tournament type multiple times (e.g., Singles in January and Singles again in March)
+- **Team tournament champions:** For team tournaments (Doubles, Trios), each team member is recorded as a champion
+  - Example: A winning Doubles team has two entries in tournament_champions, one for each bowler
+  - Example: A winning Trios team has three entries in tournament_champions, one for each bowler
+- **Tournament of Champions eligibility:** Any bowler with at least one tournament championship is eligible to compete in the Tournament of Champions
+- **Historical preservation:** Championship records are permanent and are never deleted, even for inactive tournament formats
+- **Tournament invariants:** Tournament owns the business rules about champions (e.g., Singles tournaments have exactly one champion, Doubles tournaments have exactly two champions)
 
 **Tournament Frequency:**
 
 - Tournaments are held regularly throughout the year, with at least one tournament per month guaranteed
-- The Month property captures when the championship was won
+- Tournament dates capture when championships were won
 
-**Related Terms:** Bowler, TournamentType, Month, Tournament of Champions
+**Related Terms:** Bowler, Tournament, TournamentType
 
-**Code Reference:** `src/backend/Neba.Domain/Tournaments/Title.cs`
+**Code References:**
+
+- Domain: `src/backend/Neba.Website.Domain/Tournaments/Tournament.cs` (Tournament.Champions navigation)
+- Domain: `src/backend/Neba.Website.Domain/Bowlers/Bowler.cs` (Bowler.Titles navigation)
+- Infrastructure: `src/backend/Neba.Website.Infrastructure/Database/Configurations/TournamentConfiguration.cs` (many-to-many configuration)
+- DTOs: `src/backend/Neba.Website.Application/Tournaments/TitleDto.cs` (query results)
 
 ---
 

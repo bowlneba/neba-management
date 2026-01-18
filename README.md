@@ -22,7 +22,6 @@ Centralized platform for managing the New England Bowlers Association (NEBA). Ha
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=bowlneba_neba-management&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=bowlneba_neba-management)
 
-
 ## Architecture
 
 This application follows a **Modular Monolith** architecture with **Domain-Driven Design (DDD)** tactical patterns and **Clean Architecture** principles.
@@ -97,9 +96,11 @@ src/backend/
 - [x] Tournament Rules
 - [x] Hall of Fame (including HOF indicator for champions)
 - [x] Bowling Centers
-- [ ] Tournaments
-- [ ] News
+- [x] Tournaments
+- [ ] Tournament Documents
 - [ ] Sponsors
+- [ ] Tournament Detail (Individual Tournament Info)
+- [ ] News
 - [ ] About
 - [ ] Stats
 

@@ -7,6 +7,7 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
     <PublishReadyToRun>true</PublishReadyToRun>
     <UserSecretsId>6aeddec6-defa-4da5-ad0e-bca10a004887</UserSecretsId>
+    <NoWarn>$(NoWarn);S1075;CA5394</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="ErrorOr" />

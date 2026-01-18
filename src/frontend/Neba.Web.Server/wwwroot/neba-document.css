@@ -1,6 +1,13 @@
 /* NebaDocument Component - Reusable Document with Table of Contents
  * Leverages NEBA theme variables from neba_theme.css
  * Styles common HTML elements from Google Docs exports and other document sources
+ *
+ * IMPORTANT: This file MUST remain in wwwroot/ as a global stylesheet
+ * DO NOT convert to NebaDocument.razor.css with CSS isolation because:
+ * - Component renders dynamic HTML from MarkupString (Markdown/HTML files)
+ * - JavaScript dynamically injects TOC and slide-over content
+ * - Blazor CSS isolation (::deep) doesn't reliably style dynamic content
+ * - Requires global selectors to handle all content variations
  */
 
 /* Layout Container */
@@ -1035,7 +1042,7 @@
   color: var(--neba-gray-600);
   padding: 0.25rem 0 0 0;
   margin: 0;
-  z-index: 9999; /* ensure the text sits above surrounding elements */
+  z-index: 10; /* ensure the text sits above surrounding elements but below modals */
 }
 
 /* Last Updated Header (Slide-out) */

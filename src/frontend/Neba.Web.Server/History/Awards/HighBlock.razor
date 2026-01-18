@@ -1,6 +1,6 @@
 @page "/history/high-block"
 @using Neba.Web.Server.Notifications
-@inject NebaApiService ApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>High Block Award - NEBA</PageTitle>
@@ -123,7 +123,7 @@
     {
         try
         {
-            var result = await ApiService.GetHighBlockAwardsAsync();
+            var result = await NebaWebsiteApiService.GetHighBlockAwardsAsync();
 
             if (result.IsError)
             {

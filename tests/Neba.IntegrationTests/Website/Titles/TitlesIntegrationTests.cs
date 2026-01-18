@@ -6,6 +6,8 @@ using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Titles;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.IntegrationTests.Website.Titles;
 
@@ -21,13 +23,27 @@ public sealed class TitlesIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
+                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+                    await context.Tournaments.AddRangeAsync(seedTournaments);
+                    await context.SaveChangesAsync();
+
                     IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+
+                    // Assign bowlers as champions of tournaments
+                    TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
                     await context.SaveChangesAsync();
                 });
 
         int totalTitles = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking().SelectMany(b => b.Titles).CountAsync());
+            => await context.Tournaments
+                .SelectMany(t => t.Champions)
+                .CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 
@@ -52,13 +68,29 @@ public sealed class TitlesIntegrationTests
         // Arrange
         await SeedAsync(async context =>
                 {
+                    IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+                    await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+                    await context.SaveChangesAsync();
+
+                    IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+                    await context.Tournaments.AddRangeAsync(seedTournaments);
+                    await context.SaveChangesAsync();
+
                     IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100);
                     context.Bowlers.AddRange(seedBowlers);
+                    await context.SaveChangesAsync();
+
+                    // Assign bowlers as champions of tournaments
+                    TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
                     await context.SaveChangesAsync();
                 });
 
         int totalBowlersWithTitles = await ExecuteAsync(async context
-            => await context.Bowlers.AsNoTracking().Where(b => b.Titles.Count > 0).CountAsync());
+            => await context.Tournaments
+                .SelectMany(t => t.Champions)
+                .Select(b => b.Id)
+                .Distinct()
+                .CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

@@ -20,6 +20,16 @@ namespace Neba.Infrastructure.Database.Configurations;
 public static class ShadowIdConfiguration
 {
     /// <summary>
+    /// The default CLR property name for the shadow identifier.
+    /// </summary>
+    public const string DefaultPropertyName = "db_id";
+
+    /// <summary>
+    /// The default database column name for the shadow identifier.
+    /// </summary>
+    public const string DefaultColumnName = "id";
+
+    /// <summary>
     /// Configures a shadow integer identity property on the entity and marks it as the primary key.
     /// </summary>
     /// <typeparam name="T">The entity type being configured.</typeparam>
@@ -28,8 +38,8 @@ public static class ShadowIdConfiguration
     /// <param name="columnName">The database column name to map the shadow property to (default: "id").</param>
     public static void ConfigureShadowId<T>(
         this EntityTypeBuilder<T> builder,
-        string propertyName = "db_id",
-        string columnName = "id")
+        string propertyName = DefaultPropertyName,
+        string columnName = DefaultColumnName)
         where T : class
     {
         ArgumentNullException.ThrowIfNull(builder);

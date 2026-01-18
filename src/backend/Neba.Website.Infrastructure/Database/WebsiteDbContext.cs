@@ -19,8 +19,8 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
     public DbSet<BowlingCenter> BowlingCenters
         => Set<BowlingCenter>();
 
-    public DbSet<Title> Titles
-        => Set<Title>();
+    public DbSet<Tournament> Tournaments
+        => Set<Tournament>();
 
     public DbSet<SeasonAward> SeasonAwards
         => Set<SeasonAward>();
@@ -34,7 +34,7 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
 
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
         modelBuilder.ApplyConfiguration(new BowlingCenterConfiguration());
-        modelBuilder.ApplyConfiguration(new TitleConfiguration());
+        modelBuilder.ApplyConfiguration(new TournamentConfiguration());
         modelBuilder.ApplyConfiguration(new SeasonAwardConfiguration());
         modelBuilder.ApplyConfiguration(new HallOfFameInductionConfiguration());
     }

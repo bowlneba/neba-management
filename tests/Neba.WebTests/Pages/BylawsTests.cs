@@ -14,14 +14,14 @@ namespace Neba.WebTests.Pages;
 
 public sealed class BylawsTests : TestContextWrapper
 {
-    private readonly Mock<INebaApi> _mockNebaApi;
-    private readonly NebaApiService _nebaApiService;
+    private readonly Mock<INebaWebsiteApi> _mockNebaApi;
+    private readonly NebaWebsiteApiService _nebaWebsiteApiService;
 
     public BylawsTests()
     {
-        _mockNebaApi = new Mock<INebaApi>();
-        _nebaApiService = new NebaApiService(_mockNebaApi.Object);
-        TestContext.Services.AddSingleton(_nebaApiService);
+        _mockNebaApi = new Mock<INebaWebsiteApi>();
+        _nebaWebsiteApiService = new NebaWebsiteApiService(_mockNebaApi.Object);
+        TestContext.Services.AddSingleton(_nebaWebsiteApiService);
     }
 
     [Fact]

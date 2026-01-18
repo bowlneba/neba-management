@@ -39,7 +39,7 @@ internal static class DocumentsExtensions
                 return settings;
             });
 
-            services.AddSingleton<DocumentMapper>();
+            services.AddSingleton<HtmlProcessor>();
             services.AddSingleton<IDocumentsService, GoogleDocsService>();
 
             return services;

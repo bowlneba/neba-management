@@ -29,12 +29,15 @@ public static class BowlerOfTheYearByYearViewModelFactory
         int? seed = null)
     {
         Faker<BowlerOfTheYearByYearViewModel> faker = new Bogus.Faker<BowlerOfTheYearByYearViewModel>()
-            .RuleFor(x => x.Season, f => f.Date.Past(50).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(x => x.WinnersByCategory, f => new Dictionary<string, string>
+            .CustomInstantiator(f => new BowlerOfTheYearByYearViewModel
             {
-                { "Overall", f.Name.FullName() },
-                { "Senior", f.Name.FullName() },
-                { "Junior", f.Name.FullName() }
+                Season = f.Date.Past(50).Year.ToString(CultureInfo.CurrentCulture),
+                WinnersByCategory = new Dictionary<string, string>
+                {
+                    { "Overall", f.Name.FullName() },
+                    { "Senior", f.Name.FullName() },
+                    { "Junior", f.Name.FullName() }
+                }
             });
 
         if (seed.HasValue)

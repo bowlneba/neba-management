@@ -35,20 +35,34 @@ public sealed class Bowler
     internal Bowler()
         : base(BowlerId.New())
     {
-        Titles = [];
         SeasonAwards = [];
         HallOfFameInductions = [];
     }
 
     /// <summary>
-    /// Gets the read-only collection of championship titles won by the bowler.
-    /// </summary>
-    internal IReadOnlyCollection<Title> Titles { get; init; }
-
-    /// <summary>
-    /// Gets the read-only collection of season awards earned by the bowler (BOTY, High Average, High Block).
+    /// Gets the collection of season awards earned by the bowler (BOTY, High Average, High Block).
+    /// This is an owned collection that is part of the Bowler aggregate's state and should be
+    /// mutated only through domain methods that enforce business rules.
     /// </summary>
     internal IReadOnlyCollection<SeasonAward> SeasonAwards { get; init; }
 
+    /// <summary>
+    /// Gets the collection of hall of fame inductions for this bowler.
+    /// This is an owned collection that is part of the Bowler aggregate's state and should be
+    /// mutated only through domain methods that enforce business rules.
+    /// </summary>
     internal IReadOnlyCollection<HallOfFameInduction> HallOfFameInductions { get; init; }
+
+    private readonly List<Tournament> _titles = [];
+
+    /// <summary>
+    /// Internal navigation property to tournaments where this bowler is a champion.
+    /// This is a navigation property for querying only - NOT part of the Bowler aggregate's invariants.
+    /// Tournaments own the business rules about champions; this is just for EF Core many-to-many navigation.
+    /// </summary>
+    internal IReadOnlyCollection<Tournament> Titles
+    {
+        get => _titles;
+        init => _titles = value?.ToList() ?? [];
+    }
 }

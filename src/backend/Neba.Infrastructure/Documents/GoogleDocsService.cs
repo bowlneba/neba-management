@@ -1,39 +1,42 @@
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Docs.v1;
-using Google.Apis.Docs.v1.Data;
+using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Neba.Application.Documents;
 
 namespace Neba.Infrastructure.Documents;
 
-internal sealed class GoogleDocsService(DocumentMapper documentMapper, GoogleDocsSettings settings)
+internal sealed class GoogleDocsService(HtmlProcessor htmlProcessor, GoogleDocsSettings settings)
     : IDocumentsService
 {
-    private readonly GoogleDocsCredentials _credentials = settings.Credentials;
     private readonly IReadOnlyCollection<GoogleDocument> _documents = settings.Documents;
+    private readonly Lazy<GoogleCredential> _lazyCredential = new(() =>
+    {
+        string credentialJson = System.Text.Json.JsonSerializer.Serialize(settings.Credentials);
+        ServiceAccountCredential serviceAccountCredential = CredentialFactory.FromJson<ServiceAccountCredential>(credentialJson);
+        return serviceAccountCredential.ToGoogleCredential()
+            .CreateScoped(DriveService.Scope.DriveReadonly);
+    });
 
     public async Task<string> GetDocumentAsHtmlAsync(string documentName, CancellationToken cancellationToken)
     {
-        GoogleCredential googleCredential = null!;
-
-        string credentialJson = System.Text.Json.JsonSerializer.Serialize(_credentials);
-
-        ServiceAccountCredential serviceAccountCredential = CredentialFactory.FromJson<ServiceAccountCredential>(credentialJson);
-        googleCredential = serviceAccountCredential.ToGoogleCredential()
-            .CreateScoped(DocsService.Scope.DocumentsReadonly);
-
-        using var service = new DocsService(new BaseClientService.Initializer()
+        using var service = new DriveService(new BaseClientService.Initializer()
         {
-            HttpClientInitializer = googleCredential,
+            HttpClientInitializer = _lazyCredential.Value,
             ApplicationName = "Neba Api"
         });
 
         string documentId = _documents.SingleOrDefault(doc => doc.Name == documentName)?.DocumentId
             ?? throw new InvalidOperationException($"Google Document with name '{documentName}' not found in configuration.");
 
-        DocumentsResource.GetRequest request = service.Documents.Get(documentId);
-        Document document = await request.ExecuteAsync(cancellationToken);
+        // Export the document as HTML
+        FilesResource.ExportRequest request = service.Files.Export(documentId, "text/html");
+        await using var stream = new MemoryStream();
+        await request.DownloadAsync(stream, cancellationToken);
 
-        return documentMapper.ConvertToHtml(document);
+        // Convert the stream to a string
+        string rawHtml = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+
+        // Post-process the HTML to replace Google Docs links and clean up
+        return htmlProcessor.ProcessExportedHtml(rawHtml);
     }
 }

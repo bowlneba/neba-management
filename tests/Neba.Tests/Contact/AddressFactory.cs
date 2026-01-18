@@ -41,18 +41,23 @@ public static class AddressFactory
     public static Address Bogus(int? seed = null)
     {
         Faker<Address> faker = new Bogus.Faker<Address>()
-            .RuleFor(a => a.Street, f => f.Address.StreetAddress())
-            .RuleFor(a => a.Unit, f => f.Random.Bool(0.3f) ? f.Address.SecondaryAddress() : null)
-            .RuleFor(a => a.City, f => f.Address.City())
-            .RuleFor(a => a.Region, f => f.Address.StateAbbr())
-            .RuleFor(a => a.Country, _ => Country.UnitedStates)
-            .RuleFor(a => a.PostalCode, f => f.Address.ZipCode())
-            .RuleFor(a => a.Coordinates, f =>
+            .CustomInstantiator(faker =>
             {
-                double lat = f.Address.Latitude();
-                double lon = f.Address.Longitude();
+                double lat = faker.Address.Latitude();
+                double lon = faker.Address.Longitude();
                 ErrorOr<Coordinates> coordResult = Coordinates.Create(lat, lon);
-                return coordResult.IsError ? null : coordResult.Value;
+                Coordinates? coordinates = coordResult.IsError ? null : coordResult.Value;
+
+                return new Address()
+                {
+                    Street = faker.Address.StreetAddress(),
+                    Unit = faker.Random.Bool(0.3f) ? faker.Address.SecondaryAddress() : null,
+                    City = faker.Address.City(),
+                    Region = faker.Address.StateAbbr(),
+                    Country = Country.UnitedStates,
+                    PostalCode = faker.Address.ZipCode(),
+                    Coordinates = coordinates
+                };
             });
 
         if (seed.HasValue)

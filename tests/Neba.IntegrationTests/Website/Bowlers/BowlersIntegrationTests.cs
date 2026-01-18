@@ -6,6 +6,8 @@ using Neba.IntegrationTests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.IntegrationTests.Website.Bowlers;
 
@@ -23,12 +25,24 @@ public sealed class BowlersIntegrationTests
 
         await SeedAsync(async context =>
         {
-            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
-
-            seedBowlerId = seedBowlers.First(bowler => bowler.Titles.Count > 0).Id;
-
-            context.Bowlers.AddRange(seedBowlers);
+            IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+            await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
             await context.SaveChangesAsync();
+
+            IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(50, seedBowlingCenters, 1980);
+            await context.Tournaments.AddRangeAsync(seedTournaments);
+            await context.SaveChangesAsync();
+
+            IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
+            await context.Bowlers.AddRangeAsync(seedBowlers);
+            await context.SaveChangesAsync();
+
+            // Assign bowlers as champions of tournaments
+            TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
+            await context.SaveChangesAsync();
+
+            // Pick a bowler that has at least one title
+            seedBowlerId = seedTournaments.First(t => t.ChampionIds.Count > 0).ChampionIds.First();
         });
 
         using HttpClient httpClient = Factory.CreateClient();
@@ -52,8 +66,20 @@ public sealed class BowlersIntegrationTests
         // Arrange
         await SeedAsync(async context =>
         {
+            IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+            await context.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+            await context.SaveChangesAsync();
+
+            IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(50, seedBowlingCenters, 1980);
+            await context.Tournaments.AddRangeAsync(seedTournaments);
+            await context.SaveChangesAsync();
+
             IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(50, 1980);
             context.Bowlers.AddRange(seedBowlers);
+            await context.SaveChangesAsync();
+
+            // Assign bowlers as champions of tournaments
+            TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
             await context.SaveChangesAsync();
         });
 

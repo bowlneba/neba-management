@@ -33,11 +33,14 @@ public static class TitleResponseFactory
         int? seed = null)
     {
         Faker<TitleResponse> faker = new Faker<TitleResponse>()
-            .RuleFor(b => b.BowlerId, _ => BowlerId.New())
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
-            .RuleFor(b => b.TournamentMonth, f => f.PickRandom(Month.List.ToArray()))
-            .RuleFor(b => b.TournamentYear, f => f.Random.Int(2000, 2025))
-            .RuleFor(b => b.TournamentType, f => f.Lorem.Word());
+            .CustomInstantiator(f => new TitleResponse
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = f.Name.FullName(),
+                TournamentMonth = f.PickRandom(Month.List.ToArray()),
+                TournamentYear = f.Random.Int(2000, 2025),
+                TournamentType = f.Lorem.Word()
+            });
 
         if (seed.HasValue)
         {

@@ -34,7 +34,7 @@ public static class HallOfFameInductionFactory
         HashSet<int> usedYears = [];
 
         Bogus.Faker<HallOfFameInduction> faker = new Bogus.Faker<HallOfFameInduction>()
-            .RuleFor(hof => hof.Year, f =>
+            .CustomInstantiator(f =>
             {
                 // Generate unique years for this bowler to satisfy (Year, bowler_id) alternate key
                 int year;
@@ -46,10 +46,14 @@ public static class HallOfFameInductionFactory
                 } while (usedYears.Contains(year) && attempts < 100);
 
                 usedYears.Add(year);
-                return year;
-            })
-            .RuleFor(hof => hof.Photo, f => StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f))
-            .RuleFor(hof => hof.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList());
+
+                return new HallOfFameInduction
+                {
+                    Year = year,
+                    Photo = StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f),
+                    Categories = f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList()
+                };
+            });
 
         if (seed.HasValue)
         {

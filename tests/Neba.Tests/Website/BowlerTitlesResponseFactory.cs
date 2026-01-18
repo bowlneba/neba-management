@@ -14,9 +14,13 @@ public static class BowlerTitlesResponseFactory
         int? seed = null)
     {
         Faker<BowlerTitlesResponse> faker = new Faker<BowlerTitlesResponse>()
-            .RuleFor(response => response.BowlerId, _ => BowlerId.New())
-            .RuleFor(response => response.BowlerName, f => f.Name.FullName())
-            .RuleFor(response => response.Titles, f => BowlerTitleResponseFactory.Bogus(f.Random.Int(1, 10), seed));
+            .CustomInstantiator(f => new BowlerTitlesResponse
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = f.Name.FullName(),
+                HallOfFame = f.Random.Bool(),
+                Titles = BowlerTitleResponseFactory.Bogus(f.Random.Int(1, 10), seed)
+            });
 
         if (seed.HasValue)
         {

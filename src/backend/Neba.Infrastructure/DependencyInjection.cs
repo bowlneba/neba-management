@@ -3,6 +3,7 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Application;
 using Neba.Application.Messaging;
 using Neba.Infrastructure.BackgroundJobs;
 using Neba.Infrastructure.Caching;
@@ -35,6 +36,8 @@ public static class InfrastructureDependencyInjection
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(cachingAssemblies);
+
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             return services
                 .AddCaching(config, cachingAssemblies)

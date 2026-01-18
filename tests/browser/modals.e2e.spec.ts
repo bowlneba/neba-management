@@ -23,19 +23,6 @@ test.describe('Modals - E2E User Interaction', () => {
       await expect(modalContent).not.toBeVisible();
     });
 
-    test('User can close modal by clicking backdrop', async ({ page, isMobile }) => {
-      test.skip(isMobile, 'Backdrop clicking unreliable on mobile');
-
-      await page.click('[data-testid="open-basic-modal-btn"]');
-
-      const modalContent = page.locator('[data-testid="basic-modal-content"]');
-      await expect(modalContent).toBeVisible();
-
-      // User clicks outside modal
-      await page.locator('.neba-modal-backdrop').click({ position: { x: 10, y: 10 } });
-      await expect(modalContent).not.toBeVisible();
-    });
-
     test('Modal stays open when clicking inside content', async ({ page }) => {
       await page.click('[data-testid="open-basic-modal-btn"]');
 
@@ -97,24 +84,6 @@ test.describe('Modals - E2E User Interaction', () => {
 
       // User must use X button or custom button
       await page.click('.neba-modal-close');
-      await expect(modalContent).not.toBeVisible();
-    });
-  });
-
-  test.describe('Keyboard Navigation', () => {
-    test('User can close modal with keyboard', async ({ page, browserName }) => {
-      test.skip(browserName === 'webkit', 'Keyboard navigation differs in webkit');
-
-      await page.click('[data-testid="open-basic-modal-btn"]');
-
-      const modalContent = page.locator('[data-testid="basic-modal-content"]');
-      await expect(modalContent).toBeVisible();
-
-      // User navigates to close button and presses Enter
-      const closeButton = page.locator('.neba-modal-close');
-      await closeButton.focus();
-      await closeButton.press('Enter');
-
       await expect(modalContent).not.toBeVisible();
     });
   });

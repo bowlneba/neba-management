@@ -25,10 +25,16 @@ public static class StoredFileFactory
         int? seed = null)
     {
         Bogus.Faker<StoredFile> faker = new Bogus.Faker<StoredFile>()
-            .RuleFor(f => f.Container, f => f.System.DirectoryPath())
-            .RuleFor(f => f.Path, f => f.System.FileName())
-            .RuleFor(f => f.ContentType, f => f.System.MimeType())
-            .RuleFor(f => f.SizeInBytes, f => f.Random.Long(1, 10_000_000));
+            .CustomInstantiator(faker =>
+            {
+                return new StoredFile()
+                {
+                    Container = faker.System.DirectoryPath(),
+                    Path = faker.System.FileName(),
+                    ContentType = faker.System.MimeType(),
+                    SizeInBytes = faker.Random.Long(1, 10_000_000)
+                };
+            });
 
         if (seed.HasValue)
         {

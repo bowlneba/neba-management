@@ -14,38 +14,38 @@ public sealed partial record Address
     /// <summary>
     /// Gets the street address (e.g., house number and street name).
     /// </summary>
-    public string Street { get; internal init; } = string.Empty;
+    public string Street { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the unit, apartment, or suite number (optional).
     /// </summary>
-    public string? Unit { get; internal init; }
+    public string? Unit { get; init; }
 
     /// <summary>
     /// Gets the city or locality.
     /// </summary>
-    public string City { get; internal init; } = string.Empty;
+    public string City { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the region, state, or province.
     /// </summary>
-    public string Region { get; internal init; } = string.Empty;
+    public string Region { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the country for the address.
     /// </summary>
     [JsonConverter(typeof(SmartEnumValueConverter<Country, string>))]
-    public Country Country { get; internal init; } = Country.s_default;
+    public Country Country { get; init; } = Country.s_default;
 
     /// <summary>
     /// Gets the postal or ZIP code.
     /// </summary>
-    public string PostalCode { get; internal init; } = string.Empty;
+    public string PostalCode { get; init; } = string.Empty;
 
     /// <summary>
     /// Gets the geographic coordinates (latitude/longitude) for the address, if available.
     /// </summary>
-    public Coordinates? Coordinates { get; internal init; }
+    public Coordinates? Coordinates { get; init; }
 
     /// <summary>
     /// Gets an empty <see cref="Address"/> instance.

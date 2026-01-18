@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Neba.Application.Messaging;
 using Neba.Website.Application.Documents.Bylaws;
+using Neba.Website.Application.Tournaments;
+using Neba.Website.Application.Tournaments.ListTournaments;
 using Neba.Website.Application.Tournaments.TournamentRules;
 
 namespace Neba.Website.Application;
@@ -50,6 +52,8 @@ public static class WebsiteApplicationDependencyInjection
             services.AddScoped<ICommandHandler<RefreshTournamentRulesCacheCommand, string>, RefreshTournamentRulesCacheCommandHandler>();
             services.AddScoped<ITournamentRulesSyncBackgroundJob, TournamentRulesSyncBackgroundJob>();
             services.AddScoped<TournamentRulesSyncBackgroundJob>();
+
+            services.AddScoped<IQueryHandler<ListFutureTournamentsQuery, IReadOnlyCollection<TournamentSummaryDto>>, ListFutureTournamentsQueryHandler>();
 
             return services;
         }

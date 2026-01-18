@@ -8,28 +8,29 @@ internal sealed class WebsiteTitleQueryRepository(WebsiteDbContext dbContext)
 {
 
     public async Task<IReadOnlyCollection<BowlerTitleDto>> ListTitlesAsync(CancellationToken cancellationToken)
-        => await dbContext.Titles
+        => await dbContext.Tournaments
             .AsNoTracking()
-            .Select(title => new BowlerTitleDto
-            {
-                BowlerId = title.Bowler.Id,
-                BowlerName = title.Bowler.Name,
-                TournamentMonth = title.Month,
-                TournamentYear = title.Year,
-                TournamentType = title.TournamentType
-            })
+            .SelectMany(tournament => tournament.Champions,
+                (tournament, bowler) => new BowlerTitleDto
+                {
+                    BowlerId = bowler.Id,
+                    BowlerName = bowler.Name,
+                    TournamentDate = tournament.EndDate,
+                    TournamentType = tournament.TournamentType
+                })
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<BowlerTitleSummaryDto>> ListTitleSummariesAsync(CancellationToken cancellationToken)
-        => await dbContext.Titles
+        => await dbContext.Tournaments
             .AsNoTracking()
-            .GroupBy(title => title.Bowler.Id)
+            .SelectMany(tournament => tournament.Champions)
+            .GroupBy(bowler => bowler.Id)
             .Select(group => new BowlerTitleSummaryDto
             {
                 BowlerId = group.Key,
-                BowlerName = group.First().Bowler.Name,
+                BowlerName = group.First().Name,
                 TitleCount = group.Count(),
-                HallOfFame = group.First().Bowler.HallOfFameInductions.Any()
+                HallOfFame = group.First().HallOfFameInductions.Any()
             })
             .ToListAsync(cancellationToken);
 }

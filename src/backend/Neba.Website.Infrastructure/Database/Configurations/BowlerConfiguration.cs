@@ -21,14 +21,12 @@ internal sealed class BowlerConfiguration
             .Property(bowler => bowler.Id)
             .IsUlid<BowlerId, BowlerId.EfCoreValueConverter>();
 
-        builder.HasIndex(bowler => bowler.Id)
-            .IsUnique();
+        builder.HasAlternateKey(bowler => bowler.Id);
 
         builder
             .OwnsOne(bowler => bowler.Name, nameBuilder =>
             {
-                nameBuilder
-                    .HasIndex(name => new { name.LastName, name.FirstName });
+                nameBuilder.HasIndex(name => new { name.LastName, name.FirstName });
 
                 nameBuilder
                     .Property(name => name.FirstName)
@@ -63,19 +61,14 @@ internal sealed class BowlerConfiguration
 
         builder.HasIndex(bowler => bowler.WebsiteId)
             .IsUnique()
-            .HasFilter("\"website_id\" IS NOT NULL");
+            .AreNullsDistinct();
 
         builder.Property(bowler => bowler.ApplicationId)
             .ValueGeneratedNever();
 
         builder.HasIndex(bowler => bowler.ApplicationId)
             .IsUnique()
-            .HasFilter("\"application_id\" IS NOT NULL");
-
-        builder.HasMany(bowler => bowler.Titles)
-            .WithOne(title => title.Bowler)
-            .HasForeignKey(ForeignKeyName)
-            .OnDelete(DeleteBehavior.Cascade);
+            .AreNullsDistinct();
 
         builder.HasMany(bowler => bowler.SeasonAwards)
             .WithOne(seasonAward => seasonAward.Bowler)
@@ -86,5 +79,7 @@ internal sealed class BowlerConfiguration
             .WithOne(induction => induction.Bowler)
             .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Titles navigation is configured from Tournament side as many-to-many
     }
 }

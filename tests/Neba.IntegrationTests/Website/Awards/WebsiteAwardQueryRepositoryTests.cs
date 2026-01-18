@@ -7,6 +7,8 @@ using Neba.Website.Application.Awards.HallOfFame;
 using Neba.Website.Application.Awards.HighAverage;
 using Neba.Website.Application.Awards.HighBlock;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
+using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
 

@@ -36,12 +36,15 @@ public static class BowlerTitleViewModelFactory
         int? seed = null)
     {
         Faker<BowlerTitleViewModel> faker = new Faker<BowlerTitleViewModel>()
-            .RuleFor(vm => vm.BowlerId, _ => BowlerId.New())
-            .RuleFor(vm => vm.BowlerName, f => f.Name.FullName())
-            .RuleFor(vm => vm.TournamentMonth, f => f.Random.Int(1, 12))
-            .RuleFor(vm => vm.TournamentYear, f => f.Date.Past(70).Year)
-            .RuleFor(vm => vm.TournamentType, f => f.PickRandom("Singles", "Doubles", "Team", "All Events"))
-            .RuleFor(vm => vm.HallOfFame, f => f.Random.Bool(0.1f));
+            .CustomInstantiator(f => new BowlerTitleViewModel
+            {
+                BowlerId = BowlerId.New(),
+                BowlerName = f.Name.FullName(),
+                TournamentMonth = f.Random.Int(1, 12),
+                TournamentYear = f.Date.Past(70).Year,
+                TournamentType = f.PickRandom("Singles", "Doubles", "Team", "All Events"),
+                HallOfFame = f.Random.Bool(0.1f)
+            });
 
         if (seed.HasValue)
         {

@@ -35,11 +35,14 @@ public static class BowlerOfTheYearAwardDtoFactory
         int? seed = null)
     {
         Faker<BowlerOfTheYearAwardDto> faker = new Faker<BowlerOfTheYearAwardDto>()
-            .RuleFor(boy => boy.Id, _ => SeasonAwardId.New())
-            .RuleFor(boy => boy.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(boy => boy.Category, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()))
-            .RuleFor(boy => boy.BowlerId, _ => BowlerId.New());
+            .CustomInstantiator(f => new BowlerOfTheYearAwardDto
+            {
+                Id = SeasonAwardId.New(),
+                BowlerName = NameFactory.Bogus(1).Single(),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture),
+                Category = f.PickRandom(BowlerOfTheYearCategory.List.ToArray()),
+                BowlerId = BowlerId.New()
+            });
 
         if (seed.HasValue)
         {

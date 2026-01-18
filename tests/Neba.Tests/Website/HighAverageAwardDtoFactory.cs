@@ -18,12 +18,15 @@ public static class HighAverageAwardDtoFactory
         int? seed = null)
     {
         Faker<HighAverageAwardDto> faker = new Faker<HighAverageAwardDto>()
-            .RuleFor(x => x.Id, _ => SeasonAwardId.New())
-            .RuleFor(x => x.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(x => x.Average, f => f.Random.Decimal(190.0m, 220.0m))
-            .RuleFor(x => x.Games, f => f.Random.Int(8, 12))
-            .RuleFor(x => x.Tournaments, f => f.Random.Int(3, 7))
-            .RuleFor(x => x.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture));
+            .CustomInstantiator(f => new HighAverageAwardDto
+            {
+                Id = SeasonAwardId.New(),
+                BowlerName = NameFactory.Bogus(1).Single(),
+                Average = f.Random.Decimal(190.0m, 220.0m),
+                Games = f.Random.Int(8, 12),
+                Tournaments = f.Random.Int(3, 7),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture)
+            });
 
         if (seed is not null)
         {

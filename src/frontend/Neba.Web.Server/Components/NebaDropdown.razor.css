@@ -1,0 +1,242 @@
+/* Container */
+.neba-dropdown-container {
+    position: relative;
+    width: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Label */
+.neba-dropdown-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.neba-dropdown-required {
+    color: #DC2626;
+    margin-left: 0.25rem;
+}
+
+/* Wrapper */
+.neba-dropdown-wrapper {
+    position: relative;
+}
+
+.neba-dropdown-wrapper.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Input Container */
+.neba-dropdown-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 2px solid #D1D5DB;
+    border-radius: 0.5rem;
+    padding: 0.625rem 1rem;
+    min-height: 44px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.neba-dropdown-input-container:hover:not(.disabled) {
+    border-color: #9CA3AF;
+}
+
+.neba-dropdown-input-container:focus-within {
+    outline: none;
+    border-color: #0047AB;
+    box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.1);
+}
+
+.neba-dropdown-wrapper.disabled .neba-dropdown-input-container {
+    background-color: #F3F4F6;
+    cursor: not-allowed;
+}
+
+.neba-dropdown-wrapper.open .neba-dropdown-input-container {
+    border-color: #0047AB;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Search Input */
+.neba-dropdown-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: #111827;
+    background: transparent;
+    padding: 0;
+    width: 100%;
+}
+
+.neba-dropdown-search-input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Display Value */
+.neba-dropdown-display-value {
+    flex: 1;
+    font-size: 1rem;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.neba-dropdown-placeholder {
+    color: #9CA3AF;
+}
+
+/* Dropdown Icon */
+.neba-dropdown-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    color: #6B7280;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.neba-dropdown-icon.open {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Panel */
+.neba-dropdown-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 2px solid #0047AB;
+    border-top: none;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Scrollbar Styling */
+.neba-dropdown-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.neba-dropdown-panel::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.neba-dropdown-panel::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 4px;
+}
+
+.neba-dropdown-panel::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
+}
+
+/* Dropdown Items */
+.neba-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #111827;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    min-height: 44px;
+}
+
+.neba-dropdown-item:hover,
+.neba-dropdown-item.highlighted {
+    background-color: #F3F4F6;
+}
+
+.neba-dropdown-item.selected {
+    background-color: #EFF6FF;
+    color: #0047AB;
+    font-weight: 500;
+}
+
+.neba-dropdown-item.selected:hover,
+.neba-dropdown-item.selected.highlighted {
+    background-color: #DBEAFE;
+}
+
+/* Checkmark */
+.neba-dropdown-checkmark {
+    margin-left: 0.5rem;
+    color: #0047AB;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* No Results */
+.neba-dropdown-no-results {
+    padding: 1rem;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.875rem;
+}
+
+/* Focus Visible for Keyboard Navigation */
+.neba-dropdown-input-container:focus-visible {
+    outline: 2px solid #0047AB;
+    outline-offset: 2px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .neba-dropdown-label {
+        font-size: 0.8125rem;
+    }
+
+    .neba-dropdown-input-container {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .neba-dropdown-search-input,
+    .neba-dropdown-display-value {
+        font-size: 0.9375rem;
+    }
+
+    .neba-dropdown-item {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9375rem;
+    }
+
+    .neba-dropdown-panel {
+        max-height: 250px;
+    }
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+    .neba-dropdown-item {
+        min-height: 48px;
+    }
+
+    .neba-dropdown-input-container {
+        min-height: 48px;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .neba-dropdown-input-container,
+    .neba-dropdown-icon,
+    .neba-dropdown-item {
+        transition: none;
+    }
+}

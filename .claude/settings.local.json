@@ -145,7 +145,14 @@
       "Bash(git -C /Users/kippermand/Projects/bowlneba/neba-management remote:*)",
       "Bash(./tests/Neba.UnitTests/bin/Debug/net10.0/Neba.UnitTests:*)",
       "Bash(git stash push:*)",
-      "Bash(xattr:*)"
+      "Bash(xattr:*)",
+      "Bash(./scripts/refresh-documents.sh)",
+      "Bash(BASE_URL=http://localhost:5100 bash scripts/refresh-documents.sh:*)",
+      "Bash(git log:*)",
+      "Bash(npm run test:browser:*)",
+      "Bash(git mv:*)",
+      "Bash(docker pull:*)",
+      "Bash(docker-compose:*)"
     ],
     "deny": [],
     "ask": []

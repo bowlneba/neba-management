@@ -29,10 +29,13 @@ public static class SeasonAwardFactory
         int? seed = null)
     {
         Faker<SeasonAward> faker = new Faker<SeasonAward>()
-            .RuleFor(boy => boy.Id, _ => SeasonAwardId.New())
-            .RuleFor(boy => boy.AwardType, _ => SeasonAwardType.BowlerOfTheYear)
-            .RuleFor(boy => boy.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(boy => boy.BowlerOfTheYearCategory, f => f.PickRandom(BowlerOfTheYearCategory.List.ToArray()));
+            .CustomInstantiator(f => new SeasonAward
+            {
+                Id = SeasonAwardId.New(),
+                AwardType = SeasonAwardType.BowlerOfTheYear,
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture),
+                BowlerOfTheYearCategory = f.PickRandom(BowlerOfTheYearCategory.List.ToArray())
+            });
 
         if (seed.HasValue)
         {
@@ -50,10 +53,13 @@ public static class SeasonAwardFactory
         int? seed = null)
     {
         Faker<SeasonAward> faker = new Faker<SeasonAward>()
-            .RuleFor(award => award.Id, _ => SeasonAwardId.New())
-            .RuleFor(award => award.AwardType, _ => SeasonAwardType.High5GameBlock)
-            .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.HighBlockScore, f => f.Random.Int(1200, 1400));
+            .CustomInstantiator(f => new SeasonAward
+            {
+                Id = SeasonAwardId.New(),
+                AwardType = SeasonAwardType.High5GameBlock,
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture),
+                HighBlockScore = f.Random.Int(1200, 1400)
+            });
 
         if (seed.HasValue)
         {
@@ -82,12 +88,15 @@ public static class SeasonAwardFactory
         int? seed = null)
     {
         Faker<SeasonAward> faker = new Faker<SeasonAward>()
-            .RuleFor(award => award.Id, _ => SeasonAwardId.New())
-            .RuleFor(award => award.AwardType, _ => SeasonAwardType.HighAverage)
-            .RuleFor(award => award.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture))
-            .RuleFor(award => award.Average, f => f.Random.Int(180, 240))
-            .RuleFor(award => award.SeasonTotalGames, f => f.Random.Int(90, 120))
-            .RuleFor(award => award.Tournaments, f => f.Random.Int(8, 12));
+            .CustomInstantiator(f => new SeasonAward
+            {
+                Id = SeasonAwardId.New(),
+                AwardType = SeasonAwardType.HighAverage,
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.CurrentCulture),
+                Average = f.Random.Int(180, 240),
+                SeasonTotalGames = f.Random.Int(90, 120),
+                Tournaments = f.Random.Int(8, 12)
+            });
 
         if (seed.HasValue)
         {

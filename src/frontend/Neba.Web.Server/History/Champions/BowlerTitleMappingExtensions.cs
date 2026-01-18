@@ -45,6 +45,7 @@ internal static class BowlerTitleMappingExtensions
             => new()
             {
                 BowlerName = response.BowlerName,
+                HallOfFame = response.HallOfFame,
                 Titles = response.Titles
                     .OrderBy(title => title.Year)
                     .ThenBy(title => title.Month.Value)

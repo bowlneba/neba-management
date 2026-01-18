@@ -5,6 +5,8 @@ internal sealed record BowlerTitlesViewModel
     public required string BowlerName { get; init; }
 
     public required IReadOnlyCollection<TitleViewModel> Titles { get; init; }
+
+    public bool HallOfFame { get; init; }
 }
 
 internal sealed record TitleViewModel

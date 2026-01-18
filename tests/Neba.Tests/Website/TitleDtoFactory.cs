@@ -1,21 +1,18 @@
 using Bogus;
-using Neba.Domain;
+using Neba.Domain.Tournaments;
 using Neba.Website.Application.Tournaments;
-using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Tests.Website;
 
 public static class TitleDtoFactory
 {
     public static TitleDto Create(
-        Month? month = null,
-        int? year = null,
+        DateOnly? tournamentDate = null,
         TournamentType? tournamentType = null
     )
         => new()
         {
-            Month = month ?? Month.January,
-            Year = year ?? 2000,
+            TournamentDate = tournamentDate ?? new DateOnly(2000, 1, 1),
             TournamentType = tournamentType ?? TournamentType.Singles
         };
 
@@ -28,9 +25,11 @@ public static class TitleDtoFactory
     )
     {
         Faker<TitleDto> faker = new Faker<TitleDto>()
-            .RuleFor(title => title.Month, f => f.PickRandom(Month.List.ToArray()))
-            .RuleFor(title => title.Year, f => f.Date.Past(70).Year)
-            .RuleFor(title => title.TournamentType, f => f.PickRandom(TournamentType.List.ToArray()));
+            .CustomInstantiator(f => new TitleDto
+            {
+                TournamentDate = DateOnly.FromDateTime(f.Date.Past(70)),
+                TournamentType = f.PickRandom(TournamentType.List.ToArray())
+            });
 
         if (seed.HasValue)
         {

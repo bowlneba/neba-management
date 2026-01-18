@@ -119,6 +119,26 @@ public sealed class DocumentMapperTests
         html.ShouldBe("<p><a href='/bylaws' data-modal='true'>Bylaws</a></p>\n");
     }
 
+    [Fact(DisplayName = "Maps cross-document links with user ID in URL to routes with modal attribute")]
+    public void ConvertToHtml_CrossDocumentLinkWithUserId_MapsToRouteAndAddsModalAttribute()
+    {
+        // Arrange
+        const string docId = "abc123";
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("tournament-rules", docId, "/tournaments/rules"));
+        var mapper = new DocumentMapper(settings);
+
+        Document document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Paragraph((
+                "Tournament Rules",
+                GoogleDocsDocumentFactory.LinkToExternal(new Uri($"https://docs.google.com/document/u/0/d/{docId}/edit", UriKind.Absolute)))));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldBe("<p><a href='/tournaments/rules' data-modal='true'>Tournament Rules</a></p>\n");
+    }
+
     [Fact(DisplayName = "Renders bookmark links with correct href")]
     public void ConvertToHtml_BookmarkLink_RendersBookmarkHref()
     {
@@ -153,6 +173,44 @@ public sealed class DocumentMapperTests
         // Assert
         html.ShouldContain("<h3 id='section-1'>Section 1</h3>\n");
         html.ShouldContain("<p><a href='#section-1'>Section 1</a></p>\n");
+    }
+
+    [Fact(DisplayName = "Maps partial heading link text to full heading ID for Section headings")]
+    public void ConvertToHtml_PartialHeadingLink_MapsToFullHeadingId()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        Document document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Heading("Section 10.3 Annual Meeting", "HEADING_3"),
+            GoogleDocsDocumentFactory.Paragraph(("Annual Meeting", GoogleDocsDocumentFactory.LinkToHeading("ignored-by-mapper"))));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldContain("<h3 id='section-103-annual-meeting'>Section 10.3 Annual Meeting</h3>\n");
+        html.ShouldContain("<p><a href='#section-103-annual-meeting'>Annual Meeting</a></p>\n");
+    }
+
+    [Fact(DisplayName = "Maps partial heading link text to full heading ID for ARTICLE headings")]
+    public void ConvertToHtml_PartialArticleHeadingLink_MapsToFullHeadingId()
+    {
+        // Arrange
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        var mapper = new DocumentMapper(settings);
+
+        Document document = GoogleDocsDocumentFactory.Create(
+            GoogleDocsDocumentFactory.Heading("ARTICLE VII - HALL OF FAME COMMITTEE", "HEADING_2"),
+            GoogleDocsDocumentFactory.Paragraph(("Hall of Fame Committee", GoogleDocsDocumentFactory.LinkToHeading("ignored-by-mapper"))));
+
+        // Act
+        string html = Normalize(mapper.ConvertToHtml(document));
+
+        // Assert
+        html.ShouldContain("<h2 id='article-vii-hall-of-fame-committee'>ARTICLE VII - HALL OF FAME COMMITTEE</h2>\n");
+        html.ShouldContain("<p><a href='#article-vii-hall-of-fame-committee'>Hall of Fame Committee</a></p>\n");
     }
 
     [Fact(DisplayName = "Renders table with rows and cells")]

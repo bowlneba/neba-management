@@ -13,7 +13,6 @@ public static class BowlerFactory
         Name? name = null,
         int? websiteId = null,
         int? applicationId = null,
-        IReadOnlyCollection<Title>? titles = null,
         IReadOnlyCollection<SeasonAward>? seasonAwards = null,
         IReadOnlyCollection<HallOfFameInduction>? hallOfFameInductions = null)
             => new()
@@ -22,7 +21,6 @@ public static class BowlerFactory
                 Name = name ?? NameFactory.Create(),
                 WebsiteId = websiteId,
                 ApplicationId = applicationId,
-                Titles = titles ?? [],
                 SeasonAwards = seasonAwards ?? [],
                 HallOfFameInductions = hallOfFameInductions ?? []
             };
@@ -55,7 +53,6 @@ public static class BowlerFactory
                 Name = NameFactory.Bogus(),
                 WebsiteId = websiteIdPool.GetNext(),
                 ApplicationId = applicationIdPool.GetNext(),
-                Titles = TitleFactory.Bogus(f.Random.Int(0, 10), seed),
                 SeasonAwards = SeasonAwardFactory
                     .BogusBowlerOfTheYear(f.Random.Int(0, 5), seed)
                     .Union(SeasonAwardFactory.BogusHighBlockAward(f.Random.Int(0, 5), seed))

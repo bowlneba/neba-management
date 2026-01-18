@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);S107</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\Neba.Domain\Neba.Domain.csproj" />
     <ProjectReference Include="..\..\src\backend\Neba.Infrastructure\Neba.Infrastructure.csproj" />

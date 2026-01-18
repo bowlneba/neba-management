@@ -1,4 +1,5 @@
-﻿using Neba.Website.Application.Bowlers.BowlerTitles;
+﻿using Neba.Domain;
+using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Contracts.Bowlers;
 using Neba.Website.Contracts.Titles;
 
@@ -16,8 +17,8 @@ internal static class TitlesMappingExtensions
             {
                 BowlerId = dto.BowlerId,
                 BowlerName = dto.BowlerName.ToDisplayName(),
-                TournamentMonth = dto.TournamentMonth,
-                TournamentYear = dto.TournamentYear,
+                TournamentMonth = Month.FromValue(dto.TournamentDate.Month),
+                TournamentYear = dto.TournamentDate.Year,
                 TournamentType = dto.TournamentType.Name
             };
         }
@@ -34,8 +35,8 @@ internal static class TitlesMappingExtensions
                 HallOfFame = dto.HallOfFame,
                 Titles = dto.Titles.Select(title => new BowlerTitleResponse
                 {
-                    Month = title.Month,
-                    Year = title.Year,
+                    Month = Month.FromValue(title.TournamentDate.Month),
+                    Year = title.TournamentDate.Year,
                     TournamentType = title.TournamentType.Name
                 }).ToList()
             };

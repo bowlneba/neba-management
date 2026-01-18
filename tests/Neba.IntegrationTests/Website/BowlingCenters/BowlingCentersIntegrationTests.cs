@@ -27,7 +27,7 @@ public sealed class BowlingCentersIntegrationTests
         });
 
         int totalOpenCenters = await ExecuteAsync(async context
-            => await context.BowlingCenters.AsNoTracking().Where(bc => !bc.IsClosed).CountAsync());
+            => await context.BowlingCenters.Where(bc => !bc.IsClosed).CountAsync());
 
         using HttpClient httpClient = Factory.CreateClient();
 

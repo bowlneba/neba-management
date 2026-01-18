@@ -11,25 +11,40 @@ internal sealed class WebsiteBowlerQueryRepository(WebsiteDbContext dbContext)
 {
 
     public async Task<BowlerTitlesDto?> GetBowlerTitlesAsync(BowlerId bowlerId, CancellationToken cancellationToken)
-        => await dbContext.Bowlers
+    {
+        List<BowlerTitleDto> titles = await dbContext.Bowlers
             .AsNoTracking()
             .Where(bowler => bowler.Id == bowlerId)
-            .Select(bowler => new BowlerTitlesDto
+            .SelectMany(bowler => bowler.Titles.Select(tournament => new BowlerTitleDto
             {
-                BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
-                HallOfFame = bowler.HallOfFameInductions.Any(),
-                Titles = bowler.Titles
-                    .OrderBy(title => title.Year)
-                    .ThenBy(title => title.Month)
-                    .ThenBy(title => title.TournamentType)
-                    .Select(title => new TitleDto
-                    {
-                        Month = title.Month,
-                        Year = title.Year,
-                        TournamentType = title.TournamentType
-                    })
-                    .ToArray()
+                BowlerId = bowler.Id,
+                TournamentType = tournament.TournamentType,
+                TournamentDate = tournament.EndDate,
+            }))
+            .OrderBy(title => title.TournamentDate)
+            .ThenBy(title => title.TournamentType)
+            .ToListAsync(cancellationToken);
+
+        if (titles.Count == 0)
+        {
+            return null;
+        }
+
+        bool isInHallOfFame = await dbContext.HallOfFameInductions
+            .AnyAsync(induction => induction.Bowler.Id == bowlerId, cancellationToken);
+
+        return new BowlerTitlesDto
+        {
+            BowlerId = bowlerId,
+            BowlerName = titles[0].BowlerName,
+            HallOfFame = isInHallOfFame,
+            Titles = titles.ConvertAll(title => new TitleDto
+            {
+                TournamentType = title.TournamentType,
+                TournamentDate = title.TournamentDate,
             })
-            .SingleOrDefaultAsync(cancellationToken);
+            .AsReadOnly()
+        };
+    }
 }

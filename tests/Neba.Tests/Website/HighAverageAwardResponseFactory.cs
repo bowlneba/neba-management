@@ -35,11 +35,14 @@ public static class HighAverageAwardResponseFactory
         int? seed = null)
     {
         Faker<HighAverageAwardResponse> faker = new Faker<HighAverageAwardResponse>()
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
-            .RuleFor(b => b.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture))
-            .RuleFor(b => b.Average, f => f.Random.Decimal(150, 250))
-            .RuleFor(b => b.Games, f => f.Random.Int(30, 100))
-            .RuleFor(b => b.Tournaments, f => f.Random.Int(5, 15));
+            .CustomInstantiator(f => new HighAverageAwardResponse
+            {
+                BowlerName = f.Name.FullName(),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture),
+                Average = f.Random.Decimal(150, 250),
+                Games = f.Random.Int(30, 100),
+                Tournaments = f.Random.Int(5, 15)
+            });
 
         if (seed.HasValue)
         {

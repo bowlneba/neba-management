@@ -183,15 +183,18 @@ When implementing solutions, **ALWAYS follow this process**:
 * Aggregate boundaries and consistency requirements.
 * Ubiquitous language terms being used.
 * Business rules and invariants to enforce.
+* **Relevant ADRs**: Check `docs/architecture/` for existing architectural decisions that apply (e.g., ADR-004 for collections, ADR-001 for identifiers).
 
 ### Step 2: Architecture Review (REQUIRED)
 
 **You MUST validate:**
 
+* **Existing ADRs**: Review relevant Architecture Decision Records in `docs/architecture/` (e.g., ADR-004 for navigation properties, ADR-001 for identity patterns)
 * How responsibilities are assigned to each layer.
 * Adherence to SOLID principles, especially SRP and DIP.
 * How domain events will be used for decoupling.
 * Security implications at the aggregate level.
+* Consistency with established architectural patterns documented in ADRs.
 
 ### Step 3: Implementation Planning (REQUIRED)
 

@@ -6,7 +6,7 @@
 @implements IAsyncDisposable
 
 @inject IJSRuntime JSInterop
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 
 <script src="./BowlingCenters/BowlingCenters.razor.js" type="module"></script>
 
@@ -219,7 +219,7 @@
     {
         try
         {
-            var bowlingCentersResult = await NebaApiService.GetBowlingCentersAsync();
+            var bowlingCentersResult = await NebaWebsiteApiService.GetBowlingCentersAsync();
 
             if (bowlingCentersResult.IsError)
             {

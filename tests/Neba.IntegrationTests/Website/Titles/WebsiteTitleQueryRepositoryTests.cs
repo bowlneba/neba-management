@@ -3,6 +3,7 @@ using Neba.Tests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Application.Bowlers.BowlerTitles;
 using Neba.Website.Domain.Bowlers;
+using Neba.Website.Domain.BowlingCenters;
 using Neba.Website.Domain.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
@@ -40,12 +41,25 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1963);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
-        int expectedTitleCount = seedBowlers.Sum(bowler => bowler.Titles.Count);
-        Bowler seedBowler = seedBowlers.First(bowler => bowler.Titles.Count > 0);
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
+        await websiteDbContext.SaveChangesAsync();
+
+        int expectedTitleCount = seedTournaments.Sum(t => t.ChampionIds.Count);
+        Bowler seedBowler = seedBowlers.First(bowler =>
+            seedTournaments.Any(t => t.ChampionIds.Contains(bowler.Id)));
 
         var repository = new WebsiteTitleQueryRepository(websiteDbContext);
 
@@ -57,21 +71,22 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
         result.Count.ShouldBe(expectedTitleCount);
 
         var seedBowlerResult = result.Where(dto => dto.BowlerId == seedBowler.Id).ToList();
-        seedBowlerResult.Count.ShouldBe(seedBowler.Titles.Count);
+        seedBowlerResult.Count.ShouldBe(seedTournaments.Count(t => t.ChampionIds.Contains(seedBowler.Id)));
         seedBowlerResult.ShouldAllBe(dto => dto.BowlerName == seedBowler.Name);
 
         foreach (BowlerTitleDto? dto in seedBowlerResult)
         {
-            Title expectedTitle = seedBowler.Titles.First(t =>
-                t.Month == dto.TournamentMonth &&
-                t.Year == dto.TournamentYear &&
+            Tournament expectedTournament = seedTournaments.First(t =>
+                t.ChampionIds.Contains(seedBowler.Id) &&
+                t.EndDate.Month == dto.TournamentDate.Month &&
+                t.EndDate.Year == dto.TournamentDate.Year &&
                 t.TournamentType == dto.TournamentType);
 
             dto.BowlerId.ShouldBe(seedBowler.Id);
             dto.BowlerName.ShouldBe(seedBowler.Name);
-            dto.TournamentMonth.ShouldBe(expectedTitle.Month);
-            dto.TournamentYear.ShouldBe(expectedTitle.Year);
-            dto.TournamentType.ShouldBe(expectedTitle.TournamentType);
+            dto.TournamentDate.Month.ShouldBe(expectedTournament.EndDate.Month);
+            dto.TournamentDate.Year.ShouldBe(expectedTournament.EndDate.Year);
+            dto.TournamentType.ShouldBe(expectedTournament.TournamentType);
         }
     }
 
@@ -84,17 +99,29 @@ public sealed class WebsiteTitleQueryRepositoryTests : IAsyncLifetime
                 .UseNpgsql(_database.ConnectionString)
                 .Options);
 
+        IReadOnlyCollection<BowlingCenter> seedBowlingCenters = BowlingCenterFactory.Bogus(10, 1960);
+        await websiteDbContext.BowlingCenters.AddRangeAsync(seedBowlingCenters);
+        await websiteDbContext.SaveChangesAsync();
+
+        IReadOnlyCollection<Tournament> seedTournaments = TournamentFactory.Bogus(500, seedBowlingCenters, 1963);
+        await websiteDbContext.Tournaments.AddRangeAsync(seedTournaments);
+        await websiteDbContext.SaveChangesAsync();
+
         IReadOnlyCollection<Bowler> seedBowlers = BowlerFactory.Bogus(100, 1965);
         await websiteDbContext.Bowlers.AddRangeAsync(seedBowlers);
         await websiteDbContext.SaveChangesAsync();
 
+        // Assign bowlers as champions of tournaments
+        TournamentChampionsFactory.Bogus([.. seedTournaments], [.. seedBowlers], count: 200);
+        await websiteDbContext.SaveChangesAsync();
+
         var expectedSummaries = seedBowlers
-            .Where(bowler => bowler.Titles.Count > 0)
+            .Where(bowler => seedTournaments.Any(t => t.ChampionIds.Contains(bowler.Id)))
             .Select(bowler => new
             {
                 BowlerId = bowler.Id,
                 BowlerName = bowler.Name,
-                TitleCount = bowler.Titles.Count
+                TitleCount = seedTournaments.Count(t => t.ChampionIds.Contains(bowler.Id))
             })
             .ToList();
 

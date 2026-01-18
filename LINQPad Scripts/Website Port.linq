@@ -23,11 +23,22 @@
   <NuGetReference>Ardalis.SmartEnum</NuGetReference>
   <NuGetReference>HtmlAgilityPack</NuGetReference>
   <NuGetReference>Ulid</NuGetReference>
+  <NuGetReference>Google.Apis.Auth</NuGetReference>
+  <NuGetReference>Google.Apis.Sheets.v4</NuGetReference>
   <Namespace>Ardalis.SmartEnum</Namespace>
+  <Namespace>Google.Apis.Auth.OAuth2</Namespace>
+  <Namespace>Google.Apis.Services</Namespace>
+  <Namespace>Google.Apis.Sheets.v4</Namespace>
   <Namespace>HtmlAgilityPack</Namespace>
+  <Namespace>Microsoft.CSharp</Namespace>
   <Namespace>Microsoft.Data.SqlClient</Namespace>
+  <Namespace>Microsoft.VisualBasic</Namespace>
   <Namespace>NameParser</Namespace>
+  <Namespace>System.CodeDom</Namespace>
+  <Namespace>System.CodeDom.Compiler</Namespace>
+  <Namespace>System.Management</Namespace>
   <Namespace>System.Net.Http</Namespace>
+  <Namespace>System.Security.Cryptography</Namespace>
   <Namespace>System.Text.Json</Namespace>
   <Namespace>System.Text.Json.Serialization</Namespace>
   <Namespace>System.Threading.Tasks</Namespace>
@@ -40,14 +51,15 @@ async Task Main()
 
 	if (getBowlingCenters)
 	{
-		BowlingCenters.RemoveRange(BowlingCenters);	
+		BowlingCenters.RemoveRange(BowlingCenters);
 	}
-	
+
 	SeasonAwards.RemoveRange(SeasonAwards);
-	Titles.RemoveRange(Titles);
+	TournamentChampions.RemoveRange(TournamentChampions);
 	HallsOfFameInductions.RemoveRange(HallsOfFameInductions);
+	Tournaments.RemoveRange(Tournaments);
 	Bowlers.RemoveRange(Bowlers);
-	
+
 	await SaveChangesAsync();
 
 	if (getBowlingCenters)
@@ -55,13 +67,16 @@ async Task Main()
 		await MigrateBowlingCentersAsync();
 	}
 
+	var bowlingCenterDomainIdByWebsiteId = BowlingCenters.Where(bc => bc.WebsiteId.HasValue).ToDictionary(bc => bc.WebsiteId!.Value, bc => bc.DomainId);
+	var bowlingCenterDomainIdBySoftwareId = BowlingCenters.Where(bc => bc.ApplicationId.HasValue).ToDictionary(bc => bc.ApplicationId!.Value, bc => bc.DomainId);
+
 	var mergedBowlers = await MigrateBowlersAsync();
-	
+
 	var bowlerIdByBowlerDomainId = Bowlers.ToDictionary(b => Ulid.Parse(b.DomainId), b => b.Id);
-	
+
 	var bowlerDomainIdsBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b => b.bowlerId);
 	var bowlerDomainIdsByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.bowlerId);
-	
+
 	var softwareNamesBySoftwareId = mergedBowlers.Where(b => b.softwareId.HasValue).ToDictionary(b => b.softwareId!.Value, b=> b.softwareName);
 	var websiteNamesByWebsiteId = mergedBowlers.Where(b => b.websiteId.HasValue).ToDictionary(b => b.websiteId!.Value, b=> b.websiteName!);
 
@@ -74,15 +89,18 @@ async Task Main()
 								   from bowlerDomainIdBySoftwareId in bowlerDomainIdsBySoftwareId
 								   where bowlerNameBySoftwareId.Key == bowlerDomainIdBySoftwareId.Key
 								   select new KeyValuePair<HumanName, Ulid>(softwareNamesBySoftwareId[bowlerDomainIdBySoftwareId.Key]!, bowlerDomainIdsBySoftwareId[bowlerDomainIdBySoftwareId.Key])).ToList();
-								   
+
 	var bowlerIdsBySoftwareId = mergedBowlers.Where(bowler => bowler.softwareId.HasValue).ToDictionary(bowler => bowler.softwareId!.Value, bowler => bowlerIdByBowlerDomainId[bowler.bowlerId]);
 
 	await MigrateHallOfFameAsync(bowlerIdsBySoftwareId);
-	await MigrateTitlesAsync(bowlerDomainIdsByWebsiteId, bowlerIdByBowlerDomainId);
+
+	var migratedTournaments = await MigrateTournamentsAsync(BowlingCenters.ToList().AsReadOnly());
+
+	await MigrateTournamentChampionsAsync(bowlerDomainIdsByWebsiteId, migratedTournaments);
 	await MigrateBowlerOfTheYears(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighBlockAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
 	await MigrateHighAverageAsync(bowlerIdsByWebsiteName, bowlerDomainIdsBySoftwareName, bowlerIdByBowlerDomainId);
-	
+
 	"Migration Complete".Dump();
 }
 
@@ -94,10 +112,10 @@ public async Task MigrateBowlingCentersAsync()
 {
 	var softwareBowlingCentersDataTable = await QuerySoftwareDatabaseAsync("SELECT * FROM BowlingCenters");
 	var websiteBowlingCentersDataTable = await QueryStatsDatabaseAsync("SELECT * FROM Centers WHERE ID not in (2, 19, 28)"); //2: AMF Silver (HOF Silver), 19: TBD Center, 28: Superbowl (Apple Valley)
-	
+
 	var bowlingCenterSoftwareIdByPhoneNumber = softwareBowlingCentersDataTable
 		.AsEnumerable().ToDictionary(row => row.Field<string>("PhoneNumber")!, row => row.Field<int>("Id"));
-		
+
 	var bowlingCenterWebsiteIdByPhoneNumber = websiteBowlingCentersDataTable
 		.AsEnumerable().ToDictionary(row => row.Field<string>("Phone")!
 			.Replace("-",string.Empty)
@@ -106,11 +124,11 @@ public async Task MigrateBowlingCentersAsync()
 			.Replace(" ",string.Empty)
 			.Trim(),
 		row => row.Field<int>("ID"));
-		
+
 	List<BowlingCenters> bowlingCentersToWebsiteSchema = [];
-	
+
 	IEnumerable<string> states = ["CT", "MA", "RI", "VT", "NH", "ME"];
-	
+
 	var serializationSettings = new JsonSerializerOptions
 	{
 		PropertyNameCaseInsensitive = true
@@ -140,16 +158,16 @@ public async Task MigrateBowlingCentersAsync()
 			usbcBowlingCenters.AddRange(stateBowlingCenters);
 		}
 	}
-	
+
 	usbcBowlingCenters.Shuffle();
-	
+
 	List<string> centerPhoneNumbers = [];
 
 	foreach (var bowlingCenter in usbcBowlingCenters)
 	{
 		var centerPhoneNumber = bowlingCenter.Phone.Replace("/",string.Empty).Replace("-",string.Empty).Trim();
 		bowlingCenterSoftwareIdByPhoneNumber.TryGetValue(centerPhoneNumber, out var softwareId);
-		
+
 		centerPhoneNumbers.Add(centerPhoneNumber);
 		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
 			{
@@ -182,7 +200,7 @@ public async Task MigrateBowlingCentersAsync()
 	})
 	.Where(bowlingCenter => !centerPhoneNumbers.Contains(bowlingCenter.PhoneNumber))
 	.ToList();
-	
+
 	softwareBowlingCenters.Dump("Software Bowling Centers not in USBC Table");
 
 	foreach (var softwareBowlingCenter in softwareBowlingCenters) // Should probably be just Ken's Bowl
@@ -203,210 +221,301 @@ public async Task MigrateBowlingCentersAsync()
 			PhoneCountryCode = "1",
 			PhoneNumber = softwareBowlingCenter.PhoneNumber
 		});
-		
+
 		// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
 		centerPhoneNumbers.Add(softwareBowlingCenter.PhoneNumber);
 	}
 
-	// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
-	var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
-	.Select(row => new
-	{
-		Id = row.Field<int>("ID"),
-		CenterName = row.Field<string>("CenterName")!,
-		Street = row.Field<string>("Street")!,
-		City = row.Field<string>("City")!,
-		State = row.Field<string>("State")!,
-		Zip = row.Field<string>("Zip")!,
-		Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
-	})
-	.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
-	.Where(bc => bc.Id != 23); //Norwich has old phone number
-		
-	websiteBowlingCenters.Dump("Website Centers not Ported Yet");
-	
+	//// loop through website bowling centers and remove the ones already addedd (need to figure out how, should be same as usbc center loop) and use website info (would be interested to see what centers these are
+	//var websiteBowlingCenters = websiteBowlingCentersDataTable.AsEnumerable()
+	//.Select(row => new
+	//{
+	//	Id = row.Field<int>("ID"),
+	//	CenterName = row.Field<string>("CenterName")!,
+	//	Street = row.Field<string>("Street")!,
+	//	City = row.Field<string>("City")!,
+	//	State = row.Field<string>("State")!,
+	//	Zip = row.Field<string>("Zip")!,
+	//	Phone = bowlingCenterWebsiteIdByPhoneNumber.Single(x => x.Value == row.Field<int>("ID")).Key
+	//})
+	//.Where(bc => !centerPhoneNumbers.Contains(bc.Phone.Trim()))
+	//.Where(bc => bc.Id != 23); //Norwich has old phone number
+
+	//websiteBowlingCenters.Dump("Website Centers not Ported Yet");
+
 	//bowlingCentersToWebsiteSchema.Where(x => string.IsNullOrWhiteSpace(x.PhoneNumber)).Dump("No phone");
 
-	foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
-	{
-		bowlingCentersToWebsiteSchema.Add(new BowlingCenters
-		{
-			DomainId = Guid.AsDomainId(),
-			ApplicationId = null,
-			WebsiteId = websiteBowlingCenter.Id,
-			Name = websiteBowlingCenter.CenterName,
-			Street = websiteBowlingCenter.Street,
-			City = websiteBowlingCenter.City,
-			State = websiteBowlingCenter.State,
-			ZipCode = websiteBowlingCenter.Zip,
-			Country = "US",
-			Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
-			PhoneCountryCode = "1",
-			PhoneNumber = websiteBowlingCenter.Phone
-		});
-	}
-	
+	//foreach (var websiteBowlingCenter in websiteBowlingCenters) // not sure what will be in here but all are prob closed
+	//{
+	//	bowlingCentersToWebsiteSchema.Add(new BowlingCenters
+	//	{
+	//		DomainId = Guid.AsDomainId(),
+	//		ApplicationId = null,
+	//		WebsiteId = websiteBowlingCenter.Id,
+	//		Name = websiteBowlingCenter.CenterName,
+	//		Street = websiteBowlingCenter.Street,
+	//		City = websiteBowlingCenter.City,
+	//		State = websiteBowlingCenter.State,
+	//		ZipCode = websiteBowlingCenter.Zip,
+	//		Country = "US",
+	//		Closed = true, // true for all but Townline (no longer certified so as far as we are concerned, closed)
+	//		PhoneCountryCode = "1",
+	//		PhoneNumber = websiteBowlingCenter.Phone
+	//	});
+	//}
+
 	List<BowlingCenters> failedBowlingCenterAddressLookups = [];
 	List<KeyValuePair<BowlingCenters, int>> multipleResultsBowlingCenters = [];
-	
+
 	//todo: do manual lat/lon (address update) mapping for multiple results and remove from loop (.where lat is not null)
 	ManualLocationUpdates(bowlingCentersToWebsiteSchema);
 
 	foreach (var bowlingCenter in bowlingCentersToWebsiteSchema.Where(bc => bc.Latitude == null))
 	{
-		string address = $"{bowlingCenter.Street} {bowlingCenter.City}, {bowlingCenter.State} {bowlingCenter.ZipCode}";
-		string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+		var azureResponse = await AzureAddressLookup(httpClient, bowlingCenter.Street, bowlingCenter.City, bowlingCenter.State, bowlingCenter.ZipCode);
 
-		var result = await httpClient.GetAsync(url);
-
-		if (result.IsSuccessStatusCode)
+		if (azureResponse is null)
 		{
-			using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+			failedBowlingCenterAddressLookups.Add(bowlingCenter);
+			
+			continue;
+		}
 
-			var azureResponse = JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
-
-			if (azureResponse.Results.Length == 1)
-			{
-				var azureResult = azureResponse.Results[0];
-
-				bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
-				bowlingCenter.City = azureResult.Address.LocalName;
-				bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
-				
-				bowlingCenter.Latitude = azureResult.Position.Lat;
-				bowlingCenter.Longitude = azureResult.Position.Lon;
-
-				// we will need to add to Application Schema BowlingCenters as well (with some other info from software?)
-			}
-			else
-			{
-				multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
-			}
+		if (azureResponse.Results.Length == 1)
+		{
+			var azureResult = azureResponse.Results[0];
+			
+			FillBowlingCenterWithAzureDetails(azureResult, bowlingCenter);
 		}
 		else
 		{
-			failedBowlingCenterAddressLookups.Add(bowlingCenter);
+			multipleResultsBowlingCenters.Add(new(bowlingCenter, azureResponse.Results.Length));
 		}
 	}
 
 	failedBowlingCenterAddressLookups.Dump("Failed Bowling Center Address Lookup");
 	multipleResultsBowlingCenters.Dump("Multiple Address Lookup Bowling Centers");
 	
+	BowlingCenters.AddRange(await ManualBowlingCenterAdditionsAsync(httpClient, bowlingCenterWebsiteIdByPhoneNumber));
+
 	BowlingCenters.AddRange(bowlingCentersToWebsiteSchema);
-	
+
 	await SaveChangesAsync();
+}
+
+private async Task<IReadOnlyCollection<BowlingCenters>> ManualBowlingCenterAdditionsAsync(HttpClient httpClient, IDictionary<string, int> bowlingCenterWebsiteIdByPhoneNumber)
+{
+	List<BowlingCenters> manualBowlingCenters = [];
+
+	var hamdenLanes = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "AMF Hamden Lanes",
+		Street = "2300 Dixwell Ave",
+		City = "Hamden",
+		State = "CT",
+		ZipCode = "065142106",
+		Latitude = 41.3734065,
+		Longitude = -72.9187806,
+		PhoneCountryCode = "1",
+		PhoneNumber = "2032485503",
+		Country = "US",
+		Closed = true
+	};
+	hamdenLanes.WebsiteId = bowlingCenterWebsiteIdByPhoneNumber.TryGetValue(hamdenLanes.PhoneNumber, out var hamdenWebsiteId) ? hamdenWebsiteId : null;
+	
+	manualBowlingCenters.Add(hamdenLanes);
+
+	var colonyLanes = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "Brunswick Colony Lanes",
+		Street = "600 South Colony Road",
+		City = "Wallingford",
+		State = "CT",
+		ZipCode = "064925128",
+		Latitude = 41.442736,
+		Longitude = -72.830042,
+		PhoneCountryCode = "1",
+		PhoneNumber = "2032691415",
+		Country = "US",
+		Closed = true,
+		WebsiteId = null
+	};
+	
+	manualBowlingCenters.Add(colonyLanes);
+
+	var madisonSquareGarden = new BowlingCenters
+	{
+		DomainId = Guid.AsDomainId(),
+		Name = "Madison Square Garden",
+		Street = "4 7th Avenue",
+		City = "New York",
+		State = "NY",
+		ZipCode = "100011880",
+		Latitude = 40.7498662,
+		Longitude = -73.991985,
+		PhoneCountryCode = "1",
+		PhoneNumber = "2124656225",
+		Country = "US",
+		Closed = true,
+		WebsiteId = null
+	};
+	
+	manualBowlingCenters.Add(madisonSquareGarden);
+	
+	return manualBowlingCenters;
+}
+
+private async Task AzureAddressLookup(HttpClient httpClient, BowlingCenters bowlingCenter)
+{
+	var azureResponse = await AzureAddressLookup(httpClient, bowlingCenter.Street, bowlingCenter.City, bowlingCenter.State, bowlingCenter.ZipCode);
+
+	if (azureResponse!.Results.Length == 1)
+	{
+		var result = azureResponse.Results[0];
+		
+		FillBowlingCenterWithAzureDetails(result, bowlingCenter);
+	}
+}
+
+private async Task<AzureAtlasResponse?> AzureAddressLookup(HttpClient httpClient, string street, string city, string state, string zipCode)
+{
+	string address = $"{street} {city}, {state} {zipCode}";
+	string url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={Util.GetPassword("bowlnebaAzureMapsSubscriptionKey")}&api-version=1.0&language=en-US&query={address}";
+
+	var result = await httpClient.GetAsync(url);
+
+	if (result.IsSuccessStatusCode)
+	{
+		using var jsonDoc = JsonDocument.Parse(await result.Content.ReadAsStringAsync());
+
+		return JsonSerializer.Deserialize<AzureAtlasResponse>(jsonDoc)!;
+	}
+
+	return null;
+}
+
+private void FillBowlingCenterWithAzureDetails(AzureAtlasResult azureResult, BowlingCenters bowlingCenter)
+{
+	bowlingCenter.Street = $"{azureResult.Address.StreetNumber} {azureResult.Address.StreetName}";
+	bowlingCenter.City = azureResult.Address.LocalName;
+	bowlingCenter.ZipCode = azureResult.Address.ExtendedPostalCode?.Replace("-", string.Empty) ?? azureResult.Address.PostalCode;
+
+	bowlingCenter.Latitude = azureResult.Position.Lat;
+	bowlingCenter.Longitude = azureResult.Position.Lon;
 }
 
 private void ManualLocationUpdates(IReadOnlyCollection<BowlingCenters> bowlingCenters)
 {
 	var amity = bowlingCenters.Single(bc => bc.Name == "Amity Bowl");
 	amity.Street = "30 Selden Street";
-	
+
 	var tbowl = bowlingCenters.Single(bc => bc.Name == "Bowlero Wallingford");
 	tbowl.Latitude = 41.488968;
 	tbowl.Longitude = -72.8089833;
-	
+
 	var callahans = bowlingCenters.Single(bc => bc.Name == "Callahan's Bowl O Rama");
 	callahans.Latitude = 41.6950308;
 	callahans.Longitude = -72.7083898;
-	
+
 	var kickbackNBowl = bowlingCenters.Single(bc => bc.Name == "Kickback N Bowl");
 	kickbackNBowl.ZipCode = "06424";
-	
+
 	var subbaseLanes = bowlingCenters.Single(bc => bc.Name == "Subase Lanes");
 	subbaseLanes.Street = "Grayling Ave";
 	subbaseLanes.Unit = "Bldg. 485";
 	subbaseLanes.Latitude = 41.3912489;
 	subbaseLanes.Longitude = -72.0898898;
-	
+
 	var somerset = bowlingCenters.Single(bc => bc.Name == "AMF Somerset Lanes");
 	somerset.ZipCode = "02725";
-	
+
 	var barnBowl = bowlingCenters.Single(bc => bc.Name == "Barn Bowl & Bistro");
 	barnBowl.City = "Oak Bluffs";
 	barnBowl.Latitude = 41.4522285;
 	barnBowl.Longitude = -70.5657132;
-	
+
 	var auburn = bowlingCenters.Single(bc => bc.Name == "Bowlero Worcester");
 	auburn.Latitude = 42.222311;
 	auburn.Longitude = -71.8608448;
-	
+
 	var cove = bowlingCenters.Single(bc => bc.Name == "Cove Bowling & Entertainment, Inc");
 	cove.City = "Great Barrington";
 	cove.Latitude = 42.204971;
 	cove.Longitude = -73.347347;
-	
+
 	var hanscom = bowlingCenters.Single(bc => bc.Name == "Hanscom Lanes");
 	hanscom.Latitude = 42.4605193;
 	hanscom.Longitude = -71.2891387;
-	
+
 	var kingston = bowlingCenters.Single(bc => bc.Name == "Kingston TenPin");
 	kingston.Latitude = 42.0140969;
 	kingston.Longitude = -70.7343119;
-	
+
 	var moheganBowl = bowlingCenters.Single(bc => bc.Name == "Mohegan Bowl");
 	moheganBowl.Street = "51 Thompson Road";
 	moheganBowl.Latitude = 42.0558149;
 	moheganBowl.Longitude = -71.8648723;
-	
+
 	var ryansFamilyYarmouth = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusement Yarmouth");
 	ryansFamilyYarmouth.Street = "1067 Route 28";
 	ryansFamilyYarmouth.City = "South Yarmouth";
 	ryansFamilyYarmouth.Latitude = 41.6599952;
 	ryansFamilyYarmouth.Longitude = -70.2044246;
-	
+
 	var ryansFamilyRaynham = bowlingCenters.Single(bc => bc.Name == "Ryan's Family Amusements Raynham");
 	ryansFamilyRaynham.Street = "115 New State Highway, Rte. 44";
-	
+
 	var bruce = bowlingCenters.Single(bc => bc.Name == "Vincent Hall Training Center");
 	bruce.Latitude = 42.322359;
 	bruce.Longitude = -71.5583947;
-	
+
 	var oldMountain = bowlingCenters.Single(bc => bc.Name == "Old Mountain Lanes");
 	oldMountain.ZipCode = "02879";
 	oldMountain.Latitude = 41.4447194;
 	oldMountain.Longitude = -71.4951874;
-	
+
 	var rutland = bowlingCenters.Single(bc => bc.Name == "Rutland Bowlerama");
 	rutland.Street = "158 South Main Street";
 	rutland.Latitude = 43.5982589;
 	rutland.Longitude = -72.9725074;
-	
+
 	var stMarks = bowlingCenters.Single(bc => bc.Name == "St Marks Bowling Lanes");
 	stMarks.Street = "1271 North Ave";
 	stMarks.ZipCode = "05408";
 	stMarks.Latitude = 44.5103739;
 	stMarks.Longitude = -73.2519529;
-	
+
 	var valleyBowl = bowlingCenters.Single(bc => bc.Name == "Valley Bowl");
 	valleyBowl.Street = "12 Prince St";
 	valleyBowl.Unit = "Ste 5";
 	valleyBowl.Latitude = 43.92591;
 	valleyBowl.Longitude = -72.6662649;
-	
+
 	var funspot = bowlingCenters.Single(bc => bc.Name == "Funspot Bowling Center");
 	funspot.Street = "579 Endicott St N";
 	funspot.Latitude = 43.6137749;
 	funspot.Longitude = -71.4796793;
-	
+
 	var yankeeManchester = bowlingCenters.Single(bc => bc.Name == "Yankee Lanes Manchester");
 	yankeeManchester.Latitude = 42.980634;
 	yankeeManchester.Longitude = -71.453377;
-	
+
 	var familyFun = bowlingCenters.Single(bc => bc.Name == "Family Fun Bowling Center");
 	familyFun.Latitude = 44.7940237;
 	familyFun.Longitude = -68.8405693;
-	
+
 	var meadowLanes = bowlingCenters.Single(bc => bc.Name == "Meadow Lanes");
 	meadowLanes.Street = "907 US-2";
 	meadowLanes.City = "Wilton";
 	meadowLanes.ZipCode = "04294";
 	meadowLanes.Latitude = 44.6161222;
 	meadowLanes.Longitude = -70.1783445;
-	
+
 	var hallowell = bowlingCenters.Single(bc => bc.Name == "Sparetime Recreation Hallowell");
 	hallowell.Name = "Interstate Bowling Center";
-	hallowell.Street = "215 Whitten Road"; 
+	hallowell.Street = "215 Whitten Road";
 }
 
 public class UsbcBowlingCenterDto
@@ -724,7 +833,7 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 			continue;
 		}
 
-		// need to do other possible filtering for manual matches until websiteBowlers count is zero		
+		// need to do other possible filtering for manual matches until websiteBowlers count is zero
 		var lastNameMatch = websiteBowlers.Where(b => b.Name.Last == softwareBowler.Name.Last).ToList();
 		if (lastNameMatch.Count > 1)
 		{
@@ -781,13 +890,18 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 	var laJones = mappedBowlers.Single(b => b.ApplicationId == 1188);
 	laJones.FirstName = "L.A.";
 
-	//-----------------------------------------------------------------------
+	var phaneuf = mappedBowlers.Single(b => b.LastName == "Phaneuf");
+	phaneuf.FirstName = "George";
+	phaneuf.Nickname = "Blackie";
 
-	//foreach (var bowler in mappedBowlers)
-	//{
-	//	Bowlers.Add(bowler);
-	//	await SaveChangesAsync();
-	//}
+	var billyTrudell = mappedBowlers.Single(b => b.LastName == "Trudell" && b.FirstName == "William");
+	billyTrudell.Nickname = "Billy";
+
+	var ditto = mappedBowlers.Single(b => b.WebsiteId == 484);
+	ditto.FirstName = "Shawn";
+	ditto.Nickname = "Ditto";
+
+	// todo: get memberships of bowlers and anyone who doesn't have a record, or just the import record, that doesn't have a website Id, don't port (they haven't bowled in at least 7 years)
 
 	Bowlers.AddRange(mappedBowlers);
 
@@ -802,28 +916,141 @@ public async Task<IEnumerable<(Ulid bowlerId, int? websiteId, int? softwareId, H
 
 #endregion
 
-public async Task MigrateTitlesAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, Dictionary<Ulid, int> bowlerIdByBowlerDomainId)
+#region Tournaments
+
+public async Task<IReadOnlyCollection<TournamentRecord>> MigrateTournamentsAsync(IReadOnlyCollection<BowlingCenters> bowlingCenters)
 {
-	var titlesTable = await QueryStatsDatabaseAsync("select * from dbo.Titles");
+	var tournamentRecords = await GetTournamentsFromSpreadsheetAsync();
 
-	var titles = titlesTable.AsEnumerable()
-	.Where(row => row.Field<int>("ChampionId") != 424) //there is a bad row in the database
-	.Select(row => new Titles
+	foreach (var entry in tournamentRecords)
 	{
-		DomainId = Guid.AsDomainId(),
-		BowlerId = bowlerIdByBowlerDomainId[bowlerIdByWebsiteId[row.Field<int>("ChampionId")]],
-		Month = row.Field<DateTime>("TitleDate").Month,
-		Year = row.Field<DateTime>("TitleDate").Year,
-		TournamentType = TournamentType.FromWebsiteId(row.Field<int>("Type")).Value
-	}).ToList();
+		var domainId = Ulid.NewUlid(entry.EndDate.ToDateTime(TimeOnly.MinValue).ToUniversalTime(), RandomNumberGenerator.GetBytes(10));
+		entry.DomainId = domainId;
 
-	Titles.AddRange(titles);
+		var tournament = new Tournaments
+		{
+			DomainId = entry.DomainId.ToString(),
+			Name = entry.TournamentName,
+			StartDate = entry.StartDate,
+			EndDate = entry.EndDate,
+			BowlingCenterId = bowlingCenters.SingleOrDefault(bc => bc.Name == entry.BowlingCenter)?.DomainId,
+			TournamentType = TournamentType.FromName(entry.TournamentType),
+			ApplicationId = entry.SoftwareId,
+			Entries = entry.Entries,
+			LanePatternLength = null,
+			LanePatternRatio = null
+		};
 
-	
+		Tournaments.Add(tournament);
+	}
+
 	await SaveChangesAsync();
 
-	"Titles Migrated".Dump();
+	"Tournaments Migrated".Dump();
+
+	return tournamentRecords;
 }
+
+public async Task MigrateTournamentChampionsAsync(Dictionary<int, Ulid> bowlerIdByWebsiteId, IReadOnlyCollection<TournamentRecord> migratedTournaments)
+{
+	foreach (var tournament in migratedTournaments.Where(t => t.TournamentType != "Youth"))
+	{
+		foreach (var champion in (tournament.Winners ?? []).Where(x => x > 0))
+		{
+			var tournamentChampion = new TournamentChampions
+			{
+				TournamentId = tournament.DomainId.ToString(),
+				BowlerId = bowlerIdByWebsiteId[champion].ToString()
+			};
+
+			TournamentChampions.Add(tournamentChampion);
+		}
+	}
+
+	await SaveChangesAsync();
+
+	"Tournament Champions Migrated".Dump();
+}
+
+private async Task<IReadOnlyCollection<TournamentRecord>> GetTournamentsFromSpreadsheetAsync()
+{
+	var json = await Util.GetPasswordAsync("credentials.sheets.google");
+	var serviceAccountCredential = CredentialFactory.FromJson<ServiceAccountCredential>(json);
+	var googleCredential = serviceAccountCredential.ToGoogleCredential().CreateScoped(SheetsService.Scope.SpreadsheetsReadonly);
+
+	using var sheetsService = new SheetsService(new BaseClientService.Initializer
+	{
+		HttpClientInitializer = googleCredential,
+		ApplicationName = "NEBA Tournament Port"
+	});
+
+	const string spreadsheetId = "1dMTZ4OiXqkFmQNXBUjREVKH_cduwLmZDIcpWmhJY6ds";
+	const string tableName = "Tournaments";
+
+	var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, tableName);
+	var response = await request.ExecuteAsync();
+
+	var values = response.Values.Skip(1);
+
+	var tournaments = new List<TournamentRecord>();
+
+	foreach (var row in values)
+	{
+		var tournamentRecord = new TournamentRecord
+		{
+			OverallTournamentCount = int.TryParse(row[0]?.ToString(), out var overallCount) ? overallCount : 0,
+			SinglesTournamentCount = int.TryParse(row[1]?.ToString(), out var singleCount) ? singleCount : null,
+			Month = int.TryParse(row[2]?.ToString(), out var month) ? month : 0,
+			Year = int.TryParse(row[3]?.ToString(), out var year) ? year : 0,
+			SoftwareId = int.TryParse(row[4]?.ToString(), out var softwareId) ? softwareId : null,
+			TournamentName = row[5]?.ToString() ?? string.Empty,
+			StartDate = DateOnly.TryParse(row[6]?.ToString(), out var startDate) ? startDate : DateOnly.MinValue,
+			EndDate = DateOnly.TryParse(row[7]?.ToString(), out var endDate) ? endDate : DateOnly.MaxValue,
+			TournamentType = row[8]?.ToString() ?? string.Empty,
+			BowlingCenter = row[9]?.ToString() ?? string.Empty,
+			CityState = row[10]?.ToString() ?? string.Empty,
+			Entries = int.TryParse(row[12]?.ToString(), out var entries) ? entries : 0,
+			Winners = row[13]?.ToString()?.Split("/").Select(id => int.TryParse(id, out var idValue) ? idValue : 0).ToList().AsReadOnly() ?? []
+		};
+
+		tournaments.Add(tournamentRecord);
+	}
+
+	return tournaments;
+}
+
+public sealed class TournamentRecord
+{
+	public Ulid DomainId {get; set;}
+
+	public required int OverallTournamentCount { get; init; }
+
+	public int? SinglesTournamentCount { get; init; }
+
+	public required int Month { get; init; }
+
+	public required int Year { get; init; }
+
+	public int? SoftwareId { get; init; }
+
+	public required string TournamentName { get; init; }
+
+	public required DateOnly StartDate { get; init; }
+
+	public required DateOnly EndDate { get; init; }
+
+	public required string TournamentType { get; init; }
+
+	public required string BowlingCenter { get; init; }
+
+	public required string CityState { get; init; }
+
+	public int? Entries { get; init; }
+
+	public IReadOnlyCollection<int>? Winners { get; init; }
+}
+
+#endregion
 
 #region Awards
 
@@ -1259,7 +1486,7 @@ public async Task MigrateHallOfFameAsync(Dictionary<int, int> bowlerIdBySoftware
 		{100, 1},
 		{200, 2}
 	};
-	
+
 	var hallOfFameDataTable = await QuerySoftwareDatabaseAsync("SELECT * FROM dbo.HallOfFame");
 
 	var hallOfFameSoftwareEntries = hallOfFameDataTable.AsEnumerable()
@@ -1278,11 +1505,11 @@ public async Task MigrateHallOfFameAsync(Dictionary<int, int> bowlerIdBySoftware
 			Category = categoryConversion[entry.Category],
 			InductionYear = entry.Year
 		});
-		
+
 	HallsOfFameInductions.AddRange(hallOfFameInductions);
-	
+
 	await SaveChangesAsync();
-	
+
 	"Hall of Famers Migrated".Dump();
 }
 
@@ -1385,72 +1612,78 @@ public sealed class TournamentType
 	/// <summary>
 	/// Singles tournament (1 player per team).
 	/// </summary>
-	public static readonly TournamentType Singles = new("Singles", 10, 1, 13);
+	public static readonly TournamentType Singles = new("Singles", 100, 1, 13);
 
 	/// <summary>
 	/// Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType Doubles = new("Doubles", 20, 2, 1);
+	public static readonly TournamentType Doubles = new("Doubles", 200, 2, 1);
 
 	/// <summary>
 	/// Trios tournament (3 players per team).
 	/// </summary>
-	public static readonly TournamentType Trios = new("Trios", 30, 3, 2);
+	public static readonly TournamentType Trios = new("Trios", 300, 3, 2);
 
 	/// <summary>
 	/// Non-Champions tournament.
 	/// </summary>
-	public static readonly TournamentType NonChampions = new("Non-Champs", 11, 1, 8);
+	public static readonly TournamentType NonChampions = new("Non-Champions", 101, 1, 8);
 
 	/// <summary>
 	/// Tournament of Champions event.
 	/// </summary>
-	public static readonly TournamentType TournamentOfChampions = new("T of C", 12, 1, 7);
+	public static readonly TournamentType TournamentOfChampions = new("Tournament of Champions", 102, 1, 7);
 
 	/// <summary>
 	/// Invitational tournament.
 	/// </summary>
-	public static readonly TournamentType Invitational = new("Invitational", 13, 1, 11);
+	public static readonly TournamentType Invitational = new("Invitational", 103, 1, 11);
 
 	/// <summary>
 	/// Masters tournament.
 	/// </summary>
-	public static readonly TournamentType Masters = new("Masters", 14, 1, 12);
+	public static readonly TournamentType Masters = new("Masters", 104, 1, 12);
 
 	/// <summary>
 	/// High Roller tournament.
 	/// </summary>
-	public static readonly TournamentType HighRoller = new("High Roller", 15, 1, 3);
+	public static readonly TournamentType HighRoller = new("High Roller", 105, 1, 3);
 
 	/// <summary>
 	/// Senior tournament.
 	/// </summary>
-	public static readonly TournamentType Senior = new("Senior", 16, 1, 4);
+	public static readonly TournamentType Senior = new("Senior", 106, 1, 4);
 
 	/// <summary>
 	/// Women tournament.
 	/// </summary>
-	public static readonly TournamentType Women = new("Women's", 17, 1, 15);
+	public static readonly TournamentType Women = new("Women", 107, 1, 15);
 
 	/// <summary>
 	/// Over 40 tournament.
 	/// </summary>
-	public static readonly TournamentType OverForty = new("Over 40", 18, 1, 6);
+	public static readonly TournamentType OverForty = new("Over 40", 108, 1, 6);
 
 	/// <summary>
 	/// 40-49 age group tournament.
 	/// </summary>
-	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 19, 1, 5);
+	public static readonly TournamentType FortyToFortyNine = new("40 - 49", 109, 1, 5);
 
 	/// <summary>
 	/// Over/Under 50 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 21, 2, 14);
+	public static readonly TournamentType OverUnderFiftyDoubles = new("Over/Under 50 Doubles", 201, 2, 14);
 
 	/// <summary>
 	/// Over/Under 40 Doubles tournament (2 players per team).
 	/// </summary>
-	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40 Doubles", 22, 2, 9);
+	public static readonly TournamentType OverUnderFortyDoubles = new("Under/Over 40", 202, 2, 9);
+
+	public static readonly TournamentType Youth = new(nameof(Youth), 110, 1, null);
+	
+	public static readonly TournamentType Eliminator = new(nameof(Eliminator), 111 , 1, 10);
+	
+	public static readonly TournamentType Baker = new(nameof(Baker), 500, 5, null);
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TournamentType"/> class.
@@ -1458,7 +1691,7 @@ public sealed class TournamentType
 	/// <param name="name">The display name of the tournament type.</param>
 	/// <param name="value">The unique integer value for the tournament type.</param>
 	/// <param name="teamSize">The number of players per team for this tournament type.</param>
-	private TournamentType(string name, int value, int teamSize, int websiteId)
+	private TournamentType(string name, int value, int teamSize, int? websiteId)
 		: base(name, value)
 	{
 		TeamSize = teamSize;
@@ -1477,11 +1710,36 @@ public sealed class TournamentType
 	/// </summary>
 	public int TeamSize { get; }
 
-	public int WebsiteId { get; }
+	public int? WebsiteId { get; }
 
 	public static TournamentType FromWebsiteId(int websiteId)
 		=> List.Single(tournamentType => tournamentType.WebsiteId == websiteId);
 }
+
+public enum SinglesTournamentTypes
+{
+	Standard = 0,
+	NonChampions = 1,
+	Senior = 2,
+	Women = 3,
+	Champions = 4,
+	Invitational = 5,
+	Masters = 6,
+	Youth = 7,
+	SeniorWithWomen = 8
+}
+
+public static IDictionary<SinglesTournamentTypes, TournamentType> SoftwareToTournamentType = new Dictionary<SinglesTournamentTypes, TournamentType>()
+{
+	{SinglesTournamentTypes.Standard, TournamentType.Singles},
+	{SinglesTournamentTypes.NonChampions, TournamentType.NonChampions},
+	{SinglesTournamentTypes.Senior, TournamentType.Senior},
+	{SinglesTournamentTypes.Women, TournamentType.Women},
+	{SinglesTournamentTypes.Champions, TournamentType.TournamentOfChampions},
+	{SinglesTournamentTypes.Invitational, TournamentType.Invitational},
+	{SinglesTournamentTypes.Masters, TournamentType.Masters},
+	{SinglesTournamentTypes.SeniorWithWomen, TournamentType.Senior}
+};
 
 
 /// <summary>
@@ -2003,6 +2261,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(null, 4738),  // Cory Martin
 	new(519, 658),	// Zac Gentile
 	new(null, 2900),  // David Anton
+	new(null, 4948),  // Jonathan A Gibson, Sr
 	new(457, 701),	// Dave Paquin Jr
 	new(null, 1914),  // David Travers
 	new(17, 943), 	// Stephen Dale Jr
@@ -2236,7 +2495,7 @@ static List<(int? websiteId, int? softwareId)> s_manualMatch = new()
 	new(null, 4822),  // Matthew Dupuis
 	new(null, 3558),  // Joely O'grady
 	new(null, 4272),  // Shawn D Wood
-	new(346, 366),	// Michael Williams 
+	new(346, 366),	// Michael Williams
 	new(null, 489),   // George Jones
 	new(null, 559),   // Roger Major
 	new(null, 588),   // Paul Bouchard
@@ -2555,7 +2814,7 @@ static class IdExtensions
 		{
 			return new Ulid(Guid.NewGuid());
 		}
-		
+
 		public static string AsDomainId()
 		{
 			return Guid.AsUlid().ToString();

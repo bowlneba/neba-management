@@ -1,0 +1,114 @@
+@page "/tournaments"
+@using Neba.Domain.Identifiers
+@using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Tournaments
+@inject NebaWebsiteApiService NebaWebsiteService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Future Tournaments - NEBA</PageTitle>
+
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Future Tournaments</h1>
+        <p class="mt-1 text-sm text-gray-600">View and register for Future NEBA tournaments</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <NebaAlert Severity="NotifySeverity.Error"
+                   Title="Error Loading Tournaments"
+                   Message="@_errorMessage"
+                   Dismissible="true"
+                   OnDismiss="@(() => _errorMessage = null)" />
+    }
+
+    <!-- Loading Indicator -->
+    <NebaLoadingIndicator IsVisible="@_isLoading"
+                          Text="Loading tournaments..."
+                          Scope="LoadingIndicatorScope.Page" />
+
+    <!-- Timeline View -->
+    @if (!_isLoading && _tournaments.Count > 0)
+    {
+        <div class="tournament-timeline">
+            @foreach (var tournament in _tournaments)
+            {
+                <div class="tournament-timeline-item">
+                    <div class="tournament-timeline-date">
+                        <div class="timeline-date-primary">@FormatDateRange(tournament.StartDate, tournament.EndDate)</div>
+                        <div class="timeline-date-year">@tournament.StartDate.Year</div>
+                    </div>
+                    <div class="tournament-timeline-content">
+                        <img src="@tournament.ThumbnailUrl" alt="@tournament.Name" class="tournament-timeline-image" />
+                        <div class="tournament-timeline-info">
+                            <div class="tournament-timeline-title">@tournament.Name</div>
+                            <div class="tournament-timeline-location">📍 @tournament.BowlingCenterName</div>
+                            <div class="tournament-tags">
+                                @if (!string.IsNullOrWhiteSpace(tournament.PatternLengthCategory))
+                                {
+                                    <span class="tournament-tag">@tournament.PatternLengthCategory</span>
+                                }
+                                <span class="tournament-tag">@tournament.TournamentType</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (!_isLoading && _tournaments.Count == 0)
+    {
+        <div class="text-center py-12 text-gray-500">
+            <p class="text-lg">No Future tournaments at this time.</p>
+            <p class="text-sm mt-2">Check back soon for new tournament announcements!</p>
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyCollection<TournamentSummaryViewModel> _tournaments = [];
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var tournamentsResult = await NebaWebsiteService.GetFutureTournamentsAsync();
+
+            if (tournamentsResult.IsError)
+            {
+                _errorMessage = $"Error retrieving tournaments: {tournamentsResult.FirstError.Description}";
+                return;
+            }
+
+            _tournaments = tournamentsResult.Value;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load tournaments: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatDateRange(DateOnly startDate, DateOnly endDate)
+    {
+        if (startDate == endDate)
+        {
+            return $"{startDate:MMM dd}";
+        }
+
+        if (startDate.Month == endDate.Month)
+        {
+            return $"{startDate:MMM dd}-{endDate.Day}";
+        }
+
+        return $"{startDate:MMM dd}-{endDate:MMM dd}";
+    }
+}

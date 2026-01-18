@@ -1,6 +1,6 @@
 @page "/history/high-average"
 @using Neba.Web.Server.Notifications
-@inject NebaApiService NebaApiService
+@inject NebaWebsiteApiService NebaWebsiteApiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>High Average Award - NEBA</PageTitle>
@@ -127,7 +127,7 @@
     {
         try
         {
-            var result =  await NebaApiService.GetHighAverageAwardsAsync();
+            var result =  await NebaWebsiteApiService.GetHighAverageAwardsAsync();
 
             if (result.IsError)
             {

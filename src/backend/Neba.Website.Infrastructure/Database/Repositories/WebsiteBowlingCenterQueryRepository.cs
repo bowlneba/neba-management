@@ -14,7 +14,6 @@ internal sealed class WebsiteBowlingCenterQueryRepository(
         CancellationToken cancellationToken)
     {
         return await _dbContext.BowlingCenters
-            .AsNoTracking()
             .Select(bc => new BowlingCenterDto
             {
                 Name = bc.Name,

@@ -1,3 +1,17 @@
+@*
+    NebaDocument Component
+
+    IMPORTANT: CSS Location
+    The CSS for this component is deliberately located in wwwroot/neba-document.css rather than
+    as a co-located NebaDocument.razor.css file. This is required because:
+
+    1. The component renders dynamic HTML content from MarkupString (e.g., from Markdown or HTML files)
+    2. JavaScript dynamically injects TOC lists and slide-over panel content at runtime
+    3. Blazor's CSS isolation (::deep selectors) doesn't reliably style dynamically injected content
+    4. The component needs global CSS selectors to properly style all dynamic content variations
+
+    DO NOT move neba-document.css to a .razor.css file - it will break layout and functionality.
+*@
 @using Neba.Web.Server.Notifications
 @using System.Globalization
 @implements IAsyncDisposable
@@ -193,7 +207,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_tocInitialized || !Content.HasValue || !ShowTableOfContents)
+        if (_tocInitialized || !Content.HasValue)
             return;
 
         try

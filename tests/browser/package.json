@@ -19,13 +19,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/bowlneba/neba-management/issues"
   },
   "homepage": "https://github.com/bowlneba/neba-management#readme",
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "tsx": "^4.19.2"
   }
 }

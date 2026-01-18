@@ -29,9 +29,12 @@ public static class BowlerOfTheYearResponseFactory
         int? seed = null)
     {
         Faker<BowlerOfTheYearResponse> faker = new Faker<BowlerOfTheYearResponse>()
-            .RuleFor(b => b.BowlerName, f => f.Name.FullName())
-            .RuleFor(b => b.Season, f => f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture))
-            .RuleFor(b => b.Category, f => f.PickRandom("Open", "Woman", "Senior", "Super Senior", "Youth", "Rookie"));
+            .CustomInstantiator(f => new BowlerOfTheYearResponse
+            {
+                BowlerName = f.Name.FullName(),
+                Season = f.Date.Past(60).Year.ToString(CultureInfo.InvariantCulture),
+                Category = f.PickRandom("Open", "Woman", "Senior", "Super Senior", "Youth", "Rookie")
+            });
 
         if (seed.HasValue)
         {

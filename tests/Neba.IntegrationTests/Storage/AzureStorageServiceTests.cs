@@ -16,6 +16,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
 {
     private AzureStorageContainer _storageContainer = null!;
     private AzureStorageService _storageService = null!;
+    private BlobClientOptions _blobClientOptions = null!;
 
     private const string TestContainer = "test-container";
     private const string TestPath = "test-blob.txt";
@@ -24,7 +25,7 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
     /// Gets a BlobServiceClient instance for direct Azure operations.
     /// </summary>
     private BlobServiceClient GetBlobServiceClient()
-        => new(_storageContainer.ConnectionString);
+        => new(_storageContainer.ConnectionString, _blobClientOptions);
 
     /// <summary>
     /// Gets a BlobClient for direct blob operations and property verification.
@@ -41,7 +42,10 @@ public sealed class AzureStorageServiceTests : IAsyncLifetime
         _storageContainer = new AzureStorageContainer();
         await _storageContainer.InitializeAsync();
 
-        var blobServiceClient = new BlobServiceClient(_storageContainer.ConnectionString);
+        // Pin to an Azurite-supported version so the emulator accepts requests instead of rejecting newer defaults.
+        _blobClientOptions = new BlobClientOptions(BlobClientOptions.ServiceVersion.V2021_08_06);
+
+        var blobServiceClient = new BlobServiceClient(_storageContainer.ConnectionString, _blobClientOptions);
         var settings = new AzureStorageSettings
         {
             UploadChunkSizeBytes = 8 * 1024 * 1024 // 8 MB chunks for testing

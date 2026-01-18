@@ -28,10 +28,13 @@ public static class HallOfFameInductionDtoFactory
         int? seed = null)
     {
         Faker<HallOfFameInductionDto> faker = new Bogus.Faker<HallOfFameInductionDto>()
-            .RuleFor(dto => dto.Year, f => f.Date.Past(60).Year)
-            .RuleFor(dto => dto.BowlerName, _ => NameFactory.Bogus(1).Single())
-            .RuleFor(dto => dto.Photo, f => StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f))
-            .RuleFor(dto => dto.Categories, f => f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList());
+            .CustomInstantiator(f => new HallOfFameInductionDto
+            {
+                Year = f.Date.Past(60).Year,
+                BowlerName = NameFactory.Bogus(1).Single(),
+                Photo = StoredFileFactory.Bogus(1).Single().OrNull(f, 0.6f),
+                Categories = f.PickRandom(HallOfFameCategory.List.ToArray(), f.Random.Int(1, 2)).ToList()
+            });
 
         if (seed.HasValue)
         {
