@@ -43,6 +43,19 @@ public sealed class HangfireBackgroundJobSchedulerTests
         }
     }
 
+    private sealed record FailingJob : IBackgroundJob
+    {
+        public string JobName => "FailingJob";
+    }
+
+    private sealed class FailingJobHandler : IBackgroundJobHandler<FailingJob>
+    {
+        public Task ExecuteAsync(FailingJob job, CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException("Job execution failed");
+        }
+    }
+
     private static HangfireBackgroundJobScheduler CreateScheduler()
     {
         var mockScopeFactory = new Mock<IServiceScopeFactory>();
@@ -62,6 +75,10 @@ public sealed class HangfireBackgroundJobSchedulerTests
                 mockServiceProvider
                     .Setup(x => x.GetService(typeof(IBackgroundJobHandler<SimpleTestJob>)))
                     .Returns(new SimpleJobHandler());
+
+                mockServiceProvider
+                    .Setup(x => x.GetService(typeof(IBackgroundJobHandler<FailingJob>)))
+                    .Returns(new FailingJobHandler());
 
                 mockScope.Setup(x => x.ServiceProvider).Returns(mockServiceProvider.Object);
                 return mockScope.Object;
@@ -322,5 +339,30 @@ public sealed class HangfireBackgroundJobSchedulerTests
             scheduler.AddOrUpdateRecurring("updatable", job1, "0 0 * * *");
             scheduler.AddOrUpdateRecurring("updatable", job2, "0 12 * * *");
         });
+    }
+
+    [Fact(DisplayName = "ExecuteJobAsync propagates exception from handler")]
+    public async Task ExecuteJobAsync_WhenHandlerThrows_PropagatesException()
+    {
+        // Arrange
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
+        var job = new FailingJob();
+
+        // Act & Assert
+        InvalidOperationException exception = await Should.ThrowAsync<InvalidOperationException>(() =>
+            scheduler.ExecuteJobAsync(job, "Failing Display", CancellationToken.None));
+        exception.Message.ShouldBe("Job execution failed");
+    }
+
+    [Fact(DisplayName = "ExecuteJobAsync handles different exception types")]
+    public async Task ExecuteJobAsync_WhenHandlerThrowsDifferentExceptionTypes_PropagatesCorrectly()
+    {
+        // Arrange
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
+        var job = new FailingJob();
+
+        // Act & Assert
+        await Should.ThrowAsync<InvalidOperationException>(() =>
+            scheduler.ExecuteJobAsync(job, "Failing Job", CancellationToken.None));
     }
 }
