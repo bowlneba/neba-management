@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" />
+    <PackageReference Include="Hangfire.MemoryStorage" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
   </ItemGroup>
 
