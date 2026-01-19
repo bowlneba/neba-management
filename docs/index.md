@@ -37,8 +37,6 @@ title: Home
         <p>OpenTelemetry metrics, traces, and logs.</p>
         <ul class="feature-list">
             <li><a href="{{ '/observability/telemetry-reference' | relative_url }}">Telemetry Reference</a></li>
-            <li>Monitoring Dashboards <span class="status-badge status-soon">Soon</span></li>
-            <li>Alert Configuration <span class="status-badge status-soon">Soon</span></li>
         </ul>
     </div>
 
