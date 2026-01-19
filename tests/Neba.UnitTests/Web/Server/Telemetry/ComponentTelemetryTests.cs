@@ -74,10 +74,10 @@ public sealed class ComponentTelemetryTests
             new InvalidOperationException("Invalid op"), componentName, routePath));
 
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(
-            new ArgumentNullException("param"), componentName, routePath));
+            new ArgumentException("argument error"), componentName, routePath));
 
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(
-            new NullReferenceException("null ref"), componentName, routePath));
+            new InvalidCastException("invalid cast"), componentName, routePath));
 
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(
             new TimeoutException("timeout"), componentName, routePath));
@@ -168,7 +168,7 @@ public sealed class ComponentTelemetryTests
             new ArgumentException("Error 2"), "Component2", "/route2"));
 
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(
-            new NullReferenceException("Error 3"), "Component3", "/route3"));
+            new InvalidCastException("Error 3"), "Component3", "/route3"));
     }
 
     [Fact(DisplayName = "RecordComponentError with exception message containing special characters completes successfully")]
@@ -200,11 +200,11 @@ public sealed class ComponentTelemetryTests
     public void RecordComponentError_WithAggregateException_CompletesSuccessfully()
     {
         // Arrange
-        var innerExceptions = new[]
+        var innerExceptions = new Exception[]
         {
             new InvalidOperationException("Error 1"),
             new ArgumentException("Error 2"),
-            new NullReferenceException("Error 3")
+            new InvalidCastException("Error 3")
         };
         var aggregateException = new AggregateException("Multiple errors occurred", innerExceptions);
         string componentName = "AggregateErrorComponent";

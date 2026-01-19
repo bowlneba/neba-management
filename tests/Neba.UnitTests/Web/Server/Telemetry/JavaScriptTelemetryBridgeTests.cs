@@ -1,5 +1,7 @@
 using Neba.Web.Server.Telemetry;
 
+#pragma warning disable CA1416 // Platform compatibility - testing browser-only APIs in unit test context
+
 namespace Neba.UnitTests.Web.Server.Telemetry;
 
 [Trait("Category", "Unit")]

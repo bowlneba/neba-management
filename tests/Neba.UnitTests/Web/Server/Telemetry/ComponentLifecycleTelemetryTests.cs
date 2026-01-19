@@ -5,14 +5,28 @@ namespace Neba.UnitTests.Web.Server.Telemetry;
 
 [Trait("Category", "Unit")]
 [Trait("Component", "Web.Server.Telemetry")]
-public sealed class ComponentLifecycleTelemetryTests
+public sealed class ComponentLifecycleTelemetryTests : IDisposable
 {
+    private readonly ActivityListener _listener;
+
+    public ComponentLifecycleTelemetryTests()
+    {
+        _listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Neba.Web.Server.ComponentLifecycle",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData
+        };
+        ActivitySource.AddActivityListener(_listener);
+    }
+
+    public void Dispose() => _listener.Dispose();
+
     [Fact(DisplayName = "RecordInitialization with async flag true completes successfully")]
     public void RecordInitialization_WithAsyncTrue_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        double durationMs = 15.5;
+        const string componentName = "TestComponent";
+        const double durationMs = 15.5;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs, isAsync: true));
@@ -22,8 +36,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithAsyncFalse_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        double durationMs = 10.0;
+        const string componentName = "TestComponent";
+        const double durationMs = 10.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs, isAsync: false));
@@ -33,8 +47,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithDefaultAsync_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        double durationMs = 20.3;
+        const string componentName = "TestComponent";
+        const double durationMs = 20.3;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs));
@@ -44,8 +58,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithZeroDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "FastComponent";
-        double durationMs = 0.0;
+        const string componentName = "FastComponent";
+        const double durationMs = 0.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs));
@@ -55,8 +69,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithVerySmallDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "QuickComponent";
-        double durationMs = 0.001;
+        const string componentName = "QuickComponent";
+        const double durationMs = 0.001;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs));
@@ -66,8 +80,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithLargeDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "SlowComponent";
-        double durationMs = 5000.0;
+        const string componentName = "SlowComponent";
+        const double durationMs = 5000.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs));
@@ -77,8 +91,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_WithFirstRenderTrue_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        double durationMs = 25.5;
+        const string componentName = "TestComponent";
+        const double durationMs = 25.5;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, durationMs, firstRender: true));
@@ -88,8 +102,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_WithFirstRenderFalse_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        double durationMs = 12.3;
+        const string componentName = "TestComponent";
+        const double durationMs = 12.3;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, durationMs, firstRender: false));
@@ -99,8 +113,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_WithZeroDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "InstantRenderComponent";
-        double durationMs = 0.0;
+        const string componentName = "InstantRenderComponent";
+        const double durationMs = 0.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, durationMs, firstRender: true));
@@ -110,8 +124,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_WithVerySmallDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "FastRenderComponent";
-        double durationMs = 0.5;
+        const string componentName = "FastRenderComponent";
+        const double durationMs = 0.5;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, durationMs, firstRender: false));
@@ -121,8 +135,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_WithLargeDuration_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "SlowRenderComponent";
-        double durationMs = 3000.0;
+        const string componentName = "SlowRenderComponent";
+        const double durationMs = 3000.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, durationMs, firstRender: true));
@@ -132,7 +146,7 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordDisposal_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
+        const string componentName = "TestComponent";
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordDisposal(componentName));
@@ -142,7 +156,7 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordDisposal_CalledMultipleTimes_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "RepeatedComponent";
+        const string componentName = "RepeatedComponent";
 
         // Act & Assert
         for (int i = 0; i < 5; i++)
@@ -155,8 +169,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_ReturnsActivityWithCorrectName()
     {
         // Arrange
-        string componentName = "TestComponent";
-        string lifecycleEvent = "Initialize";
+        const string componentName = "TestComponent";
+        const string lifecycleEvent = "Initialize";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -170,8 +184,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_SetsComponentNameTag()
     {
         // Arrange
-        string componentName = "MyComponent";
-        string lifecycleEvent = "Render";
+        const string componentName = "MyComponent";
+        const string lifecycleEvent = "Render";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -185,8 +199,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_SetsLifecycleEventTag()
     {
         // Arrange
-        string componentName = "TestComponent";
-        string lifecycleEvent = "Dispose";
+        const string componentName = "TestComponent";
+        const string lifecycleEvent = "Dispose";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -200,8 +214,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_WithInitializeEvent_CreatesCorrectActivity()
     {
         // Arrange
-        string componentName = "InitComponent";
-        string lifecycleEvent = "Initialize";
+        const string componentName = "InitComponent";
+        const string lifecycleEvent = "Initialize";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -217,8 +231,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_WithRenderEvent_CreatesCorrectActivity()
     {
         // Arrange
-        string componentName = "RenderComponent";
-        string lifecycleEvent = "Render";
+        const string componentName = "RenderComponent";
+        const string lifecycleEvent = "Render";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -234,8 +248,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_WithDisposeEvent_CreatesCorrectActivity()
     {
         // Arrange
-        string componentName = "DisposeComponent";
-        string lifecycleEvent = "Dispose";
+        const string componentName = "DisposeComponent";
+        const string lifecycleEvent = "Dispose";
 
         // Act
         using Activity? activity = ComponentLifecycleTelemetry.StartActivity(componentName, lifecycleEvent);
@@ -251,7 +265,7 @@ public sealed class ComponentLifecycleTelemetryTests
     public void CompleteComponentLifecycle_CanBeTracked()
     {
         // Arrange
-        string componentName = "LifecycleComponent";
+        const string componentName = "LifecycleComponent";
 
         // Act & Assert - Initialize
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, 15.0, isAsync: true));
@@ -271,9 +285,9 @@ public sealed class ComponentLifecycleTelemetryTests
     public void MultipleComponents_CanBeTrackedConcurrently()
     {
         // Arrange
-        string component1 = "Component1";
-        string component2 = "Component2";
-        string component3 = "Component3";
+        const string component1 = "Component1";
+        const string component2 = "Component2";
+        const string component3 = "Component3";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -299,8 +313,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordInitialization_WithLongComponentName_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "VeryLongComponentNameForTestingPurposesThatExceedsNormalLength";
-        double durationMs = 10.0;
+        const string componentName = "VeryLongComponentNameForTestingPurposesThatExceedsNormalLength";
+        const double durationMs = 10.0;
 
         // Act & Assert
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordInitialization(componentName, durationMs));
@@ -310,7 +324,7 @@ public sealed class ComponentLifecycleTelemetryTests
     public void RecordRender_MultipleUpdates_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "DynamicComponent";
+        const string componentName = "DynamicComponent";
 
         // Act & Assert - First render
         Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, 25.0, firstRender: true));
@@ -327,8 +341,8 @@ public sealed class ComponentLifecycleTelemetryTests
     public void StartActivity_WithUsingStatement_DisposesCorrectly()
     {
         // Arrange
-        string componentName = "UsingComponent";
-        string lifecycleEvent = "Initialize";
+        const string componentName = "UsingComponent";
+        const string lifecycleEvent = "Initialize";
 
         // Act & Assert
         Should.NotThrow(() =>

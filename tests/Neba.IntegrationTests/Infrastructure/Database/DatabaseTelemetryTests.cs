@@ -71,7 +71,7 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
 
         // Act - Multiple concurrent queries
         var count1 = await context.Bowlers.CountAsync();
-        var count2 = await context.Bowlers.Where(b => b.Id > 0).CountAsync();
+        var count2 = await context.Bowlers.Where(b => b.Id != default).CountAsync();
         var list = await context.Bowlers.Take(5).ToListAsync();
 
         // Assert

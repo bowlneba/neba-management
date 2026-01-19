@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Neba.ServiceDefaults.Telemetry;
 
+#pragma warning disable S3871, S3376 // Exception type naming conventions - test helper class
+
 namespace Neba.UnitTests.ServiceDefaults.Telemetry;
 
 [Trait("Category", "Unit")]
@@ -20,8 +22,8 @@ public sealed class TelemetryExtensionsTests
         errorType.ShouldBe("System.InvalidOperationException");
     }
 
-    [Fact(DisplayName = "GetErrorType returns type name when FullName is null")]
-    public void GetErrorType_WhenFullNameIsNull_ReturnsTypeName()
+    [Fact(DisplayName = "GetErrorType returns fully qualified name for custom exception")]
+    public void GetErrorType_ForCustomException_ReturnsFullyQualifiedName()
     {
         // Arrange
         var exception = new CustomExceptionWithoutFullName();
@@ -31,7 +33,8 @@ public sealed class TelemetryExtensionsTests
 
         // Assert
         errorType.ShouldNotBeNullOrEmpty();
-        errorType.ShouldBe(exception.GetType().Name);
+        // Custom exceptions have FullName, so the full qualified name is returned
+        errorType.ShouldBe(exception.GetType().FullName);
     }
 
     [Fact(DisplayName = "GetErrorType throws ArgumentNullException when exception is null")]
@@ -264,9 +267,17 @@ public sealed class TelemetryExtensionsTests
     }
 
     // Helper class for testing exception without FullName
-    private class CustomExceptionWithoutFullName : Exception
+    private sealed class CustomExceptionWithoutFullName : Exception
     {
         public CustomExceptionWithoutFullName() : base("Custom exception")
+        {
+        }
+
+        public CustomExceptionWithoutFullName(string message) : base(message)
+        {
+        }
+
+        public CustomExceptionWithoutFullName(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -326,11 +326,14 @@ public sealed class LoadingStateTelemetryTests
         string operationName = "RepeatedOperation";
 
         // Act & Assert
-        for (int i = 0; i < 5; i++)
+        Should.NotThrow(() =>
         {
-            var sw = LoadingStateTelemetry.StartLoadingTimer(operationName);
-            LoadingStateTelemetry.StopLoadingTimer(operationName, sw, success: true, itemCount: i);
-        }
+            for (int i = 0; i < 5; i++)
+            {
+                var sw = LoadingStateTelemetry.StartLoadingTimer(operationName);
+                LoadingStateTelemetry.StopLoadingTimer(operationName, sw, success: true, itemCount: i);
+            }
+        });
     }
 
     [Fact(DisplayName = "Very quick operation can be measured")]
