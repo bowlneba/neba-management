@@ -11,6 +11,18 @@ test.describe('Telemetry Helper - JavaScript Telemetry Functions', () => {
 
     // Wait for the telemetry helper script to load
     await page.waitForLoadState('networkidle');
+
+    // Load telemetry helper module and ensure it's available globally
+    await page.addScriptTag({
+      type: 'module',
+      content: `
+        import * as telemetryHelper from '/js/telemetry-helper.js';
+        window.telemetry = window.telemetry || telemetryHelper;
+      `
+    });
+
+    // Wait a bit for the module to be fully loaded
+    await page.waitForFunction(() => typeof window.telemetry !== 'undefined');
   });
 
   test.describe('Telemetry Initialization', () => {

@@ -61,6 +61,7 @@ export function createTimer(eventName) {
                 success: success,
                 ...additionalProperties
             });
+            return duration;
         }
     };
 }
@@ -230,4 +231,19 @@ export function initializePerformanceTracking() {
 
     // Track resources after a short delay to capture initial resources
     setTimeout(() => trackResourcePerformance(), 1000);
+}
+
+// Expose telemetry functions globally for use in non-module contexts (e.g., E2E tests)
+if (typeof globalThis !== 'undefined') {
+    globalThis.telemetry = {
+        initializeTelemetry,
+        trackEvent,
+        trackError,
+        createTimer,
+        withTelemetry,
+        trackResourcePerformance,
+        trackNavigationPerformance,
+        trackWebVitals,
+        initializePerformanceTracking
+    };
 }
