@@ -80,11 +80,11 @@ internal sealed class TournamentConfiguration
                 j => j.HasOne<Bowler>()
                     .WithMany()
                     .HasForeignKey(tournamentChampion => tournamentChampion.BowlerId)
-                    .HasPrincipalKey(nameof(Bowler.Id)),
+                    .HasPrincipalKey(bowler => bowler.Id),
                 j => j.HasOne<Tournament>()
                     .WithMany()
                     .HasForeignKey(tournamentChampion => tournamentChampion.TournamentId)
-                    .HasPrincipalKey(nameof(Tournament.Id)),
+                    .HasPrincipalKey(tournament => tournament.Id),
                 j =>
                 {
                     j.ToTable("tournament_champions", WebsiteDbContext.DefaultSchema);
@@ -92,5 +92,11 @@ internal sealed class TournamentConfiguration
                     // Index on bowler_id for FK lookup performance
                     j.HasIndex(tournamentChampion => tournamentChampion.BowlerId);
                 });
+
+        builder.HasMany(tournament => tournament.Documents)
+            .WithOne()
+            .HasForeignKey(document => document.TournamentId)
+            .HasPrincipalKey(tournament => tournament.Id)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

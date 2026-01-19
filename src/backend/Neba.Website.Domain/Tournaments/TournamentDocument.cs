@@ -32,5 +32,5 @@ public sealed class TournamentDocument
     /// <summary>
     /// Gets the UTC date and time when the document was uploaded.
     /// </summary>
-    public required DateTime UploadedAtUtc { get; init; }
+    public required DateTimeOffset UploadedAtUtc { get; init; }
 }

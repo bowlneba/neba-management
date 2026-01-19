@@ -81,6 +81,11 @@ public sealed class Tournament
         init => _champions = value?.ToList() ?? [];
     }
 
+    /// <summary>
+    /// Gets the collection of documents associated with the tournament.
+    /// </summary>
+    public IReadOnlyCollection<TournamentDocument> Documents { get; init; } = [];
+
     internal Tournament()
         : base(TournamentId.New())
     { }
