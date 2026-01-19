@@ -8,6 +8,16 @@
   "dotnet.debug.sourceFileMap": {
     ".": "${workspaceFolder}"
   },
+
+  // Jest configuration for Test Explorer
+  "jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+  "jest.rootPath": "src/frontend/Neba.Web.Server",
+  "jest.autoRun": "off",
+  "jest.outputConfig": {
+    "revealOn": "run",
+    "revealWithFocus": "test-results"
+  },
+
   "cSpell.words": [
     "Antiforgery",
     "appsettings",

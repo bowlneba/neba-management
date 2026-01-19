@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // C# Development
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime",
+
+    // Testing
+    "orta.vscode-jest",
+    "ms-playwright.playwright",
+
+    // Blazor/Razor
+    "ms-dotnettools.blazorwasm-companion",
+
+    // Code Quality
+    "sonarsource.sonarlint-vscode",
+    "editorconfig.editorconfig",
+
+    // Utilities
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

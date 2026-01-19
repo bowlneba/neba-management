@@ -1,6 +1,6 @@
 // MainLayout navigation functionality
 
-import { initializeTelemetry, initializePerformanceTracking } from '../wwwroot/js/telemetry-helper.js';
+import { initializeTelemetry, initializePerformanceTracking } from '../js/telemetry-helper.js';
 
 // Get breakpoint values from CSS variables
 function getBreakpoint(name) {
