@@ -332,7 +332,7 @@ public sealed class ComponentLifecycleTelemetryTests : IDisposable
         // Subsequent renders
         for (int i = 0; i < 10; i++)
         {
-            double duration = 10.0 + i * 0.5;
+            double duration = 10.0 + (i * 0.5);
             Should.NotThrow(() => ComponentLifecycleTelemetry.RecordRender(componentName, duration, firstRender: false));
         }
     }
