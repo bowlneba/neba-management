@@ -100,9 +100,9 @@ public sealed class SlowQueryInterceptorTests
     [Fact(DisplayName = "Multiple interceptors with different thresholds can coexist")]
     public void MultipleInterceptorsWithDifferentThresholds_CanCoexist()
     {
-        var logger1 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
-        var logger2 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
-        var logger3 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
+        ILogger<SlowQueryInterceptor> logger1 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
+        ILogger<SlowQueryInterceptor> logger2 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
+        ILogger<SlowQueryInterceptor> logger3 = new Mock<ILogger<SlowQueryInterceptor>>().Object;
 
         Should.NotThrow(() =>
         {
