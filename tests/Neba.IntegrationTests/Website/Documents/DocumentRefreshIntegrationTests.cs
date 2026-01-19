@@ -200,66 +200,6 @@ public sealed class DocumentRefreshIntegrationTests(ITestOutputHelper output)
     }
 
     /// <summary>
-    /// Collects SSE events from a stream until the expected count is reached or timeout occurs.
-    /// </summary>
-    private static async Task<List<SseEvent>> CollectSseEventsAsync(
-        HttpClient httpClient,
-        string endpoint,
-        int expectedEventCount,
-        TimeSpan maxWaitTime,
-        CancellationToken cancellationToken)
-    {
-        List<SseEvent> events = [];
-
-        using CancellationTokenSource timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(maxWaitTime);
-
-        try
-        {
-            using HttpResponseMessage response = await httpClient.GetAsync(
-                new Uri(endpoint, UriKind.Relative),
-                HttpCompletionOption.ResponseHeadersRead,
-                timeoutCts.Token);
-
-            response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-            await using Stream stream = await response.Content.ReadAsStreamAsync(timeoutCts.Token);
-            using StreamReader reader = new(stream);
-
-            while (events.Count < expectedEventCount && !timeoutCts.Token.IsCancellationRequested)
-            {
-                try
-                {
-                    string? eventData = await ReadSseEventAsync(reader, timeoutCts.Token);
-
-                    if (eventData is null)
-                    {
-                        break;
-                    }
-
-                    SseEvent? parsedEvent = ParseSseEvent(eventData);
-
-                    if (parsedEvent is not null)
-                    {
-                        events.Add(parsedEvent);
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    // Timeout or cancellation - return what we have
-                    break;
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Expected when timeout occurs
-        }
-
-        return events;
-    }
-
-    /// <summary>
     /// Represents an SSE event for document refresh status.
     /// </summary>
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes - instantiated via JSON deserialization
