@@ -13,7 +13,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "button.click";
+        const string eventName = "button.click";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackEvent(eventName));
@@ -24,7 +24,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "page.load";
+        const string eventName = "page.load";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackEvent(eventName, null));
@@ -35,7 +35,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "modal.open";
+        const string eventName = "modal.open";
         var properties = new Dictionary<string, object>();
 
         // Act & Assert
@@ -47,7 +47,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "search.executed";
+        const string eventName = "search.executed";
         var properties = new Dictionary<string, object>
         {
             { "query", "test search" },
@@ -63,7 +63,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "api.call";
+        const string eventName = "api.call";
         var properties = new Dictionary<string, object>
         {
             { "status_code", 200 },
@@ -79,7 +79,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "form.submit";
+        const string eventName = "form.submit";
         var properties = new Dictionary<string, object>
         {
             { "success", true },
@@ -95,7 +95,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "api.request";
+        const string eventName = "api.request";
         var properties = new Dictionary<string, object>
         {
             { "duration_ms", 125.5 },
@@ -111,7 +111,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "operation.complete";
+        const string eventName = "operation.complete";
         var properties = new Dictionary<string, object>
         {
             { "duration_ms", 250.0 }
@@ -126,7 +126,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "complex.event";
+        const string eventName = "complex.event";
         var properties = new Dictionary<string, object>
         {
             { "name", "test" },
@@ -145,7 +145,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "map.route_calculated";
+        const string eventName = "map.route_calculated";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackEvent(eventName));
@@ -173,9 +173,9 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string errorMessage = "JavaScript error occurred";
-        string source = "map.route";
-        string stackTrace = "at calculateRoute (map.js:123)\nat handleClick (app.js:45)";
+        const string errorMessage = "JavaScript error occurred";
+        const string source = "map.route";
+        const string stackTrace = "at calculateRoute (map.js:123)\nat handleClick (app.js:45)";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackError(errorMessage, source, stackTrace));
@@ -186,8 +186,8 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string errorMessage = "Error message";
-        string source = "component.init";
+        const string errorMessage = "Error message";
+        const string source = "component.init";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackError(errorMessage, source, null));
@@ -198,8 +198,8 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string errorMessage = "Error message";
-        string source = "component.render";
+        const string errorMessage = "Error message";
+        const string source = "component.render";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackError(errorMessage, source, string.Empty));
@@ -211,7 +211,7 @@ public sealed class JavaScriptTelemetryBridgeTests
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
         string errorMessage = new string('x', 1000);
-        string source = "long.error";
+        const string source = "long.error";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackError(errorMessage, source));
@@ -222,8 +222,8 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string errorMessage = "Deep stack error";
-        string source = "deep.stack";
+        const string errorMessage = "Deep stack error";
+        const string source = "deep.stack";
         string stackTrace = string.Join("\n", Enumerable.Range(0, 50).Select(i => $"at function{i} (file{i}.js:{i})"));
 
         // Act & Assert
@@ -235,8 +235,8 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string errorMessage = "Error with special chars: <>&\"'{}[]";
-        string source = "special.chars";
+        const string errorMessage = "Error with special chars: <>&\"'{}[]";
+        const string source = "special.chars";
 
         // Act & Assert
         Should.NotThrow(() => bridge.TrackError(errorMessage, source));
@@ -285,7 +285,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "event.with.nulls";
+        const string eventName = "event.with.nulls";
         var properties = new Dictionary<string, object>
         {
             { "property1", "value" },
@@ -301,7 +301,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "integer.duration";
+        const string eventName = "integer.duration";
         var properties = new Dictionary<string, object>
         {
             { "duration_ms", 100 }, // integer instead of double
@@ -334,7 +334,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "nested.event";
+        const string eventName = "nested.event";
         var properties = new Dictionary<string, object>
         {
             { "user.id", "123" },
@@ -352,7 +352,7 @@ public sealed class JavaScriptTelemetryBridgeTests
     {
         // Arrange
         var bridge = new JavaScriptTelemetryBridge();
-        string eventName = "failed.operation";
+        const string eventName = "failed.operation";
         var properties = new Dictionary<string, object>
         {
             { "duration_ms", 500.0 },

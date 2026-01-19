@@ -21,12 +21,10 @@ public sealed class GoogleDocsServiceTests
         => new(settings);
 
     [Fact(DisplayName = "GetDocumentAsHtmlAsync returns result for valid document")]
-    public async Task GetDocumentAsHtmlAsync_WithValidDocument_ReturnsHtml()
+    public Task GetDocumentAsHtmlAsync_WithValidDocument_ReturnsHtml()
     {
         // Arrange
-        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
         GoogleDocsSettings settings = CreateMockSettings();
-        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Note: In a real test, we would mock the Google Drive API
         // This test demonstrates the pattern but cannot fully test without
@@ -34,9 +32,10 @@ public sealed class GoogleDocsServiceTests
 
         // For now, we verify the pattern of service creation
         // Full integration tests exist in DatabaseTelemetryTests
-        // Act & Assert - Settings are created with required structure
+        // Act & Assert - Settings are created with the required structure
         settings.Documents.ShouldNotBeEmpty();
         settings.Credentials.ShouldNotBeNull();
+        return Task.CompletedTask;
     }
 
     [Fact(DisplayName = "GoogleDocsService requires valid settings")]

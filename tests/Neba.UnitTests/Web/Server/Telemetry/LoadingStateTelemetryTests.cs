@@ -11,8 +11,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithSuccessTrue_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "LoadUsers";
-        double durationMs = 125.5;
+        const string operationName = "LoadUsers";
+        const double durationMs = 125.5;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true));
@@ -22,8 +22,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithSuccessFalse_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "LoadUsers";
-        double durationMs = 250.0;
+        const string operationName = "LoadUsers";
+        const double durationMs = 250.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: false));
@@ -33,9 +33,9 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithItemCount_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "LoadUsers";
-        double durationMs = 100.0;
-        int itemCount = 50;
+        const string operationName = "LoadUsers";
+        const double durationMs = 100.0;
+        const int itemCount = 50;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true, itemCount));
@@ -45,8 +45,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithoutItemCount_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "LoadSettings";
-        double durationMs = 50.0;
+        const string operationName = "LoadSettings";
+        const double durationMs = 50.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true, null));
@@ -56,8 +56,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithZeroDuration_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "CachedData";
-        double durationMs = 0.0;
+        const string operationName = "CachedData";
+        const double durationMs = 0.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true));
@@ -67,8 +67,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithLargeDuration_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "SlowQuery";
-        double durationMs = 5000.0;
+        const string operationName = "SlowQuery";
+        const double durationMs = 5000.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true));
@@ -78,8 +78,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithZeroItemCount_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "EmptyResult";
-        double durationMs = 50.0;
+        const string operationName = "EmptyResult";
+        const double durationMs = 50.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true, itemCount: 0));
@@ -89,8 +89,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordDataLoad_WithLargeItemCount_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "BulkLoad";
-        double durationMs = 1000.0;
+        const string operationName = "BulkLoad";
+        const double durationMs = 1000.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordDataLoad(operationName, durationMs, success: true, itemCount: 10000));
@@ -100,8 +100,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordTimeToFirstRender_RecordsSuccessfully()
     {
         // Arrange
-        string componentName = "UserDashboard";
-        double durationMs = 75.5;
+        const string componentName = "UserDashboard";
+        const double durationMs = 75.5;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordTimeToFirstRender(componentName, durationMs));
@@ -111,8 +111,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordTimeToFirstRender_WithZeroDuration_RecordsSuccessfully()
     {
         // Arrange
-        string componentName = "SimpleComponent";
-        double durationMs = 0.0;
+        const string componentName = "SimpleComponent";
+        const double durationMs = 0.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordTimeToFirstRender(componentName, durationMs));
@@ -122,8 +122,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordTimeToFirstRender_WithLargeDuration_RecordsSuccessfully()
     {
         // Arrange
-        string componentName = "ComplexDashboard";
-        double durationMs = 3000.0;
+        const string componentName = "ComplexDashboard";
+        const double durationMs = 3000.0;
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordTimeToFirstRender(componentName, durationMs));
@@ -133,8 +133,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordLoadingState_WithLoadingState_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "FetchData";
-        string state = "loading";
+        const string operationName = "FetchData";
+        const string state = "loading";
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordLoadingState(operationName, state));
@@ -144,8 +144,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordLoadingState_WithLoadedState_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "FetchData";
-        string state = "loaded";
+        const string operationName = "FetchData";
+        const string state = "loaded";
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordLoadingState(operationName, state));
@@ -155,8 +155,8 @@ public sealed class LoadingStateTelemetryTests
     public void RecordLoadingState_WithErrorState_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "FetchData";
-        string state = "error";
+        const string operationName = "FetchData";
+        const string state = "error";
 
         // Act & Assert
         Should.NotThrow(() => LoadingStateTelemetry.RecordLoadingState(operationName, state));
@@ -166,7 +166,7 @@ public sealed class LoadingStateTelemetryTests
     public void StartLoadingTimer_ReturnsRunningStopwatch()
     {
         // Arrange
-        string operationName = "LoadData";
+        const string operationName = "LoadData";
 
         // Act
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
@@ -180,7 +180,7 @@ public sealed class LoadingStateTelemetryTests
     public void StartLoadingTimer_RecordsLoadingState()
     {
         // Arrange
-        string operationName = "LoadUsers";
+        const string operationName = "LoadUsers";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -194,7 +194,7 @@ public sealed class LoadingStateTelemetryTests
     public void StopLoadingTimer_StopsStopwatchAndRecordsData()
     {
         // Arrange
-        string operationName = "LoadData";
+        const string operationName = "LoadData";
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
 
         // Act
@@ -208,7 +208,7 @@ public sealed class LoadingStateTelemetryTests
     public void StopLoadingTimer_WithItemCount_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "LoadUsers";
+        const string operationName = "LoadUsers";
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
 
         // Act
@@ -223,7 +223,7 @@ public sealed class LoadingStateTelemetryTests
     public void StopLoadingTimer_WithSuccessFalse_RecordsSuccessfully()
     {
         // Arrange
-        string operationName = "FailedLoad";
+        const string operationName = "FailedLoad";
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
 
         // Act
@@ -237,7 +237,7 @@ public sealed class LoadingStateTelemetryTests
     public void StopLoadingTimer_WhenStopwatchIsNull_ThrowsArgumentNullException()
     {
         // Arrange
-        string operationName = "LoadData";
+        const string operationName = "LoadData";
 
         // Act & Assert
         Should.Throw<ArgumentNullException>(() =>
@@ -248,7 +248,7 @@ public sealed class LoadingStateTelemetryTests
     public async Task CompleteLoadingCycle_ExecutesSuccessfully()
     {
         // Arrange
-        string operationName = "LoadDashboard";
+        const string operationName = "LoadDashboard";
 
         // Act
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
@@ -295,7 +295,7 @@ public sealed class LoadingStateTelemetryTests
     public void LoadingStateTransitions_CanBeTrackedManually()
     {
         // Arrange
-        string operationName = "ManualOperation";
+        const string operationName = "ManualOperation";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -309,7 +309,7 @@ public sealed class LoadingStateTelemetryTests
     public void ErrorStateTransition_CanBeTracked()
     {
         // Arrange
-        string operationName = "ErrorOperation";
+        const string operationName = "ErrorOperation";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -323,7 +323,7 @@ public sealed class LoadingStateTelemetryTests
     public void MultipleOperations_WithSameName_CanBeTracked()
     {
         // Arrange
-        string operationName = "RepeatedOperation";
+        const string operationName = "RepeatedOperation";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -340,7 +340,7 @@ public sealed class LoadingStateTelemetryTests
     public void VeryQuickOperation_CanBeMeasured()
     {
         // Arrange
-        string operationName = "QuickOperation";
+        const string operationName = "QuickOperation";
 
         // Act
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
@@ -355,8 +355,8 @@ public sealed class LoadingStateTelemetryTests
     public async Task LongRunningOperation_CanBeMeasured()
     {
         // Arrange
-        string operationName = "LongOperation";
-        int delayMs = 100;
+        const string operationName = "LongOperation";
+        const int delayMs = 100;
 
         // Act
         Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);

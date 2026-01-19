@@ -10,7 +10,7 @@ public sealed class HangfireMetricsTests
     public void RecordJobStart_WithValidJobType_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "DocumentRefreshJob";
+        const string jobType = "DocumentRefreshJob";
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobStart(jobType));
@@ -29,8 +29,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSuccess_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "DocumentRefreshJob";
-        double durationMs = 1234.5;
+        const string jobType = "DocumentRefreshJob";
+        const double durationMs = 1234.5;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobSuccess(jobType, durationMs));
@@ -40,8 +40,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSuccess_WithFastExecution_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "QuickJob";
-        double durationMs = 50.0;
+        const string jobType = "QuickJob";
+        const double durationMs = 50.0;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobSuccess(jobType, durationMs));
@@ -51,8 +51,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSuccess_WithSlowExecution_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "SlowJob";
-        double durationMs = 30000.0;
+        const string jobType = "SlowJob";
+        const double durationMs = 30000.0;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobSuccess(jobType, durationMs));
@@ -62,8 +62,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSuccess_WithZeroDuration_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "InstantJob";
-        double durationMs = 0.0;
+        const string jobType = "InstantJob";
+        const double durationMs = 0.0;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobSuccess(jobType, durationMs));
@@ -73,9 +73,9 @@ public sealed class HangfireMetricsTests
     public void RecordJobFailure_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "FailingJob";
-        double durationMs = 5000.0;
-        string errorType = "InvalidOperationException";
+        const string jobType = "FailingJob";
+        const double durationMs = 5000.0;
+        const string errorType = "InvalidOperationException";
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobFailure(jobType, durationMs, errorType));
@@ -85,8 +85,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobFailure_WithDifferentErrorTypes_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "FailingJob";
-        double durationMs = 2500.0;
+        const string jobType = "FailingJob";
+        const double durationMs = 2500.0;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobFailure(jobType, durationMs, "TimeoutException"));
@@ -98,9 +98,9 @@ public sealed class HangfireMetricsTests
     public void RecordJobFailure_WithQuickFailure_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "QuickFailJob";
-        double durationMs = 10.0;
-        string errorType = "NullReferenceException";
+        const string jobType = "QuickFailJob";
+        const double durationMs = 10.0;
+        const string errorType = "NullReferenceException";
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobFailure(jobType, durationMs, errorType));
@@ -110,8 +110,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSequence_StartThenSuccess_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "SequencedJob";
-        double durationMs = 1500.0;
+        const string jobType = "SequencedJob";
+        const double durationMs = 1500.0;
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -125,9 +125,9 @@ public sealed class HangfireMetricsTests
     public void RecordJobSequence_StartThenFailure_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "FailingSequencedJob";
-        double durationMs = 3000.0;
-        string errorType = "OperationCanceledException";
+        const string jobType = "FailingSequencedJob";
+        const double durationMs = 3000.0;
+        const string errorType = "OperationCanceledException";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -156,8 +156,8 @@ public sealed class HangfireMetricsTests
     public void RecordJobSuccess_WithDecimalDuration_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "PrecisionJob";
-        double durationMs = 1234.5678;
+        const string jobType = "PrecisionJob";
+        const double durationMs = 1234.5678;
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobSuccess(jobType, durationMs));
@@ -167,9 +167,9 @@ public sealed class HangfireMetricsTests
     public void RecordJobFailure_WithSpecialCharactersInErrorType_CompletesSuccessfully()
     {
         // Arrange
-        string jobType = "SpecialJob";
-        double durationMs = 1000.0;
-        string errorType = "Namespace.Nested+InnerException";
+        const string jobType = "SpecialJob";
+        const double durationMs = 1000.0;
+        const string errorType = "Namespace.Nested+InnerException";
 
         // Act & Assert
         Should.NotThrow(() => HangfireMetrics.RecordJobFailure(jobType, durationMs, errorType));

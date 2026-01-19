@@ -11,11 +11,11 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "Bylaws";
-        string documentId = "1abc123def456";
-        double durationMs = 2500.0;
-        long sizeBytes = 15000;
-        string contentType = MediaTypeNames.Text.Html;
+        const string documentName = "Bylaws";
+        const string documentId = "1abc123def456";
+        const double durationMs = 2500.0;
+        const long sizeBytes = 15000;
+        const string contentType = MediaTypeNames.Text.Html;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -26,10 +26,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithFastExport_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "SmallDoc";
-        string documentId = "2xyz456abc789";
-        double durationMs = 100.0;
-        long sizeBytes = 2000;
+        const string documentName = "SmallDoc";
+        const string documentId = "2xyz456abc789";
+        const double durationMs = 100.0;
+        const long sizeBytes = 2000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -40,10 +40,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithLargeExport_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "LargeDoc";
-        string documentId = "3def789xyz123";
-        double durationMs = 5000.0;
-        long sizeBytes = 500000;
+        const string documentName = "LargeDoc";
+        const string documentId = "3def789xyz123";
+        const double durationMs = 5000.0;
+        const long sizeBytes = 500000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -54,10 +54,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithZeroSize_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "EmptyDoc";
-        string documentId = "4ghi012jkl345";
-        double durationMs = 50.0;
-        long sizeBytes = 0;
+        const string documentName = "EmptyDoc";
+        const string documentId = "4ghi012jkl345";
+        const double durationMs = 50.0;
+        const long sizeBytes = 0;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -68,10 +68,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithDecimalDuration_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "PrecisionDoc";
-        string documentId = "5mno678pqr901";
-        double durationMs = 1234.5678;
-        long sizeBytes = 10000;
+        const string documentName = "PrecisionDoc";
+        const string documentId = "5mno678pqr901";
+        const double durationMs = 1234.5678;
+        const long sizeBytes = 10000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -94,9 +94,9 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportFailure_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "FailedDoc";
-        string documentId = "6stu345vwx678";
-        string contentType = MediaTypeNames.Text.Html;
+        const string documentName = "FailedDoc";
+        const string documentId = "6stu345vwx678";
+        const string contentType = MediaTypeNames.Text.Html;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportFailure(
@@ -107,8 +107,8 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportFailure_WithDifferentContentTypes_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "FailedDoc";
-        string documentId = "7yza901bcd234";
+        const string documentName = "FailedDoc";
+        const string documentId = "7yza901bcd234";
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -145,10 +145,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithLongDocumentName_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "VeryLongDocumentNameWithManyCharactersToTestStringHandling";
-        string documentId = "8efg567hij890";
-        double durationMs = 1500.0;
-        long sizeBytes = 20000;
+        const string documentName = "VeryLongDocumentNameWithManyCharactersToTestStringHandling";
+        const string documentId = "8efg567hij890";
+        const double durationMs = 1500.0;
+        const long sizeBytes = 20000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -159,10 +159,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithSpecialCharactersInName_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "Document-Name_2024 (v2).txt";
-        string documentId = "9klm234nop567";
-        double durationMs = 1000.0;
-        long sizeBytes = 5000;
+        const string documentName = "Document-Name_2024 (v2).txt";
+        const string documentId = "9klm234nop567";
+        const double durationMs = 1000.0;
+        const long sizeBytes = 5000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -173,10 +173,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithVeryLargeDuration_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "SlowDoc";
-        string documentId = "10qrs901tuv234";
-        double durationMs = 120000.0; // 2 minutes
-        long sizeBytes = 50000;
+        const string documentName = "SlowDoc";
+        const string documentId = "10qrs901tuv234";
+        const double durationMs = 120000.0; // 2 minutes
+        const long sizeBytes = 50000;
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(
@@ -187,10 +187,10 @@ public sealed class GoogleDocsMetricsTests
     public void RecordExportSuccess_WithVeryLargeFileSize_CompletesSuccessfully()
     {
         // Arrange
-        string documentName = "HugeDoc";
-        string documentId = "11wxy567zabc890";
-        double durationMs = 10000.0;
-        long sizeBytes = 10000000; // 10MB
+        const string documentName = "HugeDoc";
+        const string documentId = "11wxy567zabc890";
+        const double durationMs = 10000.0;
+        const long sizeBytes = 10000000; // 10MB
 
         // Act & Assert
         Should.NotThrow(() => GoogleDocsMetrics.RecordExportSuccess(

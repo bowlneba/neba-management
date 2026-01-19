@@ -11,7 +11,7 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
-        string componentName = "TestComponent";
+        const string componentName = "TestComponent";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName));
@@ -22,8 +22,8 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
-        string componentName = "TestComponent";
-        string routePath = "/test/page";
+        const string componentName = "TestComponent";
+        const string routePath = "/test/page";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, routePath));
@@ -34,7 +34,7 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
-        string componentName = "TestComponent";
+        const string componentName = "TestComponent";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, null));
@@ -45,7 +45,7 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new ArgumentException("Test error");
-        string componentName = "MyComponent";
+        const string componentName = "MyComponent";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, null));
@@ -56,7 +56,7 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new ArgumentException("Test error");
-        string componentName = "MyComponent";
+        const string componentName = "MyComponent";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, string.Empty));
@@ -66,8 +66,8 @@ public sealed class ComponentTelemetryTests
     public void RecordComponentError_WithDifferentExceptionTypes_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "TestComponent";
-        string routePath = "/test";
+        const string componentName = "TestComponent";
+        const string routePath = "/test";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(
@@ -87,8 +87,8 @@ public sealed class ComponentTelemetryTests
     public void RecordComponentError_WithStackTrace_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "ErrorComponent";
-        string routePath = "/error";
+        const string componentName = "ErrorComponent";
+        const string routePath = "/error";
         Exception? capturedException = null;
 
         try
@@ -108,8 +108,8 @@ public sealed class ComponentTelemetryTests
     public void RecordComponentError_WithNestedException_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "NestedErrorComponent";
-        string routePath = "/nested";
+        const string componentName = "NestedErrorComponent";
+        const string routePath = "/nested";
 
         var innerException = new ArgumentException("Inner error");
         var outerException = new InvalidOperationException("Outer error", innerException);
@@ -123,8 +123,8 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
-        string componentName = "VeryLongComponentNameThatExceedsNormalLengthForTestingPurposesComponent";
-        string routePath = "/test/very/long/route/path/for/testing";
+        const string componentName = "VeryLongComponentNameThatExceedsNormalLengthForTestingPurposesComponent";
+        const string routePath = "/test/very/long/route/path/for/testing";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, routePath));
@@ -135,8 +135,8 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Test error");
-        string componentName = "TestComponent";
-        string routePath = "/test/route?param=value&other=123#section";
+        const string componentName = "TestComponent";
+        const string routePath = "/test/route?param=value&other=123#section";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, routePath));
@@ -146,8 +146,8 @@ public sealed class ComponentTelemetryTests
     public void RecordComponentError_CalledMultipleTimes_CompletesSuccessfully()
     {
         // Arrange
-        string componentName = "RepeatedErrorComponent";
-        string routePath = "/repeated";
+        const string componentName = "RepeatedErrorComponent";
+        const string routePath = "/repeated";
 
         // Act & Assert
         for (int i = 0; i < 5; i++)
@@ -176,8 +176,8 @@ public sealed class ComponentTelemetryTests
     {
         // Arrange
         var exception = new InvalidOperationException("Error with special chars: <>&\"'{}[]");
-        string componentName = "SpecialCharsComponent";
-        string routePath = "/special";
+        const string componentName = "SpecialCharsComponent";
+        const string routePath = "/special";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, routePath));
@@ -189,8 +189,8 @@ public sealed class ComponentTelemetryTests
         // Arrange
         string longMessage = new string('x', 1000);
         var exception = new InvalidOperationException(longMessage);
-        string componentName = "LongMessageComponent";
-        string routePath = "/long";
+        const string componentName = "LongMessageComponent";
+        const string routePath = "/long";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(exception, componentName, routePath));
@@ -207,8 +207,8 @@ public sealed class ComponentTelemetryTests
             new InvalidCastException("Error 3")
         };
         var aggregateException = new AggregateException("Multiple errors occurred", innerExceptions);
-        string componentName = "AggregateErrorComponent";
-        string routePath = "/aggregate";
+        const string componentName = "AggregateErrorComponent";
+        const string routePath = "/aggregate";
 
         // Act & Assert
         Should.NotThrow(() => ComponentTelemetry.RecordComponentError(aggregateException, componentName, routePath));

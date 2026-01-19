@@ -11,7 +11,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionStart_ReturnsRunningStopwatch()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
 
         // Act
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
@@ -42,9 +42,9 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionEnd_StopsTheStopwatch()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
-        int eventCount = 5;
+        const int eventCount = 5;
 
         // Act
         SseStreamTelemetry.RecordConnectionEnd(streamType, stopwatch, eventCount);
@@ -57,7 +57,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionEnd_WithZeroEvents_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
 
         // Act & Assert
@@ -69,7 +69,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionEnd_WithMultipleEvents_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "notification";
+        const string streamType = "notification";
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
 
         // Act & Assert
@@ -81,8 +81,8 @@ public sealed class SseStreamTelemetryTests
     public void RecordEventPublished_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
-        string eventType = "content.updated";
+        const string streamType = "document";
+        const string eventType = "content.updated";
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordEventPublished(streamType, eventType));
@@ -92,7 +92,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordEventPublished_WithDifferentEventTypes_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordEventPublished(streamType, "content.created"));
@@ -104,8 +104,8 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionError_WithValidParameters_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
-        string errorType = "System.OperationCanceledException";
+        const string streamType = "document";
+        const string errorType = "System.OperationCanceledException";
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordConnectionError(streamType, errorType));
@@ -115,7 +115,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionError_WithDifferentErrorTypes_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "notification";
+        const string streamType = "notification";
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordConnectionError(streamType, "System.InvalidOperationException"));
@@ -127,7 +127,7 @@ public sealed class SseStreamTelemetryTests
     public async Task CompleteConnectionLifecycle_ExecutesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
 
         // Act - Start connection
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
@@ -152,7 +152,7 @@ public sealed class SseStreamTelemetryTests
     public async Task ConnectionErrorLifecycle_ExecutesSuccessfully()
     {
         // Arrange
-        string streamType = "notification";
+        const string streamType = "notification";
 
         // Act - Start connection
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
@@ -206,7 +206,7 @@ public sealed class SseStreamTelemetryTests
     public void RecordEventPublished_CalledMultipleTimes_CompletesSuccessfully()
     {
         // Arrange
-        string streamType = "document";
+        const string streamType = "document";
 
         // Act & Assert
         for (int i = 0; i < 10; i++)
@@ -219,7 +219,7 @@ public sealed class SseStreamTelemetryTests
     public void StopwatchMeasuresShortConnections()
     {
         // Arrange
-        string streamType = "status";
+        const string streamType = "status";
 
         // Act
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
@@ -234,8 +234,8 @@ public sealed class SseStreamTelemetryTests
     public async Task StopwatchMeasuresLongerConnections()
     {
         // Arrange
-        string streamType = "document";
-        int delayMs = 100;
+        const string streamType = "document";
+        const int delayMs = 100;
 
         // Act
         Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);

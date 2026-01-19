@@ -171,7 +171,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         // Arrange
         HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Recurring Doc");
-        var cronExpression = "0 0 * * *"; // Daily at midnight
+        const string cronExpression = "0 0 * * *"; // Daily at midnight
 
         // Act & Assert
         Should.NotThrow(() => scheduler.AddOrUpdateRecurring("recurring_job", job, cronExpression));
@@ -236,7 +236,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     {
         // Arrange
         HangfireBackgroundJobScheduler scheduler = CreateScheduler();
-        var jobId = "job_to_delete_123";
+        const string jobId = "job_to_delete_123";
 
         // Act
         var result = scheduler.Delete(jobId);
