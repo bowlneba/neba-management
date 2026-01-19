@@ -3,8 +3,6 @@ layout: default
 title: ADR-005 - OpenTelemetry with Service Defaults Pattern (Without Aspire AppHost)
 ---
 
-# ADR-005: OpenTelemetry with Service Defaults Pattern (Without Aspire AppHost)
-
 **Status**: Accepted
 
 **Date**: 2026-01-13
@@ -797,7 +795,7 @@ Add to `appsettings.Development.json` (both API and Web Server):
 **Local Development**:
 
 1. Start Docker Compose: `docker-compose up -d`
-2. Verify Aspire Dashboard is running: http://localhost:18888
+2. Verify Aspire Dashboard is running: <http://localhost:18888>
 3. Start `Neba.Api` and `Neba.Web.Server`
 4. Navigate the application to generate telemetry
 5. View traces in Aspire Dashboard:
@@ -934,7 +932,7 @@ dotnet run
 
 **Viewing Telemetry**:
 
-1. Navigate to http://localhost:18888
+1. Navigate to <http://localhost:18888>
 2. Dashboard automatically discovers services emitting OTLP telemetry
 3. View:
    - **Resources**: See Neba.Api and Neba.Web.Server listed
@@ -959,7 +957,7 @@ docker-compose down -v
 
 **Local Development (Aspire Dashboard)**:
 
-- **URL**: http://localhost:18888
+- **URL**: <http://localhost:18888>
 - **Protocol**: OTLP over gRPC (port 4317)
 - **Features**:
   - Real-time trace visualization with span waterfall
@@ -1210,6 +1208,7 @@ This ADR documents our decision to implement OpenTelemetry using a **hybrid appr
 ### The Result
 
 A pragmatic, production-ready observability solution that:
+
 1. Gives developers excellent local debugging via Aspire Dashboard
 2. Provides enterprise monitoring in Azure Monitor for production
 3. Maintains clean architecture with host-level infrastructure separation

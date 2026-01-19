@@ -3,8 +3,6 @@ layout: default
 title: Telemetry Reference
 ---
 
-# NEBA Telemetry Reference
-
 This document provides a comprehensive reference of all OpenTelemetry instrumentation in the NEBA Management application. It describes metrics, traces, and logs across all components and bounded contexts.
 
 > **Last Updated**: January 2026
@@ -24,12 +22,15 @@ The NEBA Management application uses OpenTelemetry for distributed tracing, metr
 All custom telemetry follows OpenTelemetry semantic conventions:
 
 **Metrics**: `neba.{component}.{resource}.{action}`
+
 - Examples: `neba.cache.hits`, `neba.database.query.duration`
 
 **Activity Sources**: `Neba.{Component}.{Subcomponent}`
+
 - Examples: `Neba.Handlers`, `Neba.Web.Server.JavaScript`
 
 **Traces**: `{component}.{action}`
+
 - Examples: `query.GetBylawsQuery`, `javascript.page.performance`
 
 ---
@@ -39,21 +40,25 @@ All custom telemetry follows OpenTelemetry semantic conventions:
 The following instrumentation is configured automatically via `Neba.ServiceDefaults`:
 
 ### HTTP Instrumentation
+
 - **ASP.NET Core**: All HTTP requests/responses
 - **HTTP Client**: All outbound HTTP calls (including Refit API calls)
 - **Filters**: Health check endpoints (`/health`, `/alive`) excluded from traces
 
 ### Database Instrumentation
+
 - **Entity Framework Core**: All database queries with statement text
 - **PostgreSQL**: Connection pooling, command execution
 - **Enrichment**: Schema name, command type, parameter count
 
 ### Runtime Instrumentation
+
 - **GC**: Garbage collection metrics
 - **Thread Pool**: Thread pool usage
 - **Exceptions**: Unhandled exception tracking
 
 ### Azure SDK Instrumentation
+
 - **Azure Blob Storage**: Blob operations (upload, download, delete)
 - **Activity Source**: `Azure.Storage.Blobs`
 
@@ -68,6 +73,7 @@ The following instrumentation is configured automatically via `Neba.ServiceDefau
 ### Metrics
 
 #### `neba.database.query.duration`
+
 - **Type**: Histogram
 - **Unit**: milliseconds
 - **Description**: Database query execution duration
@@ -77,6 +83,7 @@ The following instrumentation is configured automatically via `Neba.ServiceDefau
   - `db.command_type`: Text, StoredProcedure, etc.
 
 #### `neba.database.query.slow`
+
 - **Type**: Counter
 - **Description**: Number of slow database queries (threshold: 1000ms)
 - **Tags**:
@@ -86,6 +93,7 @@ The following instrumentation is configured automatically via `Neba.ServiceDefau
 ### Traces
 
 #### `db.slow_query`
+
 - **Created When**: Query execution exceeds 1000ms threshold
 - **Tags**:
   - `db.operation`: Query operation type
@@ -119,6 +127,7 @@ var tournaments = await _dbContext.Tournaments
 ### Metrics
 
 #### `neba.cache.hits`
+
 - **Type**: Counter
 - **Description**: Number of cache hits
 - **Tags**:
@@ -127,6 +136,7 @@ var tournaments = await _dbContext.Tournaments
   - `cache.hit`: true
 
 #### `neba.cache.misses`
+
 - **Type**: Counter
 - **Description**: Number of cache misses
 - **Tags**:
@@ -135,6 +145,7 @@ var tournaments = await _dbContext.Tournaments
   - `cache.hit`: false
 
 #### `neba.cache.operation.duration`
+
 - **Type**: Histogram
 - **Unit**: milliseconds
 - **Description**: Duration of cache operations (get, set)
@@ -188,6 +199,7 @@ customMetrics
 #### Metrics
 
 ##### `neba.hangfire.job.executions`
+
 - **Type**: Counter
 - **Description**: Number of Hangfire job executions
 - **Tags**:
@@ -195,12 +207,14 @@ customMetrics
   - `job.type`: Job type (recurring, scheduled, etc.)
 
 ##### `neba.hangfire.job.successes`
+
 - **Type**: Counter
 - **Description**: Number of successful job executions
 - **Tags**:
   - `job.name`: Name of the job
 
 ##### `neba.hangfire.job.failures`
+
 - **Type**: Counter
 - **Description**: Number of failed job executions
 - **Tags**:
@@ -208,6 +222,7 @@ customMetrics
   - `error.type`: Exception type
 
 ##### `neba.hangfire.job.duration`
+
 - **Type**: Histogram
 - **Unit**: milliseconds
 - **Description**: Duration of job executions
@@ -224,6 +239,7 @@ customMetrics
 #### Metrics
 
 ##### `neba.backgroundjob.sync_document.executions`
+
 - **Type**: Counter
 - **Description**: Number of document sync job executions
 - **Tags**:
@@ -231,12 +247,14 @@ customMetrics
   - `triggered.by`: User or system trigger
 
 ##### `neba.backgroundjob.sync_document.successes`
+
 - **Type**: Counter
 - **Description**: Successful document syncs
 - **Tags**:
   - `document.key`: Document identifier
 
 ##### `neba.backgroundjob.sync_document.failures`
+
 - **Type**: Counter
 - **Description**: Failed document syncs
 - **Tags**:

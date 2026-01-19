@@ -3,7 +3,7 @@
  * Provides TOC generation, scroll spy, smooth scrolling, and hash navigation
  */
 
-import { trackEvent, trackError, createTimer } from '../js/telemetry-helper.js';
+import { trackError, createTimer } from '../js/telemetry-helper.js';
 
 /**
  * Escapes HTML special characters to prevent XSS attacks
