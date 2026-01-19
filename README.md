@@ -119,7 +119,7 @@ src/backend/
 - [x] SonarCloud Integration
 - [x] Background Jobs
 - [x] Global Exception Handling
-- [ ] Open Telemetry
+- [x] Open Telemetry
 - [ ] Rate Limiting & Throttling
 - [ ] Security Audits & Vulnerability Scanning
 - [x] API Documentation (OpenAPI/Swagger)
