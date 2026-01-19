@@ -40,43 +40,342 @@ function escapeHtml(text) {
  *   slideoverContentId = null
  * }
  */
-export function initializeToc(configOrContentId) {
-    // Backward compatibility: support legacy positional args
-    let config = configOrContentId;
-    if (typeof configOrContentId === 'string') {
-        const args = Array.from(arguments);
-        const [
-            contentId,
-            tocListId,
-            tocMobileListId,
-            tocMobileButtonId,
-            tocModalId,
-            tocModalOverlayId,
-            tocModalCloseId,
-            headingLevels = 'h1, h2',
-            slideoverId = null,
-            slideoverOverlayId = null,
-            slideoverCloseId = null,
-            slideoverTitleId = null,
-            slideoverContentId = null
-        ] = args;
-
-        config = {
-            contentId,
-            tocListId,
-            tocMobileListId,
-            tocMobileButtonId,
-            tocModalId,
-            tocModalOverlayId,
-            tocModalCloseId,
-            headingLevels,
-            slideoverId,
-            slideoverOverlayId,
-            slideoverCloseId,
-            slideoverTitleId,
-            slideoverContentId
-        };
+/**
+ * Normalizes config from legacy positional args or object form
+ * @param {string|Object} configOrContentId - Config object or first positional arg
+ * @returns {Object} Normalized config object
+ */
+function normalizeConfig(configOrContentId) {
+    if (typeof configOrContentId !== 'string') {
+        return configOrContentId;
     }
+
+    const args = Array.from(arguments);
+    const [
+        contentId,
+        tocListId,
+        tocMobileListId,
+        tocMobileButtonId,
+        tocModalId,
+        tocModalOverlayId,
+        tocModalCloseId,
+        headingLevels = 'h1, h2',
+        slideoverId = null,
+        slideoverOverlayId = null,
+        slideoverCloseId = null,
+        slideoverTitleId = null,
+        slideoverContentId = null
+    ] = args;
+
+    return {
+        contentId,
+        tocListId,
+        tocMobileListId,
+        tocMobileButtonId,
+        tocModalId,
+        tocModalOverlayId,
+        tocModalCloseId,
+        headingLevels,
+        slideoverId,
+        slideoverOverlayId,
+        slideoverCloseId,
+        slideoverTitleId,
+        slideoverContentId
+    };
+}
+
+/**
+ * Validates required DOM elements exist
+ * @param {Object} elements - Object with element references
+ * @returns {boolean} True if validation passed
+ */
+function validateElements(elements) {
+    const { content, contentId, tocList, tocListId } = elements;
+
+    if (!content) {
+        console.error('[NebaDocument] Content element not found:', contentId);
+        return false;
+    }
+
+    if (tocListId && !tocList) {
+        console.error('[NebaDocument] TOC list element not found:', tocListId);
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Generates and populates TOC HTML from headings
+ * @param {NodeList} headings - Collection of heading elements
+ * @param {HTMLElement} tocList - TOC list container
+ * @param {HTMLElement|null} tocMobileList - Mobile TOC list container
+ * @returns {boolean} True if TOC was generated
+ */
+function generateAndPopulateToc(headings, tocList, tocMobileList) {
+    if (!tocList || headings.length === 0) {
+        return false;
+    }
+
+    let tocHtml = '<ul class="toc-list">';
+
+    headings.forEach((heading, index) => {
+        const id = heading.id || `heading-${index}`;
+        if (!heading.id) {
+            heading.id = id;
+        }
+
+        const level = heading.tagName.toLowerCase();
+        const text = escapeHtml(heading.textContent);
+        const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
+
+        tocHtml += `<li class="${className}">
+            <a href="#${id}" class="toc-link" data-target="${id}">${text}</a>
+        </li>`;
+    });
+
+    tocHtml += '</ul>';
+    tocList.innerHTML = tocHtml;
+
+    if (tocMobileList) {
+        tocMobileList.innerHTML = tocHtml;
+    }
+
+    return true;
+}
+
+/**
+ * Assigns IDs to headings that don't have them
+ * @param {NodeList} headings - Collection of heading elements
+ */
+function ensureHeadingIds(headings) {
+    headings.forEach((heading, index) => {
+        if (!heading.id) {
+            heading.id = `heading-${index}`;
+        }
+    });
+}
+
+/**
+ * Sets up mobile modal interactions
+ * @param {HTMLElement} tocMobileButton - Button to open modal
+ * @param {HTMLElement} tocModal - Modal container
+ * @param {HTMLElement} tocModalOverlay - Modal overlay
+ * @param {HTMLElement} tocModalClose - Close button
+ * @param {HTMLElement|null} tocMobileList - Mobile TOC list
+ */
+function setupMobileModal(tocMobileButton, tocModal, tocModalOverlay, tocModalClose, tocMobileList) {
+    if (!tocMobileButton || !tocModal || !tocModalOverlay || !tocModalClose) {
+        return;
+    }
+
+    const closeModal = () => {
+        tocModal.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    tocMobileButton.addEventListener('click', () => {
+        tocModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    tocModalClose.addEventListener('click', closeModal);
+    tocModalOverlay.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && tocModal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    if (tocMobileList) {
+        setupMobileTocLinkHandlers(tocMobileList, tocModal, closeModal);
+    }
+}
+
+/**
+ * Sets up click handlers for mobile TOC links
+ * @param {HTMLElement} tocMobileList - Mobile TOC list
+ * @param {HTMLElement} tocModal - Modal container
+ * @param {Function} closeModal - Function to close modal
+ */
+function setupMobileTocLinkHandlers(tocMobileList, tocModal, closeModal) {
+    const mobileTocLinks = tocMobileList.querySelectorAll('.toc-link');
+
+    mobileTocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.dataset.target;
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                closeModal();
+                setTimeout(() => {
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const navbarHeight = 80;
+                    const offsetPosition = elementPosition + globalThis.pageYOffset - navbarHeight;
+
+                    globalThis.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 300);
+            }
+        });
+    });
+}
+
+/**
+ * Scrolls the TOC container to show the active link
+ * @param {HTMLElement} link - The TOC link element to scroll to
+ */
+function scrollTocToActiveLink(link) {
+    const tocContainer = document.querySelector('.toc-sticky');
+    if (!tocContainer || !link) return;
+
+    const tocRect = tocContainer.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const linkTop = linkRect.top - tocRect.top + tocContainer.scrollTop;
+    const targetScroll = linkTop - 60;
+
+    tocContainer.scrollTo({
+        top: Math.max(0, targetScroll),
+        behavior: 'smooth'
+    });
+}
+
+/**
+ * Sets up scroll spy functionality for TOC
+ * @param {HTMLElement} content - Content container
+ * @param {HTMLElement} tocList - TOC list container
+ * @param {NodeList} headings - Collection of heading elements
+ */
+function setupScrollSpy(content, tocList, headings) {
+    if (!tocList) {
+        return;
+    }
+
+    const tocLinks = tocList.querySelectorAll('.toc-link');
+    let currentActiveLink = null;
+
+    function updateActiveLink() {
+        const contentRect = content.getBoundingClientRect();
+        const activeHeading = findActiveHeading(headings, contentRect);
+
+        if (activeHeading) {
+            updateActiveLinkUI(activeHeading.id, tocList, currentActiveLink);
+            currentActiveLink = tocList.querySelector(`[data-target="${activeHeading.id}"]`);
+        }
+    }
+
+    tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.dataset.target;
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                const contentRect = content.getBoundingClientRect();
+                const targetRect = targetElement.getBoundingClientRect();
+                const currentScroll = content.scrollTop;
+                const offset = 20;
+                const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
+
+                content.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+
+                scrollTocToActiveLink(link);
+            }
+        });
+    });
+
+    let ticking = false;
+    content.addEventListener('scroll', () => {
+        if (!ticking) {
+            globalThis.requestAnimationFrame(() => {
+                updateActiveLink();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    updateActiveLink();
+}
+
+/**
+ * Finds the heading currently visible in viewport
+ * @param {NodeList} headings - Collection of heading elements
+ * @param {DOMRect} contentRect - Bounding rect of content container
+ * @returns {HTMLElement|null} The active heading element
+ */
+function findActiveHeading(headings, contentRect) {
+    let activeHeading = null;
+    let minDistance = Infinity;
+
+    headings.forEach(heading => {
+        const headingRect = heading.getBoundingClientRect();
+        const distanceFromTop = headingRect.top - contentRect.top;
+
+        if (distanceFromTop <= 100 && distanceFromTop >= -headingRect.height) {
+            if (Math.abs(distanceFromTop) < minDistance) {
+                minDistance = Math.abs(distanceFromTop);
+                activeHeading = heading;
+            }
+        }
+    });
+
+    if (!activeHeading) {
+        headings.forEach(heading => {
+            const headingRect = heading.getBoundingClientRect();
+            const distanceFromTop = headingRect.top - contentRect.top;
+
+            if (distanceFromTop >= 0 && distanceFromTop < minDistance) {
+                minDistance = distanceFromTop;
+                activeHeading = heading;
+            }
+        });
+    }
+
+    return activeHeading;
+}
+
+/**
+ * Updates the active link styling in TOC
+ * @param {string} targetId - ID of the target element
+ * @param {HTMLElement} tocList - TOC list container
+ * @param {HTMLElement|null} currentActiveLink - Currently active link
+ */
+function updateActiveLinkUI(targetId, tocList, currentActiveLink) {
+    const newActiveLink = tocList.querySelector(`[data-target="${targetId}"]`);
+
+    if (newActiveLink !== currentActiveLink) {
+        if (currentActiveLink) {
+            currentActiveLink.classList.remove('active');
+        }
+        if (newActiveLink) {
+            newActiveLink.classList.add('active');
+
+            const tocContainer = document.querySelector('.toc-sticky');
+            if (tocContainer) {
+                const tocRect = tocContainer.getBoundingClientRect();
+                const linkRect = newActiveLink.getBoundingClientRect();
+                const linkTop = linkRect.top - tocRect.top + tocContainer.scrollTop;
+                const targetScroll = linkTop - 60;
+
+                tocContainer.scrollTo({
+                    top: Math.max(0, targetScroll),
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }
+}
+
+export function initializeToc(configOrContentId) {
+    const config = normalizeConfig(...arguments);
 
     const {
         contentId,
@@ -108,51 +407,17 @@ export function initializeToc(configOrContentId) {
     const tocModalOverlay = document.getElementById(tocModalOverlayId);
     const tocModalClose = document.getElementById(tocModalCloseId);
 
-    if (!content) {
-        console.error('[NebaDocument] Content element not found:', contentId);
+    if (!validateElements({ content, contentId, tocList, tocListId })) {
         return false;
     }
 
-    // Check if TOC list element is specified but not found
-    if (tocListId && !tocList) {
-        console.error('[NebaDocument] TOC list element not found:', tocListId);
-        return false;
-    }
-
-    // TOC is optional - if not present, we'll still set up link navigation
     const hasToc = !!tocList;
-
-    // Extract headings based on the provided levels - need this for both TOC and link navigation
     const headings = content.querySelectorAll(headingLevels);
 
     console.log('[NebaDocument] Found headings:', headings.length);
 
     if (hasToc && headings.length > 0) {
-        // Build the table of contents
-        let tocHtml = '<ul class="toc-list">';
-
-        headings.forEach((heading, index) => {
-            const id = heading.id || `heading-${index}`;
-            if (!heading.id) {
-                heading.id = id;
-            }
-
-            const level = heading.tagName.toLowerCase();
-            const text = escapeHtml(heading.textContent);
-            const className = level === 'h1' ? 'toc-item-h1' : `toc-item-${level}`;
-
-            tocHtml += `<li class="${className}">
-                <a href="#${id}" class="toc-link" data-target="${id}">${text}</a>
-            </li>`;
-        });
-
-        tocHtml += '</ul>';
-        tocList.innerHTML = tocHtml;
-
-        // Also populate the mobile TOC
-        if (tocMobileList) {
-            tocMobileList.innerHTML = tocHtml;
-        }
+        generateAndPopulateToc(headings, tocList, tocMobileList);
     } else {
         if (!hasToc) {
             console.log('[NebaDocument] TOC not present, skipping TOC generation but will set up link navigation');
@@ -161,197 +426,15 @@ export function initializeToc(configOrContentId) {
             return false;
         }
 
-        // Still need to assign IDs to headings for anchor navigation to work
-        headings.forEach((heading, index) => {
-            if (!heading.id) {
-                heading.id = `heading-${index}`;
-            }
-        });
+        ensureHeadingIds(headings);
     }
 
-    // Mobile modal functionality
-    if (tocMobileButton && tocModal && tocModalOverlay && tocModalClose) {
-        // Open modal
-        tocMobileButton.addEventListener('click', () => {
-            tocModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        });
+    setupMobileModal(tocMobileButton, tocModal, tocModalOverlay, tocModalClose, tocMobileList);
+    setupScrollSpy(content, tocList, headings);
 
-        // Close modal functions
-        const closeModal = () => {
-            tocModal.classList.remove('active');
-            document.body.style.overflow = ''; // Restore scrolling
-        };
-
-        tocModalClose.addEventListener('click', closeModal);
-        tocModalOverlay.addEventListener('click', closeModal);
-
-        // Close on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && tocModal.classList.contains('active')) {
-                closeModal();
-            }
-        });
-
-        // Close modal when clicking a TOC link in mobile
-        if (tocMobileList) {
-            const mobileTocLinks = tocMobileList.querySelectorAll('.toc-link');
-                mobileTocLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.dataset.target;
-                    const targetElement = document.getElementById(targetId);
-
-                    if (targetElement) {
-                        // Close the modal first
-                        closeModal();
-
-                        // Scroll to the target element on the page (using globalThis scroll on mobile)
-                        setTimeout(() => {
-                            // Get the position of the element
-                            const elementPosition = targetElement.getBoundingClientRect().top;
-                            // Account for sticky navbar height (~72px) plus some padding
-                            const navbarHeight = 80;
-                            const offsetPosition = elementPosition + globalThis.pageYOffset - navbarHeight;
-
-                            globalThis.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }, 300); // Small delay to allow modal to close
-                    }
-                });
-            });
-        }
-    }
-
-    // Add scroll spy functionality
-    if (hasToc) {
-        const tocLinks = tocList.querySelectorAll('.toc-link');
-        let currentActiveLink = null;
-
-        function updateActiveLink() {
-            const contentRect = content.getBoundingClientRect();
-
-            // Find the heading that's currently at the top of the viewport (with some offset)
-            let activeHeading = null;
-            let minDistance = Infinity;
-
-            headings.forEach(heading => {
-                const headingRect = heading.getBoundingClientRect();
-                // Calculate distance from heading to the top of the content container
-                const distanceFromTop = headingRect.top - contentRect.top;
-
-                // If heading is visible or just above the viewport, and closest to top
-                if (distanceFromTop <= 100 && distanceFromTop >= -headingRect.height) {
-                    if (Math.abs(distanceFromTop) < minDistance) {
-                        minDistance = Math.abs(distanceFromTop);
-                        activeHeading = heading;
-                    }
-                }
-            });
-
-            // If no heading found near top, use the first visible one
-            if (!activeHeading) {
-                headings.forEach(heading => {
-                    const headingRect = heading.getBoundingClientRect();
-                    const distanceFromTop = headingRect.top - contentRect.top;
-
-                    if (distanceFromTop >= 0 && distanceFromTop < minDistance) {
-                        minDistance = distanceFromTop;
-                        activeHeading = heading;
-                    }
-                });
-            }
-
-            if (activeHeading) {
-                const targetId = activeHeading.id;
-                const newActiveLink = tocList.querySelector(`[data-target="${targetId}"]`);
-
-                if (newActiveLink !== currentActiveLink) {
-                    if (currentActiveLink) {
-                        currentActiveLink.classList.remove('active');
-                    }
-                    if (newActiveLink) {
-                        newActiveLink.classList.add('active');
-                        currentActiveLink = newActiveLink;
-
-                        // Auto-scroll the TOC to show the active link
-                        scrollTocToActiveLink(newActiveLink);
-                    }
-                }
-            }
-        }
-
-        // Helper function to scroll TOC to show active link
-        function scrollTocToActiveLink(link) {
-            const tocContainer = document.querySelector('.toc-sticky');
-            if (!tocContainer || !link) return;
-
-            const tocRect = tocContainer.getBoundingClientRect();
-            const linkRect = link.getBoundingClientRect();
-
-            // Calculate the position of the link relative to the TOC container
-            const linkTop = linkRect.top - tocRect.top + tocContainer.scrollTop;
-
-            // Try to position the link near the top, but with some padding
-            const targetScroll = linkTop - 60; // 60px from the top to leave some context
-
-            tocContainer.scrollTo({
-                top: Math.max(0, targetScroll),
-                behavior: 'smooth'
-            });
-        }
-
-        // Smooth scroll to section when clicking TOC links
-        tocLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.dataset.target;
-                const targetElement = document.getElementById(targetId);
-
-                if (targetElement) {
-                    // Get the position of the target relative to the scrollable content
-                    const contentRect = content.getBoundingClientRect();
-                    const targetRect = targetElement.getBoundingClientRect();
-                    const currentScroll = content.scrollTop;
-
-                    // Calculate the scroll position: current scroll + (target position - content position) - offset
-                    const offset = 20; // Small offset from the top of the container
-                    const scrollPosition = currentScroll + (targetRect.top - contentRect.top) - offset;
-
-                    content.scrollTo({
-                        top: scrollPosition,
-                        behavior: 'smooth'
-                    });
-
-                    // Scroll the TOC to show the clicked link
-                    scrollTocToActiveLink(link);
-                }
-            });
-        });
-
-        // Listen for scroll events on the content container
-        let ticking = false;
-        content.addEventListener('scroll', () => {
-            if (!ticking) {
-                globalThis.requestAnimationFrame(() => {
-                    updateActiveLink();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-
-        // Initial update
-        updateActiveLink();
-    }
-
-    // Handle internal links in content (both anchor navigation and page links)
     if (slideoverId && slideoverOverlayId && slideoverCloseId && slideoverTitleId && slideoverContentId) {
         setupInternalLinkNavigation(content, slideoverId, slideoverOverlayId, slideoverCloseId, slideoverTitleId, slideoverContentId);
     } else {
-        // Fallback to simple anchor navigation if slide-over not available
         setupInternalLinkNavigation(content);
     }
 
