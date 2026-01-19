@@ -267,13 +267,13 @@ public sealed class LoadingStateTelemetryTests
     public async Task MultipleConcurrentLoadingOperations_CanBeTracked()
     {
         // Arrange & Act
-        var sw1 = LoadingStateTelemetry.StartLoadingTimer("Operation1");
+        Stopwatch sw1 = LoadingStateTelemetry.StartLoadingTimer("Operation1");
         await Task.Delay(10);
 
-        var sw2 = LoadingStateTelemetry.StartLoadingTimer("Operation2");
+        Stopwatch sw2 = LoadingStateTelemetry.StartLoadingTimer("Operation2");
         await Task.Delay(10);
 
-        var sw3 = LoadingStateTelemetry.StartLoadingTimer("Operation3");
+        Stopwatch sw3 = LoadingStateTelemetry.StartLoadingTimer("Operation3");
         await Task.Delay(10);
 
         // Stop in different order
@@ -330,7 +330,7 @@ public sealed class LoadingStateTelemetryTests
         {
             for (int i = 0; i < 5; i++)
             {
-                var sw = LoadingStateTelemetry.StartLoadingTimer(operationName);
+                Stopwatch sw = LoadingStateTelemetry.StartLoadingTimer(operationName);
                 LoadingStateTelemetry.StopLoadingTimer(operationName, sw, success: true, itemCount: i);
             }
         });
@@ -343,7 +343,7 @@ public sealed class LoadingStateTelemetryTests
         string operationName = "QuickOperation";
 
         // Act
-        var stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
+        Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
         LoadingStateTelemetry.StopLoadingTimer(operationName, stopwatch, success: true);
 
         // Assert
@@ -359,7 +359,7 @@ public sealed class LoadingStateTelemetryTests
         int delayMs = 100;
 
         // Act
-        var stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
+        Stopwatch stopwatch = LoadingStateTelemetry.StartLoadingTimer(operationName);
         await Task.Delay(delayMs);
         LoadingStateTelemetry.StopLoadingTimer(operationName, stopwatch, success: true);
 

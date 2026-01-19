@@ -46,7 +46,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
         var query = new TestQuery();
 
@@ -62,7 +62,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
         var query = new TestQuery();
 
@@ -82,7 +82,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new FailingQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
         var query = new TestQuery();
 
@@ -96,7 +96,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new CachedQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<CachedTestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<CachedTestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<CachedTestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<CachedTestQuery, string>(innerHandler, logger);
         var query = new CachedTestQuery();
 
@@ -112,7 +112,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
         var query = new TestQuery();
         var cancellationToken = new CancellationToken(canceled: false);
@@ -129,7 +129,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
 
         // Act
@@ -148,7 +148,7 @@ public sealed class TracedQueryHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulQueryHandler();
-        var logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
+        NullLogger<TracedQueryHandlerDecorator<TestQuery, string>> logger = NullLogger<TracedQueryHandlerDecorator<TestQuery, string>>.Instance;
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
 
         // Act

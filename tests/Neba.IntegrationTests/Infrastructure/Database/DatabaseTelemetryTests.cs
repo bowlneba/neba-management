@@ -27,8 +27,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public async Task DatabaseQueries_WorkWithSlowQueryInterceptor()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
         var interceptor = new SlowQueryInterceptor(logger, slowQueryThresholdMs: 5000);
 
         await using var context = new WebsiteDbContext(
@@ -43,7 +43,7 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
         await context.SaveChangesAsync();
 
         // Act - Execute query through interceptor
-        var result = await context.Bowlers.Take(3).ToListAsync();
+        List<Bowler> result = await context.Bowlers.Take(3).ToListAsync();
 
         // Assert
         result.ShouldNotBeNull();
@@ -54,8 +54,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public async Task SlowQueryInterceptor_AllowsMultipleConcurrentQueries()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
         var interceptor = new SlowQueryInterceptor(logger, slowQueryThresholdMs: 10000);
 
         await using var context = new WebsiteDbContext(
@@ -72,7 +72,7 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
         // Act - Multiple concurrent queries
         var count1 = await context.Bowlers.CountAsync();
         var count2 = await context.Bowlers.Where(b => b.Id != default).CountAsync();
-        var list = await context.Bowlers.Take(5).ToListAsync();
+        List<Bowler> list = await context.Bowlers.Take(5).ToListAsync();
 
         // Assert
         count1.ShouldBe(10);
@@ -84,8 +84,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public async Task SlowQueryInterceptor_HandlesDifferentQueryTypes()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
         var interceptor = new SlowQueryInterceptor(logger, slowQueryThresholdMs: 10000);
 
         await using var context = new WebsiteDbContext(
@@ -101,7 +101,7 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
 
         // Act & Assert - Different query types
         // Select query
-        var selectResult = await context.Bowlers.FirstOrDefaultAsync();
+        Bowler? selectResult = await context.Bowlers.FirstOrDefaultAsync();
         selectResult.ShouldNotBeNull();
 
         // Count query
@@ -117,8 +117,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public void SlowQueryInterceptor_CanBeInstantiatedWithDefaultThreshold()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
 
         // Act & Assert
         Should.NotThrow(() => new SlowQueryInterceptor(logger));
@@ -128,8 +128,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public void SlowQueryInterceptor_CanBeInstantiatedWithCustomThreshold()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
 
         // Act & Assert
         Should.NotThrow(() => new SlowQueryInterceptor(logger, slowQueryThresholdMs: 500));
@@ -139,8 +139,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
     public async Task SlowQueryInterceptor_WithVeryLowThreshold_DetectsSlowQueries()
     {
         // Arrange
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
-        var logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Debug));
+        ILogger<SlowQueryInterceptor> logger = loggerFactory.CreateLogger<SlowQueryInterceptor>();
         // Set very low threshold so all queries appear slow
         var interceptor = new SlowQueryInterceptor(logger, slowQueryThresholdMs: 0.001);
 
@@ -156,7 +156,7 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
         await context.SaveChangesAsync();
 
         // Act - This query should be detected as slow
-        var result = await context.Bowlers.ToListAsync();
+        List<Bowler> result = await context.Bowlers.ToListAsync();
 
         // Assert - Query completes successfully even when detected as slow
         result.ShouldNotBeNull();

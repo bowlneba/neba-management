@@ -47,12 +47,12 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
         var command = new TestCommand();
 
         // Act
-        var result = await decorator.HandleAsync(command, CancellationToken.None);
+        ErrorOr<string> result = await decorator.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.IsError.ShouldBeFalse();
@@ -64,7 +64,7 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
         var command = new TestCommand();
 
@@ -73,7 +73,7 @@ public sealed class TracedCommandHandlerDecoratorTests
         ActivitySource.AddActivityListener(listener);
 
         // Act
-        var result = await decorator.HandleAsync(command, CancellationToken.None);
+        ErrorOr<string> result = await decorator.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.IsError.ShouldBeFalse();
@@ -84,7 +84,7 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new FailingCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
         var command = new TestCommand();
 
@@ -103,7 +103,7 @@ public sealed class TracedCommandHandlerDecoratorTests
         var command = new TestCommandWithError();
 
         // Act
-        var result = await decorator.HandleAsync(command, CancellationToken.None);
+        ErrorOr<string> result = await decorator.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.IsError.ShouldBeTrue();
@@ -115,13 +115,13 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
         var command = new TestCommand();
         var cancellationToken = new CancellationToken(canceled: false);
 
         // Act
-        var result = await decorator.HandleAsync(command, cancellationToken);
+        ErrorOr<string> result = await decorator.HandleAsync(command, cancellationToken);
 
         // Assert
         result.IsError.ShouldBeFalse();
@@ -132,13 +132,13 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
 
         // Act
-        var result1 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
-        var result2 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
-        var result3 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
+        ErrorOr<string> result1 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
+        ErrorOr<string> result2 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
+        ErrorOr<string> result3 = await decorator.HandleAsync(new TestCommand(), CancellationToken.None);
 
         // Assert
         result1.IsError.ShouldBeFalse();
@@ -151,12 +151,12 @@ public sealed class TracedCommandHandlerDecoratorTests
     {
         // Arrange
         var innerHandler = new SuccessfulCommandHandler();
-        var logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
+        NullLogger<TracedCommandHandlerDecorator<TestCommand, string>> logger = NullLogger<TracedCommandHandlerDecorator<TestCommand, string>>.Instance;
         var decorator = new TracedCommandHandlerDecorator<TestCommand, string>(innerHandler, logger);
         var command = new TestCommand();
 
         // Act
-        var result = await decorator.HandleAsync(command, CancellationToken.None);
+        ErrorOr<string> result = await decorator.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.IsError.ShouldBeFalse();

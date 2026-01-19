@@ -15,7 +15,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -26,7 +26,7 @@ public sealed class DatabaseTelemetryTests
         services.AddDatabaseTelemetry(configuration);
 
         // Assert
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         serviceProvider.ShouldNotBeNull();
     }
 
@@ -35,7 +35,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .Build();
 
         // Act & Assert
@@ -47,7 +47,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "5000" }
@@ -63,7 +63,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "0" }
@@ -79,7 +79,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1234.5" }
@@ -95,7 +95,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "600000" }
@@ -111,7 +111,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -119,7 +119,7 @@ public sealed class DatabaseTelemetryTests
             .Build();
 
         // Act
-        var result = services.AddDatabaseTelemetry(configuration);
+        IServiceCollection result = services.AddDatabaseTelemetry(configuration);
 
         // Assert
         result.ShouldBe(services);
@@ -130,7 +130,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -151,7 +151,7 @@ public sealed class DatabaseTelemetryTests
         // Arrange
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddConsole());
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -168,7 +168,7 @@ public sealed class DatabaseTelemetryTests
         // Arrange
         var services = new ServiceCollection();
         services.AddLogging();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "2000" }
@@ -177,10 +177,10 @@ public sealed class DatabaseTelemetryTests
 
         // Act
         services.AddDatabaseTelemetry(configuration);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var interceptor = serviceProvider.GetService<SlowQueryInterceptor>();
+        SlowQueryInterceptor? interceptor = serviceProvider.GetService<SlowQueryInterceptor>();
         interceptor.ShouldNotBeNull();
     }
 
@@ -189,7 +189,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -205,7 +205,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Database:SlowQueryThresholdMs", "1000" }
@@ -226,7 +226,7 @@ public sealed class DatabaseTelemetryTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>())
             .Build();
 

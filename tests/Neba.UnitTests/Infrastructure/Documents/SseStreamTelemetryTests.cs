@@ -25,15 +25,15 @@ public sealed class SseStreamTelemetryTests
     public void RecordConnectionStart_WithDifferentStreamTypes_ReturnsStopwatch()
     {
         // Arrange & Act & Assert
-        var sw1 = SseStreamTelemetry.RecordConnectionStart("document");
+        Stopwatch sw1 = SseStreamTelemetry.RecordConnectionStart("document");
         sw1.ShouldNotBeNull();
         sw1.IsRunning.ShouldBeTrue();
 
-        var sw2 = SseStreamTelemetry.RecordConnectionStart("notification");
+        Stopwatch sw2 = SseStreamTelemetry.RecordConnectionStart("notification");
         sw2.ShouldNotBeNull();
         sw2.IsRunning.ShouldBeTrue();
 
-        var sw3 = SseStreamTelemetry.RecordConnectionStart("status");
+        Stopwatch sw3 = SseStreamTelemetry.RecordConnectionStart("status");
         sw3.ShouldNotBeNull();
         sw3.IsRunning.ShouldBeTrue();
     }
@@ -43,7 +43,7 @@ public sealed class SseStreamTelemetryTests
     {
         // Arrange
         string streamType = "document";
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
         int eventCount = 5;
 
         // Act
@@ -58,7 +58,7 @@ public sealed class SseStreamTelemetryTests
     {
         // Arrange
         string streamType = "document";
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordConnectionEnd(streamType, stopwatch, 0));
@@ -70,7 +70,7 @@ public sealed class SseStreamTelemetryTests
     {
         // Arrange
         string streamType = "notification";
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
 
         // Act & Assert
         Should.NotThrow(() => SseStreamTelemetry.RecordConnectionEnd(streamType, stopwatch, 100));
@@ -130,7 +130,7 @@ public sealed class SseStreamTelemetryTests
         string streamType = "document";
 
         // Act - Start connection
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
         stopwatch.IsRunning.ShouldBeTrue();
 
         // Simulate some events
@@ -155,7 +155,7 @@ public sealed class SseStreamTelemetryTests
         string streamType = "notification";
 
         // Act - Start connection
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
         stopwatch.IsRunning.ShouldBeTrue();
 
         // Simulate some events before error
@@ -174,13 +174,13 @@ public sealed class SseStreamTelemetryTests
     public async Task MultipleConcurrentConnections_TrackedIndependently()
     {
         // Arrange & Act
-        var sw1 = SseStreamTelemetry.RecordConnectionStart("document");
+        Stopwatch sw1 = SseStreamTelemetry.RecordConnectionStart("document");
         await Task.Delay(10);
 
-        var sw2 = SseStreamTelemetry.RecordConnectionStart("notification");
+        Stopwatch sw2 = SseStreamTelemetry.RecordConnectionStart("notification");
         await Task.Delay(10);
 
-        var sw3 = SseStreamTelemetry.RecordConnectionStart("status");
+        Stopwatch sw3 = SseStreamTelemetry.RecordConnectionStart("status");
         await Task.Delay(10);
 
         // End connections in different order
@@ -222,7 +222,7 @@ public sealed class SseStreamTelemetryTests
         string streamType = "status";
 
         // Act
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
         SseStreamTelemetry.RecordConnectionEnd(streamType, stopwatch, 0);
 
         // Assert
@@ -238,7 +238,7 @@ public sealed class SseStreamTelemetryTests
         int delayMs = 100;
 
         // Act
-        var stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
+        Stopwatch stopwatch = SseStreamTelemetry.RecordConnectionStart(streamType);
         await Task.Delay(delayMs);
         SseStreamTelemetry.RecordConnectionEnd(streamType, stopwatch, 0);
 

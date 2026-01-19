@@ -24,9 +24,9 @@ public sealed class GoogleDocsServiceTests
     public async Task GetDocumentAsHtmlAsync_WithValidDocument_ReturnsHtml()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = CreateMockSettings();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = CreateMockSettings();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Note: In a real test, we would mock the Google Drive API
         // This test demonstrates the pattern but cannot fully test without
@@ -43,9 +43,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithValidSettings_CanBeCreated()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = CreateMockSettings();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = CreateMockSettings();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -58,12 +58,12 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithMultipleDocuments_CanBeCreated()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = GoogleDocsSettingsFactory.Create(
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(
             ("Doc1", "id1", "/doc1"),
             ("Doc2", "id2", "/doc2"),
             ("Doc3", "id3", "/doc3"));
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -76,9 +76,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithEmptyDocumentsList_CanBeCreated()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = GoogleDocsSettingsFactory.Create();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -91,9 +91,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_CallsMetricsOnSuccess()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = CreateMockSettings();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = CreateMockSettings();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act
         var service = new GoogleDocsService(htmlProcessor, settings, logger);
@@ -106,9 +106,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_ImplementsIDocumentsService()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = CreateMockSettings();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = CreateMockSettings();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act
         var service = new GoogleDocsService(htmlProcessor, settings, logger);
@@ -121,9 +121,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithSingleDocument_CanBeCreated()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = GoogleDocsSettingsFactory.Create(("OnlyDoc", "only_id", "/onlydoc"));
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("OnlyDoc", "only_id", "/onlydoc"));
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -136,9 +136,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithSpecialCharactersInDocName_CanBeCreated()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = GoogleDocsSettingsFactory.Create(("Doc-Name_2024 (v2)", "special_id", "/doc-name"));
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("Doc-Name_2024 (v2)", "special_id", "/doc-name"));
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -152,9 +152,9 @@ public sealed class GoogleDocsServiceTests
     {
         // Arrange
         var longId = new string('a', 500);
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = GoogleDocsSettingsFactory.Create(("LongIdDoc", longId, "/longid"));
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("LongIdDoc", longId, "/longid"));
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
         Should.NotThrow(() =>
@@ -167,9 +167,9 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_UsesTelemetryMetrics()
     {
         // Arrange
-        var logger = NullLogger<GoogleDocsService>.Instance;
-        var settings = CreateMockSettings();
-        var htmlProcessor = CreateHtmlProcessor(settings);
+        NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
+        GoogleDocsSettings settings = CreateMockSettings();
+        HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act
         var service = new GoogleDocsService(htmlProcessor, settings, logger);

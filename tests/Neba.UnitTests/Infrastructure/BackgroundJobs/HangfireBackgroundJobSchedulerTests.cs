@@ -74,7 +74,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Enqueue_WithValidJob_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Test Document");
 
         // Act
@@ -89,7 +89,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Enqueue_WithDifferentJobTypes_ReturnsJobIds()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job1 = new TestBackgroundJob("Doc1");
         var job2 = new SimpleTestJob();
 
@@ -107,7 +107,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Schedule_WithTimeSpan_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Delayed Doc");
         var delay = TimeSpan.FromHours(1);
 
@@ -123,9 +123,9 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Schedule_WithDateTimeOffset_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Future Doc");
-        var futureTime = DateTimeOffset.UtcNow.AddDays(1);
+        DateTimeOffset futureTime = DateTimeOffset.UtcNow.AddDays(1);
 
         // Act
         var jobId = scheduler.Schedule(job, futureTime);
@@ -139,7 +139,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Schedule_WithSmallDelay_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Quick Job");
         var delay = TimeSpan.FromSeconds(5);
 
@@ -154,7 +154,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Schedule_WithLargeDelay_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Long Job");
         var delay = TimeSpan.FromDays(30);
 
@@ -169,7 +169,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void AddOrUpdateRecurring_WithCronExpression_Succeeds()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Recurring Doc");
         var cronExpression = "0 0 * * *"; // Daily at midnight
 
@@ -181,7 +181,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void AddOrUpdateRecurring_WithDifferentCronExpressions_Succeeds()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job1 = new TestBackgroundJob("Daily Job");
         var job2 = new TestBackgroundJob("Hourly Job");
 
@@ -197,7 +197,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void RemoveRecurring_WithValidId_Succeeds()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Removable Job");
         scheduler.AddOrUpdateRecurring("removable_job", job, "0 0 * * *");
 
@@ -209,7 +209,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void RemoveRecurring_WithNonExistentId_Succeeds()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
 
         // Act & Assert
         Should.NotThrow(() => scheduler.RemoveRecurring("non_existent_job"));
@@ -219,7 +219,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void ContinueWith_WithValidParentJobId_ReturnsJobId()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var parentJobId = scheduler.Enqueue(new SimpleTestJob());
         var job = new TestBackgroundJob("Continuation Job");
 
@@ -235,7 +235,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void Delete_WithValidJobId_ReturnsResult()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var jobId = "job_to_delete_123";
 
         // Act
@@ -250,7 +250,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public async Task ExecuteJobAsync_WithValidHandler_ExecutesSuccessfully()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Executable Job");
 
         // Act & Assert
@@ -262,7 +262,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public async Task ExecuteJobAsync_WithCancellationToken_CompletesSuccessfully()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job = new TestBackgroundJob("Cancellable Job");
         var cancellationToken = new CancellationToken(canceled: false);
 
@@ -275,7 +275,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void MultipleJobs_ScheduledConcurrently_AllComplete()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
 
         // Act
         var jobId1 = scheduler.Enqueue(new TestBackgroundJob("Job1"));
@@ -294,7 +294,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void JobChain_Created_Successfully()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job1 = new TestBackgroundJob("First");
 
         // Act
@@ -312,7 +312,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
     public void RecurringJob_CanBeUpdated_Successfully()
     {
         // Arrange
-        var scheduler = CreateScheduler();
+        HangfireBackgroundJobScheduler scheduler = CreateScheduler();
         var job1 = new TestBackgroundJob("Initial");
         var job2 = new TestBackgroundJob("Updated");
 
