@@ -39,20 +39,22 @@ public sealed class JavaScriptTelemetryBridge
 
         if (properties != null)
         {
-            foreach (var prop in properties)
+            foreach (KeyValuePair<string, object> prop in properties)
             {
                 activity?.SetTag($"event.{prop.Key}", prop.Value);
 
                 // Track duration if present
-                if (prop.Key == "duration_ms" && prop.Value is double durationMs)
+                if (prop.Key != "duration_ms" || prop.Value is not double durationMs)
                 {
-                    TagList durationTags = new()
-                    {
-                        { "event.name", eventName },
-                        { "event.success", properties.TryGetValue("success", out object? successValue) && successValue is bool success && success }
-                    };
-                    s_operationDuration.Record(durationMs, durationTags);
+                    continue;
                 }
+
+                TagList durationTags = new()
+                {
+                    { "event.name", eventName },
+                    { "event.success", properties.TryGetValue("success", out object? successValue) && successValue is bool success && success }
+                };
+                s_operationDuration.Record(durationMs, durationTags);
             }
         }
 
