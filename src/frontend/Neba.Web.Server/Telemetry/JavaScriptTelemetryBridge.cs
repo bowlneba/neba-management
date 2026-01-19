@@ -49,7 +49,7 @@ public sealed class JavaScriptTelemetryBridge
                     TagList durationTags = new()
                     {
                         { "event.name", eventName },
-                        { "event.success", properties.ContainsKey("success") && (bool)properties["success"] }
+                        { "event.success", properties.TryGetValue("success", out object? successValue) && successValue is bool success && success }
                     };
                     s_operationDuration.Record(durationMs, durationTags);
                 }
