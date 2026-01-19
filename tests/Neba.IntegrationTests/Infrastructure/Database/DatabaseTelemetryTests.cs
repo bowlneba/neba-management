@@ -70,8 +70,8 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
         await context.SaveChangesAsync();
 
         // Act - Multiple concurrent queries
-        var count1 = await context.Bowlers.CountAsync();
-        var count2 = await context.Bowlers.Where(b => b.Id != default).CountAsync();
+        int count1 = await context.Bowlers.CountAsync();
+        int count2 = await context.Bowlers.Where(b => b.Id != default).CountAsync();
         List<Bowler> list = await context.Bowlers.Take(5).ToListAsync();
 
         // Assert
@@ -105,11 +105,11 @@ public sealed class DatabaseTelemetryTests : IAsyncLifetime
         selectResult.ShouldNotBeNull();
 
         // Count query
-        var countResult = await context.Bowlers.CountAsync();
+        int countResult = await context.Bowlers.CountAsync();
         countResult.ShouldBe(3);
 
         // Any query
-        var anyResult = await context.Bowlers.AnyAsync();
+        bool anyResult = await context.Bowlers.AnyAsync();
         anyResult.ShouldBeTrue();
     }
 
