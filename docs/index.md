@@ -26,8 +26,19 @@ title: Home
         <ul class="feature-list">
             <li><a href="{{ '/architecture/bounded-contexts' | relative_url }}">Bounded Contexts</a></li>
             <li><a href="{{ '/architecture/adr-001-ulid-shadow-keys' | relative_url }}">ADR-001: ULID Pattern</a></li>
+            <li><a href="{{ '/architecture/adr-0050-opentelemetry-without-aspire-apphost' | relative_url }}">ADR-005: OpenTelemetry</a></li>
             <li>Domain Models <span class="status-badge status-soon">Soon</span></li>
             <li>CQRS Implementation <span class="status-badge status-soon">Soon</span></li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h3><span class="feature-icon">📊</span> Observability <span class="status-badge status-ready">Ready</span></h3>
+        <p>OpenTelemetry metrics, traces, and logs.</p>
+        <ul class="feature-list">
+            <li><a href="{{ '/observability/telemetry-reference' | relative_url }}">Telemetry Reference</a></li>
+            <li>Monitoring Dashboards <span class="status-badge status-soon">Soon</span></li>
+            <li>Alert Configuration <span class="status-badge status-soon">Soon</span></li>
         </ul>
     </div>
 
