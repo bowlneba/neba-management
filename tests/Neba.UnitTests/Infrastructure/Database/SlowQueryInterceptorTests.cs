@@ -103,7 +103,7 @@ public sealed class SlowQueryInterceptorTests
     [Fact(DisplayName = "Different threshold values are accepted")]
     public void Constructor_WithVariousThresholds_Succeeds()
     {
-        var thresholds = new[] { 0, 100, 500, 1000, 5000, 10000, double.MaxValue };
+        double[] thresholds = [0, 100, 500, 1000, 5000, 10000, double.MaxValue];
         foreach (double threshold in thresholds)
         {
             Should.NotThrow(() => new SlowQueryInterceptor(_mockLogger.Object, threshold));

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Neba.Infrastructure.Documents;
 
 namespace Neba.UnitTests.Infrastructure.Documents;
@@ -70,7 +71,7 @@ public sealed class DocumentRefreshSseStreamHandlerTests
         Delegate handler = DocumentRefreshSseStreamHandler.CreateStreamHandler(documentType);
 
         // Assert
-        var parameters = handler.Method.GetParameters();
+        ParameterInfo[] parameters = handler.Method.GetParameters();
         parameters[0].ParameterType.ShouldBe(typeof(DocumentRefreshChannels));
         parameters[2].ParameterType.ShouldBe(typeof(CancellationToken));
     }
