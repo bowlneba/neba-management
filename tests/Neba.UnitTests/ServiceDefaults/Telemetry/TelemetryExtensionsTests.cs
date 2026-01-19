@@ -127,7 +127,7 @@ public sealed class TelemetryExtensionsTests
         var exception = new InvalidOperationException("Test exception");
 
         // Act
-        var result = activity.SetExceptionTags(exception);
+        Activity? result = activity.SetExceptionTags(exception);
 
         // Assert
         result.ShouldBe(activity);
@@ -141,7 +141,7 @@ public sealed class TelemetryExtensionsTests
         var exception = new InvalidOperationException("Test exception");
 
         // Act
-        var result = activity.SetExceptionTags(exception);
+        Activity? result = activity.SetExceptionTags(exception);
 
         // Assert
         result.ShouldBeNull();
@@ -226,7 +226,7 @@ public sealed class TelemetryExtensionsTests
         activity.Start();
 
         // Act
-        var result = activity.SetCodeAttributes("MyFunction", "MyNamespace");
+        Activity? result = activity.SetCodeAttributes("MyFunction", "MyNamespace");
 
         // Assert
         result.ShouldBe(activity);
@@ -239,7 +239,7 @@ public sealed class TelemetryExtensionsTests
         Activity? activity = null;
 
         // Act
-        var result = activity.SetCodeAttributes("MyFunction", "MyNamespace");
+        Activity? result = activity.SetCodeAttributes("MyFunction", "MyNamespace");
 
         // Assert
         result.ShouldBeNull();

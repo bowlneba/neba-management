@@ -24,7 +24,7 @@ internal static class DatabaseTelemetry
                         options.EnrichWithIDbCommand = (activity, command) =>
                         {
                             // Filter out Hangfire internal queries to reduce telemetry volume/cost
-                            if (command.CommandText?.Contains("hangfire.", StringComparison.OrdinalIgnoreCase) == true)
+                            if (command.CommandText?.Contains("hangfire.", StringComparison.OrdinalIgnoreCase) is true)
                             {
                                 activity.IsAllDataRequested = false;
                                 return;
