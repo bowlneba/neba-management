@@ -42,9 +42,9 @@ public sealed class SlowQueryInterceptorTests
     {
         Should.NotThrow(() =>
         {
-            var interceptor1 = new SlowQueryInterceptor(_mockLogger.Object, 500);
-            var interceptor2 = new SlowQueryInterceptor(_mockLogger.Object, 1000);
-            var interceptor3 = new SlowQueryInterceptor(_mockLogger.Object, 2000);
+            _ = new SlowQueryInterceptor(_mockLogger.Object, 500);
+            _ = new SlowQueryInterceptor(_mockLogger.Object, 1000);
+            _ = new SlowQueryInterceptor(_mockLogger.Object, 2000);
         });
     }
 
