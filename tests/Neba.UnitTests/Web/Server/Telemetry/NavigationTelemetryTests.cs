@@ -69,10 +69,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/new-page", false);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/new-page", false));
     }
 
     [Fact(DisplayName = "LocationChanged with intercepted navigation records correctly")]
@@ -83,10 +80,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page2", isNavigationIntercepted: true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page2", isNavigationIntercepted: true));
     }
 
     [Fact(DisplayName = "LocationChanged with external navigation records correctly")]
@@ -97,10 +91,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page2", isNavigationIntercepted: false);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page2", isNavigationIntercepted: false));
     }
 
     [Fact(DisplayName = "Multiple navigation events are tracked")]
@@ -127,10 +118,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page?param=value&other=123", true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page?param=value&other=123", true));
     }
 
     [Fact(DisplayName = "Navigation with fragment is tracked")]
@@ -141,10 +129,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page#section", true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page#section", true));
     }
 
     [Fact(DisplayName = "Navigation to same page is tracked")]
@@ -155,10 +140,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page", true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page", true));
     }
 
     [Fact(DisplayName = "Navigation to root path is tracked")]
@@ -169,10 +151,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/", true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/", true));
     }
 
     [Fact(DisplayName = "Navigation from root path is tracked")]
@@ -183,10 +162,7 @@ public sealed class NavigationTelemetryTests
         using var telemetry = new NavigationTelemetry(navManager);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            navManager.TriggerLocationChanged("https://localhost/page", true);
-        });
+        Should.NotThrow(() => navManager.TriggerLocationChanged("https://localhost/page", true));
     }
 
     [Fact(DisplayName = "Rapid consecutive navigations are tracked")]

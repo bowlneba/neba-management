@@ -47,10 +47,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsService accepts valid documents configuration")]
@@ -65,10 +62,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsService with empty documents list can be created")]
@@ -80,10 +74,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsMetrics.RecordExportSuccess is called on successful export")]
@@ -125,10 +116,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsService handles document with special characters in name")]
@@ -140,10 +128,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsService with long document IDs can be created")]
@@ -156,10 +141,7 @@ public sealed class GoogleDocsServiceTests
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
 
         // Act & Assert
-        Should.NotThrow(() =>
-        {
-            _ = new GoogleDocsService(htmlProcessor, settings, logger);
-        });
+        Should.NotThrow(() => _ = new GoogleDocsService(htmlProcessor, settings, logger));
     }
 
     [Fact(DisplayName = "GoogleDocsMetrics is used for telemetry")]
