@@ -21,13 +21,15 @@ namespace Neba.Website.Endpoints.Tournaments;
 
 internal static class TournamentEndpoints
 {
+    private const string TournamentsTag = "tournaments";
+
     extension(IEndpointRouteBuilder app)
     {
         public IEndpointRouteBuilder MapTournamentEndpoints()
         {
             RouteGroupBuilder tournamentGroup = app
                 .MapGroup("/tournaments")
-                .WithTags("tournaments", "website")
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag)
                 .AllowAnonymous();
 
             tournamentGroup
@@ -36,7 +38,7 @@ internal static class TournamentEndpoints
 
             RouteGroupBuilder tournamentRulesGroup = tournamentGroup
                 .MapGroup("/rules")
-                .WithTags("tournaments", "website", "documents")
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag, "documents")
                 .AllowAnonymous();
 
             tournamentRulesGroup
@@ -68,7 +70,7 @@ internal static class TournamentEndpoints
                 .WithDescription("Retrieves a list of all upcoming NEBA tournaments.")
                 .Produces<CollectionResponse<TournamentSummaryResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags("tournaments", "website");
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag);
 
             return app;
         }
@@ -95,7 +97,7 @@ internal static class TournamentEndpoints
                 .WithDescription("Retrieves a list of all NEBA tournaments that took place in the specified year.")
                 .Produces<CollectionResponse<TournamentSummaryResponse>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags("tournaments", "website");
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag);
 
             return app;
         }
@@ -117,7 +119,7 @@ internal static class TournamentEndpoints
             .WithDescription("Retrieves the tournament rules document")
             .Produces<DocumentResponse<string>>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-            .WithTags("tournaments", "website", "documents");
+            .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag, "documents");
 
             return app;
         }
@@ -145,7 +147,7 @@ internal static class TournamentEndpoints
                 .WithDescription("Refreshes the cached version of the tournament rules document.")
                 .Produces(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.ProblemJson)
-                .WithTags("tournaments", "website");
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag);
 
             return app;
         }
@@ -159,7 +161,7 @@ internal static class TournamentEndpoints
                 .WithSummary("Stream tournament rules document refresh status updates via SSE")
                 .WithDescription("Subscribes to real-time status updates for tournament rules document refresh operations using Server-Sent Events.")
                 .Produces(StatusCodes.Status200OK, contentType: "text/event-stream")
-                .WithTags("tournaments", "website", "sse");
+                .WithTags(TournamentsTag, WebsiteEndpoints.WebsiteTag, "sse");
 
             return app;
         }

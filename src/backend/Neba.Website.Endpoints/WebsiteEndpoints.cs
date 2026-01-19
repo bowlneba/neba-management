@@ -20,6 +20,8 @@ public static class WebsiteEndpoints
 #pragma warning disable CA1034 // Nested types should not be visible
 #pragma warning disable S1144 // Remove unused constructor of private type.
 
+    internal const string WebsiteTag = "website";
+
     extension(IEndpointRouteBuilder app)
     {
         /// <summary>
