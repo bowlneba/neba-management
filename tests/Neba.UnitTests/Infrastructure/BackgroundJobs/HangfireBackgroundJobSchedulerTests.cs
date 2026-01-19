@@ -78,7 +78,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var job = new TestBackgroundJob("Test Document");
 
         // Act
-        var jobId = scheduler.Enqueue(job);
+        string jobId = scheduler.Enqueue(job);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -94,8 +94,8 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var job2 = new SimpleTestJob();
 
         // Act
-        var jobId1 = scheduler.Enqueue(job1);
-        var jobId2 = scheduler.Enqueue(job2);
+        string jobId1 = scheduler.Enqueue(job1);
+        string jobId2 = scheduler.Enqueue(job2);
 
         // Assert
         jobId1.ShouldNotBeNull();
@@ -112,7 +112,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var delay = TimeSpan.FromHours(1);
 
         // Act
-        var jobId = scheduler.Schedule(job, delay);
+        string jobId = scheduler.Schedule(job, delay);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -128,7 +128,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         DateTimeOffset futureTime = DateTimeOffset.UtcNow.AddDays(1);
 
         // Act
-        var jobId = scheduler.Schedule(job, futureTime);
+        string jobId = scheduler.Schedule(job, futureTime);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -144,7 +144,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var delay = TimeSpan.FromSeconds(5);
 
         // Act
-        var jobId = scheduler.Schedule(job, delay);
+        string jobId = scheduler.Schedule(job, delay);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -159,7 +159,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var delay = TimeSpan.FromDays(30);
 
         // Act
-        var jobId = scheduler.Schedule(job, delay);
+        string jobId = scheduler.Schedule(job, delay);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -220,11 +220,11 @@ public sealed class HangfireBackgroundJobSchedulerTests
     {
         // Arrange
         HangfireBackgroundJobScheduler scheduler = CreateScheduler();
-        var parentJobId = scheduler.Enqueue(new SimpleTestJob());
+        string parentJobId = scheduler.Enqueue(new SimpleTestJob());
         var job = new TestBackgroundJob("Continuation Job");
 
         // Act
-        var jobId = scheduler.ContinueWith(parentJobId, job);
+        string jobId = scheduler.ContinueWith(parentJobId, job);
 
         // Assert
         jobId.ShouldNotBeNull();
@@ -239,7 +239,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         const string jobId = "job_to_delete_123";
 
         // Act
-        var result = scheduler.Delete(jobId);
+        bool result = scheduler.Delete(jobId);
 
         // Assert
         // Result may be true or false depending on Hangfire state
@@ -278,9 +278,9 @@ public sealed class HangfireBackgroundJobSchedulerTests
         HangfireBackgroundJobScheduler scheduler = CreateScheduler();
 
         // Act
-        var jobId1 = scheduler.Enqueue(new TestBackgroundJob("Job1"));
-        var jobId2 = scheduler.Enqueue(new TestBackgroundJob("Job2"));
-        var jobId3 = scheduler.Enqueue(new SimpleTestJob());
+        string jobId1 = scheduler.Enqueue(new TestBackgroundJob("Job1"));
+        string jobId2 = scheduler.Enqueue(new TestBackgroundJob("Job2"));
+        string jobId3 = scheduler.Enqueue(new SimpleTestJob());
 
         // Assert
         jobId1.ShouldNotBeNull();
@@ -298,9 +298,9 @@ public sealed class HangfireBackgroundJobSchedulerTests
         var job1 = new TestBackgroundJob("First");
 
         // Act
-        var jobId1 = scheduler.Enqueue(job1);
+        string jobId1 = scheduler.Enqueue(job1);
         var job2 = new TestBackgroundJob("Second");
-        var jobId2 = scheduler.ContinueWith(jobId1, job2);
+        string jobId2 = scheduler.ContinueWith(jobId1, job2);
 
         // Assert
         jobId1.ShouldNotBeNull();

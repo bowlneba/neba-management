@@ -51,7 +51,7 @@ public sealed class TracedQueryHandlerDecoratorTests
         var query = new TestQuery();
 
         // Act
-        var result = await decorator.HandleAsync(query, CancellationToken.None);
+        string result = await decorator.HandleAsync(query, CancellationToken.None);
 
         // Assert
         result.ShouldBe("query_result");
@@ -71,7 +71,7 @@ public sealed class TracedQueryHandlerDecoratorTests
         ActivitySource.AddActivityListener(listener);
 
         // Act
-        var result = await decorator.HandleAsync(query, CancellationToken.None);
+        string result = await decorator.HandleAsync(query, CancellationToken.None);
 
         // Assert
         result.ShouldBe("query_result");
@@ -101,7 +101,7 @@ public sealed class TracedQueryHandlerDecoratorTests
         var query = new CachedTestQuery();
 
         // Act
-        var result = await decorator.HandleAsync(query, CancellationToken.None);
+        string result = await decorator.HandleAsync(query, CancellationToken.None);
 
         // Assert
         result.ShouldBe("cached_result");
@@ -118,7 +118,7 @@ public sealed class TracedQueryHandlerDecoratorTests
         var cancellationToken = new CancellationToken(canceled: false);
 
         // Act
-        var result = await decorator.HandleAsync(query, cancellationToken);
+        string result = await decorator.HandleAsync(query, cancellationToken);
 
         // Assert
         result.ShouldBe("query_result");
@@ -133,9 +133,9 @@ public sealed class TracedQueryHandlerDecoratorTests
         var decorator = new TracedQueryHandlerDecorator<TestQuery, string>(innerHandler, logger);
 
         // Act
-        var result1 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
-        var result2 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
-        var result3 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
+        string result1 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
+        string result2 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
+        string result3 = await decorator.HandleAsync(new TestQuery(), CancellationToken.None);
 
         // Assert
         result1.ShouldBe("query_result");
@@ -156,7 +156,7 @@ public sealed class TracedQueryHandlerDecoratorTests
             .Select(_ => decorator.HandleAsync(new TestQuery(), CancellationToken.None))
             .ToList();
 
-        var results = await Task.WhenAll(tasks);
+        string[] results = await Task.WhenAll(tasks);
 
         // Assert
         results.ShouldAllBe(r => r == "query_result");

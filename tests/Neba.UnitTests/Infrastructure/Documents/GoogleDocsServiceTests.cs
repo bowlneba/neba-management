@@ -150,7 +150,7 @@ public sealed class GoogleDocsServiceTests
     public void GoogleDocsService_WithLongDocumentIds_CanBeCreated()
     {
         // Arrange
-        var longId = new string('a', 500);
+        string longId = new string('a', 500);
         NullLogger<GoogleDocsService> logger = NullLogger<GoogleDocsService>.Instance;
         GoogleDocsSettings settings = GoogleDocsSettingsFactory.Create(("LongIdDoc", longId, "/longid"));
         HtmlProcessor htmlProcessor = CreateHtmlProcessor(settings);
