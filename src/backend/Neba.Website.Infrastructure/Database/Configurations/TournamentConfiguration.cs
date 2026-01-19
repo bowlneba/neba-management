@@ -94,9 +94,9 @@ internal sealed class TournamentConfiguration
                 });
 
         builder.HasMany(tournament => tournament.Documents)
-            .WithOne()
-            .HasForeignKey(document => document.TournamentId)
-            .HasPrincipalKey(tournament => tournament.Id)
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithOne(document => document.Tournament)
+            .HasForeignKey(ForeignKeyName)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
     }
 }

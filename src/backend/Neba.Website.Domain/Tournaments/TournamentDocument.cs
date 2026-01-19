@@ -15,9 +15,9 @@ public sealed class TournamentDocument
     public required TournamentDocumentId Id { get; init; }
 
     /// <summary>
-    /// Gets the unique identifier for the tournament.
+    /// Gets the tournament associated with the document (Navigation property).
     /// </summary>
-    public required TournamentId TournamentId { get; init; }
+    internal Tournament Tournament { get; set; } = null!;
 
     /// <summary>
     /// Gets the type of the tournament document.

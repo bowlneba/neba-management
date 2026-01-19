@@ -21,9 +21,6 @@ internal sealed class TournamentDocumentConfiguration
 
         builder.HasAlternateKey(document => document.Id);
 
-        builder.Property(document => document.TournamentId)
-            .IsUlid<TournamentId, TournamentId.EfCoreValueConverter>(TournamentConfiguration.ForeignKeyName);
-
         builder.Property(document => document.DocumentType)
             .HasConversion<SmartEnumConverter<TournamentDocumentType, int>>()
             .IsRequired();
