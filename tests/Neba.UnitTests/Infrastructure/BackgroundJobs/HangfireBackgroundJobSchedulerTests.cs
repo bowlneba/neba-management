@@ -43,7 +43,7 @@ public sealed class HangfireBackgroundJobSchedulerTests
         }
     }
 
-        private static HangfireBackgroundJobScheduler CreateScheduler()
+    private static HangfireBackgroundJobScheduler CreateScheduler()
     {
         var mockScopeFactory = new Mock<IServiceScopeFactory>();
         var mockLogger = new Mock<ILogger<HangfireBackgroundJobScheduler>>();
