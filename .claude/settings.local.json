@@ -152,7 +152,8 @@
       "Bash(npm run test:browser:*)",
       "Bash(git mv:*)",
       "Bash(docker pull:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(npm run test:coverage:*)"
     ],
     "deny": [],
     "ask": []
