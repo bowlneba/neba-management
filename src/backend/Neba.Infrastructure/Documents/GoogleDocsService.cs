@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Mime;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
@@ -34,7 +35,7 @@ internal sealed class GoogleDocsService(
         activity?.SetCodeAttributes("GetDocumentAsHtmlAsync", "Neba.GoogleDocs");
         activity?.SetTag("document.name", documentName);
         activity?.SetTag("document.id", documentId);
-        activity?.SetTag("export.format", "text/html");
+        activity?.SetTag("export.format", MediaTypeNames.Text.Html);
 
         long startTimestamp = Stopwatch.GetTimestamp();
 
@@ -49,7 +50,7 @@ internal sealed class GoogleDocsService(
             });
 
             // Export the document as HTML
-            FilesResource.ExportRequest request = service.Files.Export(documentId, "text/html");
+            FilesResource.ExportRequest request = service.Files.Export(documentId, MediaTypeNames.Text.Html);
             await using var stream = new MemoryStream();
             await request.DownloadAsync(stream, cancellationToken);
 
@@ -68,7 +69,7 @@ internal sealed class GoogleDocsService(
             double durationMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
             logger.LogDocumentExported(documentName, processedSize, durationMs);
 
-            GoogleDocsMetrics.RecordExportSuccess(documentName, documentId, durationMs, processedSize);
+            GoogleDocsMetrics.RecordExportSuccess(documentName, documentId, durationMs, processedSize, MediaTypeNames.Text.Html);
 
             activity?.SetTag("export.size_bytes", processedSize);
             activity?.SetTag("export.duration_ms", durationMs);
@@ -78,7 +79,7 @@ internal sealed class GoogleDocsService(
         catch (Exception ex)
         {
             logger.LogDocumentExportFailed(ex, documentName, documentId);
-            GoogleDocsMetrics.RecordExportFailure(documentName, documentId);
+            GoogleDocsMetrics.RecordExportFailure(documentName, documentId, MediaTypeNames.Text.Html);
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw;
         }

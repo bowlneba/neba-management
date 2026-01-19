@@ -35,13 +35,14 @@ internal static class GoogleDocsMetrics
     /// <param name="documentId">The Google Docs document ID.</param>
     /// <param name="durationMs">Duration of the export operation in milliseconds.</param>
     /// <param name="sizeBytes">Size of the exported HTML in bytes.</param>
-    public static void RecordExportSuccess(string documentName, string documentId, double durationMs, long sizeBytes)
+    /// <param name="contentType">The content type of the export format.</param>
+    public static void RecordExportSuccess(string documentName, string documentId, double durationMs, long sizeBytes, string contentType)
     {
         TagList tags = new()
         {
             { "document.name", documentName },
             { "document.id", documentId },
-            { "export.format", "text/html" }
+            { "export.format", contentType }
         };
 
         s_exportSuccess.Add(1, tags);
@@ -54,13 +55,14 @@ internal static class GoogleDocsMetrics
     /// </summary>
     /// <param name="documentName">The name of the document that failed to export.</param>
     /// <param name="documentId">The Google Docs document ID.</param>
-    public static void RecordExportFailure(string documentName, string documentId)
+    /// <param name="contentType">The content type of the export format.</param>
+    public static void RecordExportFailure(string documentName, string documentId, string contentType)
     {
         TagList tags = new()
         {
             { "document.name", documentName },
             { "document.id", documentId },
-            { "export.format", "text/html" }
+            { "export.format", contentType }
         };
         s_exportFailure.Add(1, tags);
     }
