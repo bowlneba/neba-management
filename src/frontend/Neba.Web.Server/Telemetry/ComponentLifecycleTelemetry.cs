@@ -8,6 +8,8 @@ namespace Neba.Web.Server.Telemetry;
 /// </summary>
 public static class ComponentLifecycleTelemetry
 {
+    private const string ComponentNameTag = "component.name";
+
     private static readonly ActivitySource s_activitySource = new("Neba.Web.Server.ComponentLifecycle");
     private static readonly Meter s_meter = new("Neba.Web.Server.ComponentLifecycle");
 
@@ -39,7 +41,7 @@ public static class ComponentLifecycleTelemetry
     {
         TagList tags = new()
         {
-            { "component.name", componentName },
+            { ComponentNameTag, componentName },
             { "component.init.async", isAsync }
         };
 
@@ -57,7 +59,7 @@ public static class ComponentLifecycleTelemetry
     {
         TagList tags = new()
         {
-            { "component.name", componentName },
+            { ComponentNameTag, componentName },
             { "component.first_render", firstRender }
         };
 
@@ -72,7 +74,7 @@ public static class ComponentLifecycleTelemetry
     {
         TagList tags = new()
         {
-            { "component.name", componentName }
+            { ComponentNameTag, componentName }
         };
 
         s_componentDisposals.Add(1, tags);
@@ -87,7 +89,7 @@ public static class ComponentLifecycleTelemetry
     public static Activity? StartActivity(string componentName, string lifecycleEvent)
     {
         Activity? activity = s_activitySource.StartActivity($"component.{lifecycleEvent}");
-        activity?.SetTag("component.name", componentName);
+        activity?.SetTag(ComponentNameTag, componentName);
         activity?.SetTag("component.lifecycle.event", lifecycleEvent);
         return activity;
     }

@@ -8,6 +8,8 @@ namespace Neba.Infrastructure.BackgroundJobs;
 /// </summary>
 internal static class HangfireMetrics
 {
+    private const string JobTypeTagName = "job.type";
+
     private static readonly Meter s_meter = new("Neba.Hangfire");
 
     private static readonly Counter<long> s_jobExecutions = s_meter.CreateCounter<long>(
@@ -33,7 +35,7 @@ internal static class HangfireMetrics
     /// <param name="jobType">The type of job being executed.</param>
     public static void RecordJobStart(string jobType)
     {
-        TagList tags = new() { { "job.type", jobType } };
+        TagList tags = new() { { JobTypeTagName, jobType } };
         s_jobExecutions.Add(1, tags);
     }
 
@@ -44,12 +46,12 @@ internal static class HangfireMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string jobType, double durationMs)
     {
-        TagList tags = new() { { "job.type", jobType } };
+        TagList tags = new() { { JobTypeTagName, jobType } };
         s_jobSuccesses.Add(1, tags);
 
         TagList durationTags = new()
         {
-            { "job.type", jobType },
+            { JobTypeTagName, jobType },
             { "result", "success" }
         };
         s_jobDuration.Record(durationMs, durationTags);
@@ -65,14 +67,14 @@ internal static class HangfireMetrics
     {
         TagList failureTags = new()
         {
-            { "job.type", jobType },
+            { JobTypeTagName, jobType },
             { "error.type", errorType }
         };
         s_jobFailures.Add(1, failureTags);
 
         TagList durationTags = new()
         {
-            { "job.type", jobType },
+            { JobTypeTagName, jobType },
             { "result", "failure" },
             { "error.type", errorType }
         };

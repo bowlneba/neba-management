@@ -8,6 +8,8 @@ namespace Neba.Infrastructure.Documents;
 /// </summary>
 internal static class SseStreamTelemetry
 {
+    private const string StreamTypeTagName = "stream.type";
+
     private static readonly ActivitySource s_activitySource = new("Neba.Infrastructure.SSE");
     private static readonly Meter s_meter = new("Neba.Infrastructure.SSE");
 
@@ -39,13 +41,13 @@ internal static class SseStreamTelemetry
     /// <returns>Stopwatch to track connection duration.</returns>
     public static Stopwatch RecordConnectionStart(string streamType)
     {
-        TagList tags = new() { { "stream.type", streamType } };
+        TagList tags = new() { { StreamTypeTagName, streamType } };
 
         s_connectionCount.Add(1, tags);
         s_activeConnections.Add(1, tags);
 
         using Activity? activity = s_activitySource.StartActivity("sse.connection");
-        activity?.SetTag("stream.type", streamType);
+        activity?.SetTag(StreamTypeTagName, streamType);
 
         return Stopwatch.StartNew();
     }
@@ -63,15 +65,15 @@ internal static class SseStreamTelemetry
 
         TagList tags = new()
         {
-            { "stream.type", streamType },
+            { StreamTypeTagName, streamType },
             { "event.count", eventCount }
         };
 
-        s_activeConnections.Add(-1, new TagList { { "stream.type", streamType } });
+        s_activeConnections.Add(-1, new TagList { { StreamTypeTagName, streamType } });
         s_connectionDuration.Record(durationSeconds, tags);
 
         using Activity? activity = s_activitySource.StartActivity("sse.connection.closed");
-        activity?.SetTag("stream.type", streamType);
+        activity?.SetTag(StreamTypeTagName, streamType);
         activity?.SetTag("duration_seconds", durationSeconds);
         activity?.SetTag("event.count", eventCount);
     }
@@ -85,7 +87,7 @@ internal static class SseStreamTelemetry
     {
         TagList tags = new()
         {
-            { "stream.type", streamType },
+            { StreamTypeTagName, streamType },
             { "event.type", eventType }
         };
 
@@ -101,15 +103,15 @@ internal static class SseStreamTelemetry
     {
         TagList tags = new()
         {
-            { "stream.type", streamType },
+            { StreamTypeTagName, streamType },
             { "error.type", errorType }
         };
 
         s_connectionErrors.Add(1, tags);
-        s_activeConnections.Add(-1, new TagList { { "stream.type", streamType } });
+        s_activeConnections.Add(-1, new TagList { { StreamTypeTagName, streamType } });
 
         using Activity? activity = s_activitySource.StartActivity("sse.connection.error");
-        activity?.SetTag("stream.type", streamType);
+        activity?.SetTag(StreamTypeTagName, streamType);
         activity?.SetTag("error.type", errorType);
         activity?.SetStatus(ActivityStatusCode.Error, errorType);
     }

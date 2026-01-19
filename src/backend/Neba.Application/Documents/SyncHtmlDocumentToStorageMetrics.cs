@@ -8,6 +8,8 @@ namespace Neba.Application.Documents;
 /// </summary>
 internal static class SyncHtmlDocumentToStorageMetrics
 {
+    private const string DocumentKeyTagName = "document.key";
+
     private static readonly Meter s_meter = new("Neba.BackgroundJobs");
 
     private static readonly Counter<long> s_jobExecutions = s_meter.CreateCounter<long>(
@@ -46,7 +48,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
     {
         TagList tags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "triggered.by", triggeredBy }
         };
         s_jobExecutions.Add(1, tags);
@@ -59,12 +61,12 @@ internal static class SyncHtmlDocumentToStorageMetrics
     /// <param name="durationMs">Duration in milliseconds.</param>
     public static void RecordJobSuccess(string documentKey, double durationMs)
     {
-        TagList tags = new() { { "document.key", documentKey } };
+        TagList tags = new() { { DocumentKeyTagName, documentKey } };
         s_jobSuccesses.Add(1, tags);
 
         TagList durationTags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "result", "success" }
         };
         s_jobDuration.Record(durationMs, durationTags);
@@ -80,14 +82,14 @@ internal static class SyncHtmlDocumentToStorageMetrics
     {
         TagList failureTags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "error.type", errorType }
         };
         s_jobFailures.Add(1, failureTags);
 
         TagList durationTags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "result", "failure" },
             { "error.type", errorType }
         };
@@ -103,7 +105,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
     {
         TagList tags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "phase", "retrieve" }
         };
         s_retrieveDuration.Record(durationMs, tags);
@@ -118,7 +120,7 @@ internal static class SyncHtmlDocumentToStorageMetrics
     {
         TagList tags = new()
         {
-            { "document.key", documentKey },
+            { DocumentKeyTagName, documentKey },
             { "phase", "upload" }
         };
         s_uploadDuration.Record(durationMs, tags);
