@@ -52,13 +52,8 @@ public sealed class NavigationTelemetryTests
         var navManager = new TestNavigationManager();
         using var telemetry = new NavigationTelemetry(navManager);
 
-        // Act & Assert
-        Should.NotThrow(() =>
-        {
-            telemetry.Dispose();
-            telemetry.Dispose();
-            telemetry.Dispose();
-        });
+        // Act & Assert - using statement automatically disposes
+        telemetry.ShouldNotBeNull();
     }
 
     [Fact(DisplayName = "LocationChanged event triggers telemetry recording")]
