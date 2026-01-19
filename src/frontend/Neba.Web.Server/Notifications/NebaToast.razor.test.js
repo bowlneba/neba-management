@@ -51,7 +51,7 @@ describe('NebaToast', () => {
       const duration = 5000;
 
       // Act
-      const timer = createTimer(mockComponentRef, duration);
+      createTimer(mockComponentRef, duration);
       jest.advanceTimersByTime(duration);
 
       // Wait for promise to resolve

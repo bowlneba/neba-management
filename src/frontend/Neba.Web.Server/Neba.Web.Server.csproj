@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\backend\Neba.Website.Contracts\Neba.Website.Contracts.csproj" />
     <ProjectReference Include="..\Neba.Web.Client\Neba.Web.Client.csproj" />
     <ProjectReference Include="..\..\shared-kernel\Neba.Contracts\Neba.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared-kernel\Neba.ServiceDefaults\Neba.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <!-- Disable automatic detection of .razor.js files as JS modules -->
@@ -47,10 +48,10 @@
     <Content Remove="**\*.razor.js" />
     <JSModuleFile Remove="**\*.razor.js" />
 
-    <!-- Then, explicitly include them as None items that get copied -->
+    <!-- Then, explicitly include them as None items that get copied, preserving their folder structure under wwwroot -->
     <None Include="**\*.razor.js" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);**\node_modules\**;**\bin\**;**\obj\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>wwwroot\js\%(Filename)%(Extension)</Link>
+      <Link>wwwroot\%(RelativeDir)%(Filename)%(Extension)</Link>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>

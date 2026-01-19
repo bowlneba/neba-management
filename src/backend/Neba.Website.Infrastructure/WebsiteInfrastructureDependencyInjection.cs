@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Neba.Infrastructure.Database;
 using Neba.Website.Application.Awards;
 using Neba.Website.Application.Bowlers;
 using Neba.Website.Application.Bowlers.BowlerTitles;
@@ -50,9 +51,15 @@ public static class WebsiteInfrastructureDependencyInjection
             string websiteConnectionString = config.GetConnectionString("website")
                                              ?? throw new InvalidOperationException("Database connection string 'website' is not configured.");
 
-            services.AddDbContext<WebsiteDbContext>(options => options
-                .UseNpgsql(websiteConnectionString, npgsqlOptions =>
-                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema)));
+            services.AddDbContext<WebsiteDbContext>((sp, options) =>
+            {
+                options.UseNpgsql(websiteConnectionString, npgsqlOptions =>
+                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WebsiteDbContext.DefaultSchema));
+
+                // Add slow query interceptor
+                SlowQueryInterceptor interceptor = sp.GetRequiredService<SlowQueryInterceptor>();
+                options.AddInterceptors(interceptor);
+            });
 
             string[] websiteTags = ["database", "website"];
 

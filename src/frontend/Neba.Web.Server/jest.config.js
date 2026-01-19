@@ -3,7 +3,8 @@ export default {
 
   // Module path mappings for imports
   moduleNameMapper: {
-    '^/js/(.*)$': '<rootDir>/wwwroot/js/$1'
+    '^/js/(.*)$': '<rootDir>/wwwroot/js/$1',
+    '^\\.\\./js/(.*)$': '<rootDir>/wwwroot/js/$1'
   },
 
   // Test file patterns

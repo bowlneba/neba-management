@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,10 @@ public static class DocumentRefreshSseStreamHandler
         HybridCache cache,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        const string streamType = "document-refresh";
+        Stopwatch connectionTimer = SseStreamTelemetry.RecordConnectionStart(streamType);
+        int eventCount = 0;
+
         // Send the initial state if available from cache, otherwise send a default "ready" state
         string cacheKey = $"{documentType}:refresh:current";
 
@@ -56,19 +61,27 @@ public static class DocumentRefreshSseStreamHandler
         if (state is not null)
         {
             var initialEvent = DocumentRefreshStatusEvent.FromStatus(state.Status, state.ErrorMessage);
+            SseStreamTelemetry.RecordEventPublished(documentType, state.Status);
+            eventCount++;
             yield return initialEvent;
         }
         else
         {
             // No cached state means no refresh has been performed yet, send "Completed" as default
             var initialEvent = DocumentRefreshStatusEvent.FromStatus(DocumentRefreshStatus.Completed.Name);
+            SseStreamTelemetry.RecordEventPublished(streamType, DocumentRefreshStatus.Completed.Name);
+            eventCount++;
             yield return initialEvent;
         }
 
         // Stream updates from the channel
-        await foreach (DocumentRefreshStatusEvent statusEvent in channelReader.ReadAllAsync(cancellationToken))
+        await foreach (DocumentRefreshStatusEvent statusEvent in channelReader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
         {
+            SseStreamTelemetry.RecordEventPublished(streamType, statusEvent.Status);
+            eventCount++;
             yield return statusEvent;
         }
+
+        SseStreamTelemetry.RecordConnectionEnd(streamType, connectionTimer, eventCount);
     }
 }

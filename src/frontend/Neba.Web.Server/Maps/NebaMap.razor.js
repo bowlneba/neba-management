@@ -2,6 +2,8 @@
 // Displays locations on an interactive map with clustering, popups, and focus capabilities
 // Note: Assumes 'atlas' is available globally from the Azure Maps SDK CDN
 
+import { trackError, createTimer } from '../js/telemetry-helper.js';
+
 let map = null;
 let dataSource = null;
 let markers = new Map(); // Track markers by location ID
@@ -509,15 +511,23 @@ export function enterDirectionsPreview(locationId) {
  * @returns {Promise<Object>} Route data with distance, time, and instructions
  */
 export async function showRoute(origin, destination) {
+    const timer = createTimer('map.route_calculation');
+
     if (!map) {
         console.error('[NebaMap] Cannot show route - map not initialized');
-        throw new Error('Map not initialized');
+        const error = new Error('Map not initialized');
+        trackError(error.message, 'map.route', error.stack);
+        timer.stop(false, { error: 'map_not_initialized' });
+        throw error;
     }
 
     const authConfig = globalThis.azureMapsAuthConfig;
     if (!authConfig) {
         console.error('[NebaMap] Cannot show route - no auth configuration available');
-        throw new Error('Authentication not configured');
+        const error = new Error('Authentication not configured');
+        trackError(error.message, 'map.route', error.stack);
+        timer.stop(false, { error: 'auth_not_configured' });
+        throw error;
     }
 
     console.log('[NebaMap] Calculating route from', origin, 'to', destination);
@@ -543,7 +553,10 @@ export async function showRoute(origin, destination) {
             console.log('[NebaMap] Using Azure AD for route');
             const token = await getAzureADTokenForRoute();
             if (!token) {
-                throw new Error('Failed to get Azure AD token for route calculation');
+                const error = new Error('Failed to get Azure AD token for route calculation');
+                trackError(error.message, 'map.route', error.stack);
+                timer.stop(false, { error: 'token_acquisition_failed' });
+                throw error;
             }
             headers['Authorization'] = `Bearer ${token}`;
             headers['x-ms-client-id'] = authConfig.accountId;
@@ -552,13 +565,19 @@ export async function showRoute(origin, destination) {
         const response = await fetch(url, { headers });
 
         if (!response.ok) {
-            throw new Error(`Route API error: ${response.status} ${response.statusText}`);
+            const error = new Error(`Route API error: ${response.status} ${response.statusText}`);
+            trackError(error.message, 'map.route', error.stack);
+            timer.stop(false, { error: 'api_error', status_code: response.status });
+            throw error;
         }
 
         const data = await response.json();
 
         if (!data.routes || data.routes.length === 0) {
-            throw new Error('No route found');
+            const error = new Error('No route found');
+            trackError(error.message, 'map.route', error.stack);
+            timer.stop(false, { error: 'no_route_found' });
+            throw error;
         }
 
         const route = data.routes[0];
@@ -594,10 +613,19 @@ export async function showRoute(origin, destination) {
         // Draw the route on the map
         drawRoute(route, origin, destination);
 
+        // Track successful route calculation
+        timer.stop(true, {
+            distance_meters: summary.lengthInMeters,
+            travel_time_seconds: summary.travelTimeInSeconds,
+            instruction_count: instructions.length
+        });
+
         console.log('[NebaMap] Route calculated:', routeData);
         return routeData;
     } catch (error) {
         console.error('[NebaMap] Error calculating route:', error);
+        trackError(error.message, 'map.route', error.stack);
+        timer.stop(false, { error: error.message });
         throw error;
     }
 }

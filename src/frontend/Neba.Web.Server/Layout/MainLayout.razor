@@ -1,7 +1,12 @@
 @using Neba.Web.Server.Notifications
+@using Neba.Web.Server.Telemetry
+@using Microsoft.JSInterop
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
 @inject IWebHostEnvironment HostEnv
+@inject NavigationTelemetry NavTelemetry
+@inject JavaScriptTelemetryBridge JsTelemetry
+@inject IJSRuntime JS
 
 <script src="./Layout/MainLayout.razor.js" type="module"></script>
 
@@ -172,6 +177,18 @@
 </div>
 
 @code {
+    // NavigationTelemetry is injected and automatically tracks navigation events
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize JavaScript telemetry bridge
+            var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Layout/MainLayout.razor.js");
+            await module.InvokeVoidAsync("initializeTelemetryBridge", DotNetObjectReference.Create(JsTelemetry));
+        }
+    }
+
     private bool IsProduction =>
         string.Equals(HostEnv.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(HostEnv.EnvironmentName, "Docker", StringComparison.OrdinalIgnoreCase);

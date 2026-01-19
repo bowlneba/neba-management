@@ -1,7 +1,15 @@
-namespace Neba.Api.HealthChecks;
+using Microsoft.AspNetCore.Http;
 
-internal static class HealthCheckResponseWriter
+namespace Neba.ServiceDefaults.HealthChecks;
+
+/// <summary>
+/// Provides a default health check response writer.
+/// </summary>
+public static class HealthCheckResponseWriter
 {
+    /// <summary>
+    /// Gets the default health check response writer.
+    /// </summary>
     public static Func<HttpContext, Microsoft.Extensions.Diagnostics.HealthChecks.HealthReport, Task> Default()
             => async (context, report) =>
         {

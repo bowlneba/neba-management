@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Neba.Application.BackgroundJobs;
 using Neba.Application.Storage;
+using Neba.ServiceDefaults.Telemetry;
 
 namespace Neba.Application.Documents;
 
@@ -31,6 +33,7 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
     ILogger<SyncHtmlDocumentToStorageJobHandler> logger)
         : IBackgroundJobHandler<SyncHtmlDocumentToStorageJob>
 {
+    private static readonly ActivitySource s_activitySource = new("Neba.BackgroundJobs");
 
     /// <summary>
     /// Executes the sync job: retrieves the document HTML and uploads it to the
@@ -58,27 +61,60 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
             throw new ArgumentException("Job.Path cannot be null or whitespace.", nameof(job));
         }
 
+        using Activity? activity = s_activitySource.StartActivity("backgroundjob.sync_document");
+
+        activity?.SetCodeAttributes("SyncHtmlDocumentToStorageJob", "Neba.BackgroundJobs");
+        activity?.SetTag("document.key", job.DocumentKey);
+        activity?.SetTag("storage.container", job.Container);
+        activity?.SetTag("storage.path", job.Path);
+        activity?.SetTag("triggered.by", job.TriggeredBy);
+
+        long jobStartTimestamp = Stopwatch.GetTimestamp();
+        SyncHtmlDocumentToStorageMetrics.RecordJobStart(job.DocumentKey, job.TriggeredBy);
+
         try
         {
             logger.LogStartingHtmlDocumentSync();
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Retrieving, cancellationToken: cancellationToken);
 
+            // Retrieve document HTML
+            long retrieveStartTimestamp = Stopwatch.GetTimestamp();
             string documentHtml = await documentsService.GetDocumentAsHtmlAsync(
                 job.DocumentKey,
                 cancellationToken);
+            double retrieveDurationMs = Stopwatch.GetElapsedTime(retrieveStartTimestamp).TotalMilliseconds;
+            SyncHtmlDocumentToStorageMetrics.RecordRetrieveDuration(job.DocumentKey, retrieveDurationMs);
+
+            activity?.AddEvent(new ActivityEvent("document_retrieved", tags: new ActivityTagsCollection
+            {
+                { "phase", "retrieve" },
+                { "duration_ms", retrieveDurationMs }
+            }));
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Uploading, cancellationToken: cancellationToken);
 
             job.Metadata["LastUpdatedUtc"] = DateTimeOffset.UtcNow.ToString("o");
             job.Metadata["LastUpdatedBy"] = job.TriggeredBy;
 
+            // Upload document to storage
+            long uploadStartTimestamp = Stopwatch.GetTimestamp();
             string name = await storageService.UploadAsync(job.Container, job.Path, documentHtml, MediaTypeNames.Text.Html, job.Metadata, cancellationToken);
+            double uploadDurationMs = Stopwatch.GetElapsedTime(uploadStartTimestamp).TotalMilliseconds;
+            SyncHtmlDocumentToStorageMetrics.RecordUploadDuration(job.DocumentKey, uploadDurationMs);
+
+            activity?.AddEvent(new ActivityEvent("document_uploaded", tags: new ActivityTagsCollection
+            {
+                { "phase", "upload" },
+                { "duration_ms", uploadDurationMs },
+                { "storage.name", name }
+            }));
 
             logger.LogCompletedHtmlDocumentSync(name);
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Completed, cancellationToken: cancellationToken);
 
+            // Invalidate caches
             if (!string.IsNullOrWhiteSpace(job.DocumentCacheKey))
             {
                 await cache.RemoveAsync(job.DocumentCacheKey, cancellationToken);
@@ -88,9 +124,25 @@ public sealed class SyncHtmlDocumentToStorageJobHandler(
             {
                 await cache.RemoveAsync(job.CacheKey, cancellationToken);
             }
+
+            double totalDurationMs = Stopwatch.GetElapsedTime(jobStartTimestamp).TotalMilliseconds;
+            SyncHtmlDocumentToStorageMetrics.RecordJobSuccess(job.DocumentKey, totalDurationMs);
+
+            activity?.SetTag("job.duration_ms", totalDurationMs);
+            activity?.SetTag("retrieve.duration_ms", retrieveDurationMs);
+            activity?.SetTag("upload.duration_ms", uploadDurationMs);
+            activity?.SetStatus(ActivityStatusCode.Ok);
         }
         catch (Exception ex)
         {
+            double totalDurationMs = Stopwatch.GetElapsedTime(jobStartTimestamp).TotalMilliseconds;
+            SyncHtmlDocumentToStorageMetrics.RecordJobFailure(job.DocumentKey, totalDurationMs, ex.GetType().Name);
+
+            activity?.SetTag("job.duration_ms", totalDurationMs);
+            activity?.SetTag("error.type", ex.GetType().Name);
+            activity?.SetTag("error.message", ex.Message);
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+
             logger.LogErrorDuringHtmlDocumentSync(ex);
 
             await UpdateStatusAsync(job, DocumentRefreshStatus.Failed, ex.Message, cancellationToken);

@@ -36,6 +36,15 @@ services:
     networks:
       - neba-network
 
+  neba.otel:
+    container_name: neba-telemetry
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    ports:
+      - "19634:18888" # OTEL Dashboard
+      - "19635:18889" # OTLP Receiver
+    networks:
+      - neba-network
+
   neba.db:
     container_name: neba-db
     image: postgres:17.6

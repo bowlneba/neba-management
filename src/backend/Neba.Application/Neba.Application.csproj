@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Neba.Domain\Neba.Domain.csproj" />
+    <ProjectReference Include="..\..\shared-kernel\Neba.ServiceDefaults\Neba.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

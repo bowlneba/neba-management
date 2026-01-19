@@ -1,5 +1,7 @@
 // MainLayout navigation functionality
 
+import { initializeTelemetry, initializePerformanceTracking } from '../js/telemetry-helper.js';
+
 // Get breakpoint values from CSS variables
 function getBreakpoint(name) {
     const value = getComputedStyle(document.documentElement)
@@ -126,7 +128,18 @@ function initializeNavigation() {
     globalThis.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
 
-}// Initialize on DOM ready and after Blazor updates
+}
+
+/**
+ * Initializes telemetry with DotNet bridge reference
+ * @param {any} dotNetReference - DotNet object reference for JSInterop
+ */
+export function initializeTelemetryBridge(dotNetReference) {
+    initializeTelemetry(dotNetReference);
+    initializePerformanceTracking();
+}
+
+// Initialize on DOM ready and after Blazor updates
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeNavigation);
 } else {
