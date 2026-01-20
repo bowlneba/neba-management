@@ -208,6 +208,54 @@ Lane patterns are recorded to:
 
 ---
 
+## TournamentFile
+
+**Definition:** An entity representing a **file** associated with a tournament, such as a logo, flyer, or other visual asset stored in blob storage.
+
+**Purpose:**
+
+- Associates uploaded files with specific tournaments
+- Tracks file metadata and upload timing
+- Enables tournament branding and visual identity
+- Supports file type categorization (Logo, Flyer, etc.)
+
+**Properties:**
+
+- `TournamentFileId` - Unique identifier for the tournament file association
+- `FileType` - The category of file (e.g., Logo)
+- `File` - The StoredFile value object containing file metadata (container, path, content type, size)
+- `UploadedAtUtc` - Timestamp when the file was uploaded to the system
+
+**File Types:**
+
+- **Logo** - Tournament branding or sponsor logos (currently the only implemented type)
+- Future types may include: Flyer, Results PDF, Bracket, Photo Gallery, etc.
+
+**Business Rules:**
+
+- Multiple files of different types can be associated with a single tournament
+- Files are stored in Azure Blob Storage (or AWS S3 in future)
+- File metadata is persisted in the domain model via the StoredFile value object
+- Files are permanent once uploaded (no automatic deletion)
+
+**Relationship to Tournament:**
+
+- Tournament → Files is a one-to-many relationship
+- Tournament aggregate owns the TournamentFile collection
+- Files are navigation properties, loaded when needed
+
+**Important Terminology Note:**
+
+TournamentFile represents **files** (binary assets in blob storage), **not documents** (content from Google Docs/Office like bylaws or tournament rules). See the [Documents vs Files section in Technical Building Blocks]({{ '/ubiquitous-language/technical-building-blocks' | relative_url }}#documents-vs-files) for the distinction.
+
+**Related Terms:** Tournament, StoredFile, TournamentFileType
+
+**Code Reference:** 
+- `src/backend/Neba.Website.Domain/Tournaments/TournamentFile.cs`
+- `src/backend/Neba.Website.Domain/Tournaments/TournamentFileType.cs`
+
+---
+
 ## Champion / Title Relationship
 
 For documentation on the Champion/Title concept (the many-to-many relationship between Tournament and Bowler), see the [Title / Champion section in Awards & Titles]({{ '/ubiquitous-language/awards-and-titles' | relative_url }}#title--champion).

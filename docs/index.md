@@ -13,10 +13,12 @@ title: Home
         <h3><span class="feature-icon">📖</span> Ubiquitous Language <span class="status-badge status-ready">Ready</span></h3>
         <p>Domain terminology and definitions for consistent communication.</p>
         <ul class="feature-list">
+            <li><a href="{{ '/ubiquitous-language/technical-building-blocks' | relative_url }}">Technical Building Blocks</a></li>
             <li><a href="{{ '/ubiquitous-language/awards-and-titles' | relative_url }}">Awards & Titles</a></li>
+            <li><a href="{{ '/ubiquitous-language/tournaments' | relative_url }}">Tournaments</a></li>
+            <li><a href="{{ '/ubiquitous-language/hall-of-fame' | relative_url }}">Hall of Fame</a></li>
             <li>Bowlers <span class="status-badge status-soon">Soon</span></li>
             <li>Members <span class="status-badge status-soon">Soon</span></li>
-            <li>Tournaments <span class="status-badge status-soon">Soon</span></li>
         </ul>
     </div>
 
