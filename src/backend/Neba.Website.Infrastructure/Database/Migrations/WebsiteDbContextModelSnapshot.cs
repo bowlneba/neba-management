@@ -432,73 +432,6 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                     b.ToTable("tournament_champions", "website");
                 });
 
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.TournamentDocument", b =>
-                {
-                    b.Property<int>("db_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("db_id"));
-
-                    b.Property<int>("DocumentType")
-                        .HasColumnType("integer")
-                        .HasColumnName("document_type");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasMaxLength(26)
-                        .HasColumnType("character(26)")
-                        .HasColumnName("domain_id")
-                        .IsFixedLength();
-
-                    b.Property<DateTimeOffset>("UploadedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_at_utc");
-
-                    b.Property<int>("tournament_id")
-                        .HasColumnType("integer")
-                        .HasColumnName("tournament_id");
-
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "File", "Neba.Website.Domain.Tournaments.TournamentDocument.File#StoredFile", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Container")
-                                .IsRequired()
-                                .HasMaxLength(63)
-                                .HasColumnType("character varying(63)")
-                                .HasColumnName("file_container");
-
-                            b1.Property<string>("ContentType")
-                                .IsRequired()
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)")
-                                .HasColumnName("file_content_type");
-
-                            b1.Property<string>("Path")
-                                .IsRequired()
-                                .HasMaxLength(1024)
-                                .HasColumnType("character varying(1024)")
-                                .HasColumnName("file_path");
-
-                            b1.Property<long>("SizeInBytes")
-                                .HasColumnType("bigint")
-                                .HasColumnName("file_size_in_bytes");
-                        });
-
-                    b.HasKey("db_id")
-                        .HasName("pk_tournament_documents");
-
-                    b.HasAlternateKey("Id")
-                        .HasName("ak_tournament_documents_domain_id");
-
-                    b.HasIndex("tournament_id")
-                        .HasDatabaseName("ix_tournament_documents_tournament_id");
-
-                    b.ToTable("tournament_documents", "website");
-                });
-
             modelBuilder.Entity("Neba.Website.Domain.Awards.HallOfFameInduction", b =>
                 {
                     b.HasOne("Neba.Website.Domain.Bowlers.Bowler", "Bowler")
@@ -605,28 +538,11 @@ namespace Neba.Website.Infrastructure.Database.Migrations
                         .HasConstraintName("fk_tournament_champions_tournaments_tournament_id");
                 });
 
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.TournamentDocument", b =>
-                {
-                    b.HasOne("Neba.Website.Domain.Tournaments.Tournament", "Tournament")
-                        .WithMany("Documents")
-                        .HasForeignKey("tournament_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_tournament_documents_tournaments_tournament_id");
-
-                    b.Navigation("Tournament");
-                });
-
             modelBuilder.Entity("Neba.Website.Domain.Bowlers.Bowler", b =>
                 {
                     b.Navigation("HallOfFameInductions");
 
                     b.Navigation("SeasonAwards");
-                });
-
-            modelBuilder.Entity("Neba.Website.Domain.Tournaments.Tournament", b =>
-                {
-                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }
