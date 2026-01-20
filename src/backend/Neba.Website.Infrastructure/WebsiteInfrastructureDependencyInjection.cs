@@ -10,6 +10,7 @@ using Neba.Website.Application.BowlingCenters;
 using Neba.Website.Application.Tournaments;
 using Neba.Website.Infrastructure.Database;
 using Neba.Website.Infrastructure.Database.Repositories;
+using Neba.Website.Infrastructure.Tournaments;
 
 namespace Neba.Website.Infrastructure;
 
@@ -75,6 +76,8 @@ public static class WebsiteInfrastructureDependencyInjection
 
         private IServiceCollection AddRepositories()
         {
+            services.AddSingleton<ITournamentUrlBuilder, TournamentUrlBuilder>();
+
             services.AddScoped<IWebsiteBowlerQueryRepository, WebsiteBowlerQueryRepository>();
             services.AddScoped<IWebsiteTitleQueryRepository, WebsiteTitleQueryRepository>();
             services.AddScoped<IWebsiteAwardQueryRepository, WebsiteAwardQueryRepository>();

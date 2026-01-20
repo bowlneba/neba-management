@@ -1,46 +1,86 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Domain;
 using Neba.Website.Application.Tournaments;
+using Neba.Website.Domain.Tournaments;
 
 namespace Neba.Website.Infrastructure.Database.Repositories;
 
-internal sealed class WebsiteTournamentQueryRepository(WebsiteDbContext dbContext)
+internal sealed class WebsiteTournamentQueryRepository(
+    WebsiteDbContext dbContext,
+    ITournamentUrlBuilder urlBuilder)
     : IWebsiteTournamentQueryRepository
 {
     public async Task<IReadOnlyCollection<TournamentSummaryDto>> ListTournamentsAfterDateAsync(DateOnly afterDate, CancellationToken cancellationToken)
-        => await dbContext.Tournaments
+    {
+        var results = await dbContext.Tournaments
             .AsNoTracking()
             .Where(tournament => tournament.StartDate >= afterDate)
             .OrderBy(tournament => tournament.StartDate)
-            .Select(tournament => new TournamentSummaryDto
+            .Select(tournament => new
             {
-                Id = tournament.Id,
-                Name = tournament.Name,
-                BowlingCenterId = tournament.BowlingCenterId,
+                tournament.Id,
+                tournament.Name,
+                tournament.BowlingCenterId,
                 BowlingCenterName = tournament.BowlingCenter != null ? tournament.BowlingCenter.Name : null,
-                StartDate = tournament.StartDate,
-                EndDate = tournament.EndDate,
-                TournamentType = tournament.TournamentType,
+                tournament.StartDate,
+                tournament.EndDate,
+                tournament.TournamentType,
                 PatternLengthCategory = tournament.LanePattern != null ? tournament.LanePattern.LengthCategory : null,
-                ThumbnailUrl = null
+                LogoFile = tournament.Files
+                    .Where(file => file.FileType == TournamentFileType.Logo)
+                    .Select(file => file.File)
+                    .FirstOrDefault()
             })
             .ToListAsync(cancellationToken);
 
+        return results.ConvertAll(result => new TournamentSummaryDto
+        {
+            Id = result.Id,
+            Name = result.Name,
+            BowlingCenterId = result.BowlingCenterId,
+            BowlingCenterName = result.BowlingCenterName,
+            StartDate = result.StartDate,
+            EndDate = result.EndDate,
+            TournamentType = result.TournamentType,
+            PatternLengthCategory = result.PatternLengthCategory,
+            ThumbnailUrl = urlBuilder.BuildFileUrl(result.LogoFile)
+        });
+    }
+
     public async Task<IReadOnlyCollection<TournamentSummaryDto>> ListTournamentsInYearAsync(int year, CancellationToken cancellationToken)
-        => await dbContext.Tournaments
+    {
+        var results = await dbContext.Tournaments
             .AsNoTracking()
             .Where(tournament => tournament.StartDate.Year == year)
             .OrderBy(tournament => tournament.StartDate)
-            .Select(tournament => new TournamentSummaryDto
+            .Select(tournament => new
             {
-                Id = tournament.Id,
-                Name = tournament.Name,
-                BowlingCenterId = tournament.BowlingCenterId,
+                tournament.Id,
+                tournament.Name,
+                tournament.BowlingCenterId,
                 BowlingCenterName = tournament.BowlingCenter != null ? tournament.BowlingCenter.Name : null,
-                StartDate = tournament.StartDate,
-                EndDate = tournament.EndDate,
-                TournamentType = tournament.TournamentType,
+                tournament.StartDate,
+                tournament.EndDate,
+                tournament.TournamentType,
                 PatternLengthCategory = tournament.LanePattern != null ? tournament.LanePattern.LengthCategory : null,
-                ThumbnailUrl = null
+                LogoFile = tournament.Files
+                    .Where(file => file.FileType == TournamentFileType.Logo)
+                    .Select(file => file.File)
+                    .FirstOrDefault()
             })
             .ToListAsync(cancellationToken);
+
+        return results.ConvertAll(result => new TournamentSummaryDto
+        {
+            Id = result.Id,
+            Name = result.Name,
+            BowlingCenterId = result.BowlingCenterId,
+            BowlingCenterName = result.BowlingCenterName,
+            StartDate = result.StartDate,
+            EndDate = result.EndDate,
+            TournamentType = result.TournamentType,
+            PatternLengthCategory = result.PatternLengthCategory,
+            ThumbnailUrl = urlBuilder.BuildFileUrl(result.LogoFile)
+        });
+    }
 }

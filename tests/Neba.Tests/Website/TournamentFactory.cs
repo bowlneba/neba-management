@@ -16,7 +16,8 @@ public static class TournamentFactory
         TournamentType? tournamentType = null,
         int? entries = null,
         LanePattern? lanePattern = null,
-        int? applicationId = null)
+        int? applicationId = null,
+        IReadOnlyCollection<TournamentFile>? files = null)
             => new()
             {
                 Id = id ?? TournamentId.New(),
@@ -28,7 +29,8 @@ public static class TournamentFactory
                 TournamentType = tournamentType ?? TournamentType.Singles,
                 LanePattern = lanePattern,
                 EntryCount = entries ?? 50,
-                ApplicationId = applicationId
+                ApplicationId = applicationId,
+                Files = files ?? []
             };
 
     public static Tournament Create(
@@ -40,7 +42,8 @@ public static class TournamentFactory
         TournamentType? tournamentType = null,
         int? entries = null,
         LanePattern? lanePattern = null,
-        int? applicationId = null
+        int? applicationId = null,
+        IReadOnlyCollection<TournamentFile>? files = null
     )
     {
         BowlingCenter bowlingCenterPopulated = bowlingCenter ?? BowlingCenterFactory.Create();
@@ -56,7 +59,8 @@ public static class TournamentFactory
             EntryCount = entries ?? 50,
             TournamentType = tournamentType ?? TournamentType.Singles,
             LanePattern = lanePattern,
-            ApplicationId = applicationId
+            ApplicationId = applicationId,
+            Files = files ?? []
         };
     }
 

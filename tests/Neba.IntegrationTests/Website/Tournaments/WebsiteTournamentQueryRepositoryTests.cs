@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Neba.Domain.Tournaments;
+using Neba.Tests;
 using Neba.Tests.Infrastructure;
 using Neba.Tests.Website;
 using Neba.Website.Application.Tournaments;
@@ -90,7 +92,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddRangeAsync(bogusTournaments);
         await websiteDbContext.SaveChangesAsync();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
         DateOnly cutoffDate = new DateOnly(2024, 1, 15);
 
         // Act
@@ -179,7 +182,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddRangeAsync(bogusTournaments);
         await websiteDbContext.SaveChangesAsync();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
         const int targetYear = 2024;
 
         // Act
@@ -234,7 +238,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddAsync(tournamentBeforeCutoff);
         await websiteDbContext.SaveChangesAsync();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
         DateOnly cutoffDate = new DateOnly(2025, 1, 1);
 
         // Act
@@ -278,7 +283,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
 
         websiteDbContext.ChangeTracker.Clear();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
         const int targetYear = 2024;
 
         // Act
@@ -318,7 +324,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddAsync(tournament);
         await websiteDbContext.SaveChangesAsync();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
 
         // Act
         IReadOnlyCollection<TournamentSummaryDto> result
@@ -366,7 +373,8 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         await websiteDbContext.Tournaments.AddAsync(tournament);
         await websiteDbContext.SaveChangesAsync();
 
-        var repository = new WebsiteTournamentQueryRepository(websiteDbContext);
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
 
         // Act
         IReadOnlyCollection<TournamentSummaryDto> result
@@ -377,5 +385,150 @@ public sealed class WebsiteTournamentQueryRepositoryTests : IAsyncLifetime
         TournamentSummaryDto dto = result.Single();
 
         dto.PatternLengthCategory.ShouldBeNull();
+    }
+
+    [Fact(DisplayName = "Maps tournament logo to ThumbnailUrl when logo file exists")]
+    public async Task ListTournamentsAfterDateAsync_WithLogoFile_MapsThumbnailUrl()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(_database.ConnectionString)
+                .Options);
+
+        // Create seed bowling center
+        BowlingCenter bowlingCenter = BowlingCenterFactory.Create(
+            name: "Test Bowling Center");
+        await websiteDbContext.BowlingCenters.AddAsync(bowlingCenter);
+        await websiteDbContext.SaveChangesAsync();
+
+        // Create tournament file with logo
+        TournamentFile logoFile = TournamentFileFactory.Create(
+            fileType: TournamentFileType.Logo,
+            file: StoredFileFactory.Create(
+                container: "tournament-files",
+                path: "logos/2024-singles.png",
+                contentType: "image/png",
+                sizeInBytes: 102400));
+
+        // Create tournament with logo file
+        Tournament tournament = TournamentFactory.Create(
+            name: "Singles Championship",
+            startDate: new DateOnly(2024, 6, 1),
+            endDate: new DateOnly(2024, 6, 1),
+            bowlingCenter: bowlingCenter,
+            files: [logoFile]);
+
+        await websiteDbContext.Tournaments.AddAsync(tournament);
+        await websiteDbContext.SaveChangesAsync();
+
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
+
+        // Act
+        IReadOnlyCollection<TournamentSummaryDto> result
+            = await repository.ListTournamentsAfterDateAsync(new DateOnly(2024, 1, 1), CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(1);
+        TournamentSummaryDto dto = result.Single();
+
+        dto.ThumbnailUrl.ShouldNotBeNull();
+        dto.ThumbnailUrl!.ToString().ShouldContain("tournament-files");
+        dto.ThumbnailUrl.ToString().ShouldContain("logos/2024-singles.png");
+    }
+
+    [Fact(DisplayName = "Maps null ThumbnailUrl when tournament has no logo file")]
+    public async Task ListTournamentsAfterDateAsync_WithoutLogoFile_MapsNullThumbnailUrl()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(_database.ConnectionString)
+                .Options);
+
+        // Create seed bowling center
+        BowlingCenter bowlingCenter = BowlingCenterFactory.Create(
+            name: "Test Bowling Center");
+        await websiteDbContext.BowlingCenters.AddAsync(bowlingCenter);
+        await websiteDbContext.SaveChangesAsync();
+
+        // Create tournament without any files
+        Tournament tournament = TournamentFactory.Create(
+            name: "Singles Championship",
+            startDate: new DateOnly(2024, 6, 1),
+            endDate: new DateOnly(2024, 6, 1),
+            bowlingCenter: bowlingCenter,
+            files: []);
+
+        await websiteDbContext.Tournaments.AddAsync(tournament);
+        await websiteDbContext.SaveChangesAsync();
+
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
+
+        // Act
+        IReadOnlyCollection<TournamentSummaryDto> result
+            = await repository.ListTournamentsAfterDateAsync(new DateOnly(2024, 1, 1), CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(1);
+        TournamentSummaryDto dto = result.Single();
+
+        dto.ThumbnailUrl.ShouldBeNull();
+    }
+
+    [Fact(DisplayName = "Maps tournament logo to ThumbnailUrl in ListTournamentsInYearAsync")]
+    public async Task ListTournamentsInYearAsync_WithLogoFile_MapsThumbnailUrl()
+    {
+        // Arrange
+        await using var websiteDbContext = new WebsiteDbContext(
+            new DbContextOptionsBuilder<WebsiteDbContext>()
+                .UseNpgsql(_database.ConnectionString)
+                .Options);
+
+        // Create seed bowling center
+        BowlingCenter bowlingCenter = BowlingCenterFactory.Create(
+            name: "Test Bowling Center");
+        await websiteDbContext.BowlingCenters.AddAsync(bowlingCenter);
+        await websiteDbContext.SaveChangesAsync();
+
+        // Create tournament file with logo
+        TournamentFile logoFile = TournamentFileFactory.Create(
+            fileType: TournamentFileType.Logo,
+            file: StoredFileFactory.Create(
+                container: "tournament-files",
+                path: "logos/2024-masters.jpg",
+                contentType: "image/jpeg",
+                sizeInBytes: 204800));
+
+        // Create tournament with logo file
+        Tournament tournament = TournamentFactory.Create(
+            name: "Masters Tournament",
+            startDate: new DateOnly(2024, 8, 15),
+            endDate: new DateOnly(2024, 8, 17),
+            bowlingCenter: bowlingCenter,
+            tournamentType: TournamentType.Masters,
+            files: [logoFile]);
+
+        await websiteDbContext.Tournaments.AddAsync(tournament);
+        await websiteDbContext.SaveChangesAsync();
+
+        var urlBuilder = new TestTournamentUrlBuilder();
+        var repository = new WebsiteTournamentQueryRepository(websiteDbContext, urlBuilder);
+
+        // Act
+        IReadOnlyCollection<TournamentSummaryDto> result
+            = await repository.ListTournamentsInYearAsync(2024, CancellationToken.None);
+
+        // Assert
+        result.Count.ShouldBe(1);
+        TournamentSummaryDto dto = result.Single();
+
+        dto.ThumbnailUrl.ShouldNotBeNull();
+        dto.ThumbnailUrl!.ToString().ShouldContain("tournament-files");
+        dto.ThumbnailUrl.ToString().ShouldContain("logos/2024-masters.jpg");
+        dto.Name.ShouldBe("Masters Tournament");
+        dto.TournamentType.ShouldBe(TournamentType.Masters);
     }
 }
