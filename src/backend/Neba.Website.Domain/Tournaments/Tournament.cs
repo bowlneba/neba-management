@@ -82,9 +82,9 @@ public sealed class Tournament
     }
 
     /// <summary>
-    /// Gets the collection of documents associated with the tournament.
+    /// Gets the collection of files associated with the tournament.
     /// </summary>
-    public IReadOnlyCollection<TournamentDocument> Documents { get; init; } = [];
+    public IReadOnlyCollection<TournamentFile> Files { get; init; } = [];
 
     internal Tournament()
         : base(TournamentId.New())

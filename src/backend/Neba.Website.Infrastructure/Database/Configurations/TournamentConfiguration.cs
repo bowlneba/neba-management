@@ -93,8 +93,8 @@ internal sealed class TournamentConfiguration
                     j.HasIndex(tournamentChampion => tournamentChampion.BowlerId);
                 });
 
-        builder.HasMany(tournament => tournament.Documents)
-            .WithOne(document => document.Tournament)
+        builder.HasMany(tournament => tournament.Files)
+            .WithOne(file => file.Tournament)
             .HasForeignKey(ForeignKeyName)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

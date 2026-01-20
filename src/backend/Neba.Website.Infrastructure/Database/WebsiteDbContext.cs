@@ -35,7 +35,7 @@ internal sealed class WebsiteDbContext(DbContextOptions<WebsiteDbContext> option
         modelBuilder.ApplyConfiguration(new BowlerConfiguration());
         modelBuilder.ApplyConfiguration(new BowlingCenterConfiguration());
         modelBuilder.ApplyConfiguration(new TournamentConfiguration());
-        modelBuilder.ApplyConfiguration(new TournamentDocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new TournamentFileConfiguration());
         modelBuilder.ApplyConfiguration(new SeasonAwardConfiguration());
         modelBuilder.ApplyConfiguration(new HallOfFameInductionConfiguration());
     }

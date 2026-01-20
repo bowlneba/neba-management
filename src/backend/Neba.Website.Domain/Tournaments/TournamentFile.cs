@@ -7,12 +7,12 @@ namespace Neba.Website.Domain.Tournaments;
 /// <summary>
 /// Represents a document associated with a tournament.
 /// </summary>
-public sealed class TournamentDocument
+public sealed class TournamentFile
 {
     /// <summary>
     /// Gets the unique identifier for the tournament document.
     /// </summary>
-    public required TournamentDocumentId Id { get; init; }
+    public required TournamentFileId Id { get; init; }
 
     /// <summary>
     /// Gets the tournament associated with the document (Navigation property).
@@ -20,17 +20,17 @@ public sealed class TournamentDocument
     internal Tournament Tournament { get; set; } = null!;
 
     /// <summary>
-    /// Gets the type of the tournament document.
+    /// Gets the type of the tournament file.
     /// </summary>
-    public required TournamentDocumentType DocumentType { get; init; }
+    public required TournamentFileType FileType { get; init; }
 
     /// <summary>
-    /// Gets the stored file associated with the tournament document.
+    /// Gets the stored file associated with the tournament file.
     /// </summary>
     public required StoredFile File { get; init; }
 
     /// <summary>
-    /// Gets the UTC date and time when the document was uploaded.
+    /// Gets the UTC date and time when the file was uploaded.
     /// </summary>
     public required DateTimeOffset UploadedAtUtc { get; init; }
 }
